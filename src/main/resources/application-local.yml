@@ -6,7 +6,6 @@ spring:
     name: umc-service-local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/umc-service?serverTimezone=Asia/Seoul
 
     config:
       import: classpath:application.yml
