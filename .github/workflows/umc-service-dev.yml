@@ -62,6 +62,6 @@ jobs:
           script: |
             cd /
             sudo docker-compose -f docker-compose.dev.yml down
-            sudo docker pull   ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}-dev
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}-dev
             sudo docker-compose -f docker-compose.dev.yml up -d
             sudo docker image prune -f
