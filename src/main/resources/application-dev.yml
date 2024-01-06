@@ -6,7 +6,6 @@ spring:
     name: umc-service-dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DATABASE_URL_DEV}
 
     config:
       import: classpath:application.yml
