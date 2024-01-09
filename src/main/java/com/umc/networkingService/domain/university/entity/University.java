@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.university.entity;
 
+import com.umc.networkingService.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -11,7 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Getter
 @RequiredArgsConstructor
-public class University {
+public class University extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "uuid2")
