@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.proposal;
+package com.umc.networkingService.domain.proposal.entity;
 
 import com.umc.networkingService.global.common.BaseEntity;
 import jakarta.persistence.Column;
@@ -32,6 +32,6 @@ public class Proposal extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    //@Column(nullable = false) //이미지 필수 저장
+    //@Column(nullable = false)
     //private List<String> images;
 }
