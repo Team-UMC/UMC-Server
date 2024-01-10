@@ -1,26 +1,35 @@
 package com.umc.networkingService.domain.todayILearned.entity;
 
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.BaseEntity;
 import com.umc.networkingService.global.common.Part;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import lombok.Builder;
-import org.hibernate.annotations.GenericGenerator;
 
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UuidGenerator;
+
+@Getter
+@Entity
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is null")
 public class TodayILearned extends BaseEntity {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @UuidGenerator
+    @Column(name = "today_i_learned_id")
     private UUID id;
 
-    @Column(nullable = false)
-    private UUID writer;
+
+    //private Member writer;
 
     @Column(nullable = false)
     private String title;
@@ -29,13 +38,17 @@ public class TodayILearned extends BaseEntity {
 
     private String content;
 
-    @Column(nullable = false)
-    private List<Part> part;
+    @Enumerated(EnumType.STRING)
+    @JoinColumn
+    @ElementCollection(fetch = FetchType.LAZY)
+     List<Part> part= new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean isNotion;
 
-    @Column(nullable = false)
-    @Builder.Default
+
+    @Enumerated(EnumType.STRING)
+    @JoinColumn
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<String> attechedFilees = new ArrayList<>();
 }

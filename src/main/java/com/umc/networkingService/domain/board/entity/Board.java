@@ -11,15 +11,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is null")
 @DynamicInsert
 public class Board extends BaseEntity {
     @Id
@@ -45,23 +47,15 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private Role rolePermission;
 
-    @ElementCollection(targetClass = Part.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(
-            name = "board_part_permission",
-            joinColumns = @JoinColumn(name = "board_id")
-    )
-    @Column(name = "part", nullable = false)
+    @JoinColumn
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Part> partPermission = new ArrayList<>();
 
 
-    @ElementCollection(targetClass = Semester.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(
-            name= "board_semester_permission",
-            joinColumns = @JoinColumn(name = "board_id")
-    )
-    @Column(name="semester",nullable = false)
+    @JoinColumn
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Semester> semesterPermission = new ArrayList<>();
 
 

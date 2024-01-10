@@ -9,15 +9,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is null")
 @DynamicInsert
 public class Album extends BaseEntity {
 

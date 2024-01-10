@@ -6,13 +6,15 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
-@Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is null")
 public class AlbumComment extends BaseEntity {
 
     @Id
@@ -32,7 +34,7 @@ public class AlbumComment extends BaseEntity {
     //최상위 댓글인 경우 null
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="parent_comment_id")
-    private AlbumHeart parentComment;
+    private AlbumComment parentComment;
 
     @Column(nullable = false)
     private String content;

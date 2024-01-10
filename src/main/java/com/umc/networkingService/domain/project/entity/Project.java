@@ -2,27 +2,28 @@ package com.umc.networkingService.domain.project.entity;
 
 import com.umc.networkingService.global.common.BaseEntity;
 import com.umc.networkingService.global.common.Semester;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import lombok.Builder;
+
+import lombok.*;
 import lombok.Builder.Default;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UuidGenerator;
 
 @Getter
-@RequiredArgsConstructor
+@Entity
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is null")
 public class Project extends BaseEntity {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @UuidGenerator
+    @Column(name = "project_id")
     private UUID id;
 
     @Column(nullable = false)
@@ -35,8 +36,8 @@ public class Project extends BaseEntity {
 
     private String description;
 
-    @Column(nullable = false)
-    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<String> tags = new ArrayList<>();
 
 //    Semester 테이블과 연결

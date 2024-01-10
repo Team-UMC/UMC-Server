@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
@@ -17,10 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is null")
 public class Schedule extends BaseEntity {
+
     @Id
     @UuidGenerator
     @Column(name = "schedule_id")
@@ -51,25 +54,16 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false)
     private Role rolePermission;
 
-    @ElementCollection(targetClass = Part.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(
-            name = "schedule_part_permission",
-            joinColumns = @JoinColumn(name = "schedule_id")
-    )
-    @Column(name = "part", nullable = false)
+    @JoinColumn
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Part> partPermission = new ArrayList<>();
 
 
-    @ElementCollection(targetClass = Semester.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(
-            name= "schedule_semester_permission",
-            joinColumns = @JoinColumn(name = "schedule_id")
-    )
-    @Column(name="semester",nullable = false)
+    @JoinColumn
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Semester> semesterPermission = new ArrayList<>();
-
 
     @Column(nullable = false)
     private HostType hostType;

@@ -4,41 +4,33 @@ import com.umc.networkingService.global.common.BaseEntity;
 import com.umc.networkingService.global.common.Part;
 import com.umc.networkingService.global.common.Role;
 import com.umc.networkingService.global.common.Semester;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import lombok.Builder;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is null")
 public class Member extends BaseEntity {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @UuidGenerator
+    @Column(name = "member_id")
     private UUID id;
 
-    @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)", nullable = false)
-    private UUID university;
 
-    @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)", nullable = false)
-    private UUID branch;
+    //private University university;
+
+
+    //private Branch branch;
 
     private String profileImage;
 
@@ -57,16 +49,19 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private SocialType socialType;
 
-    @Column(nullable = false)
-    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Part> part = new ArrayList<>();
 
-    @Column(nullable = false)
-    private List<Semester> semester;
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<Semester> semester=new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
     private Position position;
 
     private String gitNickname;
