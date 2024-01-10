@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class Member extends BaseEntity {
     @Id
@@ -50,10 +50,12 @@ public class Member extends BaseEntity {
     private SocialType socialType;
 
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Part> part = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "member_semester", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Semester> semester=new ArrayList<>();
 

@@ -55,13 +55,13 @@ public class Schedule extends BaseEntity {
     private Role rolePermission;
 
     @Enumerated(EnumType.STRING)
-    @JoinColumn
+    @CollectionTable(name = "schedule_part_permission", joinColumns = @JoinColumn(name = "schedule_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Part> partPermission = new ArrayList<>();
 
 
     @Enumerated(EnumType.STRING)
-    @JoinColumn
+    @CollectionTable(name = "schedule_semester_permission", joinColumns = @JoinColumn(name = "schedule_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Semester> semesterPermission = new ArrayList<>();
 

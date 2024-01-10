@@ -25,7 +25,7 @@ public class TodayILearned extends BaseEntity {
 
     @Id
     @UuidGenerator
-    @Column(name = "today_i_learned_id")
+    @Column(name = "til_id")
     private UUID id;
 
 
@@ -39,16 +39,15 @@ public class TodayILearned extends BaseEntity {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    @JoinColumn
-    @ElementCollection(fetch = FetchType.LAZY)
-     List<Part> part= new ArrayList<>();
+    @Column(nullable = false)
+    private Part part;
 
     @Column(nullable = false)
     private Boolean isNotion;
 
 
     @Enumerated(EnumType.STRING)
-    @JoinColumn
+    @CollectionTable(name = "til_files", joinColumns = @JoinColumn(name = "til_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> attechedFilees = new ArrayList<>();
 }
