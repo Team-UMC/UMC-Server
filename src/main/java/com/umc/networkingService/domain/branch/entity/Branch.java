@@ -1,14 +1,12 @@
 package com.umc.networkingService.domain.branch.entity;
 
 import com.umc.networkingService.global.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.umc.networkingService.global.common.Semester;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
@@ -19,9 +17,8 @@ import java.util.UUID;
 public class Branch extends BaseEntity {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name="uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @UuidGenerator
+    @Column(name = "branch_id")
     private UUID id;
 
     @Column(nullable = false)
@@ -32,8 +29,8 @@ public class Branch extends BaseEntity {
 
     private String image;
 
-    //semester enum과 연결
-    //@Column(nullable = false)
-    //private Semester semester;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Semester semester;
 
 }
