@@ -1,41 +1,40 @@
-package com.umc.networkingService.domain.friend.entity;
+package com.umc.networkingService.domain.project.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.Part;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.util.UUID;
-
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 @Getter
 @Entity
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor
 @SQLRestriction("deleted_at is null")
-public class Friend extends BaseEntity  {
+public class ProjectMember extends BaseEntity {
 
     @Id
     @UuidGenerator
-    @Column(name = "friend_id")
+    @Column(name = "project_member_id")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private Member sender;
+    private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private Member receiver;
+    private Member member;
+
+    @Column(nullable = false)
+    private Part part;
+
 }

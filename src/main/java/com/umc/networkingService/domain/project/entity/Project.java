@@ -40,9 +40,8 @@ public class Project extends BaseEntity {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<String> tags = new ArrayList<>();
 
-//    Semester 테이블과 연결
-//    @Column(nullable = false)
-//    private Semester semester;
+    @Column(nullable = false)
+    private Semester semester;
 
     @Column(nullable = false)
     private Type type;

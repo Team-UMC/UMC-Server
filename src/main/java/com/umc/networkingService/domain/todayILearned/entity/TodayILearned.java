@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -21,15 +19,17 @@ import org.hibernate.annotations.UuidGenerator;
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
+@Table(name = "today_i_learned")
 public class TodayILearned extends BaseEntity {
 
     @Id
     @UuidGenerator
-    @Column(name = "til_id")
+    @Column(name = "today_i_learned_id")
     private UUID id;
 
-
-    //private Member writer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Member writer;
 
     @Column(nullable = false)
     private String title;
@@ -42,12 +42,5 @@ public class TodayILearned extends BaseEntity {
     @Column(nullable = false)
     private Part part;
 
-    @Column(nullable = false)
-    private Boolean isNotion;
-
-
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "til_files", joinColumns = @JoinColumn(name = "til_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<String> attechedFilees = new ArrayList<>();
+    private Boolean linkedNotion;
 }

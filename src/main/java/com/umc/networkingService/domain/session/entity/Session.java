@@ -1,4 +1,4 @@
-package com.umc.networkingService.session.entity;
+package com.umc.networkingService.domain.session.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.BaseEntity;

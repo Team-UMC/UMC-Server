@@ -1,5 +1,7 @@
 package com.umc.networkingService.domain.member.entity;
 
+import com.umc.networkingService.domain.branch.entity.Branch;
+import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.BaseEntity;
 import com.umc.networkingService.global.common.Part;
 import com.umc.networkingService.global.common.Role;
@@ -26,11 +28,13 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "university_id")
+    private University university;
 
-    //private University university;
-
-
-    //private Branch branch;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "branch_id")
+    private Branch branch;
 
     private String profileImage;
 

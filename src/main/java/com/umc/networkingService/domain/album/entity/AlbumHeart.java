@@ -1,6 +1,8 @@
 package com.umc.networkingService.domain.album.entity;
 
+import com.fasterxml.jackson.databind.ser.Serializers.Base;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,7 +16,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
-public class AlbumHeart {
+public class AlbumHeart extends BaseEntity {
 
     @Id
     @UuidGenerator

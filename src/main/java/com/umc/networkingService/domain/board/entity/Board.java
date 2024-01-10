@@ -40,16 +40,6 @@ public class Board extends BaseEntity {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role rolePermission;
-
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "board_part_permission", joinColumns = @JoinColumn(name = "board_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Part> partPermission = new ArrayList<>();
-
-
-    @Enumerated(EnumType.STRING)
     @CollectionTable(name = "board_semester_permission", joinColumns = @JoinColumn(name = "board_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Semester> semesterPermission = new ArrayList<>();

@@ -39,26 +39,13 @@ public class Schedule extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private LocalDateTime startDateTime;
 
     @Column(nullable = false)
-    private LocalDateTime endDate;
-
-    @Column(nullable = false)
-    private String timeSetting;
+    private LocalDateTime endDateTime;
 
     @Column(nullable = false)
     private String placeSetting;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role rolePermission;
-
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "schedule_part_permission", joinColumns = @JoinColumn(name = "schedule_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Part> partPermission = new ArrayList<>();
-
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "schedule_semester_permission", joinColumns = @JoinColumn(name = "schedule_id"))

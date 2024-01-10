@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.mascot.entity;
 
+import com.umc.networkingService.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +19,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
-public class Mascot {
+public class Mascot extends BaseEntity {
 
     @Id
     @UuidGenerator
@@ -26,7 +27,10 @@ public class Mascot {
     private UUID id;
 
     @Column(nullable = false)
-    private Long level;
+    private int startLevel;
+
+    @Column(nullable = false)
+    private int endLevel;
 
     private String dialogue;
 
