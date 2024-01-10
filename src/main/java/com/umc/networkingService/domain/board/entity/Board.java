@@ -1,30 +1,35 @@
 package com.umc.networkingService.domain.board.entity;
 
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.umc.networkingService.global.common.Part;
+import com.umc.networkingService.global.common.Role;
+import com.umc.networkingService.global.common.Semester;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.UuidGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
 public class Board extends BaseEntity {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @UuidGenerator
+    @Column(name = "board_id")
     private UUID id;
 
-    //member 테이블과 연결
-    // private Member writer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "member_id")
+    private Member writer;
 
     @Column(nullable = false)
     private String title;
@@ -32,19 +37,33 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    //private List<String> images;
+    @ElementCollection
+    private List<String> images = new ArrayList<>();
 
-    //role enum과 연결
-    //@Column(nullable = false)
-    //private Role rolePermission;
 
-    //part enum과 연결
-    //@Column(nullable = false)
-    //private Part partPermission;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role rolePermission;
 
-    //semester enum과 연결
-    //@Column(nullable = false)
-    //private SemesterPermission;
+    @ElementCollection(targetClass = Part.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(
+            name = "board_part_permission",
+            joinColumns = @JoinColumn(name = "board_id")
+    )
+    @Column(name = "part", nullable = false)
+    private List<Part> partPermission = new ArrayList<>();
+
+
+    @ElementCollection(targetClass = Semester.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(
+            name= "board_semester_permission",
+            joinColumns = @JoinColumn(name = "board_id")
+    )
+    @Column(name="semester",nullable = false)
+    private List<Semester> semesterPermission = new ArrayList<>();
+
 
     @Column(nullable = false)
     private HostType hostType;
