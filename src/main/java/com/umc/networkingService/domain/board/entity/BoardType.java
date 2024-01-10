@@ -10,5 +10,5 @@ public enum BoardType {
     MATCHING("매칭"),
     OB("이전 기수");
 
-    private final String Korean;
+    private final String toKorean;
 }

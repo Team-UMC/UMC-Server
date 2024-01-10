@@ -8,5 +8,5 @@ public enum HostType {
     BRANCH("지부"),
     CAMPUS("학교");
 
-    private final String Korean;
+    private final String toKorean;
 }
