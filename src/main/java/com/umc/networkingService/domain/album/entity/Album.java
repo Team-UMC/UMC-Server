@@ -1,0 +1,52 @@
+package com.umc.networkingService.domain.album.entity;
+
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.Semester;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
+
+@Getter
+@Entity
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is null")
+@DynamicInsert
+public class Album extends BaseEntity {
+
+    @Id
+    @UuidGenerator
+    @Column(name = "album_id")
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false,name = "member_id")
+    private Member writer;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Semester semester;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String content;
+
+    @ColumnDefault("0")
+    private int hitCount;
+
+    @ColumnDefault("0")
+    private int heartCount;
+
+    @ColumnDefault("0")
+    private int commentCount;
+
+}
