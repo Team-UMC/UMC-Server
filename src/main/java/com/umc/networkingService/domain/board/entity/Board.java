@@ -39,10 +39,6 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @ElementCollection
-    private List<String> images = new ArrayList<>();
-
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role rolePermission;

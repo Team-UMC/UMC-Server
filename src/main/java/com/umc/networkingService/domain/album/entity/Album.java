@@ -12,8 +12,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -41,10 +39,6 @@ public class Album extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
-
-    //이미지 필수 저장
-    @ElementCollection
-    private List<String> images = new ArrayList<>();
 
     @ColumnDefault("0")
     private int hitCount;

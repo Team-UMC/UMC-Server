@@ -1,6 +1,5 @@
-package com.umc.networkingService.domain.proposal.entity;
+package com.umc.networkingService.domain.board.entity;
 
-import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,30 +8,23 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
-public class Proposal extends BaseEntity {
+public class BoardImage extends BaseEntity {
 
     @Id
     @UuidGenerator
-    @Column(name = "proposal_id")
+    @Column(name = "board_image_id")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name="member_id")
-    private Member writer;
+    @JoinColumn(name="board_id")
+    private Board board;
 
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String content;
-
-
+    private String url;
 }
