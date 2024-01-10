@@ -43,3 +43,4 @@ application.yml
 ### Ignore checksum files ###
 checksums.lock
 md-checksums.bin
+*.lock
