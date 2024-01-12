@@ -1,6 +1,6 @@
 package com.umc.networkingService.global.common.exception;
 
-import com.umc.networkingService.global.common.BaseResponse;
+import com.umc.networkingService.global.common.base.BaseResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

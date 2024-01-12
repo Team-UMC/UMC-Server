@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.message.entity;
 
-import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

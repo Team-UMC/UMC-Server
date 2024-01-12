@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.project.entity;
 
-import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.Semester;
 import jakarta.persistence.*;
 
@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 import lombok.*;
-import lombok.Builder.Default;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 

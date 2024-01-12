@@ -1,9 +1,8 @@
 package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
