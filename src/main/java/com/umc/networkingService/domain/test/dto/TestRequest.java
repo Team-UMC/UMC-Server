@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.exceptionTest;
+package com.umc.networkingService.domain.test.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class TempRequest {
+public class TestRequest {
 
     @Builder
     @Getter

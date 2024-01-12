@@ -1,11 +1,11 @@
-package com.umc.networkingService.domain.exceptionTest;
+package com.umc.networkingService.domain.test.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class TempResponse {
+public class TestResponse {
 
     @Builder
     @Getter
