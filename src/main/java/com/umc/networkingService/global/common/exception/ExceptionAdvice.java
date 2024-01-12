@@ -41,7 +41,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     /*
      * ConstraintViolationException 발생 시 예외 처리
-     * @Validated 사용 시
+     * 메서드 파라미터, 또는 메서드 리턴 값에 문제가 있을 경우, @Validated 검증 실패한 경우
      */
     @org.springframework.web.bind.annotation.ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleConstraintViolationException(ConstraintViolationException e) {
@@ -50,7 +50,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     /*
      *  MethodArgumentNotValidException 발생 시 예외 처리
-     * @Valid 사용 시 (ArgumnetResolver에 의해 유효성 검사)
+     * @@RequestBody 내부에서 처리 실패한 경우, @Valid 검증 실패한 경우 (ArgumnetResolver에 의해 유효성 검사)
      */
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(
