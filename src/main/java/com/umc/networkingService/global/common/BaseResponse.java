@@ -9,18 +9,24 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"timestamp", "message", "result"})
+@JsonPropertyOrder({"timestamp", "code", "message", "result"})
 public class BaseResponse<T> {
 
     private final LocalDateTime timestamp = LocalDateTime.now();
-
+    private final String code;
     private final String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 
-    public BaseResponse(T result) {
-        this.message = "요청에 성공하였습니다.";
-        this.result = result;
+
+    //성공한 경우 응답 생성
+    public static <T> BaseResponse<T> onSuccess(T result) {
+        return new BaseResponse<>("COMMON200", "요청에 성공하였습니다.", result);
+    }
+
+    // 실패한 경우 응답 생성
+    public static <T> BaseResponse<T> onFailure(String code, String message, T data) {
+        return new BaseResponse<>(code, message, data);
     }
 
 }
