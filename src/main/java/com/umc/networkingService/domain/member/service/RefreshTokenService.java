@@ -1,5 +1,7 @@
-package com.umc.networkingService.domain.member.entity;
+package com.umc.networkingService.domain.member.service;
 
+import com.umc.networkingService.domain.member.entity.RefreshToken;
+import com.umc.networkingService.domain.member.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

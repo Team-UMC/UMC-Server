@@ -1,5 +1,6 @@
-package com.umc.networkingService.domain.member.entity;
+package com.umc.networkingService.domain.member.repository;
 
+import com.umc.networkingService.domain.member.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
