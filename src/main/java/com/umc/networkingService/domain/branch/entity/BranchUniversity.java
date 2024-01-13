@@ -1,7 +1,7 @@
 package com.umc.networkingService.domain.branch.entity;
 
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

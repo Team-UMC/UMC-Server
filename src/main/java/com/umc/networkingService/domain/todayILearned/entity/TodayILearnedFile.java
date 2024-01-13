@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.todayILearned.entity;
 
-import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

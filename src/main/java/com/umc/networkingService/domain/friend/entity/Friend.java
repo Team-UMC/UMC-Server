@@ -1,8 +1,9 @@
 package com.umc.networkingService.domain.friend.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.global.common.BaseEntity;
 import jakarta.persistence.*;
+import com.umc.networkingService.global.common.base.BaseEntity;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

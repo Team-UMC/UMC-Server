@@ -1,4 +1,4 @@
-package com.umc.networkingService.global.common;
+package com.umc.networkingService.global.common.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
