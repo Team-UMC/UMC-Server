@@ -15,7 +15,7 @@ public class RefreshTokenService {
         private final RefreshTokenRepository refreshTokenRepository; // Redis에 저장된 refreshToken을 가져오기 위해 DI
 
         @Transactional
-        public RefreshToken saveTokenInfo(UUID refreshToken, UUID memberId) { // Redis에 refreshToken 저장
+        public RefreshToken saveTokenInfo(String refreshToken, UUID memberId) { // Redis에 refreshToken 저장
             return refreshTokenRepository.save(
                     RefreshToken.builder()
                             .memberId(memberId)

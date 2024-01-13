@@ -20,7 +20,7 @@ public class RefreshTokenServiceIntegrationTest {
     @Test
     void testSaveTokenInfo() {
 
-        final UUID REFRESHTOKEN = UUID.randomUUID();  // 랜덤한 UUID 생성
+        final String REFRESHTOKEN = "testSaveTokenInfo";
         final UUID MEMBERID = UUID.randomUUID();
 
 
@@ -36,7 +36,7 @@ public class RefreshTokenServiceIntegrationTest {
     @Test
     void testFindByAccessToken() {
 
-        final UUID REFRESHTOKEN = UUID.randomUUID();  // 랜덤한 UUID 생성
+        final String REFRESHTOKEN = "testFindByAccessToken";
         final UUID MEMBERID = UUID.randomUUID();
 
         RefreshToken savedToken = refreshTokenService.saveTokenInfo(REFRESHTOKEN, MEMBERID);
@@ -54,7 +54,7 @@ public class RefreshTokenServiceIntegrationTest {
     @Test
     void testDeleteByAccessToken() {
 
-        final UUID REFRESHTOKEN = UUID.randomUUID();  // 랜덤한 UUID 생성
+        final String REFRESHTOKEN = "testDeleteByAccessToken";
         final UUID MEMBERID = UUID.randomUUID();
 
         RefreshToken savedToken = refreshTokenService.saveTokenInfo(REFRESHTOKEN, MEMBERID);
