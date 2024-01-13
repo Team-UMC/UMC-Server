@@ -2,66 +2,70 @@ package com.umc.networkingService;
 
 import com.umc.networkingService.domain.member.entity.RefreshToken;
 import com.umc.networkingService.domain.member.service.RefreshTokenService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
 @SpringBootTest
 public class RefreshTokenServiceIntegrationTest {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
 
+
     @Test
     void testSaveTokenInfo() {
-        // Given
-        String refreshToken = "sampleRefreshToken";
-        String accessToken = "sampleAccessToken";
+
+        final UUID REFRESHTOKEN = UUID.randomUUID();  // 랜덤한 UUID 생성
+        final UUID MEMBERID = UUID.randomUUID();
+
 
         // When
-        RefreshToken savedToken = refreshTokenService.saveTokenInfo(refreshToken, accessToken);
+        RefreshToken savedToken = refreshTokenService.saveTokenInfo(REFRESHTOKEN, MEMBERID);
 
         // Then (test에서 사용되는 assertion, 조건이 참이 아니라면 테스트 실패)
         assertNotNull(savedToken);
-        assertEquals(refreshToken, savedToken.getRefreshToken());
-        assertEquals(accessToken, savedToken.getAccessToken());
+        assertEquals(REFRESHTOKEN, savedToken.getRefreshToken());
+        assertEquals(MEMBERID, savedToken.getMemberId());
     }
 
     @Test
     void testFindByAccessToken() {
-        // Given
-        String refreshToken = "sampleRefreshToken";
-        String accessToken = "sampleAccessToken";
-        refreshTokenService.saveTokenInfo(refreshToken, accessToken);
+
+        final UUID REFRESHTOKEN = UUID.randomUUID();  // 랜덤한 UUID 생성
+        final UUID MEMBERID = UUID.randomUUID();
+
+        RefreshToken savedToken = refreshTokenService.saveTokenInfo(REFRESHTOKEN, MEMBERID);
 
         // When
-        RefreshToken foundToken = refreshTokenService.findByAccessToken(accessToken);
+        RefreshToken foundToken = refreshTokenService.findByMemberId(MEMBERID);
 
         // Then (test에서 사용되는 assertion, 조건이 참이 아니라면 테스트 실패)
         assertNotNull(foundToken);
-        assertEquals(refreshToken, foundToken.getRefreshToken());
-        assertEquals(accessToken, foundToken.getAccessToken());
+        assertEquals(REFRESHTOKEN, foundToken.getRefreshToken());
+        assertEquals(MEMBERID, foundToken.getMemberId());
 
     }
 
     @Test
     void testDeleteByAccessToken() {
-        // Given
-        String refreshToken = "sampleRefreshToken";
-        String accessToken = "sampleAccessToken";
-        refreshTokenService.saveTokenInfo(refreshToken, accessToken);
 
-        RefreshToken tokenToDelete = refreshTokenService.findByAccessToken(accessToken);
+        final UUID REFRESHTOKEN = UUID.randomUUID();  // 랜덤한 UUID 생성
+        final UUID MEMBERID = UUID.randomUUID();
+
+        RefreshToken savedToken = refreshTokenService.saveTokenInfo(REFRESHTOKEN, MEMBERID);
+
+        RefreshToken tokenToDelete = refreshTokenService.findByMemberId(MEMBERID);
 
         // When
-        refreshTokenService.deleteByAccessToken(tokenToDelete);
+        refreshTokenService.delete(tokenToDelete);
 
         // Then (test에서 사용되는 assertion, 조건이 참이 아니라면 테스트 실패)
-        assertThrows(IllegalArgumentException.class, () -> refreshTokenService.findByAccessToken(accessToken));
+        assertThrows(IllegalArgumentException.class, () -> refreshTokenService.findByMemberId(MEMBERID));
 
     }
 }

@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
@@ -13,24 +15,24 @@ public class RefreshTokenService {
         private final RefreshTokenRepository refreshTokenRepository; // Redis에 저장된 refreshToken을 가져오기 위해 DI
 
         @Transactional
-        public RefreshToken saveTokenInfo(String refreshToken, String accessToken) { // Redis에 refreshToken 저장
+        public RefreshToken saveTokenInfo(UUID refreshToken, UUID memberId) { // Redis에 refreshToken 저장
             return refreshTokenRepository.save(
                     RefreshToken.builder()
-                            .accessToken(accessToken)
+                            .memberId(memberId)
                             .refreshToken(refreshToken)
                             .build()
             );
         }
 
         @Transactional
-        public RefreshToken findByAccessToken(String accessToken) { // 만료된 accessToken으로 refreshToken을 찾아옴
-            return refreshTokenRepository.findByAccessToken(accessToken).orElseThrow(() -> new IllegalArgumentException("Refresh Token이 존재하지 않습니다."));
+        public RefreshToken findByMemberId(UUID memberId) { // 만료된 accessToken으로 refreshToken을 찾아옴
+            return refreshTokenRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("Refresh Token이 존재하지 않습니다."));
         }
 
         @Transactional
-        public void deleteByAccessToken(RefreshToken accessToken) { // Redis에 저장된 refreshToken 삭제
-            refreshTokenRepository.findByAccessToken(accessToken.getAccessToken())
-                    .ifPresent(refreshTokenRepository::delete);
+        public void delete(RefreshToken refreshToken) { // Redis에 저장된 refreshToken 삭제
+            // Redis에 저장된 refreshToken 삭제
+            refreshTokenRepository.delete(refreshToken);
         }
 }
 
