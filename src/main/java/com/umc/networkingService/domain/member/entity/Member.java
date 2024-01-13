@@ -2,7 +2,7 @@ package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.Part;
 import com.umc.networkingService.global.common.Role;
 import com.umc.networkingService.global.common.Semester;
