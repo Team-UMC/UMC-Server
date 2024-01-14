@@ -39,8 +39,8 @@ public class JwtTokenProvider {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String REFRESH_HEADER = "refreshToken";
-    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L;  // 유효기간 24시간
-    private static final long REF_TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L * 60L;  // 유효기간 2달
+    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L;  // 유효기간 1시간
+    private static final long REF_TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L * 14L;  // 유효기간 14일
 
     @PostConstruct
     protected void init() {
