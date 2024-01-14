@@ -22,8 +22,17 @@ public enum ErrorCode {
     // For test
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "예외처리 테스트입니다."),
 
+    // Member
+    EMPTY_MEMBER(HttpStatus.CONFLICT, "MEMBER_001", "존재하지 않는 사용자입니다."),
+
     // Auth
-    EMPTY_MEMBER(HttpStatus.CONFLICT, "MEMBER_001", "존재하지 않는 사용자입니다.");
+    EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AUTH_001", "JWT가 없습니다."),
+    INVALID_JWT(HttpStatus.UNAUTHORIZED, "AUTH_002", "유효하지 않은 JWT입니다."),
+    EXPIRED_MEMBER_JWT(HttpStatus.UNAUTHORIZED, "AUTH_003", "만료된 JWT입니다."),
+    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "AUTH_004", "지원하지 않는 JWT입니다."),
+    INVALID_ID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH_005", "유효하지 않은 ID TOKEN입니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "AUTH_006", "유효하지 않은 ACCESS TOKEN입니다."),
+    FAILED_SOCIAL_LOGIN(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_007", "소셜 로그인에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
