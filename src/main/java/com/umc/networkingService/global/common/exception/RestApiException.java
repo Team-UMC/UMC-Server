@@ -9,6 +9,4 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public class RestApiException extends RuntimeException {
     private final ErrorCode errorCode;
-    private String message;
-    private final HttpStatus status;
 }

@@ -30,7 +30,8 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     public void setErrorResponse(HttpServletResponse res, RestApiException exception)
             throws IOException {
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        res.setStatus(exception.getStatus().value());
+        // 수정 필요(ErrorCode 리팩토링 후 수정)
+//        res.setStatus(exception.getStatus().value());
         final Map<String, Object> body = new HashMap<>();
         body.put("code", exception.getErrorCode());
         body.put("message", exception.getMessage());
