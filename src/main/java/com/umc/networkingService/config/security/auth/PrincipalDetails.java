@@ -39,7 +39,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return member.getClientId();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !member.isStatus();
+        return member.getDeletedAt() == null;
     }
 }
 

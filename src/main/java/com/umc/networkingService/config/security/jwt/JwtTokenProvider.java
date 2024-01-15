@@ -15,6 +15,7 @@ import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,10 +49,7 @@ public class JwtTokenProvider {
         refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
 
-    public String generateAccessToken(Long memberId) {
-        Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
-
+    public String generateAccessToken(Claims claims, UUID memberId) {
         Date now = new Date();
         Date accessTokenExpirationTime = new Date(now.getTime() + TOKEN_VALID_TIME);
 
@@ -63,20 +61,25 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public MemberResponseDto.TokenInfo generateToken(Long memberId) {
-        Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
-
+    public String generateRefreshToken(Claims claims, UUID memberId) {
         Date now = new Date();
         Date refreshTokenExpirationTime = new Date(now.getTime() + REF_TOKEN_VALID_TIME);
 
-        String accessToken = generateAccessToken(memberId);
-        String refreshToken = Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(refreshTokenExpirationTime)
                 .signWith(SignatureAlgorithm.HS256, refreshSecretKey)
                 .compact();
+    }
+
+    public MemberResponseDto.TokenInfo generateToken(UUID memberId) {
+
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+
+        String accessToken = generateAccessToken(claims, memberId);
+        String refreshToken = generateRefreshToken(claims, memberId);
 
         return new MemberResponseDto.TokenInfo(accessToken, refreshToken);
     }

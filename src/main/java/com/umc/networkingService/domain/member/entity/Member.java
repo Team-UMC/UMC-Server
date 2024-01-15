@@ -30,11 +30,7 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private UUID id;
 
-    @Email
-    @NotNull
-    private String email;
-
-    private boolean status = true;
+    private String clientId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "university_id")
