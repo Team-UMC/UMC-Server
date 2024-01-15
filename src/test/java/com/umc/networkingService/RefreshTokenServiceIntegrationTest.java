@@ -1,7 +1,10 @@
 package com.umc.networkingService;
 
+import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.entity.RefreshToken;
 import com.umc.networkingService.domain.member.service.RefreshTokenService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,9 @@ public class RefreshTokenServiceIntegrationTest {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
 
     @Test
@@ -68,4 +74,40 @@ public class RefreshTokenServiceIntegrationTest {
         assertThrows(IllegalArgumentException.class, () -> refreshTokenService.findByMemberId(MEMBERID));
 
     }
+
+    @Test
+    void testGenerateAccessToken() {
+
+        final UUID MEMBERID = UUID.randomUUID();
+
+        Claims claims = Jwts.claims();
+        claims.put("memberId", MEMBERID);
+
+        String jwtToken = jwtTokenProvider.generateToken(MEMBERID).getAccessToken();
+
+        // When
+        UUID myMemberId = UUID.fromString(jwtTokenProvider.getMemberIdByToken(jwtToken));
+
+        // Then (test에서 사용되는 assertion, 조건이 참이 아니라면 테스트 실패)
+        assertEquals(MEMBERID, myMemberId);
+    }
+
+    @Test
+    void testGenerateRefreshToken() {
+
+        final UUID MEMBERID = UUID.randomUUID();
+
+        Claims claims = Jwts.claims();
+        claims.put("memberId", MEMBERID);
+
+        String refreshToken = jwtTokenProvider.generateToken(MEMBERID).getRefreshToken();
+
+        // When
+        UUID myMemberId = UUID.fromString(jwtTokenProvider.getMemberIdByRefreshToken(refreshToken));
+
+        // Then (test에서 사용되는 assertion, 조건이 참이 아니라면 테스트 실패)
+        assertEquals(MEMBERID, myMemberId);
+    }
+
+
 }
