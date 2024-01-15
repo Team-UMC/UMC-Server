@@ -2,7 +2,7 @@ package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.Part;
 import com.umc.networkingService.global.common.Role;
 import com.umc.networkingService.global.common.Semester;
@@ -28,6 +28,9 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private UUID id;
 
+    @Column(nullable = false)
+    private String clientId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id")
     private University university;
@@ -51,9 +54,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SocialType socialType;
-
-    @Column(nullable = false)
-    private String clientId;
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))

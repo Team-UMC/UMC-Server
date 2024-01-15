@@ -1,19 +1,16 @@
 package com.umc.networkingService.domain.todayILearned.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.global.common.BaseEntity;
+import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.Part;
 import jakarta.persistence.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Getter
 @Entity
