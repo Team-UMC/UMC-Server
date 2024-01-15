@@ -7,9 +7,7 @@ import com.umc.networkingService.global.common.Part;
 import com.umc.networkingService.global.common.Role;
 import com.umc.networkingService.global.common.Semester;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
@@ -20,6 +18,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class Member extends BaseEntity {
@@ -29,29 +29,31 @@ public class Member extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "university_id")
+    @JoinColumn(name = "university_id")
     private University university;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "branch_id")
+    @JoinColumn(name = "branch_id")
     private Branch branch;
 
     private String profileImage;
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Long remainPoint;
 
     @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
     private String name;
 
     private String statusMessage;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SocialType socialType;
+
+    @Column(nullable = false)
+    private String clientId;
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
@@ -64,7 +66,6 @@ public class Member extends BaseEntity {
     private List<Semester> semester=new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 
     @Enumerated(EnumType.STRING)
