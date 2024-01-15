@@ -7,6 +7,8 @@ import com.umc.networkingService.global.common.Part;
 import com.umc.networkingService.global.common.Role;
 import com.umc.networkingService.global.common.Semester;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +29,8 @@ public class Member extends BaseEntity {
     @UuidGenerator
     @Column(name = "member_id")
     private UUID id;
+
+    private String clientId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "university_id")
