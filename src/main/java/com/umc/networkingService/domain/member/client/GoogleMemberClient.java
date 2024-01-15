@@ -15,18 +15,18 @@ public class GoogleMemberClient {
     }
 
     public String getgoogleClientID(final String accessToken) {
+        System.out.println(accessToken);
+
         GoogleResponse response = webClient.get()
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .bodyToMono(GoogleResponse.class)
                 .block();
 
-        System.out.printf("유저" + response.getId());
-
         //TODO 정보 받기 실패 예외 처리
         if(response ==null)
             return null;
 
-        return response.getId();
+        return response.getSub();
     }
 }

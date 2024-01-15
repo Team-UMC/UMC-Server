@@ -44,7 +44,6 @@ public class Member extends BaseEntity {
     @ColumnDefault("0")
     private Long remainPoint;
 
-    @Column(nullable = false)
     private String nickname;
 
     private String name;

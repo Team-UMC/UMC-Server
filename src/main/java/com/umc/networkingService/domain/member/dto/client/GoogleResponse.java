@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class GoogleResponse {
-    private String id;
+    private String sub;
 }
