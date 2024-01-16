@@ -23,8 +23,6 @@ public class KakaoMemberClient {
                 .bodyToMono(KakaoResponse.class)
                 .block();
 
-        System.out.printf("준석" +response.getId());
-
         if(response != null)
             return response.getId();
 

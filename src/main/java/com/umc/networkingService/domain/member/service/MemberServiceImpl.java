@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.member.client.KakaoMemberClient;
 import com.umc.networkingService.domain.member.client.NaverMemberClient;
+import com.umc.networkingService.domain.member.client.GoogleMemberClient;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
@@ -14,29 +15,33 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService {
+public class MemberServiceImpl implements MemberService{
 
-    private final MemberRepository memberRepository;
-    private final MemberMapper memberMapper;
     private final KakaoMemberClient kakaoMemberClient;
+    private final MemberMapper memberMapper;
+    private final MemberRepository memberRepository;
+    private final GoogleMemberClient googleMemberClient;
     private final NaverMemberClient naverMemberClient;
 
-    @Override
-    public MemberLoginResponse socialLogin(String accessToken, SocialType socialType) {
+    private final RefreshTokenService refreshTokenService;
 
-        // 로그인 구분, 카카오
+    @Override
+    public MemberLoginResponse socialLogin(String accessToken, SocialType socialType){
+        // 로그인 구분
         if(socialType.equals(SocialType.KAKAO))
             return loginByKakao(accessToken);
 
-        // 네이버
+        if(socialType.equals(SocialType.GOOGLE))
+            return loginByGoogle(accessToken);
+
         if(socialType.equals(SocialType.NAVER))
             return loginByNaver(accessToken);
 
         return null;
     }
 
-    private MemberLoginResponse loginByKakao(final String accessToken) {
-        // Kakao 서버와 통신해서 유저 고유값(clientId) 받기
+    private MemberLoginResponse loginByKakao(final String accessToken){
+        // kakao 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = kakaoMemberClient.getkakaoClientID(accessToken);
 
         // 존재 여부 파악
@@ -50,11 +55,7 @@ public class MemberServiceImpl implements MemberService {
             // TODO: jwt 토큰 생성
             // TODO: refreshToken 디비에 저장
 
-            return MemberLoginResponse.builder()
-                    .memberId(newMember.getId())
-                    .accessToken("")
-                    .refreshToken("")
-                    .build();
+            return memberMapper.toLoginMember(newMember,"","");
         }
 
         // 2. 있으면 : 새로운 토큰 반환
@@ -64,20 +65,36 @@ public class MemberServiceImpl implements MemberService {
 
     private MemberLoginResponse loginByNaver(final String accessToken){
         // 네이버 서버와 통신해서 고유한 코드 받기
-        String clientId=naverMemberClient.getnaverClientID(accessToken);
+        String clientId = naverMemberClient.getnaverClientID(accessToken);
 
-        Optional<Member> getMember=memberRepository.findByClientIdAndSocialType(clientId,SocialType.NAVER);
+        Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId,SocialType.NAVER);
 
         if(getMember.isEmpty()) {
             Member member = memberMapper.toMember(clientId, SocialType.NAVER);
             Member newMember =  memberRepository.save(member);
 
-            return MemberLoginResponse.builder()
-                    .memberId(newMember.getId())
-                    .accessToken("")
-                    .refreshToken("")
-                    .build();
+            return memberMapper.toLoginMember(newMember,"","");
         }
         return null;
+    }
+
+    private MemberLoginResponse loginByGoogle(final String accessToken){
+        String clientId = googleMemberClient.getgoogleClientID(accessToken);
+
+        Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.GOOGLE);
+
+        // 유저정보 없을때
+        if(getMember.isEmpty()){
+            Member member = memberMapper.toMember(clientId, SocialType.GOOGLE);
+            Member newMember = memberRepository.save(member);
+
+            //TODO : jwt 토큰 생성
+            // TODO : refreshToken 디비에 저장
+
+            return memberMapper.toLoginMember(newMember,"","");
+        }
+
+        // 유저정보 있을 때
+        return memberMapper.toLoginMember(getMember.get(), "", "");
     }
 }
