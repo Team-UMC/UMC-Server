@@ -21,6 +21,9 @@ public class MemberServiceImpl implements MemberService{
     private final MemberMapper memberMapper;
     private final MemberRepository memberRepository;
     private final GoogleMemberClient googleMemberClient;
+
+    private final RefreshTokenService refreshTokenService;
+
     @Override
     public MemberLoginResponse socialLogin(String accessToken, SocialType socialType){
         // 로그인 구분
@@ -49,11 +52,7 @@ public class MemberServiceImpl implements MemberService{
             // TODO: jwt 토큰 생성
             // TODO: refreshToken 디비에 저장
 
-            return MemberLoginResponse.builder()
-                    .memberId(newMember.getId())
-                    .accessToken("")
-                    .refreshToken("")
-                    .build();
+            return memberMapper.toLoginMember(newMember,"","");
         }
 
         // 2. 있으면 : 새로운 토큰 반환
