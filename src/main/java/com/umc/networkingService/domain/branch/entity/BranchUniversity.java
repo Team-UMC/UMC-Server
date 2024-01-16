@@ -21,6 +21,10 @@ public class BranchUniversity extends BaseEntity {
     @Column(name = "branch_university_id")
     private UUID id;
 
+    // 현재 기수인지 여부
+    @Column(nullable = false)
+    private Boolean isActive;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Branch branch;
