@@ -1,8 +1,6 @@
 package com.umc.networkingService.config.security.jwt;
 
 import com.umc.networkingService.config.security.auth.PrincipalDetails;
-import com.umc.networkingService.domain.member.dto.MemberResponseDto;
-import io.jsonwebtoken.*;
 import com.umc.networkingService.config.security.auth.PrincipalDetailsService;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
@@ -73,7 +71,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public MemberResponseDto.TokenInfo generateToken(UUID memberId) {
+    public TokenInfo generateToken(UUID memberId) {
 
         Claims claims = Jwts.claims();
         claims.put("memberId", memberId);
@@ -81,7 +79,7 @@ public class JwtTokenProvider {
         String accessToken = generateAccessToken(claims, memberId);
         String refreshToken = generateRefreshToken(claims, memberId);
 
-        return new MemberResponseDto.TokenInfo(accessToken, refreshToken);
+        return new TokenInfo(accessToken, refreshToken);
     }
 
     public Authentication getAuthentication(String token) {

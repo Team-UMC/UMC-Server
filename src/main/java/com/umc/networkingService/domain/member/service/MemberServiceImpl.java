@@ -1,9 +1,11 @@
 package com.umc.networkingService.domain.member.service;
 
+import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.client.KakaoMemberClient;
 import com.umc.networkingService.domain.member.client.NaverMemberClient;
 import com.umc.networkingService.domain.member.client.GoogleMemberClient;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
+import com.umc.networkingService.config.security.jwt.TokenInfo;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
@@ -22,6 +24,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final GoogleMemberClient googleMemberClient;
     private final NaverMemberClient naverMemberClient;
+    private final JwtTokenProvider jwtTokenProvider;
 
     private final RefreshTokenService refreshTokenService;
 
@@ -53,6 +56,8 @@ public class MemberServiceImpl implements MemberService{
             Member newMember =  memberRepository.save(member);
 
             // TODO: jwt 토큰 생성
+            TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId());
+
             // TODO: refreshToken 디비에 저장
 
             return memberMapper.toLoginMember(newMember,"","");
