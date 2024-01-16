@@ -54,9 +54,6 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private SocialType socialType;
 
-    @Column(nullable = false)
-    private String clientId;
-
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
