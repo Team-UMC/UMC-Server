@@ -69,9 +69,6 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
-    @Enumerated(EnumType.STRING)
-    private Position position;
-
     private String gitNickname;
 
     private  String notionLink;
