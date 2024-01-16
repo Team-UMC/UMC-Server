@@ -24,19 +24,23 @@ public class BranchController {
 
     @Operation(summary = "지부 생성 API")
     @PostMapping("")
-    public BaseResponse<String> postBranch(@RequestBody @Valid BranchRequest.PostBranchDTO request){
+    public BaseResponse<String> postBranch(@RequestBody BranchRequest.PostBranchDTO request){
         branchService.postBranch(request);
         return BaseResponse.onSuccess("지부 생성 완료");
     }
 
     @Operation(summary = "지부 수정 API")
     @PatchMapping("")
-    public BaseResponse<String> patchBranch(){
+    public BaseResponse<String> patchBranch(@RequestBody BranchRequest.PatchBranchDTO request){
+        branchService.patchBranch(request);
+        return BaseResponse.onSuccess("지부 생성 완료");
     }
 
     @Operation(summary = "지부 삭제 API")
     @DeleteMapping("")
-    public BaseResponse<String> patchBranch(){
+    public BaseResponse<String> patchBranch(@RequestParam("branchId") String branchId){
+        branchService.deleteBranch(branchId);
+        return BaseResponse.onSuccess("지부 삭제 완료");
     }
 
     @Operation(summary = "지부 정보 조회 API")

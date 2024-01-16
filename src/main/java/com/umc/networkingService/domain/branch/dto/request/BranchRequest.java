@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.branch.dto.request;
 
+import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
 import com.umc.networkingService.global.common.Semester;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -14,12 +15,9 @@ public class BranchRequest {
     public static class PostBranchDTO{
         @NotNull
         private String name;
-
         @NotNull
         private String description;
-
         private MultipartFile image;
-
         @NotNull
         private Semester semester;
 
@@ -27,17 +25,13 @@ public class BranchRequest {
 
     @Getter
     public static class PatchBranchDTO{
-        @NotNull
+        @ExistBranch
         private UUID branchId;
-
         @NotNull
         private String name;
-
         @NotNull
         private String description;
-
         private MultipartFile image;
-
         @NotNull
         private Semester semester;
 

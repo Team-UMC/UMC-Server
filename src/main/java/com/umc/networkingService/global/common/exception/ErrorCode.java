@@ -35,10 +35,8 @@ public enum ErrorCode {
     FAILED_SOCIAL_LOGIN(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH007", "소셜 로그인에 실패하였습니다."),
 
     //Branch
-    EMPTY_BRANCH(HttpStatus.CONFLICT, "BRANCH001", "존재하지 않는 Branch입니다."),
-    EMPTY_BRANCH_NAME(HttpStatus.CONFLICT, "BRANCH002", "Branch 이름이 비어있습니다."),
-    EMPTY_BRANCH_DESCRIPTION(HttpStatus.CONFLICT, "BRANCH003", "Branch 설명이 비어있습니다."),
-    EMPTY_BRANCH_SEMESTER(HttpStatus.CONFLICT, "BRANCH004", "Branch 기수가 비어있거나, 잘못된 값임니다.");
+    BRANCH_NOT_FOUND(HttpStatus.CONFLICT, "BRANCH001", "존재하지 않는 Branch입니다."),
+    BRANCH_SEMESTER_EMPTY(HttpStatus.CONFLICT, "BRANCH004", "Branch 기수가 비어있거나, 잘못된 값임니다.");
 
 
     private final HttpStatus httpStatus;
