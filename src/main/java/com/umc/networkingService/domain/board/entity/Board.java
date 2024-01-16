@@ -2,7 +2,7 @@ package com.umc.networkingService.domain.board.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
-import com.umc.networkingService.global.common.Semester;
+import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

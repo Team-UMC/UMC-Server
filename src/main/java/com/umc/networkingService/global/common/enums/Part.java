@@ -1,4 +1,4 @@
-package com.umc.networkingService.global.common;
+package com.umc.networkingService.global.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
