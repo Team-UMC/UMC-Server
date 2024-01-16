@@ -24,7 +24,7 @@ public class GoogleMemberClient {
                 .block();
 
         //TODO 정보 받기 실패 예외 처리
-        if(response ==null)
+        if(response == null)
             return null;
 
         return response.getSub();

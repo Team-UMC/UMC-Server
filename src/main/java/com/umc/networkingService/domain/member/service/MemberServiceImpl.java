@@ -25,7 +25,6 @@ public class MemberServiceImpl implements MemberService{
     private final GoogleMemberClient googleMemberClient;
     private final NaverMemberClient naverMemberClient;
     private final JwtTokenProvider jwtTokenProvider;
-
     private final RefreshTokenService refreshTokenService;
 
     @Override
@@ -46,7 +45,6 @@ public class MemberServiceImpl implements MemberService{
     private MemberLoginResponse loginByKakao(final String accessToken){
         // kakao 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = kakaoMemberClient.getkakaoClientID(accessToken);
-
         // 존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.KAKAO);
 
@@ -54,15 +52,14 @@ public class MemberServiceImpl implements MemberService{
         if(getMember.isEmpty()) {
             return saveNewMember(clientId, SocialType.KAKAO);
         }
-
         // 2. 있으면 : 새로운 토큰 반환
         return getNewToken(getMember.get());
     }
 
     private MemberLoginResponse loginByNaver(final String accessToken){
-        // 네이버 서버와 통신해서 고유한 코드 받기
+        // naver 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = naverMemberClient.getnaverClientID(accessToken);
-
+        // 존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId,SocialType.NAVER);
 
         if(getMember.isEmpty()) {
@@ -75,23 +72,17 @@ public class MemberServiceImpl implements MemberService{
     }
 
     private MemberLoginResponse loginByGoogle(final String accessToken){
+        // google 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = googleMemberClient.getgoogleClientID(accessToken);
-
+        // 존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.GOOGLE);
 
-        // 유저정보 없을때
+        // 1. 없으면 : Member 객체 생성하고 DB 저장
         if(getMember.isEmpty()){
-            Member member = memberMapper.toMember(clientId, SocialType.GOOGLE);
-            Member newMember = memberRepository.save(member);
-
-            //TODO : jwt 토큰 생성
-            // TODO : refreshToken 디비에 저장
-
-            return memberMapper.toLoginMember(newMember,null);
+            return saveNewMember(clientId, SocialType.GOOGLE);
         }
-
-        // 유저정보 있을 때
-        return memberMapper.toLoginMember(getMember.get(), null);
+        // 2. 있으면 : 새로운 토큰 반환
+        return getNewToken(getMember.get());
     }
 
     private MemberLoginResponse saveNewMember(String clientId, SocialType socialType) {
@@ -104,7 +95,6 @@ public class MemberServiceImpl implements MemberService{
     private MemberLoginResponse getNewToken(Member member) {
         // jwt 토큰 생성
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId());
-
         // refreshToken 디비에 저장
         refreshTokenService.saveTokenInfo(tokenInfo.getRefreshToken(), member.getId());
 
