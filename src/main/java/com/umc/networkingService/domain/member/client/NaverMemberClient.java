@@ -11,21 +11,19 @@ public class NaverMemberClient {
 
     public NaverMemberClient(WebClient.Builder webClientBuilder){
         this.webClient=webClientBuilder
-                .baseUrl("https://nid.naver.com/oauth2.0/authorize")
+                .baseUrl("https://openapi.naver.com/v1/nid/me")
                 .build();
     }
 
     public String getnaverClientID(final String accessToken){
         NaverResponse response=webClient.get()
-                .header("Authorization","Bearer"+accessToken)
+                .header("Authorization","Bearer "+ accessToken)
                 .retrieve()
                 .bodyToMono(NaverResponse.class)
                 .block();
 
-        System.out.printf("네이버"+response.getId());
-
-        if(response!=null)
-            return response.getId();
+        if(response != null)
+            return response.getResponse().getId();
         return null;
     }
 }

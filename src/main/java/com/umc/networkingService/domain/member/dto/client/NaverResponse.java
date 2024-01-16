@@ -4,5 +4,10 @@ import lombok.Getter;
 
 @Getter
 public class NaverResponse {
-    private String id;
+    private Response response;
+
+    @Getter
+    public static class Response {
+        private String id;
+    }
 }
