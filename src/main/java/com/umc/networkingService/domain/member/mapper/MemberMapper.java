@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.member.mapper;
 
+import com.umc.networkingService.config.security.jwt.TokenInfo;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
@@ -14,11 +15,11 @@ public class MemberMapper {
                 .build();
     }
 
-    public MemberLoginResponse toLoginMember(final Member member, String accessToken, String refreshToken){
+    public MemberLoginResponse toLoginMember(final Member member, TokenInfo tokenInfo){
         return MemberLoginResponse.builder()
                 .memberId(member.getId())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .accessToken(tokenInfo.getAccessToken())
+                .refreshToken(tokenInfo.getRefreshToken())
                 .build();
     }
 }

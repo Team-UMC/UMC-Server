@@ -1,8 +1,6 @@
 package com.umc.networkingService.config.security.jwt;
 
 import com.umc.networkingService.config.security.auth.PrincipalDetails;
-import com.umc.networkingService.domain.member.dto.MemberResponseDto;
-import io.jsonwebtoken.*;
 import com.umc.networkingService.config.security.auth.PrincipalDetailsService;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
@@ -49,7 +47,7 @@ public class JwtTokenProvider {
         refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
 
-    public String generateAccessToken(Claims claims, UUID memberId) {
+    public String generateAccessToken(Claims claims) {
         Date now = new Date();
         Date accessTokenExpirationTime = new Date(now.getTime() + TOKEN_VALID_TIME);
 
@@ -61,7 +59,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(Claims claims, UUID memberId) {
+    public String generateRefreshToken(Claims claims) {
         Date now = new Date();
         Date refreshTokenExpirationTime = new Date(now.getTime() + REF_TOKEN_VALID_TIME);
 
@@ -73,15 +71,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public MemberResponseDto.TokenInfo generateToken(UUID memberId) {
+    public TokenInfo generateToken(UUID memberId) {
 
         Claims claims = Jwts.claims();
         claims.put("memberId", memberId);
 
-        String accessToken = generateAccessToken(claims, memberId);
-        String refreshToken = generateRefreshToken(claims, memberId);
+        String accessToken = generateAccessToken(claims);
+        String refreshToken = generateRefreshToken(claims);
 
-        return new MemberResponseDto.TokenInfo(accessToken, refreshToken);
+        return new TokenInfo(accessToken, refreshToken);
     }
 
     public Authentication getAuthentication(String token) {
