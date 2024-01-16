@@ -21,9 +21,7 @@ public class NaverMemberClient {
                 .retrieve()
                 .bodyToMono(NaverResponse.class)
                 .block();
-
-        System.out.printf("네이버"+response.getId());
-
+        
         if(response!=null)
             return response.getId();
         return null;
