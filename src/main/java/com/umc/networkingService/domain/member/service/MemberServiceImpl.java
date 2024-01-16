@@ -63,15 +63,16 @@ public class MemberServiceImpl implements MemberService{
         // 네이버 서버와 통신해서 고유한 코드 받기
         String clientId = naverMemberClient.getnaverClientID(accessToken);
 
+        // 존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId,SocialType.NAVER);
 
+        // 1. 없으면 (처음 로그인 하는 경우)
         if(getMember.isEmpty()) {
-            Member member = memberMapper.toMember(clientId, SocialType.NAVER);
-            Member newMember =  memberRepository.save(member);
-
-            return memberMapper.toLoginMember(newMember,null);
+           return saveNewMember(clientId,SocialType.NAVER);
         }
-        return null;
+
+        // 2. 있으면 (이미 로그인 했던 적이 있는 경우)
+        return getNewToken(getMember.get());
     }
 
     private MemberLoginResponse loginByGoogle(final String accessToken){
