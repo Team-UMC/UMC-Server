@@ -52,20 +52,11 @@ public class MemberServiceImpl implements MemberService{
 
         // 1. 없으면 : Member 객체 생성하고 DB 저장
         if(getMember.isEmpty()) {
-            Member member = memberMapper.toMember(clientId, SocialType.KAKAO);
-            Member newMember =  memberRepository.save(member);
-
-            // TODO: jwt 토큰 생성
-            TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId());
-
-            // TODO: refreshToken 디비에 저장
-
-            return memberMapper.toLoginMember(newMember,"","");
+            return saveNewMember(clientId, SocialType.KAKAO);
         }
 
         // 2. 있으면 : 새로운 토큰 반환
-        // TODO: 로직 생각해보기
-        return null;
+        return getNewToken(getMember.get());
     }
 
     private MemberLoginResponse loginByNaver(final String accessToken){
@@ -78,7 +69,7 @@ public class MemberServiceImpl implements MemberService{
             Member member = memberMapper.toMember(clientId, SocialType.NAVER);
             Member newMember =  memberRepository.save(member);
 
-            return memberMapper.toLoginMember(newMember,"","");
+            return memberMapper.toLoginMember(newMember,null);
         }
         return null;
     }
@@ -96,10 +87,27 @@ public class MemberServiceImpl implements MemberService{
             //TODO : jwt 토큰 생성
             // TODO : refreshToken 디비에 저장
 
-            return memberMapper.toLoginMember(newMember,"","");
+            return memberMapper.toLoginMember(newMember,null);
         }
 
         // 유저정보 있을 때
-        return memberMapper.toLoginMember(getMember.get(), "", "");
+        return memberMapper.toLoginMember(getMember.get(), null);
+    }
+
+    private MemberLoginResponse saveNewMember(String clientId, SocialType socialType) {
+        Member member = memberMapper.toMember(clientId, socialType);
+        Member newMember =  memberRepository.save(member);
+
+        return getNewToken(newMember);
+    }
+
+    private MemberLoginResponse getNewToken(Member member) {
+        // jwt 토큰 생성
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId());
+
+        // refreshToken 디비에 저장
+        refreshTokenService.saveTokenInfo(tokenInfo.getRefreshToken(), member.getId());
+
+        return memberMapper.toLoginMember(member, tokenInfo);
     }
 }
