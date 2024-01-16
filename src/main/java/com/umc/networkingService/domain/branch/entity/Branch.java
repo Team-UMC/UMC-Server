@@ -3,9 +3,7 @@ package com.umc.networkingService.domain.branch.entity;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.Semester;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -14,6 +12,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class Branch extends BaseEntity {
