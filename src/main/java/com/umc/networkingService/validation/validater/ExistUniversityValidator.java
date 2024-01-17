@@ -1,6 +1,8 @@
 package com.umc.networkingService.validation.validater;
 
 import com.umc.networkingService.domain.branch.service.BranchService;
+import com.umc.networkingService.domain.university.entity.University;
+import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.validation.annotation.ExistUniversity;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import jakarta.validation.ConstraintValidator;
@@ -14,7 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ExistUniversityValidator implements ConstraintValidator<ExistUniversity, UUID> {
 
-    private final BranchService branchService;
+    private final UniversityService universityService;
 
     @Override
     public void initialize(ExistUniversity constraintAnnotation) {
@@ -22,11 +24,11 @@ public class ExistUniversityValidator implements ConstraintValidator<ExistUniver
     }
     @Override
     public boolean isValid(UUID values, ConstraintValidatorContext context) {
-        boolean isValid = branchService.isUniversityValid(values); //나중에 university로 바꾸면 더 좋을 듯?
+        boolean isValid = universityService.isUniversityValid(values);
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorCode.BRANCH_NOT_FOUND.getMessage()).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ErrorCode.UNIVERSITY_NOT_FOUND.getMessage()).addConstraintViolation();
         }
 
         return isValid;

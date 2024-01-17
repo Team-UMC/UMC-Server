@@ -1,4 +1,9 @@
 package com.umc.networkingService.domain.university.repository;
 
-public interface UniversityRepository {
+import com.umc.networkingService.domain.university.entity.University;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface UniversityRepository extends JpaRepository<University, UUID> {
 }

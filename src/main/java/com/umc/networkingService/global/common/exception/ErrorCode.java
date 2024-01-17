@@ -39,8 +39,14 @@ public enum ErrorCode {
 
     //Branch
     BRANCH_NOT_FOUND(HttpStatus.CONFLICT, "BRANCH001", "존재하지 않는 Branch입니다."),
-    BRANCH_SEMESTER_EMPTY(HttpStatus.CONFLICT, "BRANCH004", "Branch 기수가 비어있거나, 잘못된 값임니다.");
+    BRANCH_SEMESTER_EMPTY(HttpStatus.CONFLICT, "BRANCH004", "Branch 기수가 비어있거나, 잘못된 값임니다."),
 
+    //BranchUniversity
+    BRANCH_UNIVERSITY_NOT_FOUND(HttpStatus.CONFLICT, "BRANCH_UNIVERSITY001", "존재하지 않는 BranchUniversity입니다."),
+    BRANCH_UNIVERSITY_ALREADY_EXIST(HttpStatus.CONFLICT, "BRANCH_UNIVERSITY002", "이미 존재하는 BranchUniversity입니다."),
+
+    //University
+    UNIVERSITY_NOT_FOUND(HttpStatus.CONFLICT, "UNIVERSITY001", "존재하지 않는 University입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
