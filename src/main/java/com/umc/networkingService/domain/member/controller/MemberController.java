@@ -41,6 +41,10 @@ public class MemberController {
     }
 
     @Operation(summary = "accessToken 재발급 API", description = "refreshToken가 유효하다면 새로운 accessToken을 발급하는 API입니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "AUTH006", description = "유효하지 않는 RefreshToken일 경우 발생")
+    })
     @GetMapping("/token/refresh")
     public BaseResponse<MemberGenerateNewAccessTokenResponse> regenerateToken(@CurrentMember Member member,
                                                                               @RequestHeader(value = "refreshToken") String refreshToken) {

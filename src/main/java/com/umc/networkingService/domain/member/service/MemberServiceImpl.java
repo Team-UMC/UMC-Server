@@ -60,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 디비에 저장된 refreshToken과 동일하지 않다면 유효하지 않음
         if (!refreshToken.equals(savedRefreshToken))
-            throw new RestApiException(ErrorCode.INVALID_JWT);
+            throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
 
         return new MemberGenerateNewAccessTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
     }

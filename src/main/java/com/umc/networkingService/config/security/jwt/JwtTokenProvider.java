@@ -130,7 +130,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            throw new RestApiException(ErrorCode.INVALID_JWT);
+            throw new RestApiException(ErrorCode.INVALID_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT);
         } catch (UnsupportedJwtException | SignatureException e) {
@@ -144,7 +144,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            throw new RestApiException(ErrorCode.INVALID_JWT);
+            throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT);
         } catch (UnsupportedJwtException | SignatureException e) {
