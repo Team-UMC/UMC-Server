@@ -2,6 +2,8 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.member.entity.RefreshToken;
 import com.umc.networkingService.domain.member.repository.RefreshTokenRepository;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +28,8 @@ public class RefreshTokenService {
 
         @Transactional
         public RefreshToken findByMemberId(UUID memberId) { // 만료된 accessToken으로 refreshToken을 찾아옴
-            return refreshTokenRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("Refresh Token이 존재하지 않습니다."));
+            return refreshTokenRepository.findByMemberId(memberId).orElseThrow(() ->
+                    new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
         }
 
         @Transactional

@@ -39,6 +39,6 @@ public class MemberController {
     @GetMapping("/token/refresh")
     public BaseResponse<MemberRegenerateTokenResponse> regenerateToken(@CurrentMember Member member,
                                                                        @RequestHeader(value = "refreshToken") String refreshToken) {
-        return BaseResponse.onSuccess(memberService.regenerateToken(member));
+        return BaseResponse.onSuccess(memberService.generateNewAccessToken(refreshToken, member));
     }
 }

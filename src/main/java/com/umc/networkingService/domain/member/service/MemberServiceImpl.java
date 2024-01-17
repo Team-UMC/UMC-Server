@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.member.service;
 
+import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberRegenerateTokenResponse;
@@ -13,6 +14,8 @@ import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,9 @@ public class MemberServiceImpl implements MemberService {
 
     private final UniversityService universityService;
     private final BranchUniversityService branchUniversityService;
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     @Transactional
@@ -47,8 +53,16 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberRegenerateTokenResponse regenerateToken(Member member) {
-        return null;
+    @Transactional
+    public MemberRegenerateTokenResponse generateNewAccessToken(String refreshToken, Member member) {
+
+        String savedRefreshToken = refreshTokenService.findByMemberId(member.getId()).getRefreshToken();
+
+        // 디비에 저장된 refreshToken과 동일하지 않다면 유효하지 않음
+        if (!refreshToken.equals(savedRefreshToken))
+            throw new RestApiException(ErrorCode.INVALID_JWT);
+
+        return new MemberRegenerateTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
     }
 
     // 멤버 기본 정보 저장 함수
