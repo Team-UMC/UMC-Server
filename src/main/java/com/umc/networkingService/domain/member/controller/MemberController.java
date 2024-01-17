@@ -34,17 +34,4 @@ public class MemberController {
                                                      @Valid @RequestBody MemberSignUpRequest request) {
         return BaseResponse.onSuccess(memberService.signUp(member, request));
     }
-
-    @PostMapping("/temp")
-    public String getToken() {
-        Member member = Member.builder()
-                .clientId("123456")
-                .socialType(SocialType.KAKAO)
-                .role(Role.MEMBER)
-                .build();
-
-        Member newMember =  memberRepository.save(member);
-
-        return jwtTokenProvider.generateToken(newMember.getId()).getAccessToken();
-    }
 }
