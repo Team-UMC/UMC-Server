@@ -9,8 +9,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface BranchRepository extends JpaRepository<Branch, Long>{
-    Branch findById(UUID branchId);
-    Boolean existsById(UUID branchId);
-
+public interface BranchRepository extends JpaRepository<Branch, UUID>{
 }

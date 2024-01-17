@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -48,15 +49,21 @@ public class BranchService {
     @Transactional          //지부 수정
     public void patchBranch(BranchRequest.PatchBranchDTO request) {
 
-        Branch branch = branchRepository.findById(request.getBranchId()); //이미 검증된 branchId가 들어옴
-        branch.updateBranch(request, uploadImageS3(BRANCH_CATEGORY,request.getImage()));
-        branchRepository.save(branch); //save는 update와 insert를 모두 수행함
+        Optional<Branch> optionalBranch = branchRepository.findById(request.getBranchId()); //이미 검증된 branchId가 들어옴
+
+        Branch branch = optionalBranch.get();
+        branch.updateBranch(request, uploadImageS3(BRANCH_CATEGORY, request.getImage()));
+        branchRepository.save(branch);
+
     }
 
     @Transactional          //지부 삭제
     public void deleteBranch(UUID branchId) {
-        Branch branch = branchRepository.findById(branchId);
+        Optional<Branch> optionalBranch = branchRepository.findById(branchId); //이미 검증된 branchId가 들어옴
+
+        Branch branch = optionalBranch.get();
         branchRepository.delete(branch);
+
     }
 
     @Transactional(readOnly = true)        //지부 리스트 조회
@@ -70,10 +77,12 @@ public class BranchService {
 
     @Transactional(readOnly = true)        //지부 상세 조회
     public BranchResponse.JoinBranchDetailDTO joinBranchDetail(UUID branchId) {
+        Optional<Branch> optionalBranch = branchRepository.findById(branchId); //이미 검증된 branchId가 들어옴
+
+        Branch branch = optionalBranch.get();
+
         List<BranchUniversity> branchUniversities
-                = branchUniversityRepository.findByBranch(
-                        branchRepository.findById(branchId)
-        );
+                = branchUniversityRepository.findByBranch(branch);
 
         List<University> universityList = branchUniversities.stream()
                 .map(BranchUniversity::getUniversity)
@@ -81,6 +90,7 @@ public class BranchService {
 
 
         return BranchConverter.toJoinBranchDetailDTO(universityList);
+
     }
 
     //s3에 이미지 업로드
