@@ -1,11 +1,13 @@
 package com.umc.networkingService.domain.member.service;
 
 
+import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,8 +41,11 @@ public class MemberServiceIntegrationTest {
     @Autowired private UniversityRepository universityRepository;
     @Autowired private BranchRepository branchRepository;
     @Autowired private BranchUniversityRepository branchUniversityRepository;
+    @Autowired private JwtTokenProvider jwtTokenProvider;
+    @Autowired private RefreshTokenService refreshTokenService;
 
     private Member member;
+    private String refreshToken;
     private University university;
     private Branch branch;
     private BranchUniversity branchUniversity;
@@ -47,6 +53,7 @@ public class MemberServiceIntegrationTest {
     @BeforeEach
     public void setUp() {
         member = createMember();
+        setToken(member.getId());
         university = createUniversity();
         branch = createBranch();
         branchUniversity = createBranchUniversity();
@@ -60,6 +67,11 @@ public class MemberServiceIntegrationTest {
                         .role(Role.MEMBER)
                         .build()
         );
+    }
+
+    private void setToken(UUID memberId) {
+        refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
+        refreshTokenService.saveTokenInfo(refreshToken, memberId);
     }
 
     private University createUniversity() {
@@ -119,5 +131,16 @@ public class MemberServiceIntegrationTest {
         assertEquals("인하대학교", savedMember.getUniversity().getName());
         assertEquals(1, savedMember.getPart().size());
         assertEquals(3, savedMember.getSemester().size());
+    }
+
+    @Test
+    @DisplayName("access 토큰 재발급 테스트")
+    public void generateNewAccessToken() {
+        // when
+        MemberGenerateNewAccessTokenResponse response = memberService.generateNewAccessToken(refreshToken, member);
+
+        // then
+        assertNotNull(response);
+        assertNotNull(response.getAccessToken());
     }
 }
