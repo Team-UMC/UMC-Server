@@ -1,6 +1,8 @@
 package com.umc.networkingService.domain.member.client;
 
 import com.umc.networkingService.domain.member.dto.client.NaverResponse;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -22,8 +24,9 @@ public class NaverMemberClient {
                 .bodyToMono(NaverResponse.class)
                 .block();
 
-        if(response != null)
-            return response.getResponse().getId();
-        return null;
+        if(response == null)
+            throw new RestApiException(ErrorCode._INTERNAL_SERVER_ERROR);
+
+        return response.getResponse().getId();
     }
 }

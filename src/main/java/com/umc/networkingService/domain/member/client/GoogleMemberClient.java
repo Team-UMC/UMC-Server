@@ -1,6 +1,8 @@
 package com.umc.networkingService.domain.member.client;
 
 import com.umc.networkingService.domain.member.dto.client.GoogleResponse;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -15,8 +17,6 @@ public class GoogleMemberClient {
     }
 
     public String getgoogleClientID(final String accessToken) {
-        System.out.println(accessToken);
-
         GoogleResponse response = webClient.get()
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
@@ -25,8 +25,7 @@ public class GoogleMemberClient {
 
         //TODO 정보 받기 실패 예외 처리
         if(response == null)
-            return null;
-
+            throw new RestApiException(ErrorCode._INTERNAL_SERVER_ERROR);
         return response.getSub();
     }
 }

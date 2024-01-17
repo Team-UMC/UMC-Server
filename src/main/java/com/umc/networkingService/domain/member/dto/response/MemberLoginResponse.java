@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.member.dto.response;
 
+import com.umc.networkingService.global.common.Role;
 import lombok.Builder;
 import lombok.Getter;
 

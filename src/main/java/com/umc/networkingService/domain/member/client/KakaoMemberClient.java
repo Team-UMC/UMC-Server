@@ -1,6 +1,8 @@
 package com.umc.networkingService.domain.member.client;
 
 import com.umc.networkingService.domain.member.dto.client.KakaoResponse;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -23,10 +25,10 @@ public class KakaoMemberClient {
                 .bodyToMono(KakaoResponse.class)
                 .block();
 
-        if(response != null)
-            return response.getId();
+        if(response == null)
+            throw new RestApiException(ErrorCode._INTERNAL_SERVER_ERROR);
 
         // TODO 정보 받기 실패 예외처리
-        return null;
+        return response.getId();
     }
 }
