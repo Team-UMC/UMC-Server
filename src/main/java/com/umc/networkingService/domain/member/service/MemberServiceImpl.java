@@ -11,6 +11,7 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
+import com.umc.networkingService.global.common.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -78,6 +79,10 @@ public class MemberServiceImpl implements MemberService{
     private MemberLoginResponse loginByNaver(final String accessToken){
         // naver 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = naverMemberClient.getnaverClientID(accessToken);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 96a6f7d2d1027e307fed110391f59bae07bbca09
         // 존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId,SocialType.NAVER);
 

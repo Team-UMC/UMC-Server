@@ -10,7 +10,7 @@ public class AppleMemberClient {
 
     public AppleMemberClient(WebClient.Builder webclientBuilder){
         this.webClient = webclientBuilder
-                .baseUrl("")
+                .baseUrl("https://appleid.apple.com/auth/keys")
                 .build();
     }
 

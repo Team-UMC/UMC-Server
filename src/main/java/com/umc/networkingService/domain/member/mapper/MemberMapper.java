@@ -4,6 +4,7 @@ import com.umc.networkingService.config.security.jwt.TokenInfo;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.global.common.Role;
 import org.springframework.stereotype.Component;;
 
 @Component
@@ -12,6 +13,7 @@ public class MemberMapper {
         return Member.builder()
                 .clientId(clientId)
                 .socialType(socialType)
+                .role(Role.MEMBER)
                 .build();
     }
 
