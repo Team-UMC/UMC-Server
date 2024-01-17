@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.response.MemberRegenerateTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberSignUpResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPosition;
@@ -43,6 +44,11 @@ public class MemberServiceImpl implements MemberService {
         saveMemberPositions(member, request);
 
         return new MemberSignUpResponse(memberRepository.save(member).getId());
+    }
+
+    @Override
+    public MemberRegenerateTokenResponse regenerateToken(Member member) {
+        return null;
     }
 
     // 멤버 기본 정보 저장 함수

@@ -1,25 +1,20 @@
 package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
-import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.response.MemberRegenerateTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberSignUpResponse;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.SocialType;
-import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseResponse;
-import com.umc.networkingService.global.common.enums.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "멤버 API", description = "멤버 관련 API")
 @RestController
@@ -38,5 +33,12 @@ public class MemberController {
     public BaseResponse<MemberSignUpResponse> signUp(@CurrentMember Member member,
                                                      @Valid @RequestBody MemberSignUpRequest request) {
         return BaseResponse.onSuccess(memberService.signUp(member, request));
+    }
+
+    @Operation(summary = "accessToken 재발급 API", description = "refreshToken가 유효하다면 새로운 accessToken을 발급하는 API입니다.")
+    @GetMapping("/token/refresh")
+    public BaseResponse<MemberRegenerateTokenResponse> regenerateToken(@CurrentMember Member member,
+                                                                       @RequestHeader(value = "refreshToken") String refreshToken) {
+        return BaseResponse.onSuccess(memberService.regenerateToken(member));
     }
 }
