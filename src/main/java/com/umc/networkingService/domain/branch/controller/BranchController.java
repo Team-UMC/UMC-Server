@@ -57,7 +57,7 @@ public class BranchController {
         return BaseResponse.onSuccess(branchService.joinBranchList(page-1));
     }
 
-    @Operation(summary = "지부 정보 조회 API")
+    @Operation(summary = "지부 세부 정보 조회 API")
     @PostMapping("/detail")
     public BaseResponse<BranchResponse.JoinBranchDetailDTO> joinBranchDetail(
             @RequestParam("branchId") @ExistBranch UUID branchId

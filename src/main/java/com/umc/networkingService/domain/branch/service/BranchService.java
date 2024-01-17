@@ -68,15 +68,19 @@ public class BranchService {
         return BranchConverter.toJoinBranchListDTO(branchPage.getContent());
     }
 
-    @Transactional(readOnly = true)        //todo:지부 상세 조회
+    @Transactional(readOnly = true)        //지부 상세 조회
     public BranchResponse.JoinBranchDetailDTO joinBranchDetail(UUID branchId) {
         List<BranchUniversity> branchUniversities
                 = branchUniversityRepository.findByBranch(
                         branchRepository.findById(branchId)
         );
 
+        List<University> universityList = branchUniversities.stream()
+                .map(BranchUniversity::getUniversity)
+                .toList();
 
-        return BranchConverter.toJoinBranchDetailDTO(branch);
+
+        return BranchConverter.toJoinBranchDetailDTO(universityList);
     }
 
     //s3에 이미지 업로드
