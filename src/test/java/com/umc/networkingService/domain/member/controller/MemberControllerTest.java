@@ -1,15 +1,13 @@
 package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
-import com.umc.networkingService.domain.member.dto.MemberResponseDto;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberRegenerateTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberSignUpResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
-import com.umc.networkingService.domain.member.service.RefreshTokenService;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -112,9 +110,9 @@ public class MemberControllerTest {
 
     @Test
     @DisplayName("Access 토큰 재발급 API 테스트")
-    public void regenerateTokenTest() throws Exception {
+    public void generateNewAccessTokenTest() throws Exception {
         // given
-        MemberRegenerateTokenResponse response = new MemberRegenerateTokenResponse("newAccessToken");
+        MemberGenerateNewAccessTokenResponse response = new MemberGenerateNewAccessTokenResponse("newAccessToken");
 
         given(memberService.generateNewAccessToken(refreshToken, member)).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));

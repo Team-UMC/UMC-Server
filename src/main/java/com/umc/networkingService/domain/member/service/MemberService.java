@@ -1,11 +1,11 @@
 package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberRegenerateTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberSignUpResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 
 public interface MemberService {
     MemberSignUpResponse signUp(Member member, MemberSignUpRequest request);
-    MemberRegenerateTokenResponse generateNewAccessToken(String refreshToken, Member member);
+    MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member member);
 }

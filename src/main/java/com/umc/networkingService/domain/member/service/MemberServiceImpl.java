@@ -3,7 +3,7 @@ package com.umc.networkingService.domain.member.service;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberRegenerateTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberSignUpResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPosition;
@@ -54,7 +54,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public MemberRegenerateTokenResponse generateNewAccessToken(String refreshToken, Member member) {
+    public MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member member) {
 
         String savedRefreshToken = refreshTokenService.findByMemberId(member.getId()).getRefreshToken();
 
@@ -62,7 +62,7 @@ public class MemberServiceImpl implements MemberService {
         if (!refreshToken.equals(savedRefreshToken))
             throw new RestApiException(ErrorCode.INVALID_JWT);
 
-        return new MemberRegenerateTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
+        return new MemberGenerateNewAccessTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
     }
 
     // 멤버 기본 정보 저장 함수
