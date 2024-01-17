@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
     @Operation(summary = "회원가입 API", description = "최초 멤버 정보를 등록하는 API입니다.")
     @PostMapping
     public BaseResponse<MemberSignUpResponse> signUp(@CurrentMember Member member,
