@@ -74,10 +74,20 @@ public class BranchController {
     @PostMapping("/connection")
     public BaseResponse<String> connectBranch(
             @RequestParam("branchId") @ExistBranch UUID branchId,
-            @RequestBody List<UUID> request
+            @RequestBody List<UUID> request //추후 뷰에 따라서 List가 아닌 단일 값으로 변경될 가능성 있음 (단일 값이라면 @RequestParam 으로 받음)
     ){
         branchUniversityService.connectBranchUniversity(branchId,request);
         return BaseResponse.onSuccess("지부 대학교 연결 완료");
+    }
+
+    @Operation(summary = "지부 대학교 연결 해제 API")
+    @DeleteMapping("/connection")
+    public BaseResponse<String> disconnectBranch(
+            @RequestParam("branchId") @ExistBranch UUID branchId,
+            @RequestParam("universityId") @ExistUniversity UUID universityId
+    ){
+        branchUniversityService.disconnectBranchUniversity(branchId,universityId);
+        return BaseResponse.onSuccess("지부 대학교 연결 해제 완료");
     }
 
 }
