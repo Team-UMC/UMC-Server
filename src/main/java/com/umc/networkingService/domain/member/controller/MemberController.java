@@ -9,6 +9,7 @@ import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseResponse;
+import com.umc.networkingService.global.common.enums.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,6 +40,7 @@ public class MemberController {
         Member member = Member.builder()
                 .clientId("123456")
                 .socialType(SocialType.KAKAO)
+                .role(Role.MEMBER)
                 .build();
 
         Member newMember =  memberRepository.save(member);

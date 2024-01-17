@@ -12,9 +12,9 @@ import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.global.common.enums.Role;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class MemberServiceImpl implements MemberService {
         // 멤버 직책 저장
         saveMemberPositions(member, request);
 
-        return null;
+        return new MemberSignUpResponse(memberRepository.save(member).getId());
     }
 
     // 멤버 기본 정보 저장 함수

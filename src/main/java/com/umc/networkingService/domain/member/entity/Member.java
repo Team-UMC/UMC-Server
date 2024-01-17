@@ -10,6 +10,7 @@ import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -23,6 +24,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
+@DynamicInsert
 public class Member extends BaseEntity {
     @Id
     @UuidGenerator
@@ -54,14 +56,16 @@ public class Member extends BaseEntity {
     private SocialType socialType;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Part> part = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     @CollectionTable(name = "member_semester", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<Semester> semester=new ArrayList<>();
+    private List<Semester> semester = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -76,5 +80,7 @@ public class Member extends BaseEntity {
         this.role = role;
         this.university = university;
         this.branch = branch;
+        this.part.addAll(request.getParts());
+        this.semester.addAll(request.getSemesters());
     }
 }
