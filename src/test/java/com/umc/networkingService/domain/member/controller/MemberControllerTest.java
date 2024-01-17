@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.member;
+package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
