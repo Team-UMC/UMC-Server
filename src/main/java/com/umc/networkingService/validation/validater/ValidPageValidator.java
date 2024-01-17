@@ -1,6 +1,6 @@
-package com.umc.networkingService.domain.branch.validation.validater;
+package com.umc.networkingService.validation.validater;
 
-import com.umc.networkingService.domain.branch.validation.annotation.ValidPage;
+import com.umc.networkingService.validation.annotation.ValidPage;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

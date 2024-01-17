@@ -4,14 +4,11 @@ import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.service.BranchService;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
-import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
-import com.umc.networkingService.domain.branch.validation.annotation.ValidPage;
+import com.umc.networkingService.validation.annotation.ExistBranch;
+import com.umc.networkingService.validation.annotation.ValidPage;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

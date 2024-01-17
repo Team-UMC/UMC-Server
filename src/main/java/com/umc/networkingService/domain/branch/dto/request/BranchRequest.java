@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.branch.dto.request;
 
-import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
+import com.umc.networkingService.validation.annotation.ExistBranch;
 import com.umc.networkingService.global.common.Semester;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -35,5 +35,13 @@ public class BranchRequest {
         @NotNull
         private Semester semester;
 
+    }
+
+    @Getter
+    public static class ConnectBranchDTO{
+        @ExistBranch
+        private UUID branchId;
+        @NotNull
+        private UUID universityId;
     }
 }

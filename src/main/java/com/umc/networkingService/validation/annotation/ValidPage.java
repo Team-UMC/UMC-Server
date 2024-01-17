@@ -1,6 +1,6 @@
-package com.umc.networkingService.domain.branch.validation.annotation;
+package com.umc.networkingService.validation.annotation;
 
-import com.umc.networkingService.domain.branch.validation.validater.ValidPageValidator;
+import com.umc.networkingService.validation.validater.ValidPageValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
