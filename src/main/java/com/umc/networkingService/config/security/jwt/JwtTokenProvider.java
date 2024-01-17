@@ -53,8 +53,11 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date accessTokenExpirationTime = new Date(now.getTime() + TOKEN_VALID_TIME);
 
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+
         return Jwts.builder()
-                .setClaims((Claims) Jwts.claims().put("memberId", memberId))
+                .setClaims(claims)
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(accessTokenExpirationTime)
                 .signWith(SignatureAlgorithm.HS256, jwtSecretKey)
@@ -65,8 +68,11 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date refreshTokenExpirationTime = new Date(now.getTime() + REF_TOKEN_VALID_TIME);
 
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+
         return Jwts.builder()
-                .setClaims((Claims) Jwts.claims().put("memberId", memberId))
+                .setClaims(claims)
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(refreshTokenExpirationTime)
                 .signWith(SignatureAlgorithm.HS256, refreshSecretKey)
