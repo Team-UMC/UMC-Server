@@ -11,6 +11,8 @@ import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import com.umc.networkingService.global.common.enums.Role;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,11 @@ public class MemberController {
 
     private final MemberService memberService;
     @Operation(summary = "회원가입 API", description = "최초 멤버 정보를 등록하는 API입니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "UNIVERSITY001", description = "대학교명을 잘못 입력하였을 경우 발생"),
+            @ApiResponse(responseCode = "BRANCH001", description = "대학교가 지부랑 연결되어 있지 않을 경우 발생")
+    })
     @PostMapping
     public BaseResponse<MemberSignUpResponse> signUp(@CurrentMember Member member,
                                                      @Valid @RequestBody MemberSignUpRequest request) {
