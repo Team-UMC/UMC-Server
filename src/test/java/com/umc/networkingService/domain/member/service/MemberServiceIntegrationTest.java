@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.member;
+package com.umc.networkingService.domain.member.service;
 
 
 import com.umc.networkingService.domain.branch.entity.Branch;

@@ -1,4 +1,4 @@
-package com.umc.networkingService;
+package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.entity.RefreshToken;
