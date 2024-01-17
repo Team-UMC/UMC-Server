@@ -49,24 +49,24 @@ public class JwtTokenProvider {
         refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
 
-    public String generateAccessToken(Claims claims, UUID memberId) {
+    public String generateAccessToken(UUID memberId) {
         Date now = new Date();
         Date accessTokenExpirationTime = new Date(now.getTime() + TOKEN_VALID_TIME);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .setClaims((Claims) Jwts.claims().put("memberId", memberId))
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(accessTokenExpirationTime)
                 .signWith(SignatureAlgorithm.HS256, jwtSecretKey)
                 .compact();
     }
 
-    public String generateRefreshToken(Claims claims, UUID memberId) {
+    public String generateRefreshToken(UUID memberId) {
         Date now = new Date();
         Date refreshTokenExpirationTime = new Date(now.getTime() + REF_TOKEN_VALID_TIME);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .setClaims((Claims) Jwts.claims().put("memberId", memberId))
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(refreshTokenExpirationTime)
                 .signWith(SignatureAlgorithm.HS256, refreshSecretKey)
@@ -75,11 +75,8 @@ public class JwtTokenProvider {
 
     public MemberResponseDto.TokenInfo generateToken(UUID memberId) {
 
-        Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
-
-        String accessToken = generateAccessToken(claims, memberId);
-        String refreshToken = generateRefreshToken(claims, memberId);
+        String accessToken = generateAccessToken(memberId);
+        String refreshToken = generateRefreshToken(memberId);
 
         return new MemberResponseDto.TokenInfo(accessToken, refreshToken);
     }
