@@ -5,6 +5,7 @@ import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.Semester;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -18,7 +19,7 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 @DynamicInsert
 public class Board extends BaseEntity {
@@ -60,4 +61,20 @@ public class Board extends BaseEntity {
 
     private boolean isFixed; //notice가 아니면 null
 
+    @Builder
+    public Board(Member member, String title, String content, HostType hostType, BoardType boardType) {
+        this.writer = member;
+        this.title = title;
+        this.content = content;
+        this.hostType = hostType;
+        this.boardType = boardType;
+    }
+    public static Board newBoard(Member member, String title, String content, HostType hostType, BoardType boardType) {
+        return Board.builder()
+                .member(member)
+                .title(title)
+                .content(content)
+                .hostType(hostType)
+                .boardType(boardType).build();
+    }
 }
