@@ -76,8 +76,8 @@ public class RefreshTokenServiceIntegrationTest {
         refreshTokenService.delete(tokenToDelete);
 
         // Then (test에서 사용되는 assertion, 조건이 참이 아니라면 테스트 실패)
-        assertThrows(IllegalArgumentException.class, () -> refreshTokenService.findByMemberId(MEMBERID));
 
+        assertFalse(refreshTokenService.findByMemberId(MEMBERID).isPresent(), "Optional 값이 비어있어야 성공으로 처리됩니다.");
     }
 
     @Test
