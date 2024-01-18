@@ -83,9 +83,9 @@ public class BranchController {
     @DeleteMapping("/connection")
     public BaseResponse<String> disconnectBranch(
             @RequestParam("branchId") @ExistBranch UUID branchId,
-            @RequestParam("universityId") @ExistUniversity UUID universityId //todo : List로 변경
+            @RequestBody List<UUID> request
     ){
-        branchUniversityService.disconnectBranchUniversity(branchId,universityId);
+        branchUniversityService.disconnectBranchUniversity(branchId, request);
         return BaseResponse.onSuccess("지부 대학교 연결 해제 완료");
     }
 
