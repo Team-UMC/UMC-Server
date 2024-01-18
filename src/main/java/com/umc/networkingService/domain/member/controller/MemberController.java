@@ -53,4 +53,13 @@ public class MemberController {
     public BaseResponse<MemberIdResponse> logout(@CurrentMember Member member) {
         return BaseResponse.onSuccess(memberService.logout(member));
     }
+
+    @Operation(summary = "회원 탈퇴 API", description = "해당 유저 정보를 삭제하는 API입니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @DeleteMapping
+    public BaseResponse<MemberIdResponse> withdrawal(@CurrentMember Member member) {
+        return BaseResponse.onSuccess(null);
+    }
 }
