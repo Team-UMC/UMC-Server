@@ -19,6 +19,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BranchUniversityService {
 
+    //todo : 관리자 권한 확인 추가하기
+
     private final BranchRepository branchRepository;
     private final UniversityRepository universityRepository;
     private final BranchUniversityRepository branchUniversityRepository;

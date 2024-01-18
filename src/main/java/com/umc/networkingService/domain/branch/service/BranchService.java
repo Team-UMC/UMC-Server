@@ -27,6 +27,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BranchService {
 
+    //todo : 관리자 권한 확인 추가하기
+
     private final BranchRepository branchRepository;
     private final BranchUniversityRepository branchUniversityRepository;
     private final S3FileComponent s3FileComponent;
