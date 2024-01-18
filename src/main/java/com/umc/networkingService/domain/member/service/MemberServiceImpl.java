@@ -8,6 +8,7 @@ import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPosition;
 import com.umc.networkingService.domain.member.entity.PositionType;
+import com.umc.networkingService.domain.member.entity.RefreshToken;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,13 +58,24 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member member) {
 
-        String savedRefreshToken = refreshTokenService.findByMemberId(member.getId()).getRefreshToken();
+        RefreshToken savedRefreshToken = refreshTokenService.findByMemberId(member.getId())
+                .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
 
         // 디비에 저장된 refreshToken과 동일하지 않다면 유효하지 않음
-        if (!refreshToken.equals(savedRefreshToken))
+        if (!refreshToken.equals(savedRefreshToken.getRefreshToken()))
             throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
 
         return new MemberGenerateNewAccessTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
+    }
+
+    @Override
+    @Transactional
+    public MemberIdResponse logout(Member member) {
+        Optional<RefreshToken> refreshToken = refreshTokenService.findByMemberId(member.getId());
+
+        refreshToken.ifPresent(refreshTokenService::delete);
+
+        return new MemberIdResponse(member.getId());
     }
 
     // 멤버 기본 정보 저장 함수

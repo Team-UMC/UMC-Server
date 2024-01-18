@@ -8,4 +8,5 @@ import com.umc.networkingService.domain.member.entity.Member;
 public interface MemberService {
     MemberIdResponse signUp(Member member, MemberSignUpRequest request);
     MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member member);
+    MemberIdResponse logout(Member member);
 }
