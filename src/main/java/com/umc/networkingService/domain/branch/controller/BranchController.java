@@ -4,6 +4,7 @@ import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.service.BranchService;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
+import com.umc.networkingService.global.common.Semester;
 import com.umc.networkingService.validation.annotation.ExistBranch;
 import com.umc.networkingService.validation.annotation.ExistUniversity;
 import com.umc.networkingService.validation.annotation.ValidPage;
@@ -53,17 +54,15 @@ public class BranchController {
     }
 
     @Operation(summary = "지부 리스트 정보 조회 API")
-    @PostMapping("")
+    @GetMapping("")
     public BaseResponse<BranchResponse.JoinBranchListDTO> joinBranchList(
-           @ValidPage @RequestParam(value = "page",defaultValue = "1") int page
+           @RequestParam("semester") Semester semester //기수별로 조회해서, 페이징 생략
     ){
-        //todo : 기수별 조회 처리 추가
-
-        return BaseResponse.onSuccess(branchService.joinBranchList(page-1));
+        return BaseResponse.onSuccess(branchService.joinBranchList(semester));
     }
 
     @Operation(summary = "지부 세부 정보 조회 API")
-    @PostMapping("/detail")
+    @GetMapping("/detail")
     public BaseResponse<BranchResponse.JoinBranchDetailDTO> joinBranchDetail(
             @RequestParam("branchId") @ExistBranch UUID branchId
     ){
@@ -84,7 +83,7 @@ public class BranchController {
     @DeleteMapping("/connection")
     public BaseResponse<String> disconnectBranch(
             @RequestParam("branchId") @ExistBranch UUID branchId,
-            @RequestParam("universityId") @ExistUniversity UUID universityId //List로 변경
+            @RequestParam("universityId") @ExistUniversity UUID universityId //todo : List로 변경
     ){
         branchUniversityService.disconnectBranchUniversity(branchId,universityId);
         return BaseResponse.onSuccess("지부 대학교 연결 해제 완료");

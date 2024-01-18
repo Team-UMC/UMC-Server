@@ -9,6 +9,7 @@ import com.umc.networkingService.domain.branch.execption.BranchHandler;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.university.entity.University;
+import com.umc.networkingService.global.common.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
@@ -69,12 +70,11 @@ public class BranchService {
     }
 
     @Transactional(readOnly = true)        //지부 리스트 조회
-    public BranchResponse.JoinBranchListDTO joinBranchList(Integer page) {
+    public BranchResponse.JoinBranchListDTO joinBranchList(Semester semester) {
 
-        Page<Branch> branchPage = branchRepository.findAll(PageRequest.of(page, PAGE_SIZE));
+        List<Branch> branchs = branchRepository.findBySemester(semester);
 
-
-        return BranchConverter.toJoinBranchListDTO(branchPage.getContent());
+        return BranchConverter.toJoinBranchListDTO(branchs);
     }
 
     @Transactional(readOnly = true)        //지부 상세 조회
