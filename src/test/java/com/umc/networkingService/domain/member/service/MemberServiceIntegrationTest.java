@@ -153,4 +153,16 @@ public class MemberServiceIntegrationTest {
         // then
         assertFalse(refreshTokenService.findByMemberId(member.getId()).isPresent());
     }
+
+    @Test
+    @DisplayName("회원탈퇴 테스트")
+    @Transactional
+    public void withdrawalTest() {
+        // when
+        memberService.withdrawal(member);
+
+        // then
+        assertFalse(memberRepository.findById(member.getId()).isPresent());
+        assertFalse(refreshTokenService.findByMemberId(member.getId()).isPresent());
+    }
 }
