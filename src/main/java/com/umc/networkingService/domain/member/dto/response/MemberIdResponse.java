@@ -7,6 +7,6 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-public class MemberSignUpResponse {
+public class MemberIdResponse {
     private UUID memberId;
 }

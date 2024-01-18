@@ -4,7 +4,7 @@ import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberSignUpResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPosition;
 import com.umc.networkingService.domain.member.entity.PositionType;
@@ -38,7 +38,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public MemberSignUpResponse signUp(Member member, MemberSignUpRequest request) {
+    public MemberIdResponse signUp(Member member, MemberSignUpRequest request) {
 
         // 소속 대학교 탐색
         University university = universityService.findUniversityByName(request.getUniversityName());
@@ -49,7 +49,7 @@ public class MemberServiceImpl implements MemberService {
         // 멤버 직책 저장
         saveMemberPositions(member, request);
 
-        return new MemberSignUpResponse(memberRepository.save(member).getId());
+        return new MemberIdResponse(memberRepository.save(member).getId());
     }
 
     @Override

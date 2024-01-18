@@ -3,7 +3,7 @@ package com.umc.networkingService.domain.member.controller;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberSignUpResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
@@ -88,7 +88,7 @@ public class MemberControllerTest {
                 .centerPositions(List.of("Server 파트장"))
                 .build();
 
-        MemberSignUpResponse response = new MemberSignUpResponse(member.getId());
+        MemberIdResponse response = new MemberIdResponse(member.getId());
 
         // when
         given(memberService.signUp(eq(member), any(MemberSignUpRequest.class))).willReturn(response);
