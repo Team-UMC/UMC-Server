@@ -94,7 +94,6 @@ public class MemberControllerTest {
         given(memberService.signUp(eq(member), any(MemberSignUpRequest.class))).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
-
         // then
         mockMvc.perform(post("/members")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -124,5 +123,23 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.accessToken").value(response.getAccessToken()));
+    }
+
+    @Test
+    @DisplayName("로그아웃 API 테스트")
+    public void logoutTest() throws Exception {
+        // given
+        MemberIdResponse response = new MemberIdResponse(member.getId());
+
+        given(memberService.logout(member)).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(delete("/members/logout")
+                        .header("Authorization", accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
     }
 }

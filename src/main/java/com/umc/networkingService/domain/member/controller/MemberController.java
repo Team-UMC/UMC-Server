@@ -51,6 +51,6 @@ public class MemberController {
     })
     @DeleteMapping("/logout")
     public BaseResponse<MemberIdResponse> logout(@CurrentMember Member member) {
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess(memberService.logout(member));
     }
 }
