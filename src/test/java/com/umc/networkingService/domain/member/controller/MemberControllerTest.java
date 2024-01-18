@@ -142,4 +142,22 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
     }
+
+    @Test
+    @DisplayName("회원 탈퇴 API 테스트")
+    public void withdrawalTest() throws Exception {
+        // given
+        MemberIdResponse response = new MemberIdResponse(member.getId());
+
+        given(memberService.withdrawal(member)).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(delete("/members")
+                        .header("Authorization", accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
+    }
 }
