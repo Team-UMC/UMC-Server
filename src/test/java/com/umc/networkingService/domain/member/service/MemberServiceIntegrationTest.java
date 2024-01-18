@@ -135,12 +135,22 @@ public class MemberServiceIntegrationTest {
 
     @Test
     @DisplayName("access 토큰 재발급 테스트")
-    public void generateNewAccessToken() {
+    public void generateNewAccessTokenTest() {
         // when
         MemberGenerateNewAccessTokenResponse response = memberService.generateNewAccessToken(refreshToken, member);
 
         // then
         assertNotNull(response);
         assertNotNull(response.getAccessToken());
+    }
+
+    @Test
+    @DisplayName("로그아웃 테스트")
+    public void logoutTest() {
+        // when
+        memberService.logout(member);
+
+        // then
+        assertFalse(refreshTokenService.findByMemberId(member.getId()).isPresent());
     }
 }
