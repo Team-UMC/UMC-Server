@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "멤버 API", description = "멤버 관련 API")
 @RestController
@@ -61,5 +63,16 @@ public class MemberController {
     @DeleteMapping
     public BaseResponse<MemberIdResponse> withdrawal(@CurrentMember Member member) {
         return BaseResponse.onSuccess(memberService.withdrawal(member));
+    }
+
+    @Operation(summary = "나의 프로필 수정 API", description = "본인 프로필 사진, 닉네임, 이름, 상태 메시지를 수정하는 API입니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @PatchMapping
+    public BaseResponse<MemberIdResponse> updateMyProfile(@CurrentMember Member member,
+                                                          @RequestParam MultipartFile profileImage,
+                                                          @RequestParam MemberUpdateMyProfileRequest request) {
+        return BaseResponse.onSuccess(null);
     }
 }
