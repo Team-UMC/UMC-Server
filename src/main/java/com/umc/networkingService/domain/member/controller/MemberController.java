@@ -60,6 +60,6 @@ public class MemberController {
     })
     @DeleteMapping
     public BaseResponse<MemberIdResponse> withdrawal(@CurrentMember Member member) {
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess(memberService.withdrawal(member));
     }
 }

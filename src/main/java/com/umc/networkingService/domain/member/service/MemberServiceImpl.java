@@ -71,12 +71,23 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public MemberIdResponse logout(Member member) {
-        Optional<RefreshToken> refreshToken = refreshTokenService.findByMemberId(member.getId());
+        deleteRefreshToken(member);
+        return new MemberIdResponse(member.getId());
+    }
 
-        refreshToken.ifPresent(refreshTokenService::delete);
+    @Override
+    @Transactional
+    public MemberIdResponse withdrawal(Member member) {
+        // 멤버 soft delete
+        member.delete();
+
+        // refreshToken 삭제
+        deleteRefreshToken(member);
 
         return new MemberIdResponse(member.getId());
     }
+
+
 
     // 멤버 기본 정보 저장 함수
     private void setMemberInfo(Member member, MemberSignUpRequest request, University university) {
@@ -135,5 +146,12 @@ public class MemberServiceImpl implements MemberService {
     private boolean isExecutive(List<String> positions) {
         return positions.stream()
                 .anyMatch(position -> position.equals("회장") || position.equals("부회장"));
+    }
+
+    // member 객체를 이용한 refreshToken 삭제 함수
+    private void deleteRefreshToken(Member member) {
+        Optional<RefreshToken> refreshToken = refreshTokenService.findByMemberId(member.getId());
+
+        refreshToken.ifPresent(refreshTokenService::delete);
     }
 }

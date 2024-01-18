@@ -9,4 +9,5 @@ public interface MemberService {
     MemberIdResponse signUp(Member member, MemberSignUpRequest request);
     MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member member);
     MemberIdResponse logout(Member member);
+    MemberIdResponse withdrawal(Member member);
 }
