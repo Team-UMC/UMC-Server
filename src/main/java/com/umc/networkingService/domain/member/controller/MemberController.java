@@ -73,6 +73,6 @@ public class MemberController {
     public BaseResponse<MemberIdResponse> updateMyProfile(@CurrentMember Member member,
                                                           @RequestParam MultipartFile profileImage,
                                                           @RequestParam MemberUpdateMyProfileRequest request) {
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess(memberService.updateMyProfile(member, profileImage, request));
     }
 }

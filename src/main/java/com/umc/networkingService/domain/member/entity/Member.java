@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Part;
@@ -82,5 +83,12 @@ public class Member extends BaseEntity {
         this.branch = branch;
         this.part.addAll(request.getParts());
         this.semester.addAll(request.getSemesters());
+    }
+
+    public void updateMemberInfo(MemberUpdateMyProfileRequest request, String profileImage) {
+        this.name = request.getName();
+        this.nickname = request.getNickname();
+        this.statusMessage = request.getStatusMessage();
+        this.profileImage = profileImage;
     }
 }

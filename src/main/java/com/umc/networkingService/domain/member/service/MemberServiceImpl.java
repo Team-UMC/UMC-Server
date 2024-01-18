@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.member.service;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -17,9 +18,11 @@ import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +40,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final S3FileComponent s3FileComponent;
 
     @Override
     @Transactional
@@ -87,6 +91,18 @@ public class MemberServiceImpl implements MemberService {
         return new MemberIdResponse(member.getId());
     }
 
+    @Override
+    @Transactional
+    public MemberIdResponse updateMyProfile(Member member, MultipartFile profileImage, MemberUpdateMyProfileRequest request) {
+
+        // 프로필 이미지 s3 저장
+        String profileUrl = s3FileComponent.uploadFile("member", profileImage);
+
+        // 수정된 정보 저장
+        member.updateMemberInfo(request, profileUrl);
+
+        return new MemberIdResponse(memberRepository.save(member).getId());
+    }
 
 
     // 멤버 기본 정보 저장 함수
