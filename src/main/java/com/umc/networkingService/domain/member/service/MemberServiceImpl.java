@@ -4,6 +4,7 @@ import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
+import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -24,8 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +56,7 @@ public class MemberServiceImpl implements MemberService {
         setMemberInfo(member, request, university);
 
         // 멤버 직책 저장
-        saveMemberPositions(member, request);
+        saveMemberPositions(member, request.getCampusPositions(), request.getCenterPositions());
 
         return new MemberIdResponse(memberRepository.save(member).getId());
     }
@@ -107,6 +110,31 @@ public class MemberServiceImpl implements MemberService {
         return new MemberIdResponse(memberRepository.save(member).getId());
     }
 
+    @Override
+    @Transactional
+    public MemberIdResponse updateProfile(Member member, UUID memberId, MemberUpdateProfileRequest request) {
+
+        // 수정할 유저 탐색
+        Member updateMember = loadEntity(memberId);
+
+        // 직책 수정
+        if (updateMember.getRole().getPriority() <= member.getRole().getPriority()) {
+            // 본인보다 높거나 같은 직책의 운영진의 정보를 삭제하려 할 경우
+            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
+        }
+
+        if (member.getRole().getPriority() > 2 && !request.getCenterPositions().isEmpty()) {
+            // 학교, 지부 운영진이 중앙 직책을 수정하려는 경우
+            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
+        }
+        saveMemberPositions(updateMember, request.getCampusPositions(), request.getCenterPositions());
+
+        // 파트, 학기 수정
+        updateMember.updateMemberInfo(request.getParts(), request.getSemesters());
+
+        return new MemberIdResponse(updateMember.getId());
+    }
+
 
     // 멤버 기본 정보 저장 함수
     private void setMemberInfo(Member member, MemberSignUpRequest request, University university) {
@@ -119,17 +147,28 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 멤버 직책 정보 저장 함수
-    private void saveMemberPositions(Member member, MemberSignUpRequest request) {
-        saveMemberPosition(member, request.getCenterPositions(), PositionType.CENTER);
-        saveMemberPosition(member, request.getCampusPositions(), PositionType.CAMPUS);
+    private void saveMemberPositions(Member member, List<String> campusPositions, List<String> centerPositions) {
+
+        // 기존 직책 삭제
+        member.getPositions()
+                .forEach(MemberPosition::delete);
+
+        List<MemberPosition> memberPositions = new ArrayList<>();
+
+        memberPositions.addAll(saveMemberPosition(member, campusPositions, PositionType.CAMPUS));
+        memberPositions.addAll(saveMemberPosition(member, centerPositions, PositionType.CENTER));
+
+        member.updatePositions(memberPositions);
     }
 
-    private void saveMemberPosition(Member member, List<String> positions, PositionType positionType) {
+    private List<MemberPosition> saveMemberPosition(Member member, List<String> positions, PositionType positionType) {
         List<MemberPosition> memberPositions = positions.stream()
                 .map(position -> memberMapper.toMemberPosition(member, positionType, position))
                 .toList();
 
         memberPositionRepository.saveAll(memberPositions);
+
+        return memberPositions;
     }
 
     // 멤버 Role 생성 함수
@@ -172,5 +211,11 @@ public class MemberServiceImpl implements MemberService {
         Optional<RefreshToken> refreshToken = refreshTokenService.findByMemberId(member.getId());
 
         refreshToken.ifPresent(refreshTokenService::delete);
+    }
+
+    @Override
+    public Member loadEntity(UUID id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
     }
 }

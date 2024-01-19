@@ -29,6 +29,6 @@ public class StaffMemberController {
     public BaseResponse<MemberIdResponse> updateProfile(@CurrentMember Member member,
                                                         @PathVariable(value = "memberId") UUID memberId,
                                                         @RequestBody MemberUpdateProfileRequest request) {
-        return BaseResponse.onSuccess(memberService.updateProfile(member, memberId));
+        return BaseResponse.onSuccess(memberService.updateProfile(member, memberId, request));
     }
 }

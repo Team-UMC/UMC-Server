@@ -135,8 +135,8 @@ public class MemberServiceIntegrationTest {
         assertEquals("벡스", savedMember.getNickname());
         assertEquals("GACI", savedMember.getBranch().getName());
         assertEquals("인하대학교", savedMember.getUniversity().getName());
-        assertEquals(1, savedMember.getPart().size());
-        assertEquals(3, savedMember.getSemester().size());
+        assertEquals(1, savedMember.getParts().size());
+        assertEquals(3, savedMember.getSemesters().size());
     }
 
     @Test

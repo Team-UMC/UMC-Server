@@ -10,7 +10,8 @@ import java.util.List;
 @Getter
 @Builder
 public class MemberUpdateProfileRequest {
-    private List<String> positions;
+    private List<String> campusPositions;
+    private List<String> centerPositions;
     private List<Part> parts;
     private List<Semester> semesters;
 }

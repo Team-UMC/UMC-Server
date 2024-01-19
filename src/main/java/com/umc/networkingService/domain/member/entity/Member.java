@@ -56,17 +56,21 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private SocialType socialType;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<MemberPosition> positions = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<Part> part = new ArrayList<>();
+    private List<Part> parts = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
     @CollectionTable(name = "member_semester", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<Semester> semester = new ArrayList<>();
+    private List<Semester> semesters = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -81,8 +85,8 @@ public class Member extends BaseEntity {
         this.role = role;
         this.university = university;
         this.branch = branch;
-        this.part.addAll(request.getParts());
-        this.semester.addAll(request.getSemesters());
+        this.parts.addAll(request.getParts());
+        this.semesters.addAll(request.getSemesters());
     }
 
     public void updateMemberInfo(MemberUpdateMyProfileRequest request, String profileImage) {
@@ -90,5 +94,19 @@ public class Member extends BaseEntity {
         this.nickname = request.getNickname();
         this.statusMessage = request.getStatusMessage();
         if (profileImage != null) this.profileImage = profileImage;
+    }
+
+    public void updateMemberInfo(List<Part> parts, List<Semester> semesters) {
+        this.parts.clear();
+        this.parts = parts;
+        this.semesters.clear();;
+        this.semesters = semesters;
+    }
+
+    public void updatePositions(List<MemberPosition> memberPositions) {
+        // 기존 직책 삭제
+        if (!this.positions.isEmpty()) this.positions.clear();
+
+        this.positions = memberPositions;
     }
 }
