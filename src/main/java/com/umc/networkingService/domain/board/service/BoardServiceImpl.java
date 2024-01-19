@@ -2,8 +2,10 @@ package com.umc.networkingService.domain.board.service;
 
 
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardCreateResponse;
+import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.entity.Board;
+import com.umc.networkingService.domain.board.entity.BoardImage;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.mapper.BoardImageMapper;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,31 +33,17 @@ import java.util.List;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
-    private final BoardImageRepository boardImageRepository;
-    private final S3FileComponent s3FileComponent;
+    private final BoardImageService boardImageService;
+
     @Override
     @Transactional
-    public BoardCreateResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {
+    public BoardIdResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {
         //연합, 지부, 학교 타입
         HostType hostType = request.getHostType();
         BoardType boardType = request.getBoardType();
 
-        //현재 기수
-        Semester nowSemester = Semester.findActiveSemester();
-
-        //허용 기수 (기본 모든 기수에게 허용)
-        List<Semester> semesterPermission = Arrays.stream(Semester.values()).toList();
-
-        //boardType에 따라 권한 Check
-        switch (boardType) {
-            case OB -> checkPermissionForOBBoard(member,nowSemester);
-            case NOTICE -> checkPermissionForNoticeBoard(member, hostType);
-            case WORKBOOK -> {
-                checkPermissionForWorkbookBoard(member, hostType);
-                //워크북의 경우 현재 기수만 볼 수 있도록 허용
-                semesterPermission = List.of(nowSemester);
-            }
-        }
+        //boardType과 HostType에 따라 권한 판단
+        List<Semester> semesterPermission = checkPermission(member,hostType,boardType);
 
         Board board = boardRepository.save(BoardMapper.toEntity(member,
                 request.getTitle(),
@@ -63,10 +52,55 @@ public class BoardServiceImpl implements BoardService {
                 request.getBoardType(),
                 semesterPermission));
 
-        for(MultipartFile file: files)
-            boardImageRepository.save(BoardImageMapper.toEntity(board,s3FileComponent.uploadFile("Board", file)));
+        if (files != null)
+            boardImageService.uploadBoardImages(board,files);
 
-        return new BoardCreateResponse(board.getId());
+        return new BoardIdResponse(board.getId());
+    }
+
+    @Override
+    @Transactional
+    public BoardIdResponse updateBoard(Member member, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files) {
+
+        Board board = boardRepository.findById(boardId).orElseThrow(()-> new RestApiException(ErrorCode.NOT_FOUND_BOARD));
+
+        //연합, 지부, 학교 타입
+        HostType hostType = request.getHostType();
+        BoardType boardType = request.getBoardType();
+
+        //boardType과 HostType에 따라 권한 판단
+        List<Semester> semesterPermission = checkPermission(member,hostType,boardType);
+
+        board.update(request.getHostType(),
+                request.getBoardType(),
+                request.getTitle(),
+                request.getContent(),
+                semesterPermission);
+
+        boardImageService.updateBoardImages(board,files);
+
+        return new BoardIdResponse(board.getId());
+    }
+
+
+    public List<Semester> checkPermission(Member member, HostType hostType, BoardType boardType) {
+        //현재 기수
+        Semester nowSemester = Semester.findActiveSemester();
+
+        //허용 기수 (기본 모든 기수에게 허용)
+        List<Semester> permissionSemesters = Arrays.stream(Semester.values()).toList();
+
+        //boardType에 따라 권한 Check
+        switch (boardType) {
+            case OB -> checkPermissionForOBBoard(member,nowSemester);
+            case NOTICE -> checkPermissionForNoticeBoard(member, hostType);
+            case WORKBOOK -> {
+                checkPermissionForWorkbookBoard(member, hostType);
+                //워크북의 경우 현재 기수만 볼 수 있도록 허용
+                permissionSemesters = List.of(nowSemester);
+            }
+        }
+        return permissionSemesters;
     }
 
     //OB 게시판 권한 확인 함수

@@ -10,6 +10,6 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardCreateResponse {
+public class BoardIdResponse {
     private UUID boardId;
 }

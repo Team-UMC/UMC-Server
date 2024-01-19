@@ -37,6 +37,7 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "board_semester_permission", joinColumns = @JoinColumn(name = "board_id"))
     @ElementCollection(fetch = FetchType.LAZY)
@@ -58,6 +59,15 @@ public class Board extends BaseEntity {
     private int commentCount;
 
     private boolean isFixed; //notice가 아니면 null
+
+
+    public void update(HostType hostType,BoardType boardType, String title, String content, List<Semester> semesters) {
+        this.hostType = hostType;
+        this.boardType =boardType;
+        this.title = title;
+        this.content = content;
+        this.semesterPermission = semesters;
+    }
 
 
 }
