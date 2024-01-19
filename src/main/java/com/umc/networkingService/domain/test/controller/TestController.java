@@ -4,7 +4,6 @@ import com.umc.networkingService.domain.test.dto.TestRequest;
 import com.umc.networkingService.domain.test.dto.TestResponse;
 import com.umc.networkingService.domain.test.service.TestService;
 import com.umc.networkingService.global.common.base.BaseResponse;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

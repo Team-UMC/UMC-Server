@@ -1,21 +1,13 @@
 package com.umc.networkingService.config.security.jwt;
 
 import com.umc.networkingService.config.security.auth.PrincipalDetails;
-import com.umc.networkingService.domain.member.dto.MemberResponseDto;
-import io.jsonwebtoken.*;
 import com.umc.networkingService.config.security.auth.PrincipalDetailsService;
+import com.umc.networkingService.domain.member.dto.MemberResponseDto;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
