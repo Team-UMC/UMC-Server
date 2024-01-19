@@ -12,5 +12,5 @@ import java.util.UUID;
 public interface BoardService {
     BoardIdResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files);
     BoardIdResponse updateBoard(Member member, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files);
-
+    BoardIdResponse deleteBoard(Member member, UUID boardId);
 }

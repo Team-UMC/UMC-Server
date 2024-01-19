@@ -26,6 +26,7 @@ import java.util.UUID;
 public class BoardController {
     private final BoardService boardService;
 
+
     @Operation(summary = "게시글 작성 API", description = "게시글을 작성하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
@@ -53,6 +54,17 @@ public class BoardController {
                                                          @Valid @RequestPart("request") BoardUpdateRequest request,
                                                      @RequestPart(name = "file", required = false) List<MultipartFile> files) {
         return BaseResponse.onSuccess(boardService.updateBoard(member,boardId, request, files));
+    }
+
+    @Operation(summary = "게시글 삭제 API", description = "게시글을 삭제하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
+    })
+    @DeleteMapping("/{boardId}")
+    public BaseResponse<BoardIdResponse> deleteBoard(@CurrentMember Member member,
+                                                     @PathVariable(value="boardId") UUID boardId) {
+        return BaseResponse.onSuccess(boardService.deleteBoard(member,boardId));
     }
 
 }

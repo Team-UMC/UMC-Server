@@ -5,19 +5,15 @@ import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.entity.Board;
-import com.umc.networkingService.domain.board.entity.BoardImage;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
-import com.umc.networkingService.domain.board.mapper.BoardImageMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
-import com.umc.networkingService.domain.board.repository.BoardImageRepository;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
-import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,6 +78,18 @@ public class BoardServiceImpl implements BoardService {
         return new BoardIdResponse(board.getId());
     }
 
+    @Override
+    @Transactional
+    public BoardIdResponse deleteBoard(Member member, UUID boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(()-> new RestApiException(ErrorCode.NOT_FOUND_BOARD));
+
+        boardImageService.deleteBoardImages(board);
+        board.delete();
+
+        return new BoardIdResponse(board.getId());
+
+    }
+
 
     public List<Semester> checkPermission(Member member, HostType hostType, BoardType boardType) {
         //현재 기수
@@ -103,6 +111,7 @@ public class BoardServiceImpl implements BoardService {
         return permissionSemesters;
     }
 
+
     //OB 게시판 권한 확인 함수
     public void checkPermissionForOBBoard(Member member,Semester nowSemester) {
         // OB -> Semester의 isActive가 활성화되지 않은 사용자만 가능
@@ -121,27 +130,26 @@ public class BoardServiceImpl implements BoardService {
         //Campus 권한이 있는 멤버의 역할
         List<Role> campusStaffRoles  = Role.campusStaffRoles();
 
-        //공지사항 권한 CHECK
-        switch (hostType) {
-            case CENTER:
-                //CENTER && NOTICE -> ROLE이 TOTAL_STAFF OR CENTER_STAFF 인 사람
-                if (!centerStaffRoles.contains(memberRole))
-                    throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
-                break;
-            case BRANCH:
-                //BRANCH && NOTICE -> ROLE이 BRANCH_STAFF인 사람
-                if (branchStaffRole != memberRole)
-                    throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
-                //BRANCH 나머지 -> 해당 지부 사람들 모두
-                break;
-            case CAMPUS:
-                //CAMPUS && NOTICE -> ROLE이 CAMPUS_STAFF, STAFF인 사람
-                if (!campusStaffRoles.contains(memberRole))
-                    throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
-                //CAMPUS 나머지 -> 해당 campus 사람들 모두
-                break;
-
+        // 공지사항 권한 CHECK
+        if (hostType == HostType.CENTER) {
+            // CENTER && NOTICE -> ROLE이 TOTAL_STAFF OR CENTER_STAFF 인 사람
+            if (!centerStaffRoles.contains(memberRole)) {
+                throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            }
+        } else if (hostType == HostType.BRANCH) {
+            // BRANCH && NOTICE -> ROLE이 BRANCH_STAFF인 사람
+            if (branchStaffRole != memberRole) {
+                throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            }
+            // BRANCH 나머지 -> 해당 지부 사람들 모두
+        } else if (hostType == HostType.CAMPUS) {
+            // CAMPUS && NOTICE -> ROLE이 CAMPUS_STAFF, STAFF인 사람
+            if (!campusStaffRoles.contains(memberRole)) {
+                throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            }
+            // CAMPUS 나머지 -> 해당 campus 사람들 모두
         }
+
     }
 
     //workbook 게시판 권한 확인 함수

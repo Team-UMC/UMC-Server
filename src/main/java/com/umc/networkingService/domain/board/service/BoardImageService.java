@@ -8,5 +8,6 @@ import java.util.List;
 public interface BoardImageService {
     void uploadBoardImages(Board board, List<MultipartFile> files);
     void updateBoardImages (Board board, List<MultipartFile> files);
+    void deleteBoardImages(Board board);
 
-}
+    }

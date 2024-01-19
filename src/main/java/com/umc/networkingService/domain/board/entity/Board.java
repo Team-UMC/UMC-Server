@@ -60,14 +60,12 @@ public class Board extends BaseEntity {
 
     private boolean isFixed; //notice가 아니면 null
 
-
     public void update(HostType hostType,BoardType boardType, String title, String content, List<Semester> semesters) {
         this.hostType = hostType;
-        this.boardType =boardType;
+        this.boardType = boardType;
         this.title = title;
         this.content = content;
         this.semesterPermission = semesters;
     }
-
 
 }

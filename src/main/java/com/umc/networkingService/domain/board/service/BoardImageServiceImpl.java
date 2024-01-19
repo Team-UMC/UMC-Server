@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,26 +23,31 @@ public class BoardImageServiceImpl implements BoardImageService {
     @Override
     @Transactional
     public void uploadBoardImages (Board board, List<MultipartFile> files) {
-        for (MultipartFile file : files) {
-            boardImageRepository.save(BoardImageMapper.toEntity(board, s3FileComponent.uploadFile("Board", file)));
-        }
+        files.forEach(file -> boardImageRepository.save(BoardImageMapper
+                .toEntity(board, s3FileComponent.uploadFile("Board", file))));
     }
 
     @Override
     @Transactional
     public void updateBoardImages (Board board, List<MultipartFile> files) {
+
         List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
 
+        boardImages.forEach(image -> {
+            s3FileComponent.deleteFile(image.getUrl());
+            boardImageRepository.deleteById(image.getId());
+        });
 
-        if(!boardImages.isEmpty()) {
-            for (BoardImage image: boardImages) {
-                s3FileComponent.deleteFile(image.getUrl());
-                boardImageRepository.deleteById(image.getId());
-            }
-        }
         if(files !=null)
             uploadBoardImages(board, files);
     }
 
+    @Override
+    @Transactional
+    public void deleteBoardImages(Board board) {
+        List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+
+        boardImages.forEach(BoardImage::delete);
+    }
 
 }
