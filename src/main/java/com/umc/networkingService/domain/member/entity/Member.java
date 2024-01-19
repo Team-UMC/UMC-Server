@@ -104,9 +104,11 @@ public class Member extends BaseEntity {
     }
 
     public void updatePositions(List<MemberPosition> memberPositions) {
-        // 기존 직책 삭제
-        if (!this.positions.isEmpty()) this.positions.clear();
-
         this.positions = memberPositions;
+    }
+
+    // 테스트 코드용
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }

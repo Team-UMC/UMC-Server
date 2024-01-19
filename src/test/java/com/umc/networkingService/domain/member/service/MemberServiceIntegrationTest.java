@@ -8,15 +8,21 @@ import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
+import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.MemberPosition;
+import com.umc.networkingService.domain.member.entity.PositionType;
 import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,6 +48,7 @@ public class MemberServiceIntegrationTest {
     @Autowired private MemberService memberService;
 
     @Autowired private MemberRepository memberRepository;
+    @Autowired private MemberPositionRepository memberPositionRepository;
     @Autowired private UniversityRepository universityRepository;
     @Autowired private BranchRepository branchRepository;
     @Autowired private BranchUniversityRepository branchUniversityRepository;
@@ -58,19 +65,19 @@ public class MemberServiceIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        member = createMember();
+        member = createMember("111111", Role.MEMBER);
         setToken(member.getId());
         university = createUniversity();
         branch = createBranch();
         branchUniversity = createBranchUniversity();
     }
 
-    private Member createMember() {
+    private Member createMember(String clientId, Role role) {
         return memberRepository.save(
                 Member.builder()
-                        .clientId("123456")
+                        .clientId(clientId)
                         .socialType(SocialType.KAKAO)
-                        .role(Role.MEMBER)
+                        .role(role)
                         .build()
         );
     }
@@ -118,9 +125,9 @@ public class MemberServiceIntegrationTest {
                 .nickname("벡스")
                 .universityName("인하대학교")
                 .parts(List.of(Part.SPRING))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
-                .campusPositions(List.of("회장"))
-                .centerPositions(List.of("Server 파트장"))
+                .semesters(List.of(Semester.THIRD, Semester.FOURTH))
+                .campusPositions(List.of("Android 파트장"))
+                .centerPositions(List.of())
                 .build();
 
         // when
@@ -136,7 +143,8 @@ public class MemberServiceIntegrationTest {
         assertEquals("GACI", savedMember.getBranch().getName());
         assertEquals("인하대학교", savedMember.getUniversity().getName());
         assertEquals(1, savedMember.getParts().size());
-        assertEquals(3, savedMember.getSemesters().size());
+        assertEquals(2, savedMember.getSemesters().size());
+        assertEquals(1, savedMember.getPositions().size());
     }
 
     @Test
@@ -227,5 +235,109 @@ public class MemberServiceIntegrationTest {
         assertEquals("김준석", savedMember.getName());
         assertEquals("이번 기수 화이팅~", savedMember.getStatusMessage());
         assertEquals("s3 url", savedMember.getProfileImage());
+    }
+
+    @Test
+    @DisplayName("프로필 수정 테스트")
+    @Transactional
+    public void updateProfile() {
+        // given
+
+        Member staff = createMember("222222", Role.TOTAL_STAFF);
+
+        member.updatePositions(List.of(
+                memberPositionRepository.save(MemberPosition.builder()
+                        .member(member)
+                        .type(PositionType.CAMPUS)
+                        .name("Android 파트장")
+                        .build())
+        ));
+
+        MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
+                .campusPositions(List.of("회장"))
+                .centerPositions(List.of())
+                .parts(List.of(Part.SPRING, Part.ANDROID))
+                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .build();
+
+        Optional<MemberPosition> optionalMemberPosition = member.getPositions().stream().findFirst();
+        assertTrue(optionalMemberPosition.isPresent());
+        UUID memberPositionId = optionalMemberPosition.get().getId();
+
+        // when
+        memberService.updateProfile(staff, member.getId(),request);
+
+        // then
+        Optional<Member> optionalMember = memberRepository.findById(member.getId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(1, savedMember.getPositions().size());
+        assertEquals(2, savedMember.getParts().size());
+        assertEquals(3, savedMember.getSemesters().size());
+        assertFalse(memberPositionRepository.findByIdAndDeletedAtIsNull(memberPositionId).isPresent());
+    }
+
+    @Test
+    @DisplayName("프로필 수정 권한 예외 테스트 - 상위 운영진 정보 수정 시")
+    @Transactional
+    public void updateProfileWithUpdateMember() {
+        // given
+        Member staff = createMember("222222", Role.CAMPUS_STAFF);
+        member.updateRole(Role.TOTAL_STAFF);
+
+        MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
+                .campusPositions(List.of("회장"))
+                .centerPositions(List.of())
+                .parts(List.of(Part.SPRING, Part.ANDROID))
+                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .build();
+
+
+        // when
+        RestApiException exception = assertThrows(RestApiException.class,
+                () -> memberService.updateProfile(staff, member.getId(), request));
+
+        // then
+        assertEquals(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER, exception.getErrorCode());
+
+        Optional<Member> optionalMember = memberRepository.findById(member.getId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(0, savedMember.getPositions().size());
+        assertEquals(0, savedMember.getParts().size());
+        assertEquals(0, savedMember.getSemesters().size());
+    }
+
+    @Test
+    @DisplayName("프로필 수정 권한 예외 테스트 - 학교, 지부 운영진이 중앙 직책 부여 시")
+    @Transactional
+    public void updateProfileWithUpdateCenterPosition() {
+        // given
+        Member staff = createMember("222222", Role.CAMPUS_STAFF);
+
+        MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
+                .campusPositions(List.of())
+                .centerPositions(List.of("회장"))
+                .parts(List.of(Part.SPRING, Part.ANDROID))
+                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .build();
+
+
+        // when
+        RestApiException exception = assertThrows(RestApiException.class,
+                () -> memberService.updateProfile(staff, member.getId(), request));
+
+        // then
+        assertEquals(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION, exception.getErrorCode());
+
+        Optional<Member> optionalMember = memberRepository.findById(member.getId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(0, savedMember.getPositions().size());
+        assertEquals(0, savedMember.getParts().size());
+        assertEquals(0, savedMember.getSemesters().size());
     }
 }
