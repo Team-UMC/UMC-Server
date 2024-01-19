@@ -89,6 +89,6 @@ public class Member extends BaseEntity {
         this.name = request.getName();
         this.nickname = request.getNickname();
         this.statusMessage = request.getStatusMessage();
-        this.profileImage = profileImage;
+        if (profileImage != null) this.profileImage = profileImage;
     }
 }

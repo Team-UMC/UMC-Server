@@ -95,8 +95,11 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public MemberIdResponse updateMyProfile(Member member, MultipartFile profileImage, MemberUpdateMyProfileRequest request) {
 
+        String profileUrl = null;
+
         // 프로필 이미지 s3 저장
-        String profileUrl = s3FileComponent.uploadFile("member", profileImage);
+        if (profileImage != null)
+            profileUrl = s3FileComponent.uploadFile("member", profileImage);
 
         // 수정된 정보 저장
         member.updateMemberInfo(request, profileUrl);
