@@ -34,7 +34,7 @@ public class BoardServiceImpl implements BoardService {
     private final S3FileComponent s3FileComponent;
     @Override
     @Transactional
-    public BoardCreateResponse boardCreate(Member member, BoardCreateRequest request, List<MultipartFile> files) {
+    public BoardCreateResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {
         //연합, 지부, 학교 타입
         HostType hostType = request.getHostType();
         BoardType boardType = request.getBoardType();

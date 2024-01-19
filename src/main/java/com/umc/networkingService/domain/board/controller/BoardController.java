@@ -32,11 +32,11 @@ public class BoardController {
             @ApiResponse(responseCode = "MEMBER002", description = "게시글을 쓸 권한이 없을 경우 발생"),
             @ApiResponse(responseCode = "BOARD001", description = "WORKBOOK 게시판과 CENTER, BRANCH를 선택했을 경우 금지된 요청")
     })
-    @PostMapping("/")
-    public BaseResponse<BoardCreateResponse> boardCreate(@CurrentMember Member member,
-                                                         @Valid @RequestPart BoardCreateRequest request, @RequestPart(value = "file", required = false)
+    @PostMapping
+    public BaseResponse<BoardCreateResponse> createBoard(@CurrentMember Member member,
+                                                         @Valid @RequestPart("request") BoardCreateRequest request, @RequestPart(name = "file", required = false)
                                                          List<MultipartFile> files) {
-        return BaseResponse.onSuccess(boardService.boardCreate(member, request, files));
+        return BaseResponse.onSuccess(boardService.createBoard(member, request, files));
     }
 
 
