@@ -69,10 +69,10 @@ public class MemberController {
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    @PatchMapping
+    @PostMapping("/update")
     public BaseResponse<MemberIdResponse> updateMyProfile(@CurrentMember Member member,
-                                                          @RequestParam MultipartFile profileImage,
-                                                          @RequestParam MemberUpdateMyProfileRequest request) {
+                                                          @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+                                                          @RequestPart MemberUpdateMyProfileRequest request) {
         return BaseResponse.onSuccess(memberService.updateMyProfile(member, profileImage, request));
     }
 }

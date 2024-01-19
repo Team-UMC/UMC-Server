@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -21,8 +22,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -74,8 +78,8 @@ public class MemberControllerTest {
         refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
     }
 
-    @Test
     @DisplayName("회원가입 API 테스트")
+    @Test
     public void signUpTest() throws Exception {
         // given
         MemberSignUpRequest request = MemberSignUpRequest.builder()
@@ -99,6 +103,7 @@ public class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", accessToken)
                         .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())  // 응답 출력
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
@@ -107,54 +112,118 @@ public class MemberControllerTest {
 
     }
 
-    @Test
     @DisplayName("Access 토큰 재발급 API 테스트")
+    @Test
     public void generateNewAccessTokenTest() throws Exception {
         // given
         MemberGenerateNewAccessTokenResponse response = new MemberGenerateNewAccessTokenResponse("newAccessToken");
 
-        given(memberService.generateNewAccessToken(refreshToken, member)).willReturn(response);
+        given(memberService.generateNewAccessToken(any(), any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
         mockMvc.perform(get("/members/token/refresh")
                         .header("refreshToken", refreshToken))
+                .andDo(print())  // 응답 출력
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.accessToken").value(response.getAccessToken()));
     }
 
-    @Test
     @DisplayName("로그아웃 API 테스트")
+    @Test
     public void logoutTest() throws Exception {
         // given
         MemberIdResponse response = new MemberIdResponse(member.getId());
 
-        given(memberService.logout(member)).willReturn(response);
+        given(memberService.logout(any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
         mockMvc.perform(delete("/members/logout")
                         .header("Authorization", accessToken))
+                .andDo(print())  // 응답 출력
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
     }
 
-    @Test
     @DisplayName("회원 탈퇴 API 테스트")
+    @Test
     public void withdrawalTest() throws Exception {
         // given
         MemberIdResponse response = new MemberIdResponse(member.getId());
 
-        given(memberService.withdrawal(member)).willReturn(response);
+        given(memberService.withdrawal(any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
         mockMvc.perform(delete("/members")
                         .header("Authorization", accessToken))
+                .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
+    }
+
+    @DisplayName("나의 프로필 수정 API 테스트 - 프로필 이미지 없음")
+    @Test
+    public void updateMyProfileWithoutImage() throws Exception {
+        // given
+        MemberUpdateMyProfileRequest request = MemberUpdateMyProfileRequest.builder()
+                .name("김준석")
+                .nickname("준써크")
+                .statusMessage("이번 기수 화이팅~")
+                .build();
+
+        String requestJson = objectMapper.writeValueAsString(request);
+        MockMultipartFile requestPart = new MockMultipartFile("request", "", "application/json", requestJson.getBytes(StandardCharsets.UTF_8));
+
+        MemberIdResponse response = new MemberIdResponse(member.getId());
+
+        given(memberService.updateMyProfile(any(), any(), any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/members/update")
+                        .file(requestPart)
+                        .header("Authorization", accessToken))
+                .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
+    }
+
+    @DisplayName("나의 프로필 수정 API 테스트 - 프로필 이미지 있음")
+    @Test
+    public void updateMyProfileWithImage() throws Exception {
+        // given
+        MemberUpdateMyProfileRequest request = MemberUpdateMyProfileRequest.builder()
+                .name("김준석")
+                .nickname("준써크")
+                .statusMessage("이번 기수 화이팅~")
+                .build();
+
+        String requestJson = objectMapper.writeValueAsString(request);
+        MockMultipartFile requestPart = new MockMultipartFile("request", "", "application/json", requestJson.getBytes(StandardCharsets.UTF_8));
+
+        MockMultipartFile profileImage = new MockMultipartFile("profileImage", "profileImage.jpg", "image/jpeg", "profile image".getBytes());
+
+        MemberIdResponse response = new MemberIdResponse(member.getId());
+
+        given(memberService.updateMyProfile(any(), any(), any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/members/update")
+                        .file(profileImage)
+                        .file(requestPart)
+                        .header("Authorization", accessToken))
+                .andDo(print())  // 응답 출력
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
