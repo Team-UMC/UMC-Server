@@ -67,7 +67,8 @@ public class MemberController {
 
     @Operation(summary = "나의 프로필 수정 API", description = "본인 프로필 사진, 닉네임, 이름, 상태 메시지를 수정하는 API입니다.")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "IMAGE001", description = "이미지 S3 업로드 실패할 경우 발생")
     })
     @PostMapping("/update")
     public BaseResponse<MemberIdResponse> updateMyProfile(@CurrentMember Member member,
