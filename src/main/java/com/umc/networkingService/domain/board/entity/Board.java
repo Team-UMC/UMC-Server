@@ -4,10 +4,7 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
@@ -19,6 +16,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 @DynamicInsert
@@ -43,7 +42,6 @@ public class Board extends BaseEntity {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Semester> semesterPermission = new ArrayList<>();
 
-
     @Column(nullable = false)
     private HostType hostType;
 
@@ -61,20 +59,5 @@ public class Board extends BaseEntity {
 
     private boolean isFixed; //notice가 아니면 null
 
-    @Builder
-    public Board(Member member, String title, String content, HostType hostType, BoardType boardType) {
-        this.writer = member;
-        this.title = title;
-        this.content = content;
-        this.hostType = hostType;
-        this.boardType = boardType;
-    }
-    public static Board newBoard(Member member, String title, String content, HostType hostType, BoardType boardType) {
-        return Board.builder()
-                .member(member)
-                .title(title)
-                .content(content)
-                .hostType(hostType)
-                .boardType(boardType).build();
-    }
+
 }

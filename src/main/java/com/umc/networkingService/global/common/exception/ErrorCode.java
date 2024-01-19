@@ -24,6 +24,7 @@ public enum ErrorCode {
 
     // Member
     EMPTY_MEMBER(HttpStatus.CONFLICT, "MEMBER001", "존재하지 않는 사용자입니다."),
+    FORBIDDEN_MEMBER(HttpStatus.FORBIDDEN, "MEMBER002", "권한이 없습니다."),
 
     // Auth
     EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AUTH001", "JWT가 없습니다."),
@@ -38,7 +39,12 @@ public enum ErrorCode {
     EMPTY_UNIVERSITY(HttpStatus.BAD_REQUEST, "UNIVERSITY001", "존재하지 않는 대학교입니다."),
 
     // Branch
-    EMPTY_BRANCH(HttpStatus.BAD_REQUEST, "BRANCH001", "존재하지 않는 지부입니다.");
+    EMPTY_BRANCH(HttpStatus.BAD_REQUEST, "BRANCH001", "존재하지 않는 지부입니다."),
+    //Board
+    BAD_REQUEST_BOARD(HttpStatus.BAD_REQUEST,"BOARD001", "금지된 요청입니다."),
+    ;
+
+
 
     private final HttpStatus httpStatus;
     private final String code;
