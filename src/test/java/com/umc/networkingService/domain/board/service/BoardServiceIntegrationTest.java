@@ -15,6 +15,8 @@ import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,8 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Board 서비스의 ")
 @SpringBootTest
@@ -91,6 +92,78 @@ public class BoardServiceIntegrationTest {
         assertEquals("FREE", board.getBoardType().toString());
         assertEquals("CAMPUS", board.getHostType().toString());
         assertEquals(2, boardImages.size());
+    }
+
+    @Test
+    @DisplayName("공지 사항 게시판 게시글 작성 실패 테스트(권한 없음)")
+    public void createBoardNotice() {
+        //given
+        BoardCreateRequest request = BoardCreateRequest.builder()
+                .title("제목")
+                .content("내용")
+                .boardType(BoardType.NOTICE)
+                .hostType(HostType.CAMPUS)
+                .build();
+
+        List<MultipartFile> files = new ArrayList<>();
+        files.add(new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes()));
+        files.add(new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes()));
+
+
+        //then
+        RestApiException exception = assertThrows(RestApiException.class, () -> {
+            boardService.createBoard(member, request, files);
+        });
+
+        assertEquals(ErrorCode.FORBIDDEN_MEMBER, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("OB 게시판 게시글 작성 실패 테스트(권한 없음)")
+    public void createBoardOB() {
+        //given
+        BoardCreateRequest request = BoardCreateRequest.builder()
+                .title("제목")
+                .content("내용")
+                .boardType(BoardType.OB)
+                .hostType(HostType.CAMPUS)
+                .build();
+
+        List<MultipartFile> files = new ArrayList<>();
+        files.add(new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes()));
+        files.add(new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes()));
+
+
+        //then
+        RestApiException exception = assertThrows(RestApiException.class, () -> {
+            boardService.createBoard(member, request, files);
+        });
+
+        assertEquals(ErrorCode.FORBIDDEN_MEMBER, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("Workbook 게시판 게시글 작성 실패 테스트(권한 없음)")
+    public void createBoardWorkbook() {
+        //given
+        BoardCreateRequest request = BoardCreateRequest.builder()
+                .title("제목")
+                .content("내용")
+                .boardType(BoardType.WORKBOOK)
+                .hostType(HostType.CAMPUS)
+                .build();
+
+        List<MultipartFile> files = new ArrayList<>();
+        files.add(new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes()));
+        files.add(new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes()));
+
+
+        //then
+        RestApiException exception = assertThrows(RestApiException.class, () -> {
+            boardService.createBoard(member, request, files);
+        });
+
+        assertEquals(ErrorCode.FORBIDDEN_MEMBER, exception.getErrorCode());
     }
 
 }
