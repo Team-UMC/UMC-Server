@@ -2,7 +2,8 @@ package com.umc.networkingService.domain.board.service;
 
 
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardCreateResponse;
+import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardImage;
 import com.umc.networkingService.domain.board.entity.BoardType;
@@ -43,14 +44,15 @@ public class BoardServiceIntegrationTest {
     @Autowired private BoardImageRepository boardImageRepository;
 
     private Member member;
-
+    private Board board;
     @BeforeEach
     public void setUp() {
-         member = memberRepository.save(createMember());
+         member = createMember();
+         board = createBoard();
     }
 
     private Member createMember() {
-        return Member.builder()
+        return memberRepository.save(Member.builder()
                 .id(UUID.randomUUID())
                 .clientId("123456")
                 .socialType(SocialType.KAKAO)
@@ -59,12 +61,24 @@ public class BoardServiceIntegrationTest {
                 .nickname("벡스")
                 .part(List.of(Part.SPRING))
                 .semester(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
-                .build();
+                .build());
     }
+
+    private Board createBoard() {
+        return boardRepository.save(Board.builder()
+                .writer(member)
+                .title("제목")
+                .content("내용")
+                .boardType(BoardType.FREE)
+                .hostType(HostType.CAMPUS)
+                .semesterPermission(List.of(Semester.FIFTH))
+                .build());
+    }
+
 
     @Test
     @DisplayName("게시글 작성 성공 테스트")
-    public void createBoard() {
+    public void createBoardTest() {
         //given
         BoardCreateRequest request = BoardCreateRequest.builder()
                 .title("제목")
@@ -78,7 +92,7 @@ public class BoardServiceIntegrationTest {
         files.add(new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes()));
 
         //when
-        BoardCreateResponse response = boardService.createBoard(member, request, files);
+        BoardIdResponse response = boardService.createBoard(member, request, files);
 
         //then
         Optional<Board> optionalBoard = boardRepository.findById(response.getBoardId());
@@ -166,4 +180,31 @@ public class BoardServiceIntegrationTest {
         assertEquals(ErrorCode.FORBIDDEN_MEMBER, exception.getErrorCode());
     }
 
+    @Test
+    @DisplayName("게시글 수정 성공 테스트")
+    public void updateBoardTest() {
+        //given
+        BoardUpdateRequest request = BoardUpdateRequest.builder()
+                .title("수정제목")
+                .content("수정내용")
+                .boardType(BoardType.QUESTION)
+                .hostType(HostType.CAMPUS)
+                .build();
+
+        UUID boardId = board.getId();
+        List<MultipartFile> files = new ArrayList<>();
+        files.add(new MockMultipartFile("file", "fileupdate.jpg", "image/jpeg", "file content".getBytes()));
+
+        //when
+        boardService.updateBoard(member, boardId, request, files);
+
+        //then
+        List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+
+        assertEquals("수정제목", board.getTitle());
+        assertEquals("수정내용", board.getContent());
+        assertEquals("QUESTION", board.getBoardType().toString());
+        assertEquals("CAMPUS", board.getHostType().toString());
+        assertEquals(1, boardImages.size());
+    }
 }
