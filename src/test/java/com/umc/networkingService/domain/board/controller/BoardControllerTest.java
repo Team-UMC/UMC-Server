@@ -34,6 +34,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -154,6 +155,28 @@ public class BoardControllerTest {
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result").exists());
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 API 테스트")
+    public void deleteBoardTest() throws Exception {
+        //given
+        BoardIdResponse response = new BoardIdResponse(board.getId());
+
+        //when
+        when(boardService.deleteBoard(eq(member), eq(board.getId()))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        //then
+        this.mockMvc.perform(
+                        delete("/boards/{boardId}", board.getId())
+                                .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+
     }
 
 }

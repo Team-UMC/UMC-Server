@@ -207,4 +207,20 @@ public class BoardServiceIntegrationTest {
         assertEquals("CAMPUS", board.getHostType().toString());
         assertEquals(1, boardImages.size());
     }
+
+    @Test
+    @DisplayName("게시글 삭제 성공 테스트")
+    public void deleteBoardTest() {
+        //given
+        UUID boardId = board.getId();
+
+        //when
+        boardService.deleteBoard(member, boardId);
+
+        //then
+        List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+
+        assertNotNull(board.getDeletedAt());
+        boardImages.forEach(boardImage -> assertNotNull(boardImage.getDeletedAt()));
+    }
 }
