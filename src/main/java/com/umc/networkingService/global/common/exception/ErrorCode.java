@@ -42,6 +42,7 @@ public enum ErrorCode {
     EMPTY_BRANCH(HttpStatus.BAD_REQUEST, "BRANCH001", "존재하지 않는 지부입니다."),
     //Board
     BAD_REQUEST_BOARD(HttpStatus.BAD_REQUEST,"BOARD001", "금지된 요청입니다."),
+    NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "BOARD002", "게시글을 찾을 수 없습니다.")
     ;
 
 
