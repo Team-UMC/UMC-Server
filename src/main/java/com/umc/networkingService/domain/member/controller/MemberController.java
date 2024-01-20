@@ -99,7 +99,8 @@ public class MemberController {
 
     @Operation(summary = "유저 홈화면 정보 조회 API", description = "유저 홈화면 정보인 닉네임, 프로필 사진, 기여도, 랭킹을 조회하는 API입니다.")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MEMBER004", description = "조회 대상이 소속 대학교가 없는 경우 발생")
     })
     @GetMapping("/home-info")
     public BaseResponse<MemberInquiryHomeInfoResponse> inquiryHomeInfo(@CurrentMember Member member) {
