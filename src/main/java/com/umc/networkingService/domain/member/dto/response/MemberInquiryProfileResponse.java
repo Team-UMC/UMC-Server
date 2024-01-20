@@ -7,10 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Builder
 public class MemberInquiryProfileResponse {
+    private UUID memberId;
     private String profileImage;
     private String universityName;
     private String name;

@@ -30,6 +30,7 @@ public class MemberMapper {
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY));
 
         return MemberInquiryProfileResponse.builder()
+                .memberId(member.getId())
                 .profileImage(member.getProfileImage())
                 .universityName(universityName)
                 .name(member.getName())
