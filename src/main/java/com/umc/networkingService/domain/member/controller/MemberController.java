@@ -115,4 +115,13 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.authenticationGithub(member, code));
     }
 
+    @Operation(summary = "깃허브 데이터 조회 API", description = "깃허브 잔디 이미지를 조회하는 API입니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "AUTH008", description = "깃허브 인증이 안 된 사용자일 경우 발생")
+    })
+    @GetMapping("/github")
+    public BaseResponse<MemberInquiryGithubResponse> inquiryGithubImage(@CurrentMember Member member) {
+        return BaseResponse.onSuccess(memberService.inquiryGithubImage(member));
+    }
 }
