@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
     private final TestService testService;
 
-
     @Operation(summary = "성공적인 응답 반환 API", description = "테스트 문자열을 반환하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "테스트 문자열을 성공적으로 반환")
     @GetMapping("/success")

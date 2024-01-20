@@ -1,210 +1,56 @@
 package com.umc.networkingService.domain.member.service;
 
 
-import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
-import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.domain.branch.entity.BranchUniversity;
-import com.umc.networkingService.domain.branch.repository.BranchRepository;
-import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.friend.entity.Friend;
 import com.umc.networkingService.domain.friend.repository.FriendRepository;
-import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
-import com.umc.networkingService.domain.member.repository.MemberRepository;
-import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Member 서비스의 ")
-@SpringBootTest public class MemberServiceIntegrationTest {
+@SpringBootTest
+public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
 
     @Autowired private MemberService memberService;
 
-    @Autowired private MemberRepository memberRepository;
     @Autowired private MemberPositionRepository memberPositionRepository;
     @Autowired private MemberPointRepository memberPointRepository;
-    @Autowired private UniversityRepository universityRepository;
-    @Autowired private BranchRepository branchRepository;
-    @Autowired private BranchUniversityRepository branchUniversityRepository;
     @Autowired private FriendRepository friendRepository;
-    @Autowired private JwtTokenProvider jwtTokenProvider;
-    @Autowired private RefreshTokenService refreshTokenService;
 
     @MockBean private S3FileComponent s3FileComponent;
+    @MockBean private GithubMemberClient githubMemberClient;
 
-    private Member member;
-    private String refreshToken;
-    private University university;
-    private Branch branch;
-    private BranchUniversity branchUniversity;
-
-    @BeforeEach
-    public void setUp() {
-        member = createMember("111111", Role.MEMBER);
-        setToken(member.getId());
-        university = createUniversity();
-        branch = createBranch();
-        branchUniversity = createBranchUniversity();
-    }
-
-    private Member createMember(String clientId, Role role) {
-        return memberRepository.save(
-                Member.builder()
-                        .clientId(clientId)
-                        .socialType(SocialType.KAKAO)
-                        .role(role)
-                        .build()
-        );
-    }
-
-    private void setInfo(Member nowMember) {
-        MemberSignUpRequest request = MemberSignUpRequest.builder()
-                .name("김준석")
-                .nickname("벡스")
-                .universityName("인하대학교")
-                .parts(List.of(Part.SPRING))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH))
-                .campusPositions(List.of("Android 파트장"))
-                .centerPositions(List.of())
-                .build();
-
-        nowMember.setMemberInfo(request, Role.BRANCH_STAFF, university, branch);
-    }
-
-    private void setToken(UUID memberId) {
-        refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
-        refreshTokenService.saveTokenInfo(refreshToken, memberId);
-    }
-
-    private University createUniversity() {
-        return universityRepository.save(
-                University.builder()
-                        .name("인하대학교")
-                        .build()
-        );
-    }
-
-    private Branch createBranch() {
-        return branchRepository.save(
-                Branch.builder()
-                        .name("GACI")
-                        .description("가치 지부입니다.")
-                        .semester(Semester.FIFTH)
-                        .build()
-        );
-    }
-
-    private BranchUniversity createBranchUniversity() {
-        return branchUniversityRepository.save(
-                BranchUniversity.builder()
-                        .branch(branch)
-                        .university(university)
-                        .isActive(Boolean.TRUE)
-                        .build()
-        );
-    }
 
     private MemberPoint createMemberPoint(PointType pointType) {
         return MemberPoint.builder()
                 .member(member)
                 .pointType(pointType)
                 .build();
-    }
-
-    @Test
-    @DisplayName("회원 가입 테스트")
-    @Transactional
-    public void signUpTest() {
-        // given
-        MemberSignUpRequest request = MemberSignUpRequest.builder()
-                .name("김준석")
-                .nickname("벡스")
-                .universityName("인하대학교")
-                .parts(List.of(Part.SPRING))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH))
-                .campusPositions(List.of("Android 파트장"))
-                .centerPositions(List.of())
-                .build();
-
-        // when
-        memberService.signUp(member, request);
-
-        // then
-        Optional<Member> optionalMember = memberRepository.findById(member.getId());
-        assertTrue(optionalMember.isPresent());
-        Member savedMember = optionalMember.get();
-
-        assertEquals("김준석", savedMember.getName());
-        assertEquals("벡스", savedMember.getNickname());
-        assertEquals("GACI", savedMember.getBranch().getName());
-        assertEquals("인하대학교", savedMember.getUniversity().getName());
-        assertEquals(1, savedMember.getParts().size());
-        assertEquals(2, savedMember.getSemesters().size());
-        assertEquals(1, savedMember.getPositions().size());
-    }
-
-    @Test
-    @DisplayName("access 토큰 재발급 테스트")
-    public void generateNewAccessTokenTest() {
-        // when
-        MemberGenerateNewAccessTokenResponse response = memberService.generateNewAccessToken(refreshToken, member);
-
-        // then
-        assertNotNull(response);
-        assertNotNull(response.getAccessToken());
-    }
-
-    @Test
-    @DisplayName("로그아웃 테스트")
-    public void logoutTest() {
-        // when
-        memberService.logout(member);
-
-        // then
-        assertFalse(refreshTokenService.findByMemberId(member.getId()).isPresent());
-    }
-
-    @Test
-    @DisplayName("회원탈퇴 테스트")
-    @Transactional
-    public void withdrawalTest() {
-        // when
-        memberService.withdrawal(member);
-
-        // then
-        assertFalse(memberRepository.findById(member.getId()).isPresent());
-        assertFalse(refreshTokenService.findByMemberId(member.getId()).isPresent());
     }
 
     @Test
@@ -426,7 +272,7 @@ import static org.mockito.BDDMockito.given;
     }
 
     @Test
-    @DisplayName("유저 홈화면 정보 조회 테스트")
+    @DisplayName("포인트 관련 유저 정보 조회 테스트")
     @Transactional
     public void inquiryHomeInfo() {
         // given
@@ -453,6 +299,22 @@ import static org.mockito.BDDMockito.given;
         assertEquals("벡스", response.getNickname());
         assertEquals(1000L, response.getContributionPoint());
         assertEquals(4, response.getContributionRank());
+    }
+
+    @Test
+    @DisplayName("깃허브 연동 테스트")
+    @Transactional
+    public void authenticationGithub() {
+        // given
+
+        // 실제 깃허브 서버와 통신 x
+        given(githubMemberClient.getGithubNickname(any())).willReturn("junseokkim");
+
+        // when
+        MemberAuthenticationGithubResponse response = memberService.authenticationGithub(member, "깃허브 인가 코드");
+
+        // then
+        assertEquals("junseokkim", response.getGithubNickname());
     }
 
     @Test
@@ -510,11 +372,13 @@ import static org.mockito.BDDMockito.given;
     @Transactional
     public void inquiryMemberPointsWithMultiple() {
         // given
-        memberPointRepository.saveAll(List.of(
-                createMemberPoint(PointType.PUDDING),
-                createMemberPoint(PointType.PUDDING),
-                createMemberPoint(PointType.DOUGHNUT)
-        ));
+        try {
+            memberPointRepository.save(createMemberPoint(PointType.PUDDING));
+            memberPointRepository.save(createMemberPoint(PointType.PUDDING));
+            Thread.sleep(1000);  // 1초 대기
+            memberPointRepository.save(createMemberPoint(PointType.DOUGHNUT));
+        } catch (InterruptedException ignored) {
+        }
 
         // when
         MemberInquiryPointsResponse response = memberService.inquiryMemberPoints(member);

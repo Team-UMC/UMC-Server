@@ -1,31 +1,18 @@
 package com.umc.networkingService.domain.member.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
-import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
-import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
-import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
 import com.umc.networkingService.domain.member.entity.PointType;
-import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
-import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
@@ -36,8 +23,9 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,136 +33,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @DisplayName("Member 컨트롤러의")
-@SpringBootTest
-@AutoConfigureMockMvc
-public class MemberControllerTest {
-
-    @Autowired private MockMvc mockMvc;
-
-    @Autowired private ObjectMapper objectMapper;
-
-    @Autowired private JwtTokenProvider jwtTokenProvider;
+public class MemberControllerTest extends MemberControllerTestConfig {
 
     @Autowired private MemberMapper memberMapper;
 
     @MockBean private MemberService memberService;
-
-    @MockBean private MemberRepository memberRepository;
-
-    private Member member;
-    private String accessToken;
-    private String refreshToken;
-
-    @BeforeEach
-    public void setUp() {
-        member = createMember();
-        setToken(member);
-    }
-
-    private Member createMember() {
-        return Member.builder()
-                .id(UUID.randomUUID())
-                .clientId("123456")
-                .socialType(SocialType.KAKAO)
-                .role(Role.MEMBER)
-                .build();
-    }
-
-    private void setToken(Member member) {
-        accessToken = jwtTokenProvider.generateAccessToken(member.getId());
-        refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
-    }
-
-    @DisplayName("회원가입 API 테스트")
-    @Test
-    public void signUpTest() throws Exception {
-        // given
-        MemberSignUpRequest request = MemberSignUpRequest.builder()
-                .name("김준석")
-                .nickname("벡스")
-                .universityName("인하대학교")
-                .parts(List.of(Part.SPRING))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
-                .campusPositions(List.of("회장"))
-                .centerPositions(List.of("Server 파트장"))
-                .build();
-
-        MemberIdResponse response = new MemberIdResponse(member.getId());
-
-        // when
-        given(memberService.signUp(eq(member), any(MemberSignUpRequest.class))).willReturn(response);
-        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
-
-        // then
-        mockMvc.perform(post("/members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", accessToken)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())  // 응답 출력
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
-
-
-    }
-
-    @DisplayName("Access 토큰 재발급 API 테스트")
-    @Test
-    public void generateNewAccessTokenTest() throws Exception {
-        // given
-        MemberGenerateNewAccessTokenResponse response = new MemberGenerateNewAccessTokenResponse("newAccessToken");
-
-        given(memberService.generateNewAccessToken(any(), any())).willReturn(response);
-        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
-
-        // when & then
-        mockMvc.perform(get("/members/token/refresh")
-                        .header("refreshToken", refreshToken))
-                .andDo(print())  // 응답 출력
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                .andExpect(jsonPath("$.result.accessToken").value(response.getAccessToken()));
-    }
-
-    @DisplayName("로그아웃 API 테스트")
-    @Test
-    public void logoutTest() throws Exception {
-        // given
-        MemberIdResponse response = new MemberIdResponse(member.getId());
-
-        given(memberService.logout(any())).willReturn(response);
-        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
-
-        // when & then
-        mockMvc.perform(delete("/members/logout")
-                        .header("Authorization", accessToken))
-                .andDo(print())  // 응답 출력
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
-    }
-
-    @DisplayName("회원 탈퇴 API 테스트")
-    @Test
-    public void withdrawalTest() throws Exception {
-        // given
-        MemberIdResponse response = new MemberIdResponse(member.getId());
-
-        given(memberService.withdrawal(any())).willReturn(response);
-        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
-
-        // when & then
-        mockMvc.perform(delete("/members")
-                        .header("Authorization", accessToken))
-                .andDo(print())  // 응답 출력
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
-    }
 
     @DisplayName("나의 프로필 수정 API 테스트 - 프로필 이미지 없음")
     @Test
@@ -295,7 +158,7 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
     }
 
-    @DisplayName("유저 홈화면 정보 조회 API 테스트")
+    @DisplayName("포인트 관련 유저 정보 조회 API 테스트")
     @Test
     public void inquiryHomeInfoTest() throws Exception {
         // given
@@ -310,7 +173,7 @@ public class MemberControllerTest {
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
-        mockMvc.perform(get("/members/home-info")
+        mockMvc.perform(get("/members/simple")
                         .header("Authorization", accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -318,6 +181,27 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.contributionPoint").value("1000"));
     }
+
+    @DisplayName("깃허브 연동 API 테스트")
+    @Test
+    public void authenticationGithub() throws Exception {
+        // given
+        MemberAuthenticationGithubResponse response = new MemberAuthenticationGithubResponse("junseokkim");
+
+        given(memberService.authenticationGithub(any(), any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(post("/members/github")
+                        .param("code", "깃허브 인가 코드")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.githubNickname").value(response.getGithubNickname().toString()));
+    }
+
 
     @DisplayName("깃허브 데이터 조회 API 테스트")
     @Test
