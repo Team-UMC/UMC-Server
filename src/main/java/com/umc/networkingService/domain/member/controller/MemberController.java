@@ -3,10 +3,7 @@ package com.umc.networkingService.domain.member.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
+import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -105,6 +102,17 @@ public class MemberController {
     @GetMapping("/home-info")
     public BaseResponse<MemberInquiryHomeInfoResponse> inquiryHomeInfo(@CurrentMember Member member) {
         return BaseResponse.onSuccess(memberService.inquiryHomeInfo(member));
+    }
+
+    @Operation(summary = "깃허브 연동 API", description = "깃허브 로그인을 통해서 발급받은 accessToken으로 깃허브 닉네임을 저장하는 API입니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "AUTH008", description = "깃허브 서버와 통신 실패할 경우 발생")
+    })
+    @PostMapping("/github")
+    public BaseResponse<MemberAuthenticationGithubResponse> authenticationGithub(@CurrentMember Member member,
+                                                                                 @RequestParam String code) {
+        return BaseResponse.onSuccess(memberService.authenticationGithub(member, code));
     }
 
 }
