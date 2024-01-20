@@ -110,13 +110,17 @@ public class Member extends BaseEntity {
         this.positions = memberPositions;
     }
 
-    // 테스트 코드용
-    public void updateRole(Role role) {
-        this.role = role;
+    public void authenticationGithub(String gitNickname) {
+        this.gitNickname = gitNickname;
     }
 
     public void updateContributionPoint(Long usedPoint) {
         if (this.contributionPoint == null) this.contributionPoint = usedPoint;
         else this.contributionPoint += usedPoint;
+    }
+
+    // 테스트 코드용
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }

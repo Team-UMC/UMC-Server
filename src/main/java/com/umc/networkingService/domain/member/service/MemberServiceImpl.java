@@ -3,16 +3,13 @@ package com.umc.networkingService.domain.member.service;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.friend.service.FriendService;
+import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
+import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
-import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
@@ -46,6 +43,8 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final S3FileComponent s3FileComponent;
+
+    private final GithubMemberClient githubMemberClient;
 
     @Override
     @Transactional
@@ -165,6 +164,21 @@ public class MemberServiceImpl implements MemberService {
         int rank = calculateMyRank(member, university);
 
         return memberMapper.toInquiryHomeInfoResponse(member, rank);
+    }
+
+    @Override
+    public MemberAuthenticationGithubResponse authenticationGithub(Member member, String code) {
+
+        String githubNickname = githubMemberClient.getGithubNickname(code);
+
+        if (githubNickname == null || githubNickname.isBlank())
+            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
+
+        member.authenticationGithub(githubNickname);
+
+        Member savedMember = memberRepository.save(member);
+
+        return new MemberAuthenticationGithubResponse(savedMember.getNickname());
     }
 
     // 멤버 기본 정보 저장 함수

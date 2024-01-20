@@ -3,10 +3,7 @@ package com.umc.networkingService.domain.member.service;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
+import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.EntityLoader;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,4 +19,5 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     MemberIdResponse updateProfile(Member member, UUID memberId, MemberUpdateProfileRequest request);
     MemberInquiryProfileResponse inquiryProfile(Member member, UUID memberId);
     MemberInquiryHomeInfoResponse inquiryHomeInfo(Member member);
+    MemberAuthenticationGithubResponse authenticationGithub(Member member, String code);
 }
