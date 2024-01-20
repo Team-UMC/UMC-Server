@@ -83,6 +83,7 @@ public class MemberController {
     @Operation(summary = "유저 정보 조회 API", description = "본인 또는 타인 프로필 조회")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MEMBER004", description = "조회 대상이 소속 대학교가 없는 경우 발생")
     })
     @GetMapping("/{memberId}")
     public BaseResponse<MemberInquiryProfileResponse> inquiryProfile(@CurrentMember Member member,
