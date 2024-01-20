@@ -12,6 +12,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryGithubResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.*;
@@ -441,5 +442,37 @@ import static org.mockito.BDDMockito.given;
         assertEquals("벡스", response.getNickname());
         assertEquals(1000L, response.getContributionPoint());
         assertEquals(4, response.getContributionRank());
+    }
+
+    @Test
+    @DisplayName("깃허브 데이터 조회 테스트")
+    @Transactional
+    public void inquiryGithubImage() {
+        // given
+        member.authenticationGithub("junseokkim");
+
+        // when
+        MemberInquiryGithubResponse response = memberService.inquiryGithubImage(member);
+
+        // then
+        assertEquals("https://ghchart.rshah.org/2965FF/junseokkim", response.getGithubImage());
+    }
+
+    @Test
+    @DisplayName("깃허브 데이터 조회 테스트 - 연동 안된 경우")
+    @Transactional
+    public void inquiryGithubImageWithException() {
+        // when
+        RestApiException exception = assertThrows(RestApiException.class,
+                () -> memberService.inquiryGithubImage(member));
+
+        // then
+        assertEquals(ErrorCode.UNAUTHENTICATION_GITHUB, exception.getErrorCode());
+
+        Optional<Member> optionalMember = memberRepository.findById(member.getId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertNull(savedMember.getGitNickname());
     }
 }
