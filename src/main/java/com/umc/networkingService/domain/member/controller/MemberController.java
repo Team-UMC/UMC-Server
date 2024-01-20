@@ -10,14 +10,17 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Tag(name = "멤버 API", description = "멤버 관련 API")
@@ -80,12 +83,12 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.updateMyProfile(member, profileImage, request));
     }
 
-    @Operation(summary = "유저 정보 조회 API", description = "본인 또는 타인 프로필 조회")
+    @Operation(summary = "유저 프로필 조회 API", description = "본인 또는 타인 프로필 조회")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "MEMBER004", description = "조회 대상이 소속 대학교가 없는 경우 발생")
     })
-    @GetMapping("/{memberId}")
+    @GetMapping(value = {"", "/{memberId}"})
     public BaseResponse<MemberInquiryProfileResponse> inquiryProfile(@CurrentMember Member member,
                                                                      @PathVariable(required = false) UUID memberId) {
         return BaseResponse.onSuccess(memberService.inquiryProfile(member, memberId));

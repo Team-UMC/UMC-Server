@@ -233,7 +233,7 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
     }
 
-    @DisplayName("유저 정보 조회 API 테스트 - 본인")
+    @DisplayName("유저 프로필 조회 API 테스트 - 본인")
     @Test
     public void inquiryMyProfileTest() throws Exception {
         // given
@@ -262,7 +262,7 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
     }
 
-    @DisplayName("유저 정보 조회 API 테스트 - 타인")
+    @DisplayName("유저 프로필 조회 API 테스트 - 타인")
     @Test
     public void inquiryOthersProfileTest() throws Exception {
         // given

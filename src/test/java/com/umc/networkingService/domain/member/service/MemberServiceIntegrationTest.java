@@ -6,14 +6,14 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.friend.entity.Friend;
+import com.umc.networkingService.domain.friend.repository.FriendRepository;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
-import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.MemberPosition;
-import com.umc.networkingService.domain.member.entity.PositionType;
-import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
+import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
@@ -52,6 +52,7 @@ public class MemberServiceIntegrationTest {
     @Autowired private UniversityRepository universityRepository;
     @Autowired private BranchRepository branchRepository;
     @Autowired private BranchUniversityRepository branchUniversityRepository;
+    @Autowired private FriendRepository friendRepository;
     @Autowired private JwtTokenProvider jwtTokenProvider;
     @Autowired private RefreshTokenService refreshTokenService;
 
@@ -80,6 +81,20 @@ public class MemberServiceIntegrationTest {
                         .role(role)
                         .build()
         );
+    }
+
+    private void setInfo() {
+        MemberSignUpRequest request = MemberSignUpRequest.builder()
+                .name("김준석")
+                .nickname("벡스")
+                .universityName("인하대학교")
+                .parts(List.of(Part.SPRING))
+                .semesters(List.of(Semester.THIRD, Semester.FOURTH))
+                .campusPositions(List.of("Android 파트장"))
+                .centerPositions(List.of())
+                .build();
+
+        member.setMemberInfo(request, Role.BRANCH_STAFF, university, branch);
     }
 
     private void setToken(UUID memberId) {
@@ -339,5 +354,70 @@ public class MemberServiceIntegrationTest {
         assertEquals(0, savedMember.getPositions().size());
         assertEquals(0, savedMember.getParts().size());
         assertEquals(0, savedMember.getSemesters().size());
+    }
+
+    @Test
+    @DisplayName("유저 프로필 조회 테스트 - 본인")
+    @Transactional
+    public void inquiryMyProfile() {
+        // given
+        setInfo();
+
+        // when
+        MemberInquiryProfileResponse response = memberService.inquiryProfile(member, null);
+
+        // then
+        assertEquals("김준석", response.getName());
+        assertEquals("인하대학교", response.getUniversityName());
+        assertEquals(MemberRelation.MINE, response.getOwner());
+    }
+
+    @Test
+    @DisplayName("유저 프로필 조회 테스트 - 친구")
+    @Transactional
+    public void inquiryFriendProfile() {
+        // given
+        setInfo();
+
+        Member loginMember = memberRepository.save(Member.builder()
+                .clientId("222222")
+                .socialType(SocialType.KAKAO)
+                .role(Role.CAMPUS_STAFF)
+                .build());
+
+        friendRepository.save(Friend.builder()
+                .sender(loginMember)
+                .receiver(member)
+                .build());
+
+        // when
+        MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
+
+        // then
+        assertEquals("김준석", response.getName());
+        assertEquals("인하대학교", response.getUniversityName());
+        assertEquals(MemberRelation.FRIEND, response.getOwner());
+    }
+
+    @Test
+    @DisplayName("유저 프로필 조회 테스트 - 그 외")
+    @Transactional
+    public void inquiryOthersProfile() {
+        // given
+        setInfo();
+
+        Member loginMember = memberRepository.save(Member.builder()
+                .clientId("222222")
+                .socialType(SocialType.KAKAO)
+                .role(Role.CAMPUS_STAFF)
+                .build());
+
+        // when
+        MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
+
+        // then
+        assertEquals("김준석", response.getName());
+        assertEquals("인하대학교", response.getUniversityName());
+        assertEquals(MemberRelation.OTHERS, response.getOwner());
     }
 }
