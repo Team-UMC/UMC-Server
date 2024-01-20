@@ -7,6 +7,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfile
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
@@ -289,5 +290,29 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
+    }
+
+    @DisplayName("유저 홈화면 정보 조회 API 테스트")
+    @Test
+    public void inquiryHomeInfoTest() throws Exception {
+        // given
+        MemberInquiryHomeInfoResponse response = MemberInquiryHomeInfoResponse.builder()
+                .profileImage("프로필 이미지")
+                .nickname("벡스")
+                .contributionPoint(1000L)
+                .contributionRank(2)
+                .build();
+
+        given(memberService.inquiryHomeInfo(any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(get("/members/home-info")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.contributionPoint").value("1000"));
     }
 }
