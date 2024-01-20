@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -16,6 +17,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 @Tag(name = "멤버 API", description = "멤버 관련 API")
 @RestController
@@ -76,4 +79,15 @@ public class MemberController {
                                                           @RequestPart MemberUpdateMyProfileRequest request) {
         return BaseResponse.onSuccess(memberService.updateMyProfile(member, profileImage, request));
     }
+
+    @Operation(summary = "유저 정보 조히 API", description = "본인 또는 타인 프로필 조회")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @GetMapping("/{memberId}")
+    public BaseResponse<MemberInquiryProfileResponse> inquiryProfile(@CurrentMember Member member,
+                                                                     @PathVariable(required = false) UUID memberId) {
+        return BaseResponse.onSuccess(null);
+    }
+
 }
