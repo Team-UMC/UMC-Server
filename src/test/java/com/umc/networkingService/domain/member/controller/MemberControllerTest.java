@@ -5,10 +5,7 @@ import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
+import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
 import com.umc.networkingService.domain.member.entity.SocialType;
@@ -314,5 +311,26 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.contributionPoint").value("1000"));
+    }
+
+    @DisplayName("깃허브 데이터 조회 API 테스트")
+    @Test
+    public void inquiryGithubImage() throws Exception {
+        // given
+        MemberInquiryGithubResponse response = new MemberInquiryGithubResponse(
+                "https://ghchart.rshah.org/2965FF/junseokkim");
+
+        given(memberService.inquiryGithubImage(any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(get("/members/github")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.githubImage").value(response.getGithubImage().toString()));
+
     }
 }
