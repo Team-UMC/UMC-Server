@@ -8,9 +8,11 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfile
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
+import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
@@ -153,6 +155,17 @@ public class MemberServiceImpl implements MemberService {
         return memberMapper.toInquiryProfileResponse(inquiryMember, MemberRelation.OTHERS);
     }
 
+    @Override
+    public MemberInquiryHomeInfoResponse inquiryHomeInfo(Member member) {
+        // 소속 대학교 찾기
+        University university = Optional.ofNullable(member.getUniversity())
+                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY));
+
+        // 본인 랭킹 구하기
+        int rank = calculateMyRank(member, university);
+
+        return memberMapper.toInquiryHomeInfoResponse(member, rank);
+    }
 
     // 멤버 기본 정보 저장 함수
     private void setMemberInfo(Member member, MemberSignUpRequest request, University university) {
@@ -229,6 +242,32 @@ public class MemberServiceImpl implements MemberService {
         Optional<RefreshToken> refreshToken = refreshTokenService.findByMemberId(member.getId());
 
         refreshToken.ifPresent(refreshTokenService::delete);
+    }
+
+    // 교내 랭킹을 계산하는 함수
+    private int calculateMyRank(Member member, University university) {
+        List<Member> universityMembers = memberRepository.findAllByUniversityOrderByContributionPointDesc(university);
+
+        int myRank = 1;
+        Long prevPoint = -1L;
+        int count = 0;
+
+        for (Member universityMember : universityMembers) {
+            if (!universityMember.getContributionPoint().equals(prevPoint)) {
+                prevPoint = universityMember.getContributionPoint();
+                myRank = myRank + count;
+                count = 1;
+            } else {
+                count++;
+            }
+
+            if (universityMember.getId().equals(member.getId())) {
+                return myRank;
+            }
+        }
+
+        // 학교 구성원 중 멤버를 찾지 못하였을 경우
+        throw new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY);
     }
 
     @Override

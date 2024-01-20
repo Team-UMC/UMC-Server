@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.member.mapper;
 
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPosition;
@@ -39,6 +40,15 @@ public class MemberMapper {
                 .semesters(member.getSemesters())
                 .statusMessage(member.getStatusMessage())
                 .owner(owner)
+                .build();
+    }
+
+    public MemberInquiryHomeInfoResponse toInquiryHomeInfoResponse(Member member, int rank) {
+        return MemberInquiryHomeInfoResponse.builder()
+                .profileImage(member.getProfileImage())
+                .nickname(member.getNickname())
+                .contributionPoint(member.getContributionPoint())
+                .contributionRank(rank)
                 .build();
     }
 }
