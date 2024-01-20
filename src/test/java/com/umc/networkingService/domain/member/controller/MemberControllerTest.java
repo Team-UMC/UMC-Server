@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
+import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.MemberRelation;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
@@ -31,8 +34,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -172,7 +174,7 @@ public class MemberControllerTest {
 
     @DisplayName("나의 프로필 수정 API 테스트 - 프로필 이미지 없음")
     @Test
-    public void updateMyProfileWithoutImage() throws Exception {
+    public void updateMyProfileWithoutImageTest() throws Exception {
         // given
         MemberUpdateMyProfileRequest request = MemberUpdateMyProfileRequest.builder()
                 .name("김준석")
@@ -201,7 +203,7 @@ public class MemberControllerTest {
 
     @DisplayName("나의 프로필 수정 API 테스트 - 프로필 이미지 있음")
     @Test
-    public void updateMyProfileWithImage() throws Exception {
+    public void updateMyProfileWithImageTest() throws Exception {
         // given
         MemberUpdateMyProfileRequest request = MemberUpdateMyProfileRequest.builder()
                 .name("김준석")
@@ -225,6 +227,64 @@ public class MemberControllerTest {
                         .file(requestPart)
                         .header("Authorization", accessToken))
                 .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
+    }
+
+    @DisplayName("유저 정보 조회 API 테스트 - 본인")
+    @Test
+    public void inquiryMyProfileTest() throws Exception {
+        // given
+        MemberInquiryProfileResponse response = MemberInquiryProfileResponse.builder()
+                .memberId(member.getId())
+                .profileImage("profileImage")
+                .universityName("인하대학교")
+                .name("김준석")
+                .nickname("벡스")
+                .parts(List.of(Part.SPRING, Part.ANDROID))
+                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .statusMessage("아자아자 화이팅")
+                .owner(MemberRelation.MINE)
+                .build();
+
+        given(memberService.inquiryProfile(any(), any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(get("/members")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
+    }
+
+    @DisplayName("유저 정보 조회 API 테스트 - 타인")
+    @Test
+    public void inquiryOthersProfileTest() throws Exception {
+        // given
+        MemberInquiryProfileResponse response = MemberInquiryProfileResponse.builder()
+                .memberId(member.getId())
+                .profileImage("profileImage")
+                .universityName("인하대학교")
+                .name("김준석")
+                .nickname("벡스")
+                .parts(List.of(Part.SPRING, Part.ANDROID))
+                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .statusMessage("아자아자 화이팅")
+                .owner(MemberRelation.OTHERS)
+                .build();
+
+        given(memberService.inquiryProfile(any(), any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(get("/members/" + member.getId())
+                        .header("Authorization", accessToken))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
