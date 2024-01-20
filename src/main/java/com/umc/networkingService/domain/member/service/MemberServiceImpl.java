@@ -119,7 +119,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 직책 수정
         if (updateMember.getRole().getPriority() <= member.getRole().getPriority()) {
-            // 본인보다 높거나 같은 직책의 운영진의 정보를 삭제하려 할 경우
+            // 본인보다 높거나 같은 직책의 운영진의 정보를 수정하려 할 경우
             throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
         }
 
