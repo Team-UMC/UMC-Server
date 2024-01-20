@@ -167,18 +167,27 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public MemberAuthenticationGithubResponse authenticationGithub(Member member, String code) {
 
-        String githubNickname = githubMemberClient.getGithubNickname(code);
+        String gitNickname = githubMemberClient.getGithubNickname(code);
 
-        if (githubNickname == null || githubNickname.isBlank())
+        if (gitNickname == null || gitNickname.isBlank())
             throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
-        member.authenticationGithub(githubNickname);
+        member.authenticationGithub(gitNickname);
 
         Member savedMember = memberRepository.save(member);
 
         return new MemberAuthenticationGithubResponse(savedMember.getNickname());
+    }
+
+    @Override
+    public MemberInquiryGithubResponse inquiryGithubImage(Member member) {
+        String gitNickName = member.getGitNickname();
+        if (gitNickName == null)
+            throw new RestApiException(ErrorCode.UNAUTHENTICATION_GITHUB);
+        return new MemberInquiryGithubResponse("https://ghchart.rshah.org/2965FF/" + gitNickName);
     }
 
     // 멤버 기본 정보 저장 함수
