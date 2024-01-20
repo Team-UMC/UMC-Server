@@ -11,11 +11,9 @@ import com.umc.networkingService.domain.friend.repository.FriendRepository;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryGithubResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
+import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.*;
+import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
@@ -33,14 +31,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Member 서비스의 ")
@@ -50,6 +53,7 @@ import static org.mockito.BDDMockito.given;
 
     @Autowired private MemberRepository memberRepository;
     @Autowired private MemberPositionRepository memberPositionRepository;
+    @Autowired private MemberPointRepository memberPointRepository;
     @Autowired private UniversityRepository universityRepository;
     @Autowired private BranchRepository branchRepository;
     @Autowired private BranchUniversityRepository branchUniversityRepository;
@@ -129,6 +133,13 @@ import static org.mockito.BDDMockito.given;
                         .isActive(Boolean.TRUE)
                         .build()
         );
+    }
+
+    private MemberPoint createMemberPoint(PointType pointType) {
+        return MemberPoint.builder()
+                .member(member)
+                .pointType(pointType)
+                .build();
     }
 
     @Test
@@ -474,5 +485,45 @@ import static org.mockito.BDDMockito.given;
         Member savedMember = optionalMember.get();
 
         assertNull(savedMember.getGitNickname());
+    }
+
+    @Test
+    @DisplayName("나의 남은 포인트 및 사용 내역 조회 테스트 - 1개")
+    @Transactional
+    public void inquiryMemberPoints() {
+        // given
+        memberPointRepository.save(MemberPoint.builder()
+                .member(member)
+                .pointType(PointType.PUDDING)
+                .build());
+
+        // when
+        MemberInquiryPointsResponse response = memberService.inquiryMemberPoints(member);
+
+        // then
+        assertNull(response.getRemainPoint());
+        assertEquals(1, response.getUsedHistories().size());
+    }
+
+    @Test
+    @DisplayName("나의 남은 포인트 및 사용 내역 조회 테스트 - 2개 이상")
+    @Transactional
+    public void inquiryMemberPointsWithMultiple() {
+        // given
+        memberPointRepository.saveAll(List.of(
+                createMemberPoint(PointType.PUDDING),
+                createMemberPoint(PointType.PUDDING),
+                createMemberPoint(PointType.DOUGHNUT)
+        ));
+
+        // when
+        MemberInquiryPointsResponse response = memberService.inquiryMemberPoints(member);
+
+        // then
+        assertNull(response.getRemainPoint());
+        List<Long> points = response.getUsedHistories().stream()
+                .map(MemberInquiryPointsResponse.UsedHistory::getPoint)
+                .toList();
+        assertEquals(List.of(10L, 5L), points);
     }
 }

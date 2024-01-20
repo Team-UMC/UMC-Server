@@ -8,7 +8,9 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRe
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
+import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Part;
@@ -30,7 +32,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -50,6 +54,8 @@ public class MemberControllerTest {
     @Autowired private ObjectMapper objectMapper;
 
     @Autowired private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired private MemberMapper memberMapper;
 
     @MockBean private MemberService memberService;
 
@@ -331,6 +337,32 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.githubImage").value(response.getGithubImage().toString()));
+    }
 
+    @DisplayName("나의 남은 포인트 및 사용 내역 조회 API 테스트")
+    @Test
+    public void inquiryMemberPoints() throws Exception {
+        // given
+        List<MemberInquiryPointsResponse.UsedHistory> usedHistories = Stream.of(PointType.PUDDING, PointType.DOUGHNUT)
+                .map(memberMapper::toUsedHistory)
+                .toList();
+
+        MemberInquiryPointsResponse response = MemberInquiryPointsResponse.builder()
+                .remainPoint(1000L)
+                .usedHistories(usedHistories)
+                .build();
+
+        given(memberService.inquiryMemberPoints(any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(get("/members/points")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.remainPoint").value(response.getRemainPoint()))
+                .andExpect(jsonPath("$.result.usedHistories", hasSize(response.getUsedHistories().size())));
     }
 }
