@@ -26,6 +26,7 @@ public enum ErrorCode {
     EMPTY_MEMBER(HttpStatus.CONFLICT, "MEMBER001", "존재하지 않는 사용자입니다."),
     UNAUTHORIZED_UPDATE_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER002", "상위 운영진의 직책을 수정할 수 없습니다."),
     UNAUTHORIZED_UPDATE_CENTER_POSITION(HttpStatus.BAD_REQUEST, "MEMBER002", "지부, 학교 운영진은 중앙 직책을 부여할 수 없습니다."),
+    EMPTY_MEMBER_UNIVERSITY(HttpStatus.CONFLICT, "MEBMER004", "소속 대학교가 존재하지 않는 사용자입니다."),
 
 
     // Auth

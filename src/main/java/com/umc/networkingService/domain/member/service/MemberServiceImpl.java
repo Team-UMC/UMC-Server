@@ -2,15 +2,14 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
+import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
-import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.MemberPosition;
-import com.umc.networkingService.domain.member.entity.PositionType;
-import com.umc.networkingService.domain.member.entity.RefreshToken;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
+import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
@@ -40,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final UniversityService universityService;
     private final BranchUniversityService branchUniversityService;
+    private final FriendService friendService;
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
@@ -86,7 +86,8 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public MemberIdResponse withdrawal(Member member) {
         // 멤버 soft delete
-        member.delete();
+        Member savedMember = loadEntity(member.getId());
+        savedMember.delete();
 
         // refreshToken 삭제
         deleteRefreshToken(member);
@@ -133,6 +134,23 @@ public class MemberServiceImpl implements MemberService {
         updateMember.updateMemberInfo(request.getParts(), request.getSemesters());
 
         return new MemberIdResponse(updateMember.getId());
+    }
+
+    @Override
+    public MemberInquiryProfileResponse inquiryProfile(Member member, UUID memberId) {
+        // 본인 프로필 조회인 경우
+        if (memberId == null) {
+            return memberMapper.toInquiryProfileResponse(member, MemberRelation.MINE);
+        }
+
+        Member inquiryMember = loadEntity(memberId);
+
+        // 친구 프로필 조회인 경우
+        if (friendService.checkFriend(member, inquiryMember)) {
+            return memberMapper.toInquiryProfileResponse(inquiryMember, MemberRelation.FRIEND);
+        }
+
+        return memberMapper.toInquiryProfileResponse(inquiryMember, MemberRelation.OTHERS);
     }
 
 

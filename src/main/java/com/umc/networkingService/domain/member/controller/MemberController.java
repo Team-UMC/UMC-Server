@@ -80,14 +80,14 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.updateMyProfile(member, profileImage, request));
     }
 
-    @Operation(summary = "유저 정보 조히 API", description = "본인 또는 타인 프로필 조회")
+    @Operation(summary = "유저 정보 조회 API", description = "본인 또는 타인 프로필 조회")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
     })
     @GetMapping("/{memberId}")
     public BaseResponse<MemberInquiryProfileResponse> inquiryProfile(@CurrentMember Member member,
                                                                      @PathVariable(required = false) UUID memberId) {
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess(memberService.inquiryProfile(member, memberId));
     }
 
 }

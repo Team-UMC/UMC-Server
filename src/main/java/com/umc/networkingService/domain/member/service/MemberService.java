@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfile
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.EntityLoader;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,4 +19,5 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     MemberIdResponse withdrawal(Member member);
     MemberIdResponse updateMyProfile(Member member, MultipartFile profileImage, MemberUpdateMyProfileRequest request);
     MemberIdResponse updateProfile(Member member, UUID memberId, MemberUpdateProfileRequest request);
+    MemberInquiryProfileResponse inquiryProfile(Member member, UUID memberId);
 }
