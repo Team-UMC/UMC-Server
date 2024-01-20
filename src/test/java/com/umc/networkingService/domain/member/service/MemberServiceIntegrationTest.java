@@ -36,14 +36,20 @@ import static org.mockito.BDDMockito.given;
 @SpringBootTest
 public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
 
-    @Autowired private MemberService memberService;
+    @Autowired
+    private MemberService memberService;
 
-    @Autowired private MemberPositionRepository memberPositionRepository;
-    @Autowired private MemberPointRepository memberPointRepository;
-    @Autowired private FriendRepository friendRepository;
+    @Autowired
+    private MemberPositionRepository memberPositionRepository;
+    @Autowired
+    private MemberPointRepository memberPointRepository;
+    @Autowired
+    private FriendRepository friendRepository;
 
-    @MockBean private S3FileComponent s3FileComponent;
-    @MockBean private GithubMemberClient githubMemberClient;
+    @MockBean
+    private S3FileComponent s3FileComponent;
+    @MockBean
+    private GithubMemberClient githubMemberClient;
 
 
     private MemberPoint createMemberPoint(PointType pointType) {
@@ -138,7 +144,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
         UUID memberPositionId = optionalMemberPosition.get().getId();
 
         // when
-        memberService.updateProfile(staff, member.getId(),request);
+        memberService.updateProfile(staff, member.getId(), request);
 
         // then
         Optional<Member> optionalMember = memberRepository.findById(member.getId());

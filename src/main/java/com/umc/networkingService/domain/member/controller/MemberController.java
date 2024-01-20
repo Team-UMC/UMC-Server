@@ -88,5 +88,6 @@ public class MemberController {
     @GetMapping("/points")
     public BaseResponse<MemberInquiryPointsResponse> inquiryMemberPoints(@CurrentMember Member member) {
         return BaseResponse.onSuccess(memberService.inquiryMemberPoints(member));
+
     }
 }
