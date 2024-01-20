@@ -114,4 +114,9 @@ public class Member extends BaseEntity {
     public void updateRole(Role role) {
         this.role = role;
     }
+
+    public void updateContributionPoint(Long usedPoint) {
+        if (this.contributionPoint == null) this.contributionPoint = usedPoint;
+        else this.contributionPoint += usedPoint;
+    }
 }

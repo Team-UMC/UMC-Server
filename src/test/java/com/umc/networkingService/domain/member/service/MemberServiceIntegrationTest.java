@@ -12,6 +12,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
@@ -42,8 +43,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Member 서비스의 ")
-@SpringBootTest
-public class MemberServiceIntegrationTest {
+@SpringBootTest public class MemberServiceIntegrationTest {
 
     @Autowired private MemberService memberService;
 
@@ -83,7 +83,7 @@ public class MemberServiceIntegrationTest {
         );
     }
 
-    private void setInfo() {
+    private void setInfo(Member nowMember) {
         MemberSignUpRequest request = MemberSignUpRequest.builder()
                 .name("김준석")
                 .nickname("벡스")
@@ -94,7 +94,7 @@ public class MemberServiceIntegrationTest {
                 .centerPositions(List.of())
                 .build();
 
-        member.setMemberInfo(request, Role.BRANCH_STAFF, university, branch);
+        nowMember.setMemberInfo(request, Role.BRANCH_STAFF, university, branch);
     }
 
     private void setToken(UUID memberId) {
@@ -361,7 +361,7 @@ public class MemberServiceIntegrationTest {
     @Transactional
     public void inquiryMyProfile() {
         // given
-        setInfo();
+        setInfo(member);
 
         // when
         MemberInquiryProfileResponse response = memberService.inquiryProfile(member, null);
@@ -377,13 +377,9 @@ public class MemberServiceIntegrationTest {
     @Transactional
     public void inquiryFriendProfile() {
         // given
-        setInfo();
+        setInfo(member);
 
-        Member loginMember = memberRepository.save(Member.builder()
-                .clientId("222222")
-                .socialType(SocialType.KAKAO)
-                .role(Role.CAMPUS_STAFF)
-                .build());
+        Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
 
         friendRepository.save(Friend.builder()
                 .sender(loginMember)
@@ -404,13 +400,9 @@ public class MemberServiceIntegrationTest {
     @Transactional
     public void inquiryOthersProfile() {
         // given
-        setInfo();
+        setInfo(member);
 
-        Member loginMember = memberRepository.save(Member.builder()
-                .clientId("222222")
-                .socialType(SocialType.KAKAO)
-                .role(Role.CAMPUS_STAFF)
-                .build());
+        Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
 
         // when
         MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
@@ -419,5 +411,35 @@ public class MemberServiceIntegrationTest {
         assertEquals("김준석", response.getName());
         assertEquals("인하대학교", response.getUniversityName());
         assertEquals(MemberRelation.OTHERS, response.getOwner());
+    }
+
+    @Test
+    @DisplayName("유저 홈화면 정보 조회 테스트")
+    @Transactional
+    public void inquiryHomeInfo() {
+        // given
+        setInfo(member);
+        member.updateContributionPoint(1000L);
+
+        Member universityMember1 = createMember("222222", Role.MEMBER);
+        setInfo(universityMember1);
+        universityMember1.updateContributionPoint(2000L);
+        Member universityMember2 = createMember("333333", Role.MEMBER);
+        setInfo(universityMember2);
+        universityMember2.updateContributionPoint(2000L);
+        Member universityMember3 = createMember("444444", Role.MEMBER);
+        setInfo(universityMember3);
+        universityMember3.updateContributionPoint(3000L);
+        Member universityMember4 = createMember("555555", Role.MEMBER);
+        setInfo(universityMember4);
+        universityMember4.updateContributionPoint(1000L);
+
+        // when
+        MemberInquiryHomeInfoResponse response = memberService.inquiryHomeInfo(member);
+
+        // then
+        assertEquals("벡스", response.getNickname());
+        assertEquals(1000L, response.getContributionPoint());
+        assertEquals(4, response.getContributionRank());
     }
 }
