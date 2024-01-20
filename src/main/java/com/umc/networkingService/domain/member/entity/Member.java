@@ -47,6 +47,9 @@ public class Member extends BaseEntity {
     @ColumnDefault("0")
     private Long remainPoint;
 
+    @ColumnDefault("0")
+    private Long contributionPoint;
+
     private String nickname;
 
     private String name;
