@@ -1,16 +1,15 @@
 package com.umc.networkingService.domain.member.mapper;
 
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryPointsResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
-import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.MemberPosition;
-import com.umc.networkingService.domain.member.entity.MemberRelation;
-import com.umc.networkingService.domain.member.entity.PositionType;
+import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -49,6 +48,22 @@ public class MemberMapper {
                 .nickname(member.getNickname())
                 .contributionPoint(member.getContributionPoint())
                 .contributionRank(rank)
+                .build();
+    }
+
+    public MemberInquiryPointsResponse.UsedHistory toUsedHistory(PointType pointType) {
+        return MemberInquiryPointsResponse.UsedHistory.builder()
+                .pointImage(pointType.getImage())
+                .point(pointType.getPoint())
+                .description(pointType.getDescription())
+                .build();
+    }
+
+    public MemberInquiryPointsResponse toInquiryPointsResponse(Long point,
+                                                               List<MemberInquiryPointsResponse.UsedHistory> usedHistories) {
+        return MemberInquiryPointsResponse.builder()
+                .remainPoint(point)
+                .usedHistories(usedHistories)
                 .build();
     }
 }

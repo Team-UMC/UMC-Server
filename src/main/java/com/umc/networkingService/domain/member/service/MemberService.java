@@ -21,4 +21,5 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     MemberInquiryHomeInfoResponse inquiryHomeInfo(Member member);
     MemberAuthenticationGithubResponse authenticationGithub(Member member, String code);
     MemberInquiryGithubResponse inquiryGithubImage(Member member);
+    MemberInquiryPointsResponse inquiryMemberPoints(Member member);
 }

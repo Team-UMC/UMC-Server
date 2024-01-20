@@ -10,6 +10,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRe
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
+import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
@@ -19,6 +20,9 @@ import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
     private final MemberPositionRepository memberPositionRepository;
+    private final MemberPointRepository memberPointRepository;
 
     private final UniversityService universityService;
     private final BranchUniversityService branchUniversityService;
@@ -188,6 +193,18 @@ public class MemberServiceImpl implements MemberService {
         if (gitNickName == null)
             throw new RestApiException(ErrorCode.UNAUTHENTICATION_GITHUB);
         return new MemberInquiryGithubResponse("https://ghchart.rshah.org/2965FF/" + gitNickName);
+    }
+
+    @Override
+    public MemberInquiryPointsResponse inquiryMemberPoints(Member member) {
+        Page<MemberPoint> usedPointsPage = memberPointRepository.
+                findAllByMemberOrderByCreatedAtDesc(member, PageRequest.of(0, 2));
+        List<MemberInquiryPointsResponse.UsedHistory> usedHistories = usedPointsPage.stream()
+                .map(MemberPoint::getPointType)
+                .map(memberMapper::toUsedHistory)
+                .toList();
+
+        return memberMapper.toInquiryPointsResponse(member.getRemainPoint(), usedHistories);
     }
 
     // 멤버 기본 정보 저장 함수

@@ -124,4 +124,14 @@ public class MemberController {
     public BaseResponse<MemberInquiryGithubResponse> inquiryGithubImage(@CurrentMember Member member) {
         return BaseResponse.onSuccess(memberService.inquiryGithubImage(member));
     }
+
+    @Operation(summary = "남은 포인트 및 사용 내역 조회 API", description = "본인의 남은 포인트 및 최근 2개의 사용 내역를 조회하는 API입니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @GetMapping("/points")
+    public BaseResponse<MemberInquiryPointsResponse> inquiryMemberPoints(@CurrentMember Member member) {
+        return BaseResponse.onSuccess(memberService.inquiryMemberPoints(member));
+    }
+
 }
