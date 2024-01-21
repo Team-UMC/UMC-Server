@@ -11,5 +11,6 @@ import java.util.UUID;
 public interface InviteRepository extends JpaRepository<Invite, UUID> {
 
     Optional<Invite> findByMemberAndRole(Member member, Role role);
+    Optional<Invite> findByCode(String code);
     boolean existsByCode(String code);
 }

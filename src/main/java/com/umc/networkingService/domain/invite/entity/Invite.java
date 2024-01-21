@@ -8,6 +8,8 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Getter
@@ -32,4 +34,9 @@ public class Invite extends BaseEntity {
 
     @Column(nullable = false)
     private String code;
+
+    public boolean isExpired() {
+        LocalDateTime expiresAt = this.getCreatedAt().plus(3, ChronoUnit.DAYS);
+        return LocalDateTime.now().isAfter(expiresAt);
+    }
 }

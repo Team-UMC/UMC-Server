@@ -20,4 +20,9 @@ public class BranchServiceImpl implements BranchService{
         return branchRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH));
     }
+
+    @Override
+    public Branch saveEntity(Branch branch) {
+        return branchRepository.save(branch);
+    }
 }

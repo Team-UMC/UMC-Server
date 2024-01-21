@@ -119,7 +119,6 @@ public class Member extends BaseEntity {
         else this.contributionPoint += usedPoint;
     }
 
-    // 테스트 코드용
     public void updateRole(Role role) {
         this.role = role;
     }

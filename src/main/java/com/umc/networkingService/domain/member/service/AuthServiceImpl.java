@@ -25,8 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final MemberRepository memberRepository;
-
+    private final MemberService memberService;
     private final MemberPositionService memberPositionService;
     private final RefreshTokenService refreshTokenService;
     private final UniversityService universityService;
@@ -47,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
         // 멤버 직책 저장
         memberPositionService.saveMemberPositions(member, request.getCampusPositions(), request.getCenterPositions());
 
-        return new MemberIdResponse(memberRepository.save(member).getId());
+        return new MemberIdResponse(memberService.saveEntity(member).getId());
     }
 
     @Override
@@ -75,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public MemberIdResponse withdrawal(Member member) {
         // 멤버 soft delete
-        Member savedMember = loadEntity(member.getId());
+        Member savedMember = memberService.loadEntity(member.getId());
         savedMember.delete();
 
         // refreshToken 삭제
@@ -135,11 +134,5 @@ public class AuthServiceImpl implements AuthService {
         Optional<RefreshToken> refreshToken = refreshTokenService.findByMemberId(member.getId());
 
         refreshToken.ifPresent(refreshTokenService::delete);
-    }
-
-    @Override
-    public Member loadEntity(UUID id) {
-        return memberRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
     }
 }

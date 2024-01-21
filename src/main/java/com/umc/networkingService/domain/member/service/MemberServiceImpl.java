@@ -181,4 +181,9 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
     }
+
+    @Override
+    public Member saveEntity(Member member) {
+        return memberRepository.save(member);
+    }
 }

@@ -8,7 +8,7 @@ import com.umc.networkingService.global.common.base.EntityLoader;
 
 import java.util.UUID;
 
-public interface AuthService extends EntityLoader<Member, UUID> {
+public interface AuthService {
     MemberIdResponse signUp(Member member, MemberSignUpRequest request);
     MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member member);
     MemberIdResponse logout(Member member);
