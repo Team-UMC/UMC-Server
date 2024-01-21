@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.invite.service;
 
 import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticateResponse;
 import com.umc.networkingService.domain.invite.dto.response.InviteCreateResponse;
+import com.umc.networkingService.domain.invite.dto.response.InviteInquiryMineResponse;
 import com.umc.networkingService.domain.invite.entity.Invite;
 import com.umc.networkingService.domain.invite.repository.InviteRepository;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,6 +25,16 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
     @Autowired InviteService inviteService;
     @Autowired InviteRepository inviteRepository;
+
+    private void createInvite(String code, Role role) {
+        inviteRepository.save(
+                Invite.builder()
+                        .member(member)
+                        .code(code)
+                        .role(role)
+                        .build()
+        );
+    }
 
     @Test
     @DisplayName("초대 코드 발급 테스트")
@@ -62,18 +74,40 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
     }
 
     @Test
+    @DisplayName("나의 초대 코드 조회 테스트")
+    @Transactional
+    public void inquiryMyInviteCode() {
+        // given
+        createInvite("firstInviteCode", Role.MEMBER);
+        createInvite("secondInviteCode", Role.CAMPUS_STAFF);
+
+        // when
+        List<InviteInquiryMineResponse> response = inviteService.inquiryMyInviteCode(member);
+
+        // then
+        assertEquals(2, response.size());
+    }
+
+    @Test
+    @DisplayName("나의 초대 코드 조회 테스트 - 없는 경우")
+    @Transactional
+    public void inquiryMyInviteCodeWithNone() {
+
+        // when
+        List<InviteInquiryMineResponse> response = inviteService.inquiryMyInviteCode(member);
+
+        // then
+        assertEquals(0, response.size());
+    }
+
+    @Test
     @DisplayName("초대 코드 인증 테스트")
     @Transactional
     public void authenticateInviteCode() {
         // given
         String code = "inviteCode";
 
-        Invite invite = Invite.builder()
-                .member(member)
-                .code(code)
-                .role(Role.BRANCH_STAFF)
-                .build();
-        inviteRepository.save(invite);
+        createInvite(code, Role.BRANCH_STAFF);
 
         // when
         InviteAuthenticateResponse response = inviteService.authenticateInviteCode(member, code);

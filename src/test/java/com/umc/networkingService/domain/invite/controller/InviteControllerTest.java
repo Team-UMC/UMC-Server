@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.invite.controller;
 
 import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticateResponse;
 import com.umc.networkingService.domain.invite.dto.response.InviteCreateResponse;
+import com.umc.networkingService.domain.invite.dto.response.InviteInquiryMineResponse;
 import com.umc.networkingService.domain.invite.service.InviteService;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.support.ControllerTestConfig;
@@ -9,11 +10,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -59,6 +64,30 @@ public class InviteControllerTest extends ControllerTestConfig {
                 .andDo(print())  // 응답 출력
                 .andExpect(status().isOk())
                 .andExpect(forwardedUrl("/access/denied"));
+    }
+
+    @DisplayName("나의 초대 코드 조회 API 테스트")
+    @Test
+    public void inquiryMyInviteCode() throws Exception {
+        // given
+        member.updateRole(Role.BRANCH_STAFF);
+
+        List<InviteInquiryMineResponse> response = List.of(
+                new InviteInquiryMineResponse("초대 코드1", Role.MEMBER, LocalDateTime.now()),
+                new InviteInquiryMineResponse("초대 코드2", Role.CAMPUS_STAFF, LocalDateTime.now())
+        );
+
+        given(inviteService.inquiryMyInviteCode(any())).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(get("/staff/invites")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").value(hasSize(response.size())));
     }
 
     @DisplayName("초대 코드 인증 API 테스트")
