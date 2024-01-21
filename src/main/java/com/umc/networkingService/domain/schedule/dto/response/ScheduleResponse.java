@@ -31,5 +31,13 @@ public class ScheduleResponse {
         private List<ScheduleInfo> schedules;
     }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class ScheduleId {
+        private UUID scheduleId;
+    }
+
 
 }
