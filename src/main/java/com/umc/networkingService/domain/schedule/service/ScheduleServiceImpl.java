@@ -15,7 +15,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleMapper scheduleMapper;
 
     @Override
-    public ScheduleInfoList getSchedulesByMonth(Long month) {
+    public ScheduleInfoList getCalendarByMonth(Long month) {
 
 
         return scheduleMapper.toScheduleInfoList(
