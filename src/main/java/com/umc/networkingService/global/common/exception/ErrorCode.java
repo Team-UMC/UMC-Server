@@ -49,7 +49,10 @@ public enum ErrorCode {
     EMPTY_BRANCH(HttpStatus.BAD_REQUEST, "BRANCH001", "존재하지 않는 지부입니다."),
 
     // Image
-    FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다.");
+    FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다."),
+
+    // Schedule
+    EMPTY_SCHEDULE(HttpStatus.BAD_REQUEST, "SCHEDULE001", "존재하지 않는 스케줄입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

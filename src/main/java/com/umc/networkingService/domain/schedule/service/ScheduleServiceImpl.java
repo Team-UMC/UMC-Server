@@ -1,12 +1,14 @@
 package com.umc.networkingService.domain.schedule.service;
 
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfo;
+import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleId;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoList;
 import com.umc.networkingService.domain.schedule.entity.Schedule;
 import com.umc.networkingService.domain.schedule.mapper.ScheduleMapper;
 import com.umc.networkingService.domain.schedule.repository.ScheduleRepository;
-import java.util.List;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,10 +31,20 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public UUID createSchedule(CreateSchedule request) {
-        Schedule schedule = scheduleMapper.toSchedule(request);
+        Schedule schedule = scheduleMapper.createScheduleToSchedule(request);
 
         scheduleRepository.save(schedule);
 
         return schedule.getId();
+    }
+
+    @Override
+    public ScheduleId updateSchedule(UUID scheduleId, UpdateSchedule request) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
+        schedule = scheduleMapper.updateScheduleToSchedule(request, schedule);
+
+        scheduleRepository.save(schedule);
+
+        return scheduleMapper.UUIDtoScheduleId(schedule.getId());
     }
 }
