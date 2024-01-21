@@ -4,17 +4,20 @@ package com.umc.networkingService.domain.board.service;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +33,14 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardImageService boardImageService;
+    private final BoardMapper boardMapper;
+
+
+    @Override
+    public BoardPagingResponse showBoards(Member member,HostType hostType, BoardType boardType, Pageable pageable) {
+
+        return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member,hostType,boardType,pageable));
+    }
 
     @Override
     @Transactional
@@ -41,7 +52,7 @@ public class BoardServiceImpl implements BoardService {
         //boardType과 HostType에 따라 권한 판단
         List<Semester> semesterPermission = checkPermission(member,hostType,boardType);
 
-        Board board = boardRepository.save(BoardMapper.toEntity(member,
+        Board board = boardRepository.save(boardMapper.toEntity(member,
                 request.getTitle(),
                 request.getContent(),
                 request.getHostType(),

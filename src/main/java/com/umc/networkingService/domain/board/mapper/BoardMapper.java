@@ -1,17 +1,20 @@
 package com.umc.networkingService.domain.board.mapper;
 
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPostResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Semester;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class BoardMapper {
-    public static Board toEntity(Member member, String title, String content, HostType hostType, BoardType boardType,
+    public Board toEntity(Member member, String title, String content, HostType hostType, BoardType boardType,
                                  List<Semester> semesterPermission) {
         return Board.builder()
                 .writer(member)
@@ -21,5 +24,31 @@ public class BoardMapper {
                 .boardType(boardType)
                 .semesterPermission(semesterPermission)
                 .build();
+    }
+
+    public BoardPostResponse toBoardPostResponse(Board board) {
+        return BoardPostResponse.builder()
+                .writer(board.getWriter().getName())
+                .profileImage(board.getWriter().getProfileImage())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .hitCount(board.getHitCount())
+                .heartCount(board.getHeartCount())
+                .commentCount(board.getCommentCount())
+                .createdAt(board.getCreatedAt())
+                .build();
+    }
+    public BoardPagingResponse toBoardPagingResponse(Page<Board> boards) {
+
+        List<BoardPostResponse> boardPostResponses = boards.map(this::toBoardPostResponse).stream().toList();
+        return BoardPagingResponse.builder()
+                .boardPostResponses(boardPostResponses)
+                .page(boards.getNumber())
+                .totalPages(boards.getTotalPages())
+                .totalElements((int) boards.getTotalElements())
+                .isFirst(boards.isFirst())
+                .isLast(boards.isLast())
+                .build();
+
     }
 }

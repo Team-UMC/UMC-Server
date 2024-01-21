@@ -3,7 +3,11 @@ package com.umc.networkingService.domain.board.service;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.member.entity.Member;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,4 +17,5 @@ public interface BoardService {
     BoardIdResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files);
     BoardIdResponse updateBoard(Member member, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files);
     BoardIdResponse deleteBoard(Member member, UUID boardId);
+    BoardPagingResponse showBoards(Member member,HostType host, BoardType board, Pageable pageable);
 }

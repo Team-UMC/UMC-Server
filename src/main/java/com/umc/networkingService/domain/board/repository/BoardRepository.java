@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface  BoardRepository extends JpaRepository<Board,UUID> {
+public interface BoardRepository extends JpaRepository<Board,UUID>,BoardRepositoryCustom {
     @Query(value = "select b from Board b where b.id = :boardId and b.deletedAt is null")
     Optional<Board> findById(@Param("boardId") UUID boardId);
+
+
 }

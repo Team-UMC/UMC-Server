@@ -4,15 +4,22 @@ import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseResponse;
+import com.umc.networkingService.global.common.validation.annotation.ValidEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,6 +72,23 @@ public class BoardController {
     public BaseResponse<BoardIdResponse> deleteBoard(@CurrentMember Member member,
                                                      @PathVariable(value="boardId") UUID boardId) {
         return BaseResponse.onSuccess(boardService.deleteBoard(member,boardId));
+    }
+
+
+    @Operation(summary = "특정 게시판의 게시글 목록 조회 API", description = "특정 게시판의 게시글 목록을 조회하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @GetMapping
+    public BaseResponse<BoardPagingResponse> showBoards(@CurrentMember Member member,
+                                                        @RequestParam(name = "host", required = false)
+                                                        @ValidEnum(enumClass = HostType.class) HostType hostType,
+                                                        @RequestParam(name = "board", required = false)
+                                                            @ValidEnum(enumClass = BoardType.class) BoardType boardType,
+                                                        @PageableDefault(page = 1, sort = "created_at",
+                                                                direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return BaseResponse.onSuccess(boardService.showBoards(member,hostType,boardType,pageable));
     }
 
 }
