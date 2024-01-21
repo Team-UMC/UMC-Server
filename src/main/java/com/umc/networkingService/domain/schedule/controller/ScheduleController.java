@@ -35,7 +35,7 @@ public class ScheduleController {
 
     @Operation(summary = "스케줄 추가 API", description = "운영진 관리 페이지의 스케줄을 추가하는 API입니다.")
     @PostMapping
-    public BaseResponse<UUID> createSchedule(@RequestBody CreateSchedule request) {
+    public BaseResponse<ScheduleId> createSchedule(@RequestBody CreateSchedule request) {
 
         return BaseResponse.onSuccess(scheduleService.createSchedule(request));
     }

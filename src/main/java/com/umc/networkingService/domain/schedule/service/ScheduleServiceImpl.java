@@ -30,12 +30,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public UUID createSchedule(CreateSchedule request) {
+    public ScheduleId createSchedule(CreateSchedule request) {
         Schedule schedule = scheduleMapper.createScheduleToSchedule(request);
 
         scheduleRepository.save(schedule);
 
-        return schedule.getId();
+        return scheduleMapper.UUIDtoScheduleId(schedule.getId());
     }
 
     @Override
