@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface ScheduleService {
     public ScheduleInfoList getCalendarByMonth(Long month);
-    public UUID createSchedule(CreateSchedule request);
+    public ScheduleId createSchedule(CreateSchedule request);
     public ScheduleId updateSchedule(UUID scheduleId, UpdateSchedule request);
 
 }
