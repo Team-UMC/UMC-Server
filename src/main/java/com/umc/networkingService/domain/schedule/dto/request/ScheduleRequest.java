@@ -23,4 +23,18 @@ public class ScheduleRequest {
         private HostType hostType;
         private String placeSetting;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UpdateSchedule {
+        private String title;
+        private String content;
+        private LocalDateTime startDateTime;
+        private LocalDateTime endDateTime;
+        private List<Semester> semesterPermission;
+        private HostType hostType;
+        private String placeSetting;
+    }
 }
