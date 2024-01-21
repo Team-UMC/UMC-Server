@@ -6,6 +6,8 @@ import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPostResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
@@ -23,10 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -178,5 +186,62 @@ public class BoardControllerTest {
                 .andExpect(jsonPath("$.result").exists());
 
     }
+
+    @Test
+    @DisplayName("특정 게시판의 게시글 목록 조회 테스트")
+    public void showBoardsTest() throws Exception {
+        // given
+        BoardPagingResponse response = createMockBoardPagingResponse(); // 테스트를 위한 가상의 게시글 데이터 생성
+        // when
+        when(boardService.showBoards(eq(member), any(HostType.class), any(BoardType.class), any(Pageable.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/boards")
+                        .param("host", "CAMPUS")
+                        .param("board", "NOTICE")
+                        .param("page", "0")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+
+
+    }
+
+
+    public BoardPagingResponse createMockBoardPagingResponse() {
+
+        // 가상의 BoardPostResponse 리스트 생성
+        List<BoardPostResponse> boardPostResponses = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            BoardPostResponse boardPostResponse = BoardPostResponse.builder()
+                    .title("제목")
+                    .content("내용")
+                    .writer("루시/김수민")
+                    .hitCount(1)
+                    .commentCount(1)
+                    .heartCount(1)
+                    .profileImage(".../img")
+                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .build();
+            boardPostResponses.add(boardPostResponse);
+        }
+
+
+        // 가상의 페이징 정보 설정
+        return BoardPagingResponse.builder()
+                .page(1)
+                .totalPages(3)
+                .totalElements(30)
+                .boardPostResponses(boardPostResponses)
+                .isFirst(true)
+                .isLast(false)
+                .build();
+    }
+
 
 }

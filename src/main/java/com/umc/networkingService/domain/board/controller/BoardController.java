@@ -81,9 +81,9 @@ public class BoardController {
     })
     @GetMapping
     public BaseResponse<BoardPagingResponse> showBoards(@CurrentMember Member member,
-                                                        @RequestParam(name = "host", required = false)
+                                                        @RequestParam(name = "host")
                                                         @ValidEnum(enumClass = HostType.class) HostType hostType,
-                                                        @RequestParam(name = "board", required = false)
+                                                        @RequestParam(name = "board")
                                                             @ValidEnum(enumClass = BoardType.class) BoardType boardType,
                                                         @PageableDefault(page = 1, sort = "created_at",
                                                                 direction = Sort.Direction.DESC) Pageable pageable) {
