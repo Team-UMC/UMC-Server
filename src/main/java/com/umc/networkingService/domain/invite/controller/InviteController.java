@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.invite.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticateResponse;
 import com.umc.networkingService.domain.invite.dto.response.InviteCreateResponse;
+import com.umc.networkingService.domain.invite.dto.response.InviteInquiryMineResponse;
 import com.umc.networkingService.domain.invite.service.InviteService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -14,10 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "초대 API", description = "초대 관련 API")
 @RestController
@@ -36,6 +36,15 @@ public class InviteController {
     public BaseResponse<InviteCreateResponse> createInviteCode(@CurrentMember Member member,
                                                                @RequestParam Role role) {
         return BaseResponse.onSuccess(inviteService.createInviteCode(member, role));
+    }
+
+    @Operation(summary = "나의 초대 코드 조회 API", description = "본인이 생성한 초대 코드 목록 조회 API입니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @GetMapping("/staff/invites")
+    public BaseResponse<List<InviteInquiryMineResponse>> inquiryMyInviteCode(@CurrentMember Member member) {
+        return BaseResponse.onSuccess(inviteService.inquiryMyInviteCode(member));
     }
 
     @Operation(summary = "초대 코드 확인 API", description = "발급 받은 초대 코드를 검증하는 API입니다.")

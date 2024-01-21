@@ -2,7 +2,9 @@ package com.umc.networkingService.domain.invite.service;
 
 import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticateResponse;
 import com.umc.networkingService.domain.invite.dto.response.InviteCreateResponse;
+import com.umc.networkingService.domain.invite.dto.response.InviteInquiryMineResponse;
 import com.umc.networkingService.domain.invite.entity.Invite;
+import com.umc.networkingService.domain.invite.mapper.InviteMapper;
 import com.umc.networkingService.domain.invite.repository.InviteRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
@@ -14,12 +16,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class InviteServiceImpl implements InviteService {
+
+    private final InviteMapper inviteMapper;
 
     private final InviteRepository inviteRepository;
     private final MemberService memberService;
@@ -48,6 +53,15 @@ public class InviteServiceImpl implements InviteService {
         Member savedMember = memberService.saveEntity(member);
 
         return new InviteAuthenticateResponse(savedMember.getRole());
+    }
+
+    @Override
+    public List<InviteInquiryMineResponse> inquiryMyInviteCode(Member member) {
+        List<Invite> savedInvites = inviteRepository.findAllByMember(member);
+
+        return savedInvites.stream()
+                .map(inviteMapper::toInquiryMineResponse)
+                .toList();
     }
 
     private void checkRolePriority(Member member, Role role) {
