@@ -16,6 +16,7 @@ import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
+import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ import static org.mockito.BDDMockito.given;
 
 @DisplayName("Member 서비스의 ")
 @SpringBootTest
-public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
+public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
     @Autowired
     private MemberService memberService;

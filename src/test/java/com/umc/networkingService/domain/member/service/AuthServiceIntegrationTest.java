@@ -5,10 +5,10 @@ import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAcc
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -17,11 +17,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Auth 서비스의 ")
-@SpringBootTest
-public class AuthServiceIntegrationTest extends MemberServiceTestConfig {
+public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
     @Autowired AuthService authService;
-
 
     @Test
     @DisplayName("회원 가입 테스트")

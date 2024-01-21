@@ -25,7 +25,8 @@ public class InviteController {
 
     @Operation(summary = "초대 코드 발급 API", description = "일반 부원용 또는 운영진용 초대 코드 발급 API입니다.")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "INVITE002", description = "상위의 역할에 대해서 초대 코드를 발급할 경우 발생")
     })
     @Parameter(name = "role", description = "초대 코드에 부여할 역할을 지정합니다.(ex. MEMBER, STAFF, CAMPUS_STAFF ...)")
     @PostMapping("/staff/invites")
