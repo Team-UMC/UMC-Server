@@ -1,12 +1,10 @@
-package com.umc.networkingService.domain.inviteCode.entity;
+package com.umc.networkingService.domain.invite.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Role;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -14,9 +12,11 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
-public class InviteCode extends BaseEntity {
+public class Invite extends BaseEntity {
     @Id
     @UuidGenerator
     @Column(name = "invite_code_id")
