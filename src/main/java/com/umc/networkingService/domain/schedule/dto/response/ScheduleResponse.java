@@ -20,4 +20,12 @@ public class ScheduleResponse {
         private LocalDateTime endDateTime;
         private String hostType;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class ScheduleInfoList {
+        private List<ScheduleInfo> schedules;
+    }
 }
