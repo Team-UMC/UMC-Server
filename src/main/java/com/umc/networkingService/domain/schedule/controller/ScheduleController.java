@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.schedule.controller;
 
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfo;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoList;
 import com.umc.networkingService.domain.schedule.service.ScheduleService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +24,7 @@ public class ScheduleController {
 
     @Operation(summary = "캘린더 조회 API", description = "홈 화면의 달력을 조회하는 API입니다.")
     @PostMapping
-    public BaseResponse<List<ScheduleInfo>> getSchedule(@RequestParam Long month) {
+    public BaseResponse<ScheduleInfoList> getSchedule(@RequestParam Long month) {
 
         return BaseResponse.onSuccess(scheduleService.getSchedulesByMonth(month));
     }

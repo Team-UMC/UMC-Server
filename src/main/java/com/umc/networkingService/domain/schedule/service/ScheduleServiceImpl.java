@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.schedule.service;
 
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfo;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoList;
 import com.umc.networkingService.domain.schedule.mapper.ScheduleMapper;
 import com.umc.networkingService.domain.schedule.repository.ScheduleRepository;
 import java.util.List;
@@ -14,11 +15,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleMapper scheduleMapper;
 
     @Override
-    public List<ScheduleInfo> getSchedulesByMonth(Long month) {
+    public ScheduleInfoList getSchedulesByMonth(Long month) {
 
 
-        return scheduleRepository.findSchedulesByMonth(month).stream()
+        return scheduleMapper.toScheduleInfoList(
+                scheduleRepository.findSchedulesByMonth(month).stream()
                 .map(schedule -> scheduleMapper.toScheduleInfo(schedule))
-                .toList();
+                .toList());
     }
 }
