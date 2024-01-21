@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class InviteAuthenticationResponse {
+public class InviteAuthenticateResponse {
     private Role role;
 }

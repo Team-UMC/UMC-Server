@@ -1,7 +1,7 @@
 package com.umc.networkingService.domain.invite.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
-import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticationResponse;
+import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticateResponse;
 import com.umc.networkingService.domain.invite.dto.response.InviteCreateResponse;
 import com.umc.networkingService.domain.invite.service.InviteService;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -45,8 +45,8 @@ public class InviteController {
     })
     @Parameter(name = "inviteCode", in = ParameterIn.PATH, description = "발급 받은 초대 코드를 입력하는 파라미터입니다.")
     @PostMapping("/invites/{inviteCode}")
-    public BaseResponse<InviteAuthenticationResponse> authenticationInviteCode(@CurrentMember Member member,
-                                                                               @PathVariable String inviteCode) {
-        return BaseResponse.onSuccess(inviteService.authenticationInviteCode(member, inviteCode));
+    public BaseResponse<InviteAuthenticateResponse> authenticationInviteCode(@CurrentMember Member member,
+                                                                             @PathVariable String inviteCode) {
+        return BaseResponse.onSuccess(inviteService.authenticateInviteCode(member, inviteCode));
     }
 }

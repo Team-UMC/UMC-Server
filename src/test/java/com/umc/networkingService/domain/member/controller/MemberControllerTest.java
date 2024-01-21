@@ -186,11 +186,11 @@ public class MemberControllerTest extends ControllerTestConfig {
 
     @DisplayName("깃허브 연동 API 테스트")
     @Test
-    public void authenticationGithub() throws Exception {
+    public void authenticateGithub() throws Exception {
         // given
-        MemberAuthenticationGithubResponse response = new MemberAuthenticationGithubResponse("junseokkim");
+        MemberAuthenticateGithubResponse response = new MemberAuthenticateGithubResponse("junseokkim");
 
-        given(memberService.authenticationGithub(any(), any())).willReturn(response);
+        given(memberService.authenticateGithub(any(), any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then

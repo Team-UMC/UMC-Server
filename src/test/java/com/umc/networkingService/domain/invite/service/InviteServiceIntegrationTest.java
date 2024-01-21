@@ -1,8 +1,10 @@
 package com.umc.networkingService.domain.invite.service;
 
+import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticateResponse;
 import com.umc.networkingService.domain.invite.dto.response.InviteCreateResponse;
 import com.umc.networkingService.domain.invite.entity.Invite;
 import com.umc.networkingService.domain.invite.repository.InviteRepository;
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
@@ -57,5 +59,44 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
         Optional<Invite> optionalInvite = inviteRepository.findByMemberAndRole(member, Role.CENTER_STAFF);
         assertFalse(optionalInvite.isPresent());
+    }
+
+    @Test
+    @DisplayName("초대 코드 인증 테스트")
+    @Transactional
+    public void authenticateInviteCode() {
+        // given
+        String code = "inviteCode";
+
+        Invite invite = Invite.builder()
+                .member(member)
+                .code(code)
+                .role(Role.BRANCH_STAFF)
+                .build();
+        inviteRepository.save(invite);
+
+        // when
+        InviteAuthenticateResponse response = inviteService.authenticateInviteCode(member, code);
+
+        // then
+        assertEquals(Role.BRANCH_STAFF, response.getRole());
+        Optional<Member> optionalMember = memberRepository.findById(member.getId());
+        assertTrue(optionalMember.isPresent());
+        assertEquals(Role.BRANCH_STAFF, optionalMember.get().getRole());
+    }
+
+    @Test
+    @DisplayName("초대 코드 인증 테스트 - 만료된 초대 코드 사용 시")
+    @Transactional
+    public void authenticateInviteCodeWithExpiredCode() {
+        // given
+        String code = "inviteCode";
+
+        // when
+        RestApiException exception = assertThrows(RestApiException.class,
+                () -> inviteService.authenticateInviteCode(member, code));
+
+        // then
+        assertEquals(ErrorCode.EXPIRED_INVITE_CODE, exception.getErrorCode());
     }
 }

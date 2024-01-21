@@ -1,12 +1,12 @@
 package com.umc.networkingService.domain.invite.controller;
 
+import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticateResponse;
 import com.umc.networkingService.domain.invite.dto.response.InviteCreateResponse;
 import com.umc.networkingService.domain.invite.service.InviteService;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.support.ControllerTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
@@ -59,5 +59,24 @@ public class InviteControllerTest extends ControllerTestConfig {
                 .andDo(print())  // 응답 출력
                 .andExpect(status().isOk())
                 .andExpect(forwardedUrl("/access/denied"));
+    }
+
+    @DisplayName("초대 코드 인증 API 테스트")
+    @Test
+    public void authenticateInviteCode() throws Exception {
+        // given
+        InviteAuthenticateResponse response = new InviteAuthenticateResponse(Role.BRANCH_STAFF);
+
+        given(inviteService.authenticateInviteCode(member, "inviteCode")).willReturn(response);
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(post("/invites/inviteCode")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.role").value(response.getRole().toString()));
     }
 }

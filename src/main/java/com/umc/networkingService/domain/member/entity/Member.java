@@ -110,7 +110,7 @@ public class Member extends BaseEntity {
         this.positions = memberPositions;
     }
 
-    public void authenticationGithub(String gitNickname) {
+    public void authenticateGithub(String gitNickname) {
         this.gitNickname = gitNickname;
     }
 

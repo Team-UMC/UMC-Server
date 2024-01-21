@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.invite.service;
 
-import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticationResponse;
+import com.umc.networkingService.domain.invite.dto.response.InviteAuthenticateResponse;
 import com.umc.networkingService.domain.invite.dto.response.InviteCreateResponse;
 import com.umc.networkingService.domain.invite.entity.Invite;
 import com.umc.networkingService.domain.invite.repository.InviteRepository;
@@ -14,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,7 +35,7 @@ public class InviteServiceImpl implements InviteService {
 
     @Override
     @Transactional
-    public InviteAuthenticationResponse authenticationInviteCode(Member member, String inviteCode) {
+    public InviteAuthenticateResponse authenticateInviteCode(Member member, String inviteCode) {
         Invite savedInvite = inviteRepository.findByCode(inviteCode)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_INVITE_CODE));
 
@@ -49,7 +47,7 @@ public class InviteServiceImpl implements InviteService {
         member.updateRole(savedInvite.getRole());
         Member savedMember = memberService.saveEntity(member);
 
-        return new InviteAuthenticationResponse(savedMember.getRole());
+        return new InviteAuthenticateResponse(savedMember.getRole());
     }
 
     private void checkRolePriority(Member member, Role role) {

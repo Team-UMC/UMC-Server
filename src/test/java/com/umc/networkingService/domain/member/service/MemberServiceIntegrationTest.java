@@ -311,14 +311,14 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     @Test
     @DisplayName("깃허브 연동 테스트")
     @Transactional
-    public void authenticationGithub() {
+    public void authenticateGithub() {
         // given
 
         // 실제 깃허브 서버와 통신 x
         given(githubMemberClient.getGithubNickname(any())).willReturn("junseokkim");
 
         // when
-        MemberAuthenticationGithubResponse response = memberService.authenticationGithub(member, "깃허브 인가 코드");
+        MemberAuthenticateGithubResponse response = memberService.authenticateGithub(member, "깃허브 인가 코드");
 
         // then
         assertEquals("junseokkim", response.getGithubNickname());
@@ -329,7 +329,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     @Transactional
     public void inquiryGithubImage() {
         // given
-        member.authenticationGithub("junseokkim");
+        member.authenticateGithub("junseokkim");
 
         // when
         MemberInquiryGithubResponse response = memberService.inquiryGithubImage(member);

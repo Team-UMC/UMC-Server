@@ -115,18 +115,18 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public MemberAuthenticationGithubResponse authenticationGithub(Member member, String code) {
+    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String code) {
 
         String gitNickname = githubMemberClient.getGithubNickname(code);
 
         if (gitNickname == null || gitNickname.isBlank())
             throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
-        member.authenticationGithub(gitNickname);
+        member.authenticateGithub(gitNickname);
 
         Member savedMember = memberRepository.save(member);
 
-        return new MemberAuthenticationGithubResponse(savedMember.getGitNickname());
+        return new MemberAuthenticateGithubResponse(savedMember.getGitNickname());
     }
 
     @Override

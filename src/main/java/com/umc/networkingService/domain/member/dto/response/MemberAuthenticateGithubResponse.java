@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MemberAuthenticationGithubResponse {
+public class MemberAuthenticateGithubResponse {
     private String githubNickname;
 }
