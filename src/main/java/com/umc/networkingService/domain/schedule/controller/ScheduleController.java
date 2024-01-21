@@ -1,12 +1,16 @@
 package com.umc.networkingService.domain.schedule.controller;
 
+import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoList;
 import com.umc.networkingService.domain.schedule.service.ScheduleService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +28,13 @@ public class ScheduleController {
     public BaseResponse<ScheduleInfoList> getSchedule(@RequestParam Long month) {
 
         return BaseResponse.onSuccess(scheduleService.getCalendarByMonth(month));
+    }
+
+    @Operation(summary = "스케줄 추가 API", description = "운영진 관리 페이지의 스케줄을 추가하는 API입니다.")
+    @PostMapping
+    public BaseResponse<UUID> createSchedule(@RequestBody CreateSchedule request) {
+
+        return BaseResponse.onSuccess(scheduleService.createSchedule(request));
     }
 
 }
