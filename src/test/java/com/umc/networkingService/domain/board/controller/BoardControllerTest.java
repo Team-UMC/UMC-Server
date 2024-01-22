@@ -6,8 +6,8 @@ import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
@@ -40,8 +40,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.PATCH;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,13 +49,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class BoardControllerTest {
-    @Autowired private MockMvc mockMvc;
-    @Autowired private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired private ObjectMapper objectMapper;
-
-    @MockBean private BoardService boardService;
-    @MockBean private MemberRepository memberRepository;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private BoardService boardService;
+    @MockBean
+    private MemberRepository memberRepository;
     private Member member;
     private Board board;
     private String accessToken;
@@ -94,6 +96,37 @@ public class BoardControllerTest {
 
     }
 
+
+    //가상의 BoardPagingResponse 생성
+    public BoardPagingResponse createMockBoardPagingResponse() {
+        List<BoardPagePostResponse> boardPagePostResponses = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            BoardPagePostResponse boardPagePostResponse = BoardPagePostResponse.builder()
+                    .title("제목")
+                    .content("내용")
+                    .writer("루시/김수민")
+                    .hitCount(1)
+                    .commentCount(1)
+                    .heartCount(1)
+                    .profileImage(".../img")
+                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .build();
+            boardPagePostResponses.add(boardPagePostResponse);
+        }
+
+
+        // 가상의 페이징 정보 설정
+        return BoardPagingResponse.builder()
+                .page(1)
+                .totalPages(3)
+                .totalElements(30)
+                .boardPagePostResponses(boardPagePostResponses)
+                .isFirst(true)
+                .isLast(false)
+                .build();
+    }
+
+
     @Test
     @DisplayName("게시글 생성 API 테스트")
     public void createBoardTest() throws Exception {
@@ -107,10 +140,9 @@ public class BoardControllerTest {
 
         BoardIdResponse response = new BoardIdResponse(board.getId());
 
-
         MockMultipartFile file1 = new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes());
-        MockMultipartFile request = new MockMultipartFile("request", "request", "application/json",  objectMapper.writeValueAsString(boardCreateRequest).getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile request = new MockMultipartFile("request", "request", "application/json", objectMapper.writeValueAsString(boardCreateRequest).getBytes(StandardCharsets.UTF_8));
 
         //when
         when(boardService.createBoard(eq(member), any(BoardCreateRequest.class), anyList())).thenReturn(response);
@@ -130,6 +162,7 @@ public class BoardControllerTest {
                 .andExpect(jsonPath("$.result").exists());
 
     }
+
     @Test
     @DisplayName("게시글 수정 API 테스트")
     public void updateBoardTest() throws Exception {
@@ -153,7 +186,7 @@ public class BoardControllerTest {
 
         //then
         this.mockMvc.perform(
-                        multipart(PATCH,"/boards/{boardId}",board.getId())
+                        multipart(PATCH, "/boards/{boardId}", board.getId())
                                 .file(file1)
                                 .file(request)
                                 .header("Authorization", accessToken))
@@ -187,33 +220,11 @@ public class BoardControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 검색 테스트")
-    public void searchBoardTest() throws Exception {
-        // given
-        BoardPagingResponse response = createMockBoardPagingResponse(); // 테스트를 위한 가상의 게시글 데이터 생성
-        // when
-        when(boardService.searchBoard(eq(member), any(String.class),any(Pageable.class))).thenReturn(response);
-        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
-
-        // then
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/boards/search")
-                        .param("keyword", "데모데이")
-                        .param("page", "0")
-                        .header("Authorization", accessToken))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                .andExpect(jsonPath("$.result").exists());
-    }
-
-
-    @Test
-    @DisplayName("특정 게시판의 게시글 목록 조회 테스트")
+    @DisplayName("특정 게시판의 게시글 목록 조회 API 테스트")
     public void showBoardsTest() throws Exception {
         // given
-        BoardPagingResponse response = createMockBoardPagingResponse(); // 테스트를 위한 가상의 게시글 데이터 생성
+        BoardPagingResponse response = createMockBoardPagingResponse();
+
         // when
         when(boardService.showBoards(eq(member), any(HostType.class), any(BoardType.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
@@ -233,13 +244,13 @@ public class BoardControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 상세 조회 테스트")
+    @DisplayName("게시글 상세 조회 API 테스트")
     public void showBoardDetailTest() throws Exception {
         // given
         BoardDetailResponse response = BoardDetailResponse.builder()
                 .hostType(board.getHostType())
                 .boardType(board.getBoardType())
-                .writer(board.getWriter().getNickname()+"/"+board.getWriter().getName())
+                .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
                 .profileImage(board.getWriter().getProfileImage())
                 .semester(board.getWriter().getRecentSemester())
                 .title(board.getTitle())
@@ -251,7 +262,7 @@ public class BoardControllerTest {
                 .createdAt(board.getCreatedAt())
                 .build();
         // when
-        when(boardService.showBoardDetail(eq(member),eq(board.getId()))).thenReturn(response);
+        when(boardService.showBoardDetail(eq(member), eq(board.getId()))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         // then
@@ -265,36 +276,47 @@ public class BoardControllerTest {
                 .andExpect(jsonPath("$.result").exists());
     }
 
+    @Test
+    @DisplayName("게시글 검색 API 테스트")
+    public void searchBoardTest() throws Exception {
+        // given
+        BoardPagingResponse response = createMockBoardPagingResponse();
 
+        // when
+        when(boardService.searchBoard(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
-    public BoardPagingResponse createMockBoardPagingResponse() {
-
-        // 가상의 BoardPostResponse 리스트 생성
-        List<BoardPagePostResponse> boardPagePostResponses = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            BoardPagePostResponse boardPagePostResponse = BoardPagePostResponse.builder()
-                    .title("제목")
-                    .content("내용")
-                    .writer("루시/김수민")
-                    .hitCount(1)
-                    .commentCount(1)
-                    .heartCount(1)
-                    .profileImage(".../img")
-                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
-                    .build();
-            boardPagePostResponses.add(boardPagePostResponse);
-        }
-
-
-        // 가상의 페이징 정보 설정
-        return BoardPagingResponse.builder()
-                .page(1)
-                .totalPages(3)
-                .totalElements(30)
-                .boardPagePostResponses(boardPagePostResponses)
-                .isFirst(true)
-                .isLast(false)
-                .build();
+        // then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/boards/search")
+                        .param("keyword", "데모데이")
+                        .param("page", "0")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
     }
 
+    @Test
+    @DisplayName("게시글 추천/취소 테스트")
+    public void toggleBoardHeart() throws Exception {
+        //given
+        BoardIdResponse response = new BoardIdResponse(board.getId());
+
+        //when
+        when(boardService.toggleBoardLike(eq(member), eq(board.getId()))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        //then
+        this.mockMvc.perform(
+                        post("/boards/{boardId}/heart", board.getId())
+                                .header("Authorization", accessToken))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.code").value("COMMON200"))
+                    .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                    .andExpect(jsonPath("$.result").exists());
+    }
 }
