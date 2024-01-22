@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
@@ -14,13 +15,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "Board Comment API", description = "게시판 댓글 관련 API")
 @RestController
@@ -40,6 +39,19 @@ public class BoardCommentController {
                                                                 @Valid @RequestPart("request") BoardCommentAddRequest request) {
         return BaseResponse.onSuccess(boardCommentService.addBoardComment(member, request));
     }
+
+    @Operation(summary = "댓글 수정 API", description = "댓글을 수정하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생")
+    })
+    @PatchMapping("/commentId")
+    public BaseResponse<BoardCommentIdResponse> updateBoardComment(@CurrentMember Member member,
+                                                                @PathVariable(value="commentId") UUID commentId,
+                                                                @Valid @RequestPart("request") BoardCommentUpdateRequest request) {
+        return BaseResponse.onSuccess(boardCommentService.updateBoardComment(member, commentId, request));
+    }
+
 
 
 }

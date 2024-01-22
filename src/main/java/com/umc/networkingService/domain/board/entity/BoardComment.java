@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.board.entity;
 
 
+import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
@@ -38,5 +39,9 @@ public class BoardComment extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
+
+    public void update(BoardCommentUpdateRequest request) {
+        this.content = request.getContent();
+    }
 
 }
