@@ -4,6 +4,7 @@ import com.umc.networkingService.global.common.base.BaseResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.LinkedHashMap;
@@ -32,7 +34,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     /*
      * 일반적인 서버 에러에 대한 예외 처리
      */
-    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleException(Exception e) {
         e.printStackTrace(); //예외 정보 출력
 
@@ -43,9 +45,19 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
      * ConstraintViolationException 발생 시 예외 처리
      * 메서드 파라미터, 또는 메서드 리턴 값에 문제가 있을 경우, @Validated 검증 실패한 경우
      */
-    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleConstraintViolationException(ConstraintViolationException e) {
         return handleExceptionInternal(ErrorCode._VALIDATION_ERROR);
+    }
+
+    /*
+     * MethodArgumentTypeMismatchException 발생 시 예외 처리
+     * 메서드의 인자 타입이 예상과 다른 경우
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<BaseResponse<String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        // 예외 처리 로직
+        return handleExceptionInternal(ErrorCode._METHOD_ARGUMENT_ERROR);
     }
 
     /*
