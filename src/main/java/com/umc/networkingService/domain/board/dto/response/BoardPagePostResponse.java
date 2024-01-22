@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardPostResponse {
+public class BoardPagePostResponse {
     private String writer;
     private String profileImage;
     private String title;

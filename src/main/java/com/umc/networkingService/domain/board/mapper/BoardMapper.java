@@ -1,7 +1,7 @@
 package com.umc.networkingService.domain.board.mapper;
 
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPostResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
@@ -26,8 +26,8 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardPostResponse toBoardPostResponse(Board board) {
-        return BoardPostResponse.builder()
+    public BoardPagePostResponse toBoardPagePostResponse(Board board) {
+        return BoardPagePostResponse.builder()
                 .writer(board.getWriter().getName())
                 .profileImage(board.getWriter().getProfileImage())
                 .title(board.getTitle())
@@ -40,9 +40,9 @@ public class BoardMapper {
     }
     public BoardPagingResponse toBoardPagingResponse(Page<Board> boards) {
 
-        List<BoardPostResponse> boardPostResponses = boards.map(this::toBoardPostResponse).stream().toList();
+        List<BoardPagePostResponse> boardPagePostResponses = boards.map(this::toBoardPagePostResponse).stream().toList();
         return BoardPagingResponse.builder()
-                .boardPostResponses(boardPostResponses)
+                .boardPagePostResponses(boardPagePostResponses)
                 .page(boards.getNumber())
                 .totalPages(boards.getTotalPages())
                 .totalElements((int) boards.getTotalElements())

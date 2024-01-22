@@ -1,13 +1,12 @@
 package com.umc.networkingService.domain.board.controller;
 
-import com.amazonaws.HttpMethod;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPostResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
@@ -25,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -216,9 +213,9 @@ public class BoardControllerTest {
     public BoardPagingResponse createMockBoardPagingResponse() {
 
         // 가상의 BoardPostResponse 리스트 생성
-        List<BoardPostResponse> boardPostResponses = new ArrayList<>();
+        List<BoardPagePostResponse> boardPagePostResponses = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BoardPostResponse boardPostResponse = BoardPostResponse.builder()
+            BoardPagePostResponse boardPagePostResponse = BoardPagePostResponse.builder()
                     .title("제목")
                     .content("내용")
                     .writer("루시/김수민")
@@ -228,7 +225,7 @@ public class BoardControllerTest {
                     .profileImage(".../img")
                     .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
                     .build();
-            boardPostResponses.add(boardPostResponse);
+            boardPagePostResponses.add(boardPagePostResponse);
         }
 
 
@@ -237,7 +234,7 @@ public class BoardControllerTest {
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .boardPostResponses(boardPostResponses)
+                .boardPagePostResponses(boardPagePostResponses)
                 .isFirst(true)
                 .isLast(false)
                 .build();

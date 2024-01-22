@@ -126,7 +126,7 @@ public class BoardServiceIntegrationTest {
         BoardPagingResponse boardPagingResponse = boardService.showBoards(member,hostType,boardType,pageable);
         //then
         assertEquals(0, boardPagingResponse.getPage());
-        assertEquals(1,boardPagingResponse.getBoardPostResponses().size());
+        assertEquals(1,boardPagingResponse.getBoardPagePostResponses().size());
         assertEquals(1,boardPagingResponse.getTotalElements());
     }
     @Test
