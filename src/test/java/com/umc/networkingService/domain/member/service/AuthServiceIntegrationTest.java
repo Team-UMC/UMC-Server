@@ -1,25 +1,128 @@
 package com.umc.networkingService.domain.member.service;
 
+import com.umc.networkingService.domain.member.client.GoogleMemberClient;
+import com.umc.networkingService.domain.member.client.KakaoMemberClient;
+import com.umc.networkingService.domain.member.client.NaverMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.umc.networkingService.domain.member.entity.RefreshToken;
+import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.global.common.enums.Role;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 @DisplayName("Auth 서비스의 ")
 public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
     @Autowired AuthService authService;
+
+    @MockBean private KakaoMemberClient kakaoMemberClient;
+    @MockBean private GoogleMemberClient googleMemberClient;
+    @MockBean private NaverMemberClient naverMemberClient;
+
+    @Test
+    @DisplayName("카카오 로그인 테스트")
+    @Transactional
+    public void kakaoLoginTest() {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+        String clientId = "abcdefg";
+
+        given(kakaoMemberClient.getkakaoClientID(any())).willReturn(clientId);
+
+        //when
+        MemberLoginResponse response = authService.socialLogin(accessToken, SocialType.KAKAO);
+
+        //then
+        // 멤버 저장 상태 테스트
+        Optional<Member> optionalMember = memberRepository.findById(response.getMemberId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(clientId, savedMember.getClientId());
+        assertEquals(Role.MEMBER, savedMember.getRole());
+        assertEquals(SocialType.KAKAO, savedMember.getSocialType());
+
+        // 리프레시 토큰 저장 상태 테스트
+        RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId())
+                .orElseThrow();
+        assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
+    }
+
+    @Test
+    @DisplayName("구글 로그인 테스트")
+    @Transactional
+    public void googleLoginTest() {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+        String sub = "abcdefg";
+
+        given(googleMemberClient.getgoogleClientID(any())).willReturn(sub);
+
+        //when
+        MemberLoginResponse response = authService.socialLogin(accessToken, SocialType.GOOGLE);
+
+        //then
+        // 멤버 저장 상태 테스트
+        Optional<Member> optionalMember = memberRepository.findById(response.getMemberId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(sub, savedMember.getClientId());
+        assertEquals(Role.MEMBER, savedMember.getRole());
+        assertEquals(SocialType.GOOGLE, savedMember.getSocialType());
+
+        // 리프레시 토큰 저장 상태 테스트
+        RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId())
+                .orElseThrow();
+        assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
+    }
+
+    @Test
+    @DisplayName("네이버 로그인 테스트")
+    @Transactional
+    public void naverLoginTest() {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+        String clientId = "abcdefg";
+
+        given(naverMemberClient.getnaverClientID(any())).willReturn(clientId);
+
+        //when
+        MemberLoginResponse response = authService.socialLogin(accessToken, SocialType.NAVER);
+
+        //then
+        // 멤버 저장 상태 테스트
+        Optional<Member> optionalMember = memberRepository.findById(response.getMemberId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(clientId, savedMember.getClientId());
+        assertEquals(Role.MEMBER, savedMember.getRole());
+        assertEquals(SocialType.NAVER, savedMember.getSocialType());
+
+        // 리프레시 토큰 저장 상태 테스트
+        RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId())
+                .orElseThrow();
+        assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
+    }
 
     @Test
     @DisplayName("회원 가입 테스트")
@@ -30,8 +133,7 @@ public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 .name("김준석")
                 .nickname("벡스")
                 .universityName("인하대학교")
-                .parts(List.of(Part.SPRING))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(createSemesterPart(member)))
                 .campusPositions(List.of("Android 파트장"))
                 .centerPositions(List.of())
                 .build();
@@ -48,8 +150,7 @@ public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
         assertEquals("벡스", savedMember.getNickname());
         assertEquals("GACI", savedMember.getBranch().getName());
         assertEquals("인하대학교", savedMember.getUniversity().getName());
-        assertEquals(1, savedMember.getParts().size());
-        assertEquals(2, savedMember.getSemesters().size());
+        assertEquals(2, savedMember.getSemesterParts().size());
         assertEquals(1, savedMember.getPositions().size());
     }
 

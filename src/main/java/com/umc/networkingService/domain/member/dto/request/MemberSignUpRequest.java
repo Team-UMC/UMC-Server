@@ -1,7 +1,5 @@
 package com.umc.networkingService.domain.member.dto.request;
 
-import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -20,10 +18,8 @@ public class MemberSignUpRequest {
     private String name;
     @NotBlank(message = "닉네임은 필수 입력값입니다.")
     private String nickname;
-    @Size(min = 1, message = "최소 1개의 파트를 선택해야 합니다.")
-    private List<Part> parts;
-    @Size(min = 1, message = "최소 1개의 기수를 선택해야 합니다.")
-    private List<Semester> semesters;
+    @Size(min = 1, message = "최소 하나의 기수별 파트가 필요합니다.")
+    private List<SemesterPartInfo> semesterParts;
     private String universityName;
     private List<String> campusPositions;
     private List<String> centerPositions;

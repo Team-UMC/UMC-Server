@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.member.controller;
 
+
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
@@ -55,9 +56,9 @@ public class MemberController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "MEMBER004", description = "조회 대상이 소속 대학교가 없는 경우 발생")
     })
-    @GetMapping("/simple")
-    public BaseResponse<MemberInquiryHomeInfoResponse> inquiryHomeInfo(@CurrentMember Member member) {
-        return BaseResponse.onSuccess(memberService.inquiryHomeInfo(member));
+    @GetMapping("/rank")
+    public BaseResponse<MemberInquiryInfoWithPointResponse> inquiryHomeInfo(@CurrentMember Member member) {
+        return BaseResponse.onSuccess(memberService.inquiryInfoWithPoint(member));
     }
 
     @Operation(summary = "깃허브 연동 API", description = "깃허브 로그인을 통해서 발급받은 accessToken으로 깃허브 닉네임을 저장하는 API입니다.")

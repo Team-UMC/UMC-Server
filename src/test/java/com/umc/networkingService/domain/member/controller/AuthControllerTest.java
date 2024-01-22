@@ -3,12 +3,17 @@ package com.umc.networkingService.domain.member.controller;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
+import com.umc.networkingService.domain.member.entity.SemesterPart;
+import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.AuthService;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.support.ControllerTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,19 +36,54 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class AuthControllerTest extends ControllerTestConfig {
 
-    @MockBean
-    private AuthService authService;
+    @MockBean private AuthService authService;
+
+    @Autowired private MemberMapper memberMapper;
+
+    @Test
+    @DisplayName("소셜 로그인 테스트")
+    public void loginTest() throws Exception {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+
+        MemberLoginResponse response = MemberLoginResponse.builder()
+                .memberId(UUID.randomUUID())
+                .accessToken("서버에서 발급받은 accessToken")
+                .refreshToken("서버에서 발급받은 refreshToken")
+                .build();
+
+        // when
+        given(authService.socialLogin(accessToken, SocialType.KAKAO)).willReturn(response);
+
+        // then
+        this.mockMvc.perform(post("/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("accessToken", accessToken)
+                        .param("socialType", "KAKAO"))
+                .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(response.getMemberId().toString()))
+                .andExpect(jsonPath("$.result.accessToken").value(response.getAccessToken()));
+    }
 
     @DisplayName("회원가입 API 테스트")
     @Test
     public void signUpTest() throws Exception {
         // given
+
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().semester(Semester.THIRD).part(Part.ANDROID).build(),
+                SemesterPart.builder().semester(Semester.FOURTH).part(Part.SPRING).build(),
+                SemesterPart.builder().semester(Semester.FIFTH).part(Part.SPRING).build()
+        );
+
         MemberSignUpRequest request = MemberSignUpRequest.builder()
                 .name("김준석")
                 .nickname("벡스")
                 .universityName("인하대학교")
-                .parts(List.of(Part.SPRING))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(semesterParts))
                 .campusPositions(List.of("회장"))
                 .centerPositions(List.of("Server 파트장"))
                 .build();
@@ -64,8 +104,6 @@ public class AuthControllerTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.memberId").value(member.getId().toString()));
-
-
     }
 
     @DisplayName("Access 토큰 재발급 API 테스트")

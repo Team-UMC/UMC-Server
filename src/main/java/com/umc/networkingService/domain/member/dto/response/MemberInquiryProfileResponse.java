@@ -1,8 +1,7 @@
 package com.umc.networkingService.domain.member.dto.response;
 
+import com.umc.networkingService.domain.member.dto.request.SemesterPartInfo;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
-import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Semester;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,8 +16,7 @@ public class MemberInquiryProfileResponse {
     private String universityName;
     private String name;
     private String nickname;
-    private List<Part> parts;
-    private List<Semester> semesters;
+    private List<SemesterPartInfo> semesterParts;
     private String statusMessage;
     private MemberRelation owner;
 }

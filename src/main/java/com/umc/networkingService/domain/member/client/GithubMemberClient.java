@@ -75,7 +75,7 @@ public class GithubMemberClient {
                 .block();
 
         if (response == null)
-            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
+            throw new RestApiException(ErrorCode.FAILED_SOCIAL_LOGIN);
 
         return response.getLogin();
     }

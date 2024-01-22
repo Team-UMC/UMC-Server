@@ -1,13 +1,10 @@
 package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
-import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -22,8 +19,8 @@ import java.util.UUID;
 @Getter
 @Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @SQLRestriction("deleted_at is null")
 @DynamicInsert
 public class Member extends BaseEntity {
@@ -32,6 +29,7 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private UUID id;
 
+    @Column(nullable = false)
     private String clientId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,24 +54,18 @@ public class Member extends BaseEntity {
 
     private String statusMessage;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SocialType socialType;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<SemesterPart> semesterParts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<MemberPosition> positions = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Part> parts = new ArrayList<>();
-
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    @CollectionTable(name = "member_semester", joinColumns = @JoinColumn(name = "member_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Semester> semesters = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -82,34 +74,27 @@ public class Member extends BaseEntity {
 
     private  String notionLink;
 
-    public void setMemberInfo(MemberSignUpRequest request, Role role, University university, Branch branch) {
-        this.name = request.getName();
-        this.nickname = request.getNickname();
-        this.role = role;
+    public void setMemberInfo(String name, String nickname, University university, Branch branch) {
+        this.name = name;
+        this.nickname = nickname;
         this.university = university;
         this.branch = branch;
-        this.parts.addAll(request.getParts());
-        this.semesters.addAll(request.getSemesters());
     }
 
     public void updateMemberInfo(MemberUpdateMyProfileRequest request, String profileImage) {
         this.name = request.getName();
         this.nickname = request.getNickname();
         this.statusMessage = request.getStatusMessage();
-        if (profileImage != null) this.profileImage = profileImage;
-    }
-
-    public void updateMemberInfo(List<Part> parts, List<Semester> semesters) {
-        this.parts.clear();
-        this.parts = parts;
-        this.semesters.clear();;
-        this.semesters = semesters;
+        this.profileImage = profileImage;
     }
 
     public void updatePositions(List<MemberPosition> memberPositions) {
         this.positions = memberPositions;
     }
 
+    public void updateSemesterParts(List<SemesterPart> semesterParts) {
+        this.semesterParts = semesterParts;
+    }
     public void authenticateGithub(String gitNickname) {
         this.gitNickname = gitNickname;
     }

@@ -5,7 +5,9 @@ import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Part;
@@ -40,6 +42,7 @@ public class StaffMemberControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private JwtTokenProvider jwtTokenProvider;
+    @Autowired private MemberMapper memberMapper;
     @MockBean private MemberService memberService;
     @MockBean private MemberRepository memberRepository;
 
@@ -70,12 +73,16 @@ public class StaffMemberControllerTest {
     @Test
     public void updateProfileTest() throws Exception {
         // given
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().semester(Semester.THIRD).part(Part.ANDROID).build(),
+                SemesterPart.builder().semester(Semester.FOURTH).part(Part.SPRING).build()
+        );
+
         UUID memberId = UUID.randomUUID();
         MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
                 .campusPositions(List.of())
                 .centerPositions(List.of("회장"))
-                .parts(List.of(Part.SPRING, Part.ANDROID))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(semesterParts))
                 .build();
 
         MemberIdResponse response = new MemberIdResponse(member.getId());

@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfile
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
 import com.umc.networkingService.domain.member.entity.PointType;
+import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Part;
@@ -31,8 +32,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
 
 @DisplayName("Member 컨트롤러의")
 public class MemberControllerTest extends ControllerTestConfig {
@@ -106,14 +105,18 @@ public class MemberControllerTest extends ControllerTestConfig {
     @Test
     public void inquiryMyProfileTest() throws Exception {
         // given
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().semester(Semester.THIRD).part(Part.ANDROID).build(),
+                SemesterPart.builder().semester(Semester.FOURTH).part(Part.SPRING).build()
+        );
+
         MemberInquiryProfileResponse response = MemberInquiryProfileResponse.builder()
                 .memberId(member.getId())
                 .profileImage("profileImage")
                 .universityName("인하대학교")
                 .name("김준석")
                 .nickname("벡스")
-                .parts(List.of(Part.SPRING, Part.ANDROID))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(semesterParts))
                 .statusMessage("아자아자 화이팅")
                 .owner(MemberRelation.MINE)
                 .build();
@@ -135,14 +138,18 @@ public class MemberControllerTest extends ControllerTestConfig {
     @Test
     public void inquiryOthersProfileTest() throws Exception {
         // given
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().semester(Semester.THIRD).part(Part.ANDROID).build(),
+                SemesterPart.builder().semester(Semester.FOURTH).part(Part.SPRING).build()
+        );
+
         MemberInquiryProfileResponse response = MemberInquiryProfileResponse.builder()
                 .memberId(member.getId())
                 .profileImage("profileImage")
                 .universityName("인하대학교")
                 .name("김준석")
                 .nickname("벡스")
-                .parts(List.of(Part.SPRING, Part.ANDROID))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(semesterParts))
                 .statusMessage("아자아자 화이팅")
                 .owner(MemberRelation.OTHERS)
                 .build();
@@ -164,18 +171,18 @@ public class MemberControllerTest extends ControllerTestConfig {
     @Test
     public void inquiryHomeInfoTest() throws Exception {
         // given
-        MemberInquiryHomeInfoResponse response = MemberInquiryHomeInfoResponse.builder()
+        MemberInquiryInfoWithPointResponse response = MemberInquiryInfoWithPointResponse.builder()
                 .profileImage("프로필 이미지")
                 .nickname("벡스")
                 .contributionPoint(1000L)
                 .contributionRank(2)
                 .build();
 
-        given(memberService.inquiryHomeInfo(any())).willReturn(response);
+        given(memberService.inquiryInfoWithPoint(any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
-        mockMvc.perform(get("/members/simple")
+        mockMvc.perform(get("/members/rank")
                         .header("Authorization", accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
