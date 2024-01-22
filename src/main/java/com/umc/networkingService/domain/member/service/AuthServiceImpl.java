@@ -10,14 +10,12 @@ import com.umc.networkingService.domain.member.entity.RefreshToken;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +25,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final MemberRepository memberRepository;
 
+    private final SemesterPartService semesterPartService;
     private final MemberPositionService memberPositionService;
     private final RefreshTokenService refreshTokenService;
     private final UniversityService universityService;
@@ -34,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    // 회원가입을 수행하는 함수
     @Override
     @Transactional
     public MemberIdResponse signUp(Member member, MemberSignUpRequest request) {
@@ -41,15 +41,20 @@ public class AuthServiceImpl implements AuthService {
         // 소속 대학교 탐색
         University university = universityService.findUniversityByName(request.getUniversityName());
 
-        // 멤버 기본 정보 저장
-        setMemberInfo(member, request, university);
-
         // 멤버 직책 저장
-        memberPositionService.saveMemberPositions(member, request.getCampusPositions(), request.getCenterPositions());
+        memberPositionService.saveMemberPositionInfos(member, request.getCampusPositions(), request.getCenterPositions());
+
+        // 기수별 파트 저장
+        semesterPartService.saveSemesterPartInfos(member, request.getSemesterParts());
+
+        // 이외의 기본 정보 저장
+        member.setMemberInfo(request.getName(), request.getNickname(),
+                university, branchUniversityService.findBranchByUniversity(university));
 
         return new MemberIdResponse(memberRepository.save(member).getId());
     }
 
+    // 새로운 액세스 토큰 발급 함수
     @Override
     @Transactional
     public MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member member) {
@@ -64,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
         return new MemberGenerateNewAccessTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
     }
 
+    // 로그아웃 함수
     @Override
     @Transactional
     public MemberIdResponse logout(Member member) {
@@ -71,63 +77,19 @@ public class AuthServiceImpl implements AuthService {
         return new MemberIdResponse(member.getId());
     }
 
+    // 회원 탈퇴 함수
     @Override
     @Transactional
     public MemberIdResponse withdrawal(Member member) {
-        // 멤버 soft delete
         Member savedMember = loadEntity(member.getId());
-        savedMember.delete();
 
         // refreshToken 삭제
-        deleteRefreshToken(member);
+        deleteRefreshToken(savedMember);
 
-        return new MemberIdResponse(member.getId());
-    }
+        // 멤버 soft delete
+        savedMember.delete();
 
-    // 멤버 기본 정보 저장 함수
-    private void setMemberInfo(Member member, MemberSignUpRequest request, University university) {
-        member.setMemberInfo(
-                request,
-                findMemberRole(request),
-                university,
-                branchUniversityService.findBranchByUniversity(university)
-        );
-    }
-
-    private Role findCampusRole(List<String> campusPositions) {
-        if (campusPositions.isEmpty()) {
-            return Role.MEMBER;
-        }
-
-        if (isExecutive(campusPositions)) {
-            return Role.BRANCH_STAFF;
-        }
-
-        return Role.CAMPUS_STAFF;
-    }
-
-    private Role findCenterRole(List<String> centerPositions) {
-        if (isExecutive(centerPositions)) {
-            return Role.TOTAL_STAFF;
-        }
-
-        return Role.CENTER_STAFF;
-    }
-
-    // 회장, 부회장 판별 함수
-    private boolean isExecutive(List<String> positions) {
-        return positions.stream()
-                .anyMatch(position -> position.equals("회장") || position.equals("부회장"));
-    }
-
-
-    // 멤버 Role 생성 함수
-    private Role findMemberRole(MemberSignUpRequest request) {
-        if (request.getCenterPositions().isEmpty()) {
-            return findCampusRole(request.getCampusPositions());
-        }
-
-        return findCenterRole(request.getCenterPositions());
+        return new MemberIdResponse(savedMember.getId());
     }
 
     // member 객체를 이용한 refreshToken 삭제 함수
@@ -137,6 +99,7 @@ public class AuthServiceImpl implements AuthService {
         refreshToken.ifPresent(refreshTokenService::delete);
     }
 
+    // 멤버 로드 함수
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)

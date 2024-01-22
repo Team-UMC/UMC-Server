@@ -75,32 +75,26 @@ public class Member extends BaseEntity {
 
     private  String notionLink;
 
-    public void setMemberInfo(MemberSignUpRequest request, Role role, University university, Branch branch) {
-        this.name = request.getName();
-        this.nickname = request.getNickname();
-        this.role = role;
+    public void setMemberInfo(String name, String nickname, University university, Branch branch) {
+        this.name = name;
+        this.nickname = nickname;
         this.university = university;
         this.branch = branch;
-        this.parts.addAll(request.getParts());
-        this.semesters.addAll(request.getSemesters());
     }
 
     public void updateMemberInfo(MemberUpdateMyProfileRequest request, String profileImage) {
         this.name = request.getName();
         this.nickname = request.getNickname();
         this.statusMessage = request.getStatusMessage();
-        if (profileImage != null) this.profileImage = profileImage;
-    }
-
-    public void updateMemberInfo(List<Part> parts, List<Semester> semesters) {
-        this.parts.clear();
-        this.parts = parts;
-        this.semesters.clear();;
-        this.semesters = semesters;
+        this.profileImage = profileImage;
     }
 
     public void updatePositions(List<MemberPosition> memberPositions) {
         this.positions = memberPositions;
+    }
+
+    public void updateSemesterParts(List<SemesterPart> semesterParts) {
+        this.semesterParts = semesterParts;
     }
 
     public void authenticationGithub(String gitNickname) {

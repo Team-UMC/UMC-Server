@@ -299,7 +299,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
         universityMember4.updateContributionPoint(1000L);
 
         // when
-        MemberInquiryHomeInfoResponse response = memberService.inquiryHomeInfo(member);
+        MemberInquiryInfoWithPointResponse response = memberService.inquiryInfoWithPoint(member);
 
         // then
         assertEquals("벡스", response.getNickname());

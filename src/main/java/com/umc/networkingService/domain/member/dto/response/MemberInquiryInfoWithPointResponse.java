@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class MemberInquiryHomeInfoResponse {
+public class MemberInquiryInfoWithPointResponse {
     private String profileImage;
     private String nickname;
     private Long contributionPoint;
