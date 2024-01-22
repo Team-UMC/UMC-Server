@@ -85,6 +85,13 @@ public class Board extends BaseEntity {
         boardHeart.setBoard(this);
     }
 
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decreaseCommentCount() {
+        this.commentCount--;
+    }
 
     public void setHeartCount(boolean isChecked) {
         if (isChecked) {

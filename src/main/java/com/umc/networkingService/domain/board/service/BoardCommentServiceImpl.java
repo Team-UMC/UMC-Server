@@ -31,6 +31,8 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         BoardComment comment = boardCommentRepository.save(
                 boardCommentMapper.toEntity(member, board, request));
+        board.increaseCommentCount();
+
         return new BoardCommentIdResponse(comment.getId());
     }
 
@@ -48,8 +50,13 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     @Override
     @Transactional
     public BoardCommentIdResponse deleteBoardComment(Member member, UUID commentId) {
+
         BoardComment comment = loadEntity(commentId);
+        Board board = comment.getBoard();
+
+        board.decreaseCommentCount();
         comment.delete();
+
 
         return new BoardCommentIdResponse(comment.getId());
     }
