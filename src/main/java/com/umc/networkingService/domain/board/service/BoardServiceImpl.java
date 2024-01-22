@@ -96,12 +96,7 @@ public class BoardServiceImpl implements BoardService {
         //boardType과 HostType에 따라 권한 판단
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
-        Board board = boardRepository.save(boardMapper.toEntity(member,
-                request.getTitle(),
-                request.getContent(),
-                request.getHostType(),
-                request.getBoardType(),
-                semesterPermission));
+        Board board = boardRepository.save(boardMapper.toEntity(member, request, semesterPermission));
 
         if (files != null)
             boardFileService.uploadBoardFiles(board, files);
@@ -122,11 +117,7 @@ public class BoardServiceImpl implements BoardService {
         //boardType과 HostType에 따라 권한 판단
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
-        board.update(request.getHostType(),
-                request.getBoardType(),
-                request.getTitle(),
-                request.getContent(),
-                semesterPermission);
+        board.update(request, semesterPermission);
 
         boardFileService.updateBoardFiles(board, files);
 
@@ -176,34 +167,10 @@ public class BoardServiceImpl implements BoardService {
 
     //공지사항 게시판 권한 확인 함수
     public void checkPermissionForNoticeBoard(Member member, HostType hostType) {
-        //멤버의 역할
-        Role memberRole = member.getRole();
-        //Center 권한이 있는 멤버의 역할
-        List<Role> centerStaffRoles = Role.centerStaffRoles();
-        //Branch 권한이 있는 멤버의 역할
-        Role branchStaffRole = Role.branchStaffRole();
-        //Campus 권한이 있는 멤버의 역할
-        List<Role> campusStaffRoles = Role.campusStaffRoles();
 
-        // 공지사항 권한 CHECK
-        if (hostType == HostType.CENTER) {
-            // CENTER && NOTICE -> ROLE이 TOTAL_STAFF OR CENTER_STAFF 인 사람
-            if (!centerStaffRoles.contains(memberRole)) {
-                throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
-            }
-        } else if (hostType == HostType.BRANCH) {
-            // BRANCH && NOTICE -> ROLE이 BRANCH_STAFF인 사람
-            if (branchStaffRole != memberRole) {
-                throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
-            }
-            // BRANCH 나머지 -> 해당 지부 사람들 모두
-        } else if (hostType == HostType.CAMPUS) {
-            // CAMPUS && NOTICE -> ROLE이 CAMPUS_STAFF, STAFF인 사람
-            if (!campusStaffRoles.contains(memberRole)) {
-                throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
-            }
-            // CAMPUS 나머지 -> 해당 campus 사람들 모두
-        }
+        //HostType priority와 Member Role priority를 비교하여 권한 CHECK
+        if (member.getRole().getPriority() >= hostType.getPriority())
+            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
 
     }
 

@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.mapper;
 
+import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
@@ -17,14 +18,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardMapper {
     private final BoardFileService boardFileService;
-    public Board toEntity(Member member, String title, String content, HostType hostType, BoardType boardType,
+    public Board toEntity(Member member, BoardCreateRequest request,
                                  List<Semester> semesterPermission) {
         return Board.builder()
                 .writer(member)
-                .title(title)
-                .content(content)
-                .hostType(hostType)
-                .boardType(boardType)
+                .title(request.getTitle())
+                .content(request.getContent())
+                .hostType(request.getHostType())
+                .boardType(request.getBoardType())
                 .semesterPermission(semesterPermission)
                 .build();
     }

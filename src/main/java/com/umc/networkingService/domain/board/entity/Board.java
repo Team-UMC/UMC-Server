@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.entity;
 
+import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
@@ -65,11 +66,11 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<BoardHeart> hearts = new ArrayList<>();
 
-    public void update(HostType hostType, BoardType boardType, String title, String content, List<Semester> semesters) {
-        this.hostType = hostType;
-        this.boardType = boardType;
-        this.title = title;
-        this.content = content;
+    public void update(BoardUpdateRequest request, List<Semester> semesters) {
+        this.hostType = request.getHostType();
+        this.boardType = request.getBoardType();
+        this.title = request.getTitle();
+        this.content = request.getContent();
         this.semesterPermission = semesters;
     }
 
