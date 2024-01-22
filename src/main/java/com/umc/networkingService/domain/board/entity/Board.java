@@ -62,10 +62,6 @@ public class Board extends BaseEntity {
 
     private boolean isFixed; //notice가 아니면 null
 
-    @Builder.Default
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<BoardHeart> hearts = new ArrayList<>();
-
     public void update(BoardUpdateRequest request, List<Semester> semesters) {
         this.hostType = request.getHostType();
         this.boardType = request.getBoardType();
@@ -78,12 +74,6 @@ public class Board extends BaseEntity {
         this.hitCount++;
     }
 
-
-    //연관관계 메서드
-    public void addBoardHeart(BoardHeart boardHeart) {
-        hearts.add(boardHeart);
-        boardHeart.setBoard(this);
-    }
 
     public void increaseCommentCount() {
         this.commentCount++;

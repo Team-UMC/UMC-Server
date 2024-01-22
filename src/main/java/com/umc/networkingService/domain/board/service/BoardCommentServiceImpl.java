@@ -26,6 +26,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     private final BoardCommentRepository boardCommentRepository;
     private final BoardService boardService;
     private final BoardCommentMapper boardCommentMapper;
+
     @Override
     @Transactional
     public BoardCommentIdResponse addBoardComment(Member member, BoardCommentAddRequest request) {
