@@ -187,6 +187,29 @@ public class BoardControllerTest {
     }
 
     @Test
+    @DisplayName("게시글 검색 테스트")
+    public void searchBoardTest() throws Exception {
+        // given
+        BoardPagingResponse response = createMockBoardPagingResponse(); // 테스트를 위한 가상의 게시글 데이터 생성
+        // when
+        when(boardService.searchBoard(eq(member), any(String.class),any(Pageable.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/boards/search")
+                        .param("keyword", "데모데이")
+                        .param("page", "0")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
+
+
+    @Test
     @DisplayName("특정 게시판의 게시글 목록 조회 테스트")
     public void showBoardsTest() throws Exception {
         // given
@@ -273,6 +296,5 @@ public class BoardControllerTest {
                 .isLast(false)
                 .build();
     }
-
 
 }

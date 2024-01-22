@@ -123,6 +123,22 @@ public class BoardServiceIntegrationTest {
                 .build());
     }
 
+    private void createBoards() {
+        for(int i=0;i<11;i++){
+            boardRepository.save(Board.builder()
+                    .writer(member)
+                    .title("데모데이가 곧이에용")
+                    .content("신난다~~")
+                    .boardType(BoardType.FREE)
+                    .hostType(HostType.CAMPUS)
+                    .semesterPermission(List.of(Semester.FIFTH))
+                    .hitCount(0)
+                    .heartCount(1)
+                    .commentCount(1)
+                    .build());
+        }
+    }
+
 
     @Test
     @DisplayName("특정 게시글 상세 조회 테스트")
@@ -144,29 +160,6 @@ public class BoardServiceIntegrationTest {
     @Test
     @DisplayName("특정 게시판의 게시글 목록 조회 테스트")
     public void showBoardsTest() {
-
-        //given
-        BoardCreateRequest request = BoardCreateRequest.builder()
-                .title("제목")
-                .content("내용")
-                .boardType(BoardType.FREE)
-                .hostType(HostType.CAMPUS)
-                .build();
-
-        List<MultipartFile> files = new ArrayList<>();
-        files.add(new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes()));
-        files.add(new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes()));
-
-        //when
-        BoardIdResponse response = boardService.createBoard(member, request, files);
-
-        //then
-        Optional<Board> optionalBoard = boardRepository.findById(response.getBoardId());
-        assertTrue(optionalBoard.isPresent());
-        Board board = optionalBoard.get();
-
-        List<BoardFile> boardFiles = boardFileRepository.findAllByBoard(board);
-
         //given
         HostType hostType = HostType.CAMPUS;
         BoardType boardType = BoardType.FREE;
@@ -178,6 +171,24 @@ public class BoardServiceIntegrationTest {
         assertEquals(0, boardPagingResponse.getPage());
         assertEquals(1,boardPagingResponse.getBoardPagePostResponses().size());
         assertEquals(1,boardPagingResponse.getTotalElements());
+    }
+
+    @Test
+    @DisplayName("게시글 검색 테스트")
+    public void searchBoardTest() {
+        //given
+        String keyword = "데";
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
+        createBoards();
+
+        //when
+        BoardPagingResponse boardPagingResponse = boardService.searchBoard(member,keyword,pageable);
+        //then
+        assertEquals(0, boardPagingResponse.getPage());
+        assertEquals(2,boardPagingResponse.getTotalPages());
+        assertEquals(11,boardPagingResponse.getTotalElements());
+        assertEquals(11,boardPagingResponse.getBoardPagePostResponses().size());
+        assertEquals("데모데이가 곧이에용",boardPagingResponse.getBoardPagePostResponses().get(1).getTitle());
     }
     @Test
     @DisplayName("게시글 작성 성공 테스트")
