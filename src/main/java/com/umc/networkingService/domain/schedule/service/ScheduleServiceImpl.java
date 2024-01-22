@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.schedule.service;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleDetail;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleId;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummariesInCalendar;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummary;
@@ -52,6 +53,13 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .toList();
 
         return scheduleMapper.toScheduleInfoSummaries(campusSchedules, branchSchedules, centerSchedules);
+    }
+
+    @Override
+    public ScheduleDetail getScheduleDetail(UUID scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
+
+        return scheduleMapper.toScheduleDetail(schedule);
     }
 
     @Override

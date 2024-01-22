@@ -1,6 +1,8 @@
 package com.umc.networkingService.domain.schedule.dto.response;
 
 import com.umc.networkingService.domain.board.entity.HostType;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.global.common.enums.Semester;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -58,6 +60,22 @@ public class ScheduleResponse {
     @Builder
     public static class ScheduleId {
         private UUID scheduleId;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class ScheduleDetail {
+        private UUID scheduleId;
+//        private UUID writerId;
+        private String title;
+        private String content;
+        private LocalDateTime startDateTime;
+        private LocalDateTime endDateTine;
+        private String placeSetting;
+        private HostType hostType;
+
     }
 
 
