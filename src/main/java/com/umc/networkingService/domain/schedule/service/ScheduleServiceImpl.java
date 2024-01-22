@@ -47,4 +47,16 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return scheduleMapper.UUIDtoScheduleId(schedule.getId());
     }
+
+    @Override
+    public ScheduleId deleteSchedule(UUID scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
+
+        schedule.delete();
+        scheduleRepository.save(schedule);
+
+        return scheduleMapper.UUIDtoScheduleId(schedule.getId());
+    }
+
+
 }

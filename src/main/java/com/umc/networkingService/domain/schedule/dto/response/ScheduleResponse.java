@@ -17,7 +17,7 @@ public class ScheduleResponse {
     @NoArgsConstructor
     @Builder
     public static class ScheduleInfo {
-        private UUID id;
+        private UUID scheduleId;
         private LocalDateTime startDateTime;
         private LocalDateTime endDateTime;
         private String hostType;

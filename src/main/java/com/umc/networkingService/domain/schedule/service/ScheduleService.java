@@ -11,4 +11,6 @@ public interface ScheduleService {
     public ScheduleId createSchedule(CreateSchedule request);
     public ScheduleId updateSchedule(UUID scheduleId, UpdateSchedule request);
 
+    public ScheduleId deleteSchedule(UUID scheduleId);
+
 }

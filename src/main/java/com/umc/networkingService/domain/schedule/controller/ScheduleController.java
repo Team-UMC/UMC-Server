@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +48,13 @@ public class ScheduleController {
         return BaseResponse.onSuccess(scheduleService.updateSchedule(scheduleId, request));
     }
 
+
+    @Operation(summary = "스케줄 삭제 API", description = "운영진 관리 페이지의 스케줄을 삭제하는 API입니다.")
+    @DeleteMapping("/{scheduleId}")
+    public BaseResponse<ScheduleId> deleteSchedule(@PathVariable("scheduleId") UUID scheduleId) {
+
+        return BaseResponse.onSuccess(scheduleService.deleteSchedule(scheduleId));
+    }
 
 
 }
