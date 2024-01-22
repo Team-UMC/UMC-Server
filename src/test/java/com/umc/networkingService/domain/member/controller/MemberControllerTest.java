@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberSignUpResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
@@ -30,8 +31,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
-
-
 
 @DisplayName("Member 컨트롤러의")
 @SpringBootTest
@@ -99,5 +98,33 @@ public class MemberControllerTest {
                         .andExpect(jsonPath("$.result").exists());  // result 필드가 존재하는지 검사
 
 
+    }
+
+    @Test
+    @DisplayName("소셜 로그인 테스트")
+    public void loginTest() throws Exception {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+
+        MemberLoginResponse response = MemberLoginResponse.builder()
+                .memberId(UUID.randomUUID())
+                .accessToken("서버에서 발급받은 accessToken")
+                .refreshToken("서버에서 발급받은 refreshToken")
+                .build();
+
+        // when
+        when(memberService.socialLogin(accessToken, SocialType.KAKAO)).thenReturn(response);
+
+        // then
+        this.mockMvc.perform(post("/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("accessToken", accessToken)
+                        .param("socialType", "KAKAO"))
+                .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(response.getMemberId().toString()))
+                .andExpect(jsonPath("$.result.accessToken").value(response.getAccessToken()));
     }
 }

@@ -21,8 +21,8 @@ import java.util.UUID;
 @Getter
 @Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @SQLRestriction("deleted_at is null")
 @DynamicInsert
 public class Member extends BaseEntity {
@@ -31,6 +31,7 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private UUID id;
 
+    @Column(nullable = false)
     private String clientId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,6 +53,7 @@ public class Member extends BaseEntity {
 
     private String statusMessage;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SocialType socialType;
 
