@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -25,8 +26,8 @@ public class RefreshTokenService {
         }
 
         @Transactional
-        public RefreshToken findByMemberId(UUID memberId) { // 만료된 accessToken으로 refreshToken을 찾아옴
-            return refreshTokenRepository.findByMemberId(memberId).orElseThrow(() -> new IllegalArgumentException("Refresh Token이 존재하지 않습니다."));
+        public Optional<RefreshToken> findByMemberId(UUID memberId) { // 만료된 accessToken으로 refreshToken을 찾아옴
+            return refreshTokenRepository.findByMemberId(memberId);
         }
 
         @Transactional

@@ -1,11 +1,8 @@
 package com.umc.networkingService.domain.member.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
@@ -15,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Builder
-@RedisHash(value = "jwtToken", timeToLive = 60*60*24*30) // 30일
+@RedisHash(value = "jwtToken", timeToLive = 60*60*24*14) // 14일
 public class RefreshToken { //redis에 저장할 객체
 
     @Id

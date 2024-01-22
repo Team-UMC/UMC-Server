@@ -29,8 +29,8 @@ public abstract class BaseEntity {
         return deletedAt != null;
     }
 
-    //삭제 메서드
+    // 삭제 처리 메서드
     public void delete() {
-        this.deletedAt = LocalDateTime.now();
+        deletedAt = LocalDateTime.now();
     }
 }
