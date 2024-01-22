@@ -63,7 +63,7 @@ public class BoardMapper {
                 .boardType(board.getBoardType())
                 .writer(board.getWriter().getNickname()+"/"+board.getWriter().getName())
                 .profileImage(board.getWriter().getProfileImage())
-                //.part(board.getWriter().getPart().)
+                .part(board.getWriter().getRecentPart())
                 .semester(board.getWriter().getRecentSemester())
                 .title(board.getTitle())
                 .content(board.getContent())

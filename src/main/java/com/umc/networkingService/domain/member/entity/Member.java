@@ -4,6 +4,7 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
+import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
@@ -13,9 +14,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -107,18 +106,33 @@ public class Member extends BaseEntity {
         else this.contributionPoint += usedPoint;
     }
 
+    public Semester getRecentSemester() {
+        List<SemesterPart> semesterParts = this.getSemesterParts();
+
+        List<Semester> semesters = semesterParts.stream()
+                .map(SemesterPart::getSemester)
+                .sorted(Comparator.comparingInt(Enum::ordinal))  // 순서대로 정렬
+                .collect(Collectors.toList());
+
+        return semesters.get(semesters.size() - 1);
+    }
+
+    public Part getRecentPart() {
+        Semester recentSemester = getRecentSemester();
+        List<SemesterPart> semesterParts = this.getSemesterParts();
+
+        // 최신 Semester에 해당하는 SemesterPart 찾기
+        Optional<SemesterPart> recentSemesterPart = semesterParts.stream()
+                .filter(part -> part.getSemester() == recentSemester)
+                .findFirst();
+
+        return recentSemesterPart.map(SemesterPart::getPart).orElse(null);
+    }
+
     // 테스트 코드용
     public void updateRole(Role role) {
         this.role = role;
     }
 
-    public Semester getRecentSemester() {
-        List<SemesterPart> semesterParts = this.getSemesterParts();
-
-        List<Semester> semesters = semesterParts.stream()
-                .map(SemesterPart::getSemester).toList();
-
-        return semesters.get(semesters.size() - 1);
-    }
 
 }

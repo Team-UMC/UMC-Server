@@ -65,7 +65,6 @@ public class BoardServiceIntegrationTest {
     private SemesterPartRepository semesterPartRepository;
 
 
-
     private Member member;
     private Member member2;
     private Board board;
@@ -97,8 +96,8 @@ public class BoardServiceIntegrationTest {
 
     protected List<SemesterPart> createSemesterPart(Member member) {
         List<SemesterPart> semesterParts = List.of(
-                SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.THIRD).build(),
-                SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FIFTH).build()
+                SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.FIFTH).build(),
+                SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.THIRD).build()
         );
 
         return semesterPartRepository.saveAll(semesterParts);
@@ -334,6 +333,8 @@ public class BoardServiceIntegrationTest {
         //then
         assertEquals("벡스/김준석", boardDetailResponse.getWriter());
         assertEquals(1, boardDetailResponse.getHitCount());
+        assertEquals(Semester.FIFTH, boardDetailResponse.getSemester());
+        assertEquals(Part.ANDROID, boardDetailResponse.getPart());
         assertEquals(0, boardDetailResponse.getHeartCount());
         assertEquals(1, boardDetailResponse.getBoardFiles().size());
     }
