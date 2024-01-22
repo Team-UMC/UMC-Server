@@ -59,11 +59,11 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private SocialType socialType;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<SemesterPart> semesterParts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<MemberPosition> positions = new ArrayList<>();
 

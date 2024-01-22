@@ -36,7 +36,9 @@ public class AuthServiceImpl implements AuthService {
     // 회원가입을 수행하는 함수
     @Override
     @Transactional
-    public MemberIdResponse signUp(Member member, MemberSignUpRequest request) {
+    public MemberIdResponse signUp(Member loginMember, MemberSignUpRequest request) {
+
+        Member member = loadEntity(loginMember.getId());
 
         // 소속 대학교 탐색
         University university = universityService.findUniversityByName(request.getUniversityName());
@@ -57,7 +59,9 @@ public class AuthServiceImpl implements AuthService {
     // 새로운 액세스 토큰 발급 함수
     @Override
     @Transactional
-    public MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member member) {
+    public MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member loginMember) {
+
+        Member member = loadEntity(loginMember.getId());
 
         RefreshToken savedRefreshToken = refreshTokenService.findByMemberId(member.getId())
                 .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
@@ -72,7 +76,9 @@ public class AuthServiceImpl implements AuthService {
     // 로그아웃 함수
     @Override
     @Transactional
-    public MemberIdResponse logout(Member member) {
+    public MemberIdResponse logout(Member loginMember) {
+        Member member = loadEntity(loginMember.getId());
+
         deleteRefreshToken(member);
         return new MemberIdResponse(member.getId());
     }
@@ -80,16 +86,16 @@ public class AuthServiceImpl implements AuthService {
     // 회원 탈퇴 함수
     @Override
     @Transactional
-    public MemberIdResponse withdrawal(Member member) {
-        Member savedMember = loadEntity(member.getId());
+    public MemberIdResponse withdrawal(Member loginMember) {
+        Member member = loadEntity(loginMember.getId());
 
         // refreshToken 삭제
-        deleteRefreshToken(savedMember);
+        deleteRefreshToken(member);
 
         // 멤버 soft delete
-        savedMember.delete();
+        member.delete();
 
-        return new MemberIdResponse(savedMember.getId());
+        return new MemberIdResponse(member.getId());
     }
 
     // member 객체를 이용한 refreshToken 삭제 함수

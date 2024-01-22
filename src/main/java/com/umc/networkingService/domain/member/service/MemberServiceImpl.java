@@ -44,7 +44,9 @@ public class MemberServiceImpl implements MemberService {
     // 나의 프로필 업데이트 함수
     @Override
     @Transactional
-    public MemberIdResponse updateMyProfile(Member member, MultipartFile profileImage, MemberUpdateMyProfileRequest request) {
+    public MemberIdResponse updateMyProfile(Member loginMember, MultipartFile profileImage, MemberUpdateMyProfileRequest request) {
+
+        Member member = loadEntity(loginMember.getId());
 
         String profileUrl = null;
 
@@ -122,7 +124,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public MemberAuthenticationGithubResponse authenticationGithub(Member member, String code) {
+    public MemberAuthenticationGithubResponse authenticationGithub(Member loginMember, String code) {
+        Member member = loadEntity(loginMember.getId());
 
         String gitNickname = githubMemberClient.getGithubNickname(code);
 
@@ -137,7 +140,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberInquiryGithubResponse inquiryGithubImage(Member member) {
+    public MemberInquiryGithubResponse inquiryGithubImage(Member loginMember) {
+        Member member = loadEntity(loginMember.getId());
+
         String gitNickName = member.getGitNickname();
         if (gitNickName == null)
             throw new RestApiException(ErrorCode.UNAUTHENTICATION_GITHUB);
