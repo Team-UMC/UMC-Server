@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.schedule.dto.response;
 
 import com.umc.networkingService.domain.board.entity.HostType;
-import com.umc.networkingService.global.common.enums.Semester;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +15,7 @@ public class ScheduleResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class ScheduleInfo {
+    public static class ScheduleInfoSummaryInCalendar {
         private UUID scheduleId;
         private LocalDateTime startDateTime;
         private LocalDateTime endDateTime;
@@ -27,8 +26,30 @@ public class ScheduleResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class ScheduleInfoList {
-        private List<ScheduleInfo> schedules;
+    public static class ScheduleInfoSummariesInCalendar {
+        private List<ScheduleInfoSummaryInCalendar> schedules;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class ScheduleInfoSummary {
+        private UUID scheduleId;
+        private LocalDateTime startDateTime;
+        private LocalDateTime endDatetime;
+        private String title;
+        private HostType hostType;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class ScheduleInfoSummaryLists {
+        private List<ScheduleInfoSummary> campusSchedules;
+        private List<ScheduleInfoSummary> branchSchedules;
+        private List<ScheduleInfoSummary> centerSchedules;
     }
 
     @Getter
