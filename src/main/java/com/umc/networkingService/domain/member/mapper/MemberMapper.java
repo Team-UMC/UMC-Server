@@ -1,25 +1,22 @@
 package com.umc.networkingService.domain.member.mapper;
 
+import com.umc.networkingService.config.security.jwt.TokenInfo;
 import com.umc.networkingService.domain.member.dto.request.SemesterPartInfo;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryInfoWithPointResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryPointsResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.university.entity.University;
+import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import org.springframework.stereotype.Component;
-import com.umc.networkingService.config.security.jwt.TokenInfo;
-import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
-import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.SocialType;
-import com.umc.networkingService.global.common.enums.Role;
-import org.springframework.stereotype.Component;;
-import com.umc.networkingService.domain.member.entity.MemberPosition;
-import com.umc.networkingService.domain.member.entity.PositionType;
 
 import java.util.List;
 import java.util.Optional;
+
+;
 
 @Component
 public class MemberMapper {

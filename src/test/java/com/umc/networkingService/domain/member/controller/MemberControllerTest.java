@@ -188,7 +188,7 @@ public class MemberControllerTest extends MemberControllerTestConfig {
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
-        mockMvc.perform(get("/members/simple")
+        mockMvc.perform(get("/members/rank")
                         .header("Authorization", accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -263,33 +263,5 @@ public class MemberControllerTest extends MemberControllerTestConfig {
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.remainPoint").value(response.getRemainPoint()))
                 .andExpect(jsonPath("$.result.usedHistories", hasSize(response.getUsedHistories().size())));
-    }
-
-    @Test
-    @DisplayName("소셜 로그인 테스트")
-    public void loginTest() throws Exception {
-        // given
-        String accessToken = "ya29.a0AfB_byD6";
-
-        MemberLoginResponse response = MemberLoginResponse.builder()
-                .memberId(UUID.randomUUID())
-                .accessToken("서버에서 발급받은 accessToken")
-                .refreshToken("서버에서 발급받은 refreshToken")
-                .build();
-
-        // when
-        given(memberService.socialLogin(accessToken, SocialType.KAKAO)).willReturn(response);
-
-        // then
-        this.mockMvc.perform(post("/members/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("accessToken", accessToken)
-                        .param("socialType", "KAKAO"))
-                .andDo(print())  // 응답 출력
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("COMMON200"))
-                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                .andExpect(jsonPath("$.result.memberId").value(response.getMemberId().toString()))
-                .andExpect(jsonPath("$.result.accessToken").value(response.getAccessToken()));
     }
 }

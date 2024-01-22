@@ -25,7 +25,7 @@ public class NaverMemberClient {
                 .block();
 
         if(response == null)
-            throw new RestApiException(ErrorCode._INTERNAL_SERVER_ERROR);
+            throw new RestApiException(ErrorCode.FAILED_SOCIAL_LOGIN);
 
         return response.getResponse().getId();
     }

@@ -3,7 +3,9 @@ package com.umc.networkingService.domain.member.controller;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
+import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.AuthService;
 import com.umc.networkingService.global.common.enums.Part;
@@ -36,6 +38,34 @@ public class AuthControllerTest extends MemberControllerTestConfig {
     @MockBean private AuthService authService;
 
     @Autowired private MemberMapper memberMapper;
+
+    @Test
+    @DisplayName("소셜 로그인 테스트")
+    public void loginTest() throws Exception {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+
+        MemberLoginResponse response = MemberLoginResponse.builder()
+                .memberId(UUID.randomUUID())
+                .accessToken("서버에서 발급받은 accessToken")
+                .refreshToken("서버에서 발급받은 refreshToken")
+                .build();
+
+        // when
+        given(authService.socialLogin(accessToken, SocialType.KAKAO)).willReturn(response);
+
+        // then
+        this.mockMvc.perform(post("/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("accessToken", accessToken)
+                        .param("socialType", "KAKAO"))
+                .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(response.getMemberId().toString()))
+                .andExpect(jsonPath("$.result.accessToken").value(response.getAccessToken()));
+    }
 
     @DisplayName("회원가입 API 테스트")
     @Test

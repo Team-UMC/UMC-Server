@@ -2,8 +2,6 @@ package com.umc.networkingService.domain.member.dto.response;
 
 import com.umc.networkingService.domain.member.dto.request.SemesterPartInfo;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
-import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Semester;
 import lombok.Builder;
 import lombok.Getter;
 
