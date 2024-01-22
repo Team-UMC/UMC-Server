@@ -3,17 +3,17 @@ package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
-import com.umc.networkingService.domain.board.entity.BoardImage;
+import com.umc.networkingService.domain.board.entity.BoardFile;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
-import com.umc.networkingService.domain.board.repository.BoardImageRepository;
+import com.umc.networkingService.domain.board.repository.BoardFileRepository;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
-import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
@@ -50,10 +50,10 @@ public class BoardServiceIntegrationTest {
     @Autowired private BoardService boardService;
     @Autowired private MemberRepository memberRepository;
     @Autowired private BoardRepository boardRepository;
-    @Autowired private BoardImageRepository boardImageRepository;
+    @Autowired private BoardFileRepository boardFileRepository;
     @Autowired private UniversityRepository universityRepository;
     @Autowired private BranchRepository branchRepository;
-    @Autowired private BranchUniversityRepository branchUniversityRepository;
+
 
     private Member member;
     private Board board;
@@ -110,9 +110,36 @@ public class BoardServiceIntegrationTest {
                 .boardType(BoardType.FREE)
                 .hostType(HostType.CAMPUS)
                 .semesterPermission(List.of(Semester.FIFTH))
+                .hitCount(0)
+                .heartCount(1)
+                .commentCount(1)
                 .build());
     }
 
+    private void createBoardFile() {
+        boardFileRepository.save(BoardFile.builder()
+                .board(board)
+                .url("dfsefe.img")
+                .build());
+    }
+
+
+    @Test
+    @DisplayName("특정 게시글 상세 조회 테스트")
+    public void showBoardDetailTest() {
+
+        createBoardFile();
+        //given
+        UUID boardId = board.getId();
+
+        //when
+        BoardDetailResponse boardDetailResponse = boardService.showBoardDetail(member, boardId);
+        //then
+        assertEquals("벡스/김준석", boardDetailResponse.getWriter());
+        assertEquals(1,boardDetailResponse.getHitCount());
+        assertEquals(1,boardDetailResponse.getHeartCount());
+        assertEquals(1,boardDetailResponse.getBoardFiles().size());
+    }
 
     @Test
     @DisplayName("특정 게시판의 게시글 목록 조회 테스트")
@@ -152,13 +179,13 @@ public class BoardServiceIntegrationTest {
         assertTrue(optionalBoard.isPresent());
         Board board = optionalBoard.get();
 
-        List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+        List<BoardFile> boardFiles = boardFileRepository.findAllByBoard(board);
 
         assertEquals("제목", board.getTitle());
         assertEquals("내용", board.getContent());
         assertEquals("FREE", board.getBoardType().toString());
         assertEquals("CAMPUS", board.getHostType().toString());
-        assertEquals(2, boardImages.size());
+        assertEquals(2, boardFiles.size());
     }
 
     @Test
@@ -252,13 +279,13 @@ public class BoardServiceIntegrationTest {
         boardService.updateBoard(member, boardId, request, files);
 
         //then
-        List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+        List<BoardFile> boardFiles = boardFileRepository.findAllByBoard(board);
 
         assertEquals("수정제목", board.getTitle());
         assertEquals("수정내용", board.getContent());
         assertEquals("QUESTION", board.getBoardType().toString());
         assertEquals("CAMPUS", board.getHostType().toString());
-        assertEquals(1, boardImages.size());
+        assertEquals(1, boardFiles.size());
     }
 
     @Test
@@ -271,9 +298,9 @@ public class BoardServiceIntegrationTest {
         boardService.deleteBoard(member, boardId);
 
         //then
-        List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+        List<BoardFile> boardFiles = boardFileRepository.findAllByBoard(board);
 
         assertNotNull(board.getDeletedAt());
-        boardImages.forEach(boardImage -> assertNotNull(boardImage.getDeletedAt()));
+        boardFiles.forEach(boardImage -> assertNotNull(boardImage.getDeletedAt()));
     }
 }

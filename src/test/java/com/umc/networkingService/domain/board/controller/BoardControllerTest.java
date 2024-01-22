@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
@@ -83,6 +84,7 @@ public class BoardControllerTest {
     private Board createBoard() {
         return Board.builder()
                 .id(UUID.randomUUID())
+                .writer(member)
                 .title("제목")
                 .content("내용")
                 .semesterPermission(List.of(Semester.FIFTH))
@@ -205,9 +207,41 @@ public class BoardControllerTest {
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result").exists());
-
-
     }
+
+    @Test
+    @DisplayName("게시글 상세 조회 테스트")
+    public void showBoardDetailTest() throws Exception {
+        // given
+        BoardDetailResponse response = BoardDetailResponse.builder()
+                .hostType(board.getHostType())
+                .boardType(board.getBoardType())
+                .writer(board.getWriter().getNickname()+"/"+board.getWriter().getName())
+                .profileImage(board.getWriter().getProfileImage())
+                .semester(board.getWriter().getRecentSemester())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .hitCount(board.getHitCount())
+                .heartCount(board.getHeartCount())
+                .boardFiles(new ArrayList<>())
+                .commentCount(board.getCommentCount())
+                .createdAt(board.getCreatedAt())
+                .build();
+        // when
+        when(boardService.showBoardDetail(eq(member),eq(board.getId()))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/boards/{boardId}", board.getId())
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
+
 
 
     public BoardPagingResponse createMockBoardPagingResponse() {
