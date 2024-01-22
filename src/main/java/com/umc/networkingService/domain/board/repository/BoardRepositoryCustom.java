@@ -10,4 +10,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface BoardRepositoryCustom {
     Page<Board> findAllBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable);
+    Page<Board> findKeywordBoards(Member member, String keyword, Pageable pageable);
 }

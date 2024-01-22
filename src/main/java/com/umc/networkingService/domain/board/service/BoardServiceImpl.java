@@ -60,6 +60,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public BoardPagingResponse searchBoard(Member member, String keyword, Pageable pageable) {
+
+        return boardMapper.toBoardPagingResponse(boardRepository.findKeywordBoards(member, keyword, pageable));
+
+    }
+
+    @Override
     @Transactional
     public BoardIdResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {
         //연합, 지부, 학교 타입

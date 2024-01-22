@@ -46,4 +46,18 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
         return new PageImpl<>(boards,pageable,boards.size());
     }
 
+    @Override
+    public Page<Board> findKeywordBoards(Member member, String keyword, Pageable pageable) {
+        QBoard board = QBoard.board;
+
+        List<Board> boards = query.selectFrom(board)
+                .where(board.title.contains(keyword)
+                        .or(board.content.contains(keyword))
+                        .and(board.deletedAt.isNull()))
+                .fetch();
+
+        return new PageImpl<>(boards, pageable,boards.size());
+    }
+
+
 }

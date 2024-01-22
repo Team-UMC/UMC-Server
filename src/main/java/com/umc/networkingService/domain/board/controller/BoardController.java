@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -92,7 +94,7 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.showBoards(member,hostType,boardType,pageable));
     }
 
-    @Operation(summary = "특정 게시글 상세 조회", description = "단일 게시글을 boardId를 통해 조회합니다.")
+    @Operation(summary = "특정 게시글 상세 조회 API", description = "단일 게시글을 boardId를 통해 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
@@ -102,5 +104,20 @@ public class BoardController {
     public BaseResponse<BoardDetailResponse> showBoardDetail(@CurrentMember Member member,
                                                              @PathVariable(value="boardId") UUID boardId) {
         return BaseResponse.onSuccess(boardService.showBoardDetail(member, boardId));
+    }
+
+
+    @Operation(summary = "게시글 검색 API", description = "keyword로 게시글을 검색합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+
+    })
+    @GetMapping("/search")
+    public BaseResponse<BoardPagingResponse> searchBoard(@CurrentMember Member member,
+                                                         @RequestParam(name = "keyword") String keyword,
+                                                         @PageableDefault(page = 1, sort = "created_at",
+                                                                 direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return BaseResponse.onSuccess(boardService.searchBoard(member, keyword, pageable));
     }
 }
