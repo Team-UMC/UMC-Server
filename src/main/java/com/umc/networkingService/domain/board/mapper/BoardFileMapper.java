@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BoardFileMapper {
-
-    public static BoardFile toEntity(Board board, String url) {
+    public BoardFile toBoardFileEntity(Board board, String url) {
         return BoardFile.builder()
                 .board(board)
                 .url(url).build();
     }
+
 }

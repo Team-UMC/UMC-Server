@@ -4,9 +4,7 @@ package com.umc.networkingService.domain.board.entity;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -14,6 +12,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class BoardHeart extends BaseEntity {
@@ -31,4 +31,13 @@ public class BoardHeart extends BaseEntity {
     private Board board;
 
     private boolean isChecked;
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
+    public void toggleHeart() {
+        this.isChecked= !this.isChecked;
+    }
+
 }

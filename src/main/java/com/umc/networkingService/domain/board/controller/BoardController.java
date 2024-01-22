@@ -11,19 +11,15 @@ import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseResponse;
-import com.umc.networkingService.global.common.validation.annotation.ValidEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -120,4 +116,15 @@ public class BoardController {
 
         return BaseResponse.onSuccess(boardService.searchBoard(member, keyword, pageable));
     }
+
+    @Operation(summary = "게시글 추천/취소 API", description = "한번 클릭하면 추천, 한번 더 클릭하면 취소됩니다.")
+    @ApiResponses(value= {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @PostMapping ("/{boardId}/heart")
+    public BaseResponse<BoardIdResponse> toggleBoardLike(@CurrentMember Member member,
+                                                   @PathVariable(value = "boardId") UUID boardId) {
+        return BaseResponse.onSuccess(boardService.toggleBoardLike(member,boardId));
+    }
+
 }

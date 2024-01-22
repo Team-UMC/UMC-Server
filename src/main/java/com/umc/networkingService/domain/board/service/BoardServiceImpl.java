@@ -6,11 +6,10 @@ import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.entity.Board;
-import com.umc.networkingService.domain.board.entity.BoardFile;
-import com.umc.networkingService.domain.board.entity.BoardType;
-import com.umc.networkingService.domain.board.entity.HostType;
+import com.umc.networkingService.domain.board.entity.*;
+import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
+import com.umc.networkingService.domain.board.repository.BoardHeartRepository;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
@@ -25,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,6 +36,9 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileService boardFileService;
     private final BoardMapper boardMapper;
+
+    private final BoardHeartRepository boardHeartRepository;
+    private final BoardHeartMapper boardHeartMapper;
 
 
     @Override
@@ -49,7 +52,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = loadEntity(boardId);
 
         //조회수 증가
-        board.incrementHitCount();
+        board.increaseHitCount();
 
         //해당 게시글의 모든 첨부파일 url
         List<String> boardFiles =  boardFileService.findBoardFiles(board).stream()
@@ -64,6 +67,25 @@ public class BoardServiceImpl implements BoardService {
 
         return boardMapper.toBoardPagingResponse(boardRepository.findKeywordBoards(member, keyword, pageable));
 
+    }
+
+    @Override
+    @Transactional
+    public BoardIdResponse toggleBoardLike(Member member, UUID boardId) {
+        Board board = loadEntity(boardId);
+
+        BoardHeart boardHeart = boardHeartRepository.findByMemberAndBoard(member, board)
+                .orElseGet(() -> {
+                    BoardHeart newHeart = boardHeartMapper.toBoardHeartEntity(board, member);
+                    boardHeartRepository.save(newHeart);
+                    board.addBoardHeart(newHeart);
+                    return newHeart;
+                });
+
+        boardHeart.toggleHeart();
+        board.setHeartCount(boardHeart.isChecked());
+
+        return new BoardIdResponse(boardId);
     }
 
     @Override

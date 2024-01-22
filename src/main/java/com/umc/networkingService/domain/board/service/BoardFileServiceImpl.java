@@ -4,6 +4,7 @@ package com.umc.networkingService.domain.board.service;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardFile;
 import com.umc.networkingService.domain.board.mapper.BoardFileMapper;
+import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardFileRepository;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,14 @@ import java.util.List;
 public class BoardFileServiceImpl implements BoardFileService {
 
     private final BoardFileRepository boardFileRepository;
+    private final BoardFileMapper boardFileMapper;
     private final S3FileComponent s3FileComponent;
 
     @Override
     @Transactional
     public void uploadBoardFiles (Board board, List<MultipartFile> files) {
-        files.forEach(file -> boardFileRepository.save(BoardFileMapper
-                .toEntity(board, s3FileComponent.uploadFile("Board", file))));
+        files.forEach(file -> boardFileRepository.save(boardFileMapper
+                .toBoardFileEntity(board, s3FileComponent.uploadFile("Board", file))));
     }
 
     @Override

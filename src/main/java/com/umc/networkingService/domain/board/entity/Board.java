@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.entity;
 
+import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -60,6 +61,10 @@ public class Board extends BaseEntity {
 
     private boolean isFixed; //notice가 아니면 null
 
+    @Builder.Default
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<BoardHeart> hearts = new ArrayList<>();
+
     public void update(HostType hostType,BoardType boardType, String title, String content, List<Semester> semesters) {
         this.hostType = hostType;
         this.boardType = boardType;
@@ -68,8 +73,23 @@ public class Board extends BaseEntity {
         this.semesterPermission = semesters;
     }
 
-    public void incrementHitCount() {
+    public void increaseHitCount() {
         this.hitCount++;
     }
 
+
+    //연관관계 메서드
+    public void addBoardHeart(BoardHeart boardHeart) {
+        hearts.add(boardHeart);
+        boardHeart.setBoard(this);
+    }
+
+
+    public void setHeartCount(boolean isChecked) {
+        if (isChecked) {
+            this.heartCount++;
+        } else {
+            this.heartCount--;
+        }
+    }
 }
