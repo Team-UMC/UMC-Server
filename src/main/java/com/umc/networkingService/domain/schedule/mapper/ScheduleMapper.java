@@ -16,7 +16,7 @@ public class ScheduleMapper {
 
     public ScheduleInfo toScheduleInfo(Schedule schedule) {
         return ScheduleInfo.builder()
-                .id(schedule.getId())
+                .scheduleId(schedule.getId())
                 .startDateTime(schedule.getStartDateTime())
                 .endDateTime(schedule.getEndDateTime())
                 .hostType(schedule.getHostType().toString())
