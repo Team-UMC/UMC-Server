@@ -37,7 +37,7 @@ public class BoardController {
     @Operation(summary = "게시글 작성 API", description = "게시글을 작성하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "MEMBER002", description = "게시글을 쓸 권한이 없을 경우 발생"),
+            @ApiResponse(responseCode = "MEMBER006", description = "게시글을 쓸 권한이 없을 경우 발생"),
             @ApiResponse(responseCode = "BOARD001", description = "WORKBOOK 게시판과 CENTER, BRANCH를 선택했을 경우 금지된 요청")
     })
     @PostMapping
@@ -51,7 +51,7 @@ public class BoardController {
     @Operation(summary = "게시글 수정 API", description = "게시글을 수정하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "MEMBER002", description = "게시글을 쓸 권한이 없을 경우 발생"),
+            @ApiResponse(responseCode = "MEMBER006", description = "게시글을 쓸 권한이 없을 경우 발생"),
             @ApiResponse(responseCode = "BOARD001", description = "WORKBOOK 게시판과 CENTER, BRANCH를 선택했을 경우 금지된 요청"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
     })
@@ -120,6 +120,7 @@ public class BoardController {
     @Operation(summary = "게시글 추천/취소 API", description = "한번 클릭하면 추천, 한번 더 클릭하면 취소됩니다.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
     })
     @PostMapping ("/{boardId}/heart")
     public BaseResponse<BoardIdResponse> toggleBoardLike(@CurrentMember Member member,
