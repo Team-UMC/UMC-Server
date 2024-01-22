@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface MemberPositionService {
     void saveMemberPositionInfos(Member member,  List<String> campusPositions, List<String> centerPositions);
-
 }
