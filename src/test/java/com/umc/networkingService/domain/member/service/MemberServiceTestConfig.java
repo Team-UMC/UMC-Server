@@ -7,8 +7,11 @@ import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
+import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Part;
@@ -24,7 +27,9 @@ import java.util.UUID;
 @SpringBootTest
 public abstract class MemberServiceTestConfig {
 
+    @Autowired protected MemberMapper memberMapper;
     @Autowired protected MemberRepository memberRepository;
+    @Autowired protected SemesterPartRepository semesterPartRepository;
     @Autowired protected UniversityRepository universityRepository;
     @Autowired protected BranchRepository branchRepository;
     @Autowired protected BranchUniversityRepository branchUniversityRepository;
@@ -57,18 +62,24 @@ public abstract class MemberServiceTestConfig {
         );
     }
 
-    protected void setInfo(Member nowMember) {
-        MemberSignUpRequest request = MemberSignUpRequest.builder()
+    protected MemberSignUpRequest getInfoRequest(Member nowMember) {
+        return MemberSignUpRequest.builder()
                 .name("김준석")
                 .nickname("벡스")
                 .universityName("인하대학교")
-                .parts(List.of(Part.SPRING))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(createSemesterPart(member)))
                 .campusPositions(List.of("Android 파트장"))
                 .centerPositions(List.of())
                 .build();
+    }
 
-        nowMember.setMemberInfo(request, Role.BRANCH_STAFF, university, branch);
+    protected List<SemesterPart> createSemesterPart(Member member) {
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.THIRD).build(),
+                SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FOURTH).build()
+        );
+
+        return semesterPartRepository.saveAll(semesterParts);
     }
 
     protected void setToken(UUID memberId) {

@@ -38,6 +38,8 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
 
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private MemberPositionRepository memberPositionRepository;
@@ -135,8 +137,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
         MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
                 .campusPositions(List.of("회장"))
                 .centerPositions(List.of())
-                .parts(List.of(Part.SPRING, Part.ANDROID))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(createSemesterPart(member)))
                 .build();
 
         Optional<MemberPosition> optionalMemberPosition = member.getPositions().stream().findFirst();
@@ -152,8 +153,8 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
         Member savedMember = optionalMember.get();
 
         assertEquals(1, savedMember.getPositions().size());
-        assertEquals(2, savedMember.getParts().size());
-        assertEquals(3, savedMember.getSemesters().size());
+        assertEquals(2, savedMember.getSemesterParts().size());
+        assertEquals(Role.BRANCH_STAFF, savedMember.getRole());
         assertFalse(memberPositionRepository.findByIdAndDeletedAtIsNull(memberPositionId).isPresent());
     }
 
@@ -168,8 +169,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
         MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
                 .campusPositions(List.of("회장"))
                 .centerPositions(List.of())
-                .parts(List.of(Part.SPRING, Part.ANDROID))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(createSemesterPart(member)))
                 .build();
 
 
@@ -185,8 +185,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
         Member savedMember = optionalMember.get();
 
         assertEquals(0, savedMember.getPositions().size());
-        assertEquals(0, savedMember.getParts().size());
-        assertEquals(0, savedMember.getSemesters().size());
+        assertEquals(0, savedMember.getSemesterParts().size());
     }
 
     @Test
@@ -199,8 +198,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
         MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
                 .campusPositions(List.of())
                 .centerPositions(List.of("회장"))
-                .parts(List.of(Part.SPRING, Part.ANDROID))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(createSemesterPart(member)))
                 .build();
 
 
@@ -216,8 +214,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
         Member savedMember = optionalMember.get();
 
         assertEquals(0, savedMember.getPositions().size());
-        assertEquals(0, savedMember.getParts().size());
-        assertEquals(0, savedMember.getSemesters().size());
+        assertEquals(0, savedMember.getSemesterParts().size());
     }
 
     @Test
@@ -225,7 +222,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
     @Transactional
     public void inquiryMyProfile() {
         // given
-        setInfo(member);
+        authService.signUp(member, getInfoRequest(member));
 
         // when
         MemberInquiryProfileResponse response = memberService.inquiryProfile(member, null);
@@ -241,9 +238,9 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
     @Transactional
     public void inquiryFriendProfile() {
         // given
-        setInfo(member);
-
         Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
+
+        authService.signUp(member, getInfoRequest(member));
 
         friendRepository.save(Friend.builder()
                 .sender(loginMember)
@@ -264,9 +261,9 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
     @Transactional
     public void inquiryOthersProfile() {
         // given
-        setInfo(member);
-
         Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
+
+        authService.signUp(member, getInfoRequest(member));
 
         // when
         MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
@@ -282,20 +279,20 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
     @Transactional
     public void inquiryHomeInfo() {
         // given
-        setInfo(member);
+        authService.signUp(member, getInfoRequest(member));
         member.updateContributionPoint(1000L);
 
         Member universityMember1 = createMember("222222", Role.MEMBER);
-        setInfo(universityMember1);
+        authService.signUp(universityMember1, getInfoRequest(universityMember1));
         universityMember1.updateContributionPoint(2000L);
         Member universityMember2 = createMember("333333", Role.MEMBER);
-        setInfo(universityMember2);
+        authService.signUp(universityMember2, getInfoRequest(universityMember2));
         universityMember2.updateContributionPoint(2000L);
         Member universityMember3 = createMember("444444", Role.MEMBER);
-        setInfo(universityMember3);
+        authService.signUp(universityMember3, getInfoRequest(universityMember3));
         universityMember3.updateContributionPoint(3000L);
         Member universityMember4 = createMember("555555", Role.MEMBER);
-        setInfo(universityMember4);
+        authService.signUp(universityMember4, getInfoRequest(universityMember4));
         universityMember4.updateContributionPoint(1000L);
 
         // when

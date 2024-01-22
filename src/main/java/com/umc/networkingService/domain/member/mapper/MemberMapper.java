@@ -75,7 +75,7 @@ public class MemberMapper {
                 .build();
     }
 
-    private List<SemesterPartInfo> toSemesterPartInfos(List<SemesterPart> semesterParts) {
+    public List<SemesterPartInfo> toSemesterPartInfos(List<SemesterPart> semesterParts) {
         return semesterParts.stream()
                 .map(this::toSemesterPartInfo)
                 .toList();

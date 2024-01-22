@@ -46,5 +46,4 @@ public abstract class MemberControllerTestConfig {
         accessToken = jwtTokenProvider.generateAccessToken(member.getId());
         refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
     }
-
 }

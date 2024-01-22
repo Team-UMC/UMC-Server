@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.request.SemesterPartInfo;
 import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Part;
@@ -32,8 +33,7 @@ public class AuthServiceIntegrationTest extends MemberServiceTestConfig {
                 .name("김준석")
                 .nickname("벡스")
                 .universityName("인하대학교")
-                .parts(List.of(Part.SPRING))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(createSemesterPart(member)))
                 .campusPositions(List.of("Android 파트장"))
                 .centerPositions(List.of())
                 .build();
@@ -50,8 +50,7 @@ public class AuthServiceIntegrationTest extends MemberServiceTestConfig {
         assertEquals("벡스", savedMember.getNickname());
         assertEquals("GACI", savedMember.getBranch().getName());
         assertEquals("인하대학교", savedMember.getUniversity().getName());
-        assertEquals(1, savedMember.getParts().size());
-        assertEquals(2, savedMember.getSemesters().size());
+        assertEquals(2, savedMember.getSemesterParts().size());
         assertEquals(1, savedMember.getPositions().size());
     }
 

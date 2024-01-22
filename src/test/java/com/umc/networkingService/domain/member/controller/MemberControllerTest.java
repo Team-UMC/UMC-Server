@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfile
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
 import com.umc.networkingService.domain.member.entity.PointType;
+import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Part;
@@ -105,14 +106,18 @@ public class MemberControllerTest extends MemberControllerTestConfig {
     @Test
     public void inquiryMyProfileTest() throws Exception {
         // given
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().semester(Semester.THIRD).part(Part.ANDROID).build(),
+                SemesterPart.builder().semester(Semester.FOURTH).part(Part.SPRING).build()
+        );
+
         MemberInquiryProfileResponse response = MemberInquiryProfileResponse.builder()
                 .memberId(member.getId())
                 .profileImage("profileImage")
                 .universityName("인하대학교")
                 .name("김준석")
                 .nickname("벡스")
-                .parts(List.of(Part.SPRING, Part.ANDROID))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(semesterParts))
                 .statusMessage("아자아자 화이팅")
                 .owner(MemberRelation.MINE)
                 .build();
@@ -134,14 +139,18 @@ public class MemberControllerTest extends MemberControllerTestConfig {
     @Test
     public void inquiryOthersProfileTest() throws Exception {
         // given
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().semester(Semester.THIRD).part(Part.ANDROID).build(),
+                SemesterPart.builder().semester(Semester.FOURTH).part(Part.SPRING).build()
+        );
+
         MemberInquiryProfileResponse response = MemberInquiryProfileResponse.builder()
                 .memberId(member.getId())
                 .profileImage("profileImage")
                 .universityName("인하대학교")
                 .name("김준석")
                 .nickname("벡스")
-                .parts(List.of(Part.SPRING, Part.ANDROID))
-                .semesters(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(memberMapper.toSemesterPartInfos(semesterParts))
                 .statusMessage("아자아자 화이팅")
                 .owner(MemberRelation.OTHERS)
                 .build();
