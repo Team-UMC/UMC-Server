@@ -7,6 +7,8 @@ import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -109,12 +111,10 @@ public class Member extends BaseEntity {
     public Semester getRecentSemester() {
         List<SemesterPart> semesterParts = this.getSemesterParts();
 
-        List<Semester> semesters = semesterParts.stream()
+        return semesterParts.stream()
                 .map(SemesterPart::getSemester)
-                .sorted(Comparator.comparingInt(Enum::ordinal))  // 순서대로 정렬
-                .collect(Collectors.toList());
-
-        return semesters.get(semesters.size() - 1);
+                .max(Comparator.comparingInt(Enum::ordinal))
+                .orElseThrow(()-> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
     }
 
     public Part getRecentPart() {
