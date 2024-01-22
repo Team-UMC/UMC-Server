@@ -5,7 +5,7 @@ import com.umc.networkingService.domain.board.entity.BoardFile;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BoardImageMapper {
+public class BoardFileMapper {
 
     public static BoardFile toEntity(Board board, String url) {
         return BoardFile.builder()

@@ -3,7 +3,7 @@ package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardFile;
-import com.umc.networkingService.domain.board.mapper.BoardImageMapper;
+import com.umc.networkingService.domain.board.mapper.BoardFileMapper;
 import com.umc.networkingService.domain.board.repository.BoardFileRepository;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class BoardFileServiceImpl implements BoardFileService {
     @Override
     @Transactional
     public void uploadBoardFiles (Board board, List<MultipartFile> files) {
-        files.forEach(file -> boardFileRepository.save(BoardImageMapper
+        files.forEach(file -> boardFileRepository.save(BoardFileMapper
                 .toEntity(board, s3FileComponent.uploadFile("Board", file))));
     }
 
@@ -31,7 +31,7 @@ public class BoardFileServiceImpl implements BoardFileService {
     @Transactional
     public void updateBoardFiles (Board board, List<MultipartFile> files) {
 
-        List<BoardFile> boardFiles = boardFileRepository.findAllByBoard(board);
+        List<BoardFile> boardFiles = findBoardFiles(board);
 
         boardFiles.forEach(file -> {
             s3FileComponent.deleteFile(file.getUrl());
@@ -45,14 +45,31 @@ public class BoardFileServiceImpl implements BoardFileService {
     @Override
     @Transactional
     public void deleteBoardFiles(Board board) {
-        List<BoardFile> boardFiles = boardFileRepository.findAllByBoard(board);
+        List<BoardFile> boardFiles = findBoardFiles(board);
 
         boardFiles.forEach(BoardFile::delete);
     }
 
+    @Override
     public List<BoardFile> findBoardFiles(Board board) {
         return boardFileRepository.findAllByBoard(board);
     }
 
+
+    @Override
+    public String findThumbnailImage(Board board) {
+        //이미지 파일이 있으면 가장 첫번째 이미지를 thumbnail로 반환, 없으면 null 반환
+        return findBoardFiles(board).stream()
+                .filter(file -> isImageFile(file.getUrl()))
+                .findFirst()
+                .map(BoardFile::getUrl) 
+                .orElse(null);
+    }
+
+    public static boolean isImageFile(String url) {
+        String lowerCaseUrl = url.toLowerCase();
+        return lowerCaseUrl.endsWith(".jpg") || lowerCaseUrl.endsWith(".jpeg") ||
+                lowerCaseUrl.endsWith(".png") || lowerCaseUrl.endsWith(".gif");
+    }
 
 }

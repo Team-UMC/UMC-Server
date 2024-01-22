@@ -40,7 +40,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardPagingResponse showBoards(Member member,HostType hostType, BoardType boardType, Pageable pageable) {
-
         return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member,hostType,boardType,pageable));
     }
 

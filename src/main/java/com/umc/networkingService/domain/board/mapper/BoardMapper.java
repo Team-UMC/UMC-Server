@@ -6,15 +6,19 @@ import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
+import com.umc.networkingService.domain.board.service.BoardFileService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Semester;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class BoardMapper {
+    private final BoardFileService boardFileService;
     public Board toEntity(Member member, String title, String content, HostType hostType, BoardType boardType,
                                  List<Semester> semesterPermission) {
         return Board.builder()
@@ -33,6 +37,7 @@ public class BoardMapper {
                 .profileImage(board.getWriter().getProfileImage())
                 .title(board.getTitle())
                 .content(board.getContent())
+                .thumbnail(boardFileService.findThumbnailImage(board))
                 .hitCount(board.getHitCount())
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())

@@ -6,7 +6,6 @@ import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
@@ -22,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,10 +84,8 @@ public class BoardController {
     })
     @GetMapping
     public BaseResponse<BoardPagingResponse> showBoards(@CurrentMember Member member,
-                                                        @RequestParam(name = "host")
-                                                        @ValidEnum(enumClass = HostType.class) HostType hostType,
-                                                        @RequestParam(name = "board")
-                                                            @ValidEnum(enumClass = BoardType.class) BoardType boardType,
+                                                        @RequestParam(name = "host") HostType hostType,
+                                                        @RequestParam(name = "board") BoardType boardType,
                                                         @PageableDefault(page = 1, sort = "created_at",
                                                                 direction = Sort.Direction.DESC) Pageable pageable) {
 

@@ -144,6 +144,29 @@ public class BoardServiceIntegrationTest {
     @Test
     @DisplayName("특정 게시판의 게시글 목록 조회 테스트")
     public void showBoardsTest() {
+
+        //given
+        BoardCreateRequest request = BoardCreateRequest.builder()
+                .title("제목")
+                .content("내용")
+                .boardType(BoardType.FREE)
+                .hostType(HostType.CAMPUS)
+                .build();
+
+        List<MultipartFile> files = new ArrayList<>();
+        files.add(new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes()));
+        files.add(new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes()));
+
+        //when
+        BoardIdResponse response = boardService.createBoard(member, request, files);
+
+        //then
+        Optional<Board> optionalBoard = boardRepository.findById(response.getBoardId());
+        assertTrue(optionalBoard.isPresent());
+        Board board = optionalBoard.get();
+
+        List<BoardFile> boardFiles = boardFileRepository.findAllByBoard(board);
+
         //given
         HostType hostType = HostType.CAMPUS;
         BoardType boardType = BoardType.FREE;
