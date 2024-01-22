@@ -15,7 +15,6 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.RefreshToken;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
-import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Part;
@@ -29,10 +28,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -53,6 +50,7 @@ public class MemberServiceIntegrationTest {
 
     @MockBean private KakaoMemberClient kakaoMemberClient;
     @MockBean private GoogleMemberClient googleMemberClient;
+    @MockBean private NaverMemberClient naverMemberClient;
 
     private Member member;
     private University university;
@@ -187,6 +185,34 @@ public class MemberServiceIntegrationTest {
         assertEquals(sub, savedMember.getClientId());
         assertEquals(Role.MEMBER, savedMember.getRole());
         assertEquals(SocialType.GOOGLE, savedMember.getSocialType());
+
+        // 리프레시 토큰 저장 상태 테스트
+        RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId());
+        assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
+    }
+
+    @Test
+    @DisplayName("네이버 로그인 테스트")
+    @Transactional
+    public void naverLoginTest() {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+        String clientId = "abcdefg";
+
+        given(naverMemberClient.getnaverClientID(any())).willReturn(clientId);
+
+        //when
+        MemberLoginResponse response = memberService.socialLogin(accessToken, SocialType.NAVER);
+
+        //then
+        // 멤버 저장 상태 테스트
+        Optional<Member> optionalMember = memberRepository.findById(response.getMemberId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(clientId, savedMember.getClientId());
+        assertEquals(Role.MEMBER, savedMember.getRole());
+        assertEquals(SocialType.NAVER, savedMember.getSocialType());
 
         // 리프레시 토큰 저장 상태 테스트
         RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId());
