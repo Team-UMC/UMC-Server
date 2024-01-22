@@ -158,7 +158,8 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.KAKAO);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get(), true);
+        boolean isServiceMember = getMember.get().getName() != null;
+        return getNewToken(getMember.get(), isServiceMember);
     }
 
     private MemberLoginResponse loginByNaver(final String accessToken){
