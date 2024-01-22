@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
-public class BoardImage extends BaseEntity {
+public class BoardFile extends BaseEntity {
 
     @Id
     @UuidGenerator

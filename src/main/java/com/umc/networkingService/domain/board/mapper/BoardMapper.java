@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.mapper;
 
+import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
 import com.umc.networkingService.domain.board.entity.Board;
@@ -28,7 +29,7 @@ public class BoardMapper {
 
     public BoardPagePostResponse toBoardPagePostResponse(Board board) {
         return BoardPagePostResponse.builder()
-                .writer(board.getWriter().getName())
+                .writer(board.getWriter().getNickname()+"/"+board.getWriter().getName())
                 .profileImage(board.getWriter().getProfileImage())
                 .title(board.getTitle())
                 .content(board.getContent())
@@ -50,5 +51,23 @@ public class BoardMapper {
                 .isLast(boards.isLast())
                 .build();
 
+    }
+
+    public BoardDetailResponse toBoardDetailResponse(Board board, List<String> boardFiles) {
+        return BoardDetailResponse.builder()
+                .hostType(board.getHostType())
+                .boardType(board.getBoardType())
+                .writer(board.getWriter().getNickname()+"/"+board.getWriter().getName())
+                .profileImage(board.getWriter().getProfileImage())
+                //.part(board.getWriter().getPart().)
+                .semester(board.getWriter().getRecentSemester())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .hitCount(board.getHitCount())
+                .heartCount(board.getHeartCount())
+                .commentCount(board.getCommentCount())
+                .boardFiles(boardFiles)
+                .createdAt(board.getCreatedAt())
+                .build();
     }
 }

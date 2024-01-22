@@ -3,8 +3,10 @@ package com.umc.networkingService.domain.board.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
@@ -78,6 +80,7 @@ public class BoardController {
     @Operation(summary = "특정 게시판의 게시글 목록 조회 API", description = "특정 게시판의 게시글 목록을 조회하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+
     })
     @GetMapping
     public BaseResponse<BoardPagingResponse> showBoards(@CurrentMember Member member,
@@ -91,4 +94,15 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.showBoards(member,hostType,boardType,pageable));
     }
 
+    @Operation(summary = "특정 게시글 상세 조회", description = "단일 게시글을 boardId를 통해 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
+
+    })
+    @GetMapping("/{boardId}")
+    public BaseResponse<BoardDetailResponse> showBoardDetail(@CurrentMember Member member,
+                                                             @PathVariable(value="boardId") UUID boardId) {
+        return BaseResponse.onSuccess(boardService.showBoardDetail(member, boardId));
+    }
 }

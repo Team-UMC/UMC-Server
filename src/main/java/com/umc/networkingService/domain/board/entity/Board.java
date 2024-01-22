@@ -68,4 +68,8 @@ public class Board extends BaseEntity {
         this.semesterPermission = semesters;
     }
 
+    public void incrementHitCount() {
+        this.hitCount++;
+    }
+
 }

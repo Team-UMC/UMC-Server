@@ -3,15 +3,16 @@ package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
+import com.umc.networkingService.domain.board.entity.BoardFile;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ import java.util.UUID;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
-    private final BoardImageService boardImageService;
+    private final BoardFileService boardFileService;
     private final BoardMapper boardMapper;
 
 
@@ -40,6 +42,22 @@ public class BoardServiceImpl implements BoardService {
     public BoardPagingResponse showBoards(Member member,HostType hostType, BoardType boardType, Pageable pageable) {
 
         return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member,hostType,boardType,pageable));
+    }
+
+    @Override
+    public BoardDetailResponse showBoardDetail(Member member, UUID boardId) {
+
+        Board board = loadEntity(boardId);
+
+        //조회수 증가
+        board.incrementHitCount();
+
+        //해당 게시글의 모든 첨부파일 url
+        List<String> boardFiles =  boardFileService.findBoardFiles(board).stream()
+                .map(BoardFile::getUrl).toList();
+
+        return boardMapper.toBoardDetailResponse(board,boardFiles);
+
     }
 
     @Override
@@ -60,7 +78,7 @@ public class BoardServiceImpl implements BoardService {
                 semesterPermission));
 
         if (files != null)
-            boardImageService.uploadBoardImages(board,files);
+            boardFileService.uploadBoardFiles(board,files);
 
         return new BoardIdResponse(board.getId());
     }
@@ -69,7 +87,7 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     public BoardIdResponse updateBoard(Member member, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files) {
 
-        Board board = boardRepository.findById(boardId).orElseThrow(()-> new RestApiException(ErrorCode.NOT_FOUND_BOARD));
+        Board board = loadEntity(boardId);
 
         //연합, 지부, 학교 타입
         HostType hostType = request.getHostType();
@@ -84,7 +102,7 @@ public class BoardServiceImpl implements BoardService {
                 request.getContent(),
                 semesterPermission);
 
-        boardImageService.updateBoardImages(board,files);
+        boardFileService.updateBoardFiles(board,files);
 
         return new BoardIdResponse(board.getId());
     }
@@ -92,9 +110,9 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public BoardIdResponse deleteBoard(Member member, UUID boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(()-> new RestApiException(ErrorCode.NOT_FOUND_BOARD));
+        Board board = loadEntity(boardId);
 
-        boardImageService.deleteBoardImages(board);
+        boardFileService.deleteBoardFiles(board);
         board.delete();
 
         return new BoardIdResponse(board.getId());
@@ -180,4 +198,9 @@ public class BoardServiceImpl implements BoardService {
         throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
     }
 
+
+    @Override
+    public Board loadEntity(UUID id) {
+        return boardRepository.findById(id).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BOARD));
+    }
 }

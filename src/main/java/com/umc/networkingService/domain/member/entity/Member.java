@@ -83,4 +83,8 @@ public class Member extends BaseEntity {
         this.part.addAll(request.getParts());
         this.semester.addAll(request.getSemesters());
     }
+
+    public Semester getRecentSemester() {
+        return this.getSemester().get(this.getSemester().size()-1);
+    }
 }
