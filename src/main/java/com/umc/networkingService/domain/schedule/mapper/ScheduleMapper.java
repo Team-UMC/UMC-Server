@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.schedule.mapper;
 
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleDetail;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleId;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummary;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummaryInCalendar;
@@ -15,6 +16,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduleMapper {
+
+    public ScheduleDetail toScheduleDetail(Schedule schedule) {
+        return ScheduleDetail.builder()
+                .scheduleId(schedule.getId())
+                .writerId(schedule.getWriter().getId())
+                .title(schedule.getTitle())
+                .content(schedule.getContent())
+                .startDateTime(schedule.getStartDateTime())
+                .endDateTime(schedule.getEndDateTime())
+                .placeSetting(schedule.getPlaceSetting())
+                .hostType(schedule.getHostType())
+                .build();
+    }
 
     public ScheduleInfoSummaryInCalendar toScheduleInfoSummaryInCalendar(Schedule schedule) {
         return ScheduleInfoSummaryInCalendar.builder()
