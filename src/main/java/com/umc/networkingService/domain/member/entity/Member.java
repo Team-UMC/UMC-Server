@@ -61,19 +61,12 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     @Builder.Default
+    private List<SemesterPart> semesterParts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<MemberPosition> positions = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Part> parts = new ArrayList<>();
-
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    @CollectionTable(name = "member_semester", joinColumns = @JoinColumn(name = "member_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Semester> semesters = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Role role;
