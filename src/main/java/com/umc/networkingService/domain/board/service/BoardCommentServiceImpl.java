@@ -46,6 +46,15 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     }
 
     @Override
+    @Transactional
+    public BoardCommentIdResponse deleteBoardComment(Member member, UUID commentId) {
+        BoardComment comment = loadEntity(commentId);
+        comment.delete();
+
+        return new BoardCommentIdResponse(comment.getId());
+    }
+
+    @Override
     public BoardComment loadEntity(UUID commentId) {
         return boardCommentRepository.findById(commentId).orElseThrow(
                 () -> new RestApiException(ErrorCode.EMPTY_BOARD_COMMENT));
