@@ -141,7 +141,7 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.APPLE);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get());
+        return getNewToken(getMember.get(), true);
     }
 
     private MemberLoginResponse loginByKakao(final String accessToken){
@@ -155,7 +155,7 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.KAKAO);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get());
+        return getNewToken(getMember.get(), true);
     }
 
     private MemberLoginResponse loginByNaver(final String accessToken){
@@ -169,7 +169,7 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId,SocialType.NAVER);
         }
         // 2. 있으면 (이미 로그인 했던 적이 있는 경우)
-        return getNewToken(getMember.get());
+        return getNewToken(getMember.get(), true);
     }
 
     private MemberLoginResponse loginByGoogle(final String accessToken){
@@ -183,23 +183,23 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.GOOGLE);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get());
+        return getNewToken(getMember.get(), true);
     }
 
     private MemberLoginResponse saveNewMember(String clientId, SocialType socialType) {
         Member member = memberMapper.toMember(clientId, socialType);
         Member newMember =  memberRepository.save(member);
 
-        return getNewToken(newMember);
+        return getNewToken(newMember, false);
     }
 
-    private MemberLoginResponse getNewToken(Member member) {
+    private MemberLoginResponse getNewToken(Member member, boolean isServiceMember) {
         // jwt 토큰 생성
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId());
         // refreshToken 디비에 저장
         refreshTokenService.saveTokenInfo(tokenInfo.getRefreshToken(), member.getId());
 
-        return memberMapper.toLoginMember(member, tokenInfo);
+        return memberMapper.toLoginMember(member, tokenInfo, isServiceMember);
     }
 
     // member 객체를 이용한 refreshToken 삭제 함수

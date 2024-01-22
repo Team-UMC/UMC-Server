@@ -11,4 +11,5 @@ public class MemberLoginResponse {
     private UUID memberId;
     private String accessToken;
     private String refreshToken;
+    private boolean isServiceMember;
 }

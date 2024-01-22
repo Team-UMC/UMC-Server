@@ -28,11 +28,12 @@ public class MemberMapper {
                 .build();
     }
 
-    public MemberLoginResponse toLoginMember(final Member member, TokenInfo tokenInfo) {
+    public MemberLoginResponse toLoginMember(final Member member, TokenInfo tokenInfo, boolean isServiceMember) {
         return MemberLoginResponse.builder()
                 .memberId(member.getId())
                 .accessToken(tokenInfo.getAccessToken())
                 .refreshToken(tokenInfo.getRefreshToken())
+                .isServiceMember(isServiceMember)
                 .build();
     }
     public MemberPosition toMemberPosition(Member member, PositionType type, String position) {
