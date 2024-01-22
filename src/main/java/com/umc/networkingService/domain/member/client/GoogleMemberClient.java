@@ -23,9 +23,9 @@ public class GoogleMemberClient {
                 .bodyToMono(GoogleResponse.class)
                 .block();
 
-        //TODO 정보 받기 실패 예외 처리
         if(response == null)
             throw new RestApiException(ErrorCode._INTERNAL_SERVER_ERROR);
+
         return response.getSub();
     }
 }

@@ -1,14 +1,16 @@
 package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
+import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
-import com.umc.networkingService.global.common.Part;
-import com.umc.networkingService.global.common.Role;
-import com.umc.networkingService.global.common.Semester;
+import com.umc.networkingService.global.common.enums.Part;
+import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -22,6 +24,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SQLRestriction("deleted_at is null")
+@DynamicInsert
 public class Member extends BaseEntity {
     @Id
     @UuidGenerator
@@ -55,22 +58,31 @@ public class Member extends BaseEntity {
     private SocialType socialType;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Part> part = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     @CollectionTable(name = "member_semester", joinColumns = @JoinColumn(name = "member_id"))
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<Semester> semester=new ArrayList<>();
+    private List<Semester> semester = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Enumerated(EnumType.STRING)
-    private Position position;
-
     private String gitNickname;
 
     private  String notionLink;
+
+    public void setMemberInfo(MemberSignUpRequest request, Role role, University university, Branch branch) {
+        this.name = request.getName();
+        this.nickname = request.getNickname();
+        this.role = role;
+        this.university = university;
+        this.branch = branch;
+        this.part.addAll(request.getParts());
+        this.semester.addAll(request.getSemesters());
+    }
 }

@@ -28,7 +28,6 @@ public class KakaoMemberClient {
         if(response == null)
             throw new RestApiException(ErrorCode._INTERNAL_SERVER_ERROR);
 
-        // TODO 정보 받기 실패 예외처리
         return response.getId();
     }
 }

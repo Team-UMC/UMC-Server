@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: umc-service-local
+    name: umc-service-test
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
