@@ -14,7 +14,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class BoardHeart extends BaseEntity {
     @Id
@@ -23,11 +23,11 @@ public class BoardHeart extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,name="member_id")
+    @JoinColumn(nullable = false, name = "member_id")
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,name="board_id")
+    @JoinColumn(nullable = false, name = "board_id")
     private Board board;
 
     private boolean isChecked;
@@ -37,7 +37,7 @@ public class BoardHeart extends BaseEntity {
     }
 
     public void toggleHeart() {
-        this.isChecked= !this.isChecked;
+        this.isChecked = !this.isChecked;
     }
 
 }

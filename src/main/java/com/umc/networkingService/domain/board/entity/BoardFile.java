@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class BoardFile extends BaseEntity {
 
@@ -22,7 +22,7 @@ public class BoardFile extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="board_id")
+    @JoinColumn(name = "board_id")
     private Board board;
 
     @Column(nullable = false)

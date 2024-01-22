@@ -15,8 +15,10 @@ import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
+import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Part;
@@ -59,6 +61,9 @@ public class BoardServiceIntegrationTest {
     private UniversityRepository universityRepository;
     @Autowired
     private BranchRepository branchRepository;
+    @Autowired
+    private SemesterPartRepository semesterPartRepository;
+
 
 
     private Member member;
@@ -86,10 +91,19 @@ public class BoardServiceIntegrationTest {
                 .role(Role.MEMBER)
                 .name("김준석")
                 .nickname("벡스")
-                .part(List.of(Part.SPRING))
-                .semester(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
+                .semesterParts(createSemesterPart(member))
                 .build());
     }
+
+    protected List<SemesterPart> createSemesterPart(Member member) {
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.THIRD).build(),
+                SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FIFTH).build()
+        );
+
+        return semesterPartRepository.saveAll(semesterParts);
+    }
+
 
     private Member createMember2() {
         return memberRepository.save(Member.builder()
@@ -101,8 +115,7 @@ public class BoardServiceIntegrationTest {
                 .role(Role.MEMBER)
                 .name("김수민")
                 .nickname("루시")
-                .part(List.of(Part.SPRING))
-                .semester(List.of(Semester.FIFTH))
+                .semesterParts(createSemesterPart(member2))
                 .build());
     }
 

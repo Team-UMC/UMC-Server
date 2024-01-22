@@ -18,10 +18,16 @@ import java.util.UUID;
 
 public interface BoardService extends EntityLoader<Board, UUID> {
     BoardIdResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files);
+
     BoardIdResponse updateBoard(Member member, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files);
+
     BoardIdResponse deleteBoard(Member member, UUID boardId);
-    BoardPagingResponse showBoards(Member member,HostType host, BoardType board, Pageable pageable);
+
+    BoardPagingResponse showBoards(Member member, HostType host, BoardType board, Pageable pageable);
+
     BoardDetailResponse showBoardDetail(Member member, UUID boardId);
+
     BoardPagingResponse searchBoard(Member member, String keyword, Pageable pageable);
+
     BoardIdResponse toggleBoardLike(Member member, UUID boardId);
 }

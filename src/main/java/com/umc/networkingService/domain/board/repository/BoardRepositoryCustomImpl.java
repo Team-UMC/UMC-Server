@@ -17,7 +17,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
+public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     private final JPAQueryFactory query;
 
     @Override
@@ -43,7 +43,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
         }
 
         List<Board> boards = query.selectFrom(board).where(predicate).fetch();
-        return new PageImpl<>(boards,pageable,boards.size());
+        return new PageImpl<>(boards, pageable, boards.size());
     }
 
     @Override
@@ -56,7 +56,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
                         .and(board.deletedAt.isNull()))
                 .fetch();
 
-        return new PageImpl<>(boards, pageable,boards.size());
+        return new PageImpl<>(boards, pageable, boards.size());
     }
 
 

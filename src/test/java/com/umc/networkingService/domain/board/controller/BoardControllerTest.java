@@ -13,8 +13,10 @@ import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
+import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -59,6 +61,12 @@ public class BoardControllerTest {
     private BoardService boardService;
     @MockBean
     private MemberRepository memberRepository;
+
+    @Autowired
+    private SemesterPartRepository semesterPartRepository;
+
+
+
     private Member member;
     private Board board;
     private String accessToken;
@@ -71,17 +79,27 @@ public class BoardControllerTest {
     }
 
     private Member createMember() {
-        return Member.builder()
+        return memberRepository.save(Member.builder()
                 .id(UUID.randomUUID())
                 .clientId("123456")
                 .socialType(SocialType.KAKAO)
                 .role(Role.MEMBER)
                 .name("김준석")
                 .nickname("벡스")
-                .part(List.of(Part.SPRING))
-                .semester(List.of(Semester.THIRD, Semester.FOURTH, Semester.FIFTH))
-                .build();
+                .semesterParts(createSemesterPart(member))
+                .build());
     }
+
+    protected List<SemesterPart> createSemesterPart(Member member) {
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.THIRD).build(),
+                SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FOURTH).build()
+        );
+
+        return semesterPartRepository.saveAll(semesterParts);
+    }
+
+
 
     private Board createBoard() {
         return Board.builder()

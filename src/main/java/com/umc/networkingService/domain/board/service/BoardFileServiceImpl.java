@@ -4,7 +4,6 @@ package com.umc.networkingService.domain.board.service;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardFile;
 import com.umc.networkingService.domain.board.mapper.BoardFileMapper;
-import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardFileRepository;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,14 +24,14 @@ public class BoardFileServiceImpl implements BoardFileService {
 
     @Override
     @Transactional
-    public void uploadBoardFiles (Board board, List<MultipartFile> files) {
+    public void uploadBoardFiles(Board board, List<MultipartFile> files) {
         files.forEach(file -> boardFileRepository.save(boardFileMapper
                 .toBoardFileEntity(board, s3FileComponent.uploadFile("Board", file))));
     }
 
     @Override
     @Transactional
-    public void updateBoardFiles (Board board, List<MultipartFile> files) {
+    public void updateBoardFiles(Board board, List<MultipartFile> files) {
 
         List<BoardFile> boardFiles = findBoardFiles(board);
 
@@ -40,7 +40,7 @@ public class BoardFileServiceImpl implements BoardFileService {
             boardFileRepository.deleteById(file.getId());
         });
 
-        if(files !=null)
+        if (files != null)
             uploadBoardFiles(board, files);
     }
 
@@ -64,10 +64,11 @@ public class BoardFileServiceImpl implements BoardFileService {
         return findBoardFiles(board).stream()
                 .filter(file -> isImageFile(file.getUrl()))
                 .findFirst()
-                .map(BoardFile::getUrl) 
+                .map(BoardFile::getUrl)
                 .orElse(null);
     }
 
+    //이미지파일인지 확인
     public static boolean isImageFile(String url) {
         String lowerCaseUrl = url.toLowerCase();
         return lowerCaseUrl.endsWith(".jpg") || lowerCaseUrl.endsWith(".jpeg") ||

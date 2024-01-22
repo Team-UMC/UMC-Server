@@ -65,7 +65,7 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<BoardHeart> hearts = new ArrayList<>();
 
-    public void update(HostType hostType,BoardType boardType, String title, String content, List<Semester> semesters) {
+    public void update(HostType hostType, BoardType boardType, String title, String content, List<Semester> semesters) {
         this.hostType = hostType;
         this.boardType = boardType;
         this.title = title;

@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfile
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -111,6 +113,12 @@ public class Member extends BaseEntity {
     }
 
     public Semester getRecentSemester() {
-        return this.getSemester().get(this.getSemester().size()-1);
+        List<SemesterPart> semesterParts = this.getSemesterParts();
+
+        List<Semester> semesters = semesterParts.stream()
+                .map(SemesterPart::getSemester).toList();
+
+        return semesters.get(semesters.size() - 1);
     }
+
 }

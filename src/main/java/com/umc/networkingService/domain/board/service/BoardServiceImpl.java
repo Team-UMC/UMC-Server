@@ -36,14 +36,13 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileService boardFileService;
     private final BoardMapper boardMapper;
-
     private final BoardHeartRepository boardHeartRepository;
     private final BoardHeartMapper boardHeartMapper;
 
 
     @Override
-    public BoardPagingResponse showBoards(Member member,HostType hostType, BoardType boardType, Pageable pageable) {
-        return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member,hostType,boardType,pageable));
+    public BoardPagingResponse showBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable) {
+        return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
 
     @Override
@@ -55,10 +54,10 @@ public class BoardServiceImpl implements BoardService {
         board.increaseHitCount();
 
         //해당 게시글의 모든 첨부파일 url
-        List<String> boardFiles =  boardFileService.findBoardFiles(board).stream()
+        List<String> boardFiles = boardFileService.findBoardFiles(board).stream()
                 .map(BoardFile::getUrl).toList();
 
-        return boardMapper.toBoardDetailResponse(board,boardFiles);
+        return boardMapper.toBoardDetailResponse(board, boardFiles);
 
     }
 
@@ -74,6 +73,7 @@ public class BoardServiceImpl implements BoardService {
     public BoardIdResponse toggleBoardLike(Member member, UUID boardId) {
         Board board = loadEntity(boardId);
 
+        //boardHeart에 없다면 새로 저장
         BoardHeart boardHeart = boardHeartRepository.findByMemberAndBoard(member, board)
                 .orElseGet(() -> {
                     BoardHeart newHeart = boardHeartMapper.toBoardHeartEntity(board, member);
@@ -96,7 +96,7 @@ public class BoardServiceImpl implements BoardService {
         BoardType boardType = request.getBoardType();
 
         //boardType과 HostType에 따라 권한 판단
-        List<Semester> semesterPermission = checkPermission(member,hostType,boardType);
+        List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         Board board = boardRepository.save(boardMapper.toEntity(member,
                 request.getTitle(),
@@ -106,7 +106,7 @@ public class BoardServiceImpl implements BoardService {
                 semesterPermission));
 
         if (files != null)
-            boardFileService.uploadBoardFiles(board,files);
+            boardFileService.uploadBoardFiles(board, files);
 
         return new BoardIdResponse(board.getId());
     }
@@ -122,7 +122,7 @@ public class BoardServiceImpl implements BoardService {
         BoardType boardType = request.getBoardType();
 
         //boardType과 HostType에 따라 권한 판단
-        List<Semester> semesterPermission = checkPermission(member,hostType,boardType);
+        List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         board.update(request.getHostType(),
                 request.getBoardType(),
@@ -130,7 +130,7 @@ public class BoardServiceImpl implements BoardService {
                 request.getContent(),
                 semesterPermission);
 
-        boardFileService.updateBoardFiles(board,files);
+        boardFileService.updateBoardFiles(board, files);
 
         return new BoardIdResponse(board.getId());
     }
@@ -157,7 +157,7 @@ public class BoardServiceImpl implements BoardService {
 
         //boardType에 따라 권한 Check
         switch (boardType) {
-            case OB -> checkPermissionForOBBoard(member,nowSemester);
+            case OB -> checkPermissionForOBBoard(member, nowSemester);
             case NOTICE -> checkPermissionForNoticeBoard(member, hostType);
             case WORKBOOK -> {
                 checkPermissionForWorkbookBoard(member, hostType);
@@ -170,9 +170,9 @@ public class BoardServiceImpl implements BoardService {
 
 
     //OB 게시판 권한 확인 함수
-    public void checkPermissionForOBBoard(Member member,Semester nowSemester) {
+    public void checkPermissionForOBBoard(Member member, Semester nowSemester) {
         // OB -> Semester의 isActive가 활성화되지 않은 사용자만 가능
-        if (member.getSemester().contains(nowSemester))
+        if (member.getRecentSemester().equals(nowSemester))
             throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
     }
 
@@ -185,7 +185,7 @@ public class BoardServiceImpl implements BoardService {
         //Branch 권한이 있는 멤버의 역할
         Role branchStaffRole = Role.branchStaffRole();
         //Campus 권한이 있는 멤버의 역할
-        List<Role> campusStaffRoles  = Role.campusStaffRoles();
+        List<Role> campusStaffRoles = Role.campusStaffRoles();
 
         // 공지사항 권한 CHECK
         if (hostType == HostType.CENTER) {
@@ -212,18 +212,18 @@ public class BoardServiceImpl implements BoardService {
     //workbook 게시판 권한 확인 함수
     public void checkPermissionForWorkbookBoard(Member member, HostType hostType) {
 
-    //멤버의 역할
-    Role memberRole = member.getRole();
-    //Campus 권한이 있는 멤버의 역할
-    List<Role> campusStaffRoles  = Role.campusStaffRoles();
+        //멤버의 역할
+        Role memberRole = member.getRole();
+        //Campus 권한이 있는 멤버의 역할
+        List<Role> campusStaffRoles = Role.campusStaffRoles();
 
-    //hostType이 CAMPUS가 아닐 경우 금지된 요청
-    if(hostType != HostType.CAMPUS)
-        throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
+        //hostType이 CAMPUS가 아닐 경우 금지된 요청
+        if (hostType != HostType.CAMPUS)
+            throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
 
-    //CAMPUS && WORKBOOK -> ROLE이 CAMPUS_STAFF, STAFF인 사람만
-    if (!campusStaffRoles.contains(memberRole))
-        throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+        //CAMPUS && WORKBOOK -> ROLE이 CAMPUS_STAFF, STAFF인 사람만
+        if (!campusStaffRoles.contains(memberRole))
+            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
     }
 
 
