@@ -33,7 +33,7 @@ public class University extends BaseEntity {
 
     private String semesterLogo;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @ColumnDefault("0")

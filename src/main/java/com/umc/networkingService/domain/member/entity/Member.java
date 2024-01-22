@@ -1,12 +1,10 @@
 package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
-import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -47,6 +45,9 @@ public class Member extends BaseEntity {
     @ColumnDefault("0")
     private Long remainPoint;
 
+    @ColumnDefault("0")
+    private Long contributionPoint;
+
     private String nickname;
 
     private String name;
@@ -57,17 +58,14 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private SocialType socialType;
 
-    @Enumerated(EnumType.STRING)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    @CollectionTable(name = "member_part", joinColumns = @JoinColumn(name = "member_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Part> part = new ArrayList<>();
+    private List<SemesterPart> semesterParts = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    @CollectionTable(name = "member_semester", joinColumns = @JoinColumn(name = "member_id"))
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<Semester> semester = new ArrayList<>();
+    private List<MemberPosition> positions = new ArrayList<>();
+
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -76,13 +74,39 @@ public class Member extends BaseEntity {
 
     private  String notionLink;
 
-    public void setMemberInfo(MemberSignUpRequest request, Role role, University university, Branch branch) {
-        this.name = request.getName();
-        this.nickname = request.getNickname();
-        this.role = role;
+    public void setMemberInfo(String name, String nickname, University university, Branch branch) {
+        this.name = name;
+        this.nickname = nickname;
         this.university = university;
         this.branch = branch;
-        this.part.addAll(request.getParts());
-        this.semester.addAll(request.getSemesters());
+    }
+
+    public void updateMemberInfo(MemberUpdateMyProfileRequest request, String profileImage) {
+        this.name = request.getName();
+        this.nickname = request.getNickname();
+        this.statusMessage = request.getStatusMessage();
+        this.profileImage = profileImage;
+    }
+
+    public void updatePositions(List<MemberPosition> memberPositions) {
+        this.positions = memberPositions;
+    }
+
+    public void updateSemesterParts(List<SemesterPart> semesterParts) {
+        this.semesterParts = semesterParts;
+    }
+
+    public void authenticationGithub(String gitNickname) {
+        this.gitNickname = gitNickname;
+    }
+
+    public void updateContributionPoint(Long usedPoint) {
+        if (this.contributionPoint == null) this.contributionPoint = usedPoint;
+        else this.contributionPoint += usedPoint;
+    }
+
+    // 테스트 코드용
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }

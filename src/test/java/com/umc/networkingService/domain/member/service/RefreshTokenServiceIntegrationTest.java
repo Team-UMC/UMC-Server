@@ -2,12 +2,13 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.member.entity.RefreshToken;
-import com.umc.networkingService.domain.member.service.RefreshTokenService;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
@@ -48,7 +49,8 @@ public class RefreshTokenServiceIntegrationTest {
         RefreshToken savedToken = refreshTokenService.saveTokenInfo(REFRESHTOKEN, MEMBERID);
 
         // When
-        RefreshToken foundToken = refreshTokenService.findByMemberId(MEMBERID);
+        RefreshToken foundToken = refreshTokenService.findByMemberId(MEMBERID)
+                .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
 
         // Then (test에서 사용되는 assertion, 조건이 참이 아니라면 테스트 실패)
         assertNotNull(foundToken);
@@ -65,14 +67,16 @@ public class RefreshTokenServiceIntegrationTest {
 
         RefreshToken savedToken = refreshTokenService.saveTokenInfo(REFRESHTOKEN, MEMBERID);
 
-        RefreshToken tokenToDelete = refreshTokenService.findByMemberId(MEMBERID);
+        RefreshToken tokenToDelete = refreshTokenService.findByMemberId(MEMBERID)
+                .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
+
 
         // When
         refreshTokenService.delete(tokenToDelete);
 
         // Then (test에서 사용되는 assertion, 조건이 참이 아니라면 테스트 실패)
-        assertThrows(IllegalArgumentException.class, () -> refreshTokenService.findByMemberId(MEMBERID));
 
+        assertFalse(refreshTokenService.findByMemberId(MEMBERID).isPresent(), "Optional 값이 비어있어야 성공으로 처리됩니다.");
     }
 
     @Test
