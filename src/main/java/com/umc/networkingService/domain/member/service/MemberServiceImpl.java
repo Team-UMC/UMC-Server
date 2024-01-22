@@ -1,8 +1,10 @@
 package com.umc.networkingService.domain.member.service;
 
 
+import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
+import com.umc.networkingService.config.security.jwt.TokenInfo;
 import com.umc.networkingService.domain.friend.service.FriendService;
-import com.umc.networkingService.domain.member.client.GithubMemberClient;
+import com.umc.networkingService.domain.member.client.*;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
@@ -28,11 +30,19 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService {
+public class MemberServiceImpl implements MemberService{
 
-    private final MemberRepository memberRepository;
+    private final KakaoMemberClient kakaoMemberClient;
+    private final GoogleMemberClient googleMemberClient;
+    private final NaverMemberClient naverMemberClient;
+    private final AppleMemberClient appleMemberClient;
     private final MemberMapper memberMapper;
+
     private final MemberPointRepository memberPointRepository;
+    private final MemberRepository memberRepository;
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     private final SemesterPartService semesterPartService;
     private final MemberPositionService memberPositionService;
@@ -40,6 +50,98 @@ public class MemberServiceImpl implements MemberService {
 
     private final S3FileComponent s3FileComponent;
     private final GithubMemberClient githubMemberClient;
+
+    @Override
+    public MemberLoginResponse socialLogin(String accessToken, SocialType socialType){
+        // 로그인 구분
+        if(socialType.equals(SocialType.KAKAO))
+            return loginByKakao(accessToken);
+
+        if(socialType.equals(SocialType.GOOGLE))
+            return loginByGoogle(accessToken);
+
+        if(socialType.equals(SocialType.NAVER))
+            return loginByNaver(accessToken);
+
+        if(socialType.equals(SocialType.APPLE))
+            return loginByApple(accessToken);
+
+        return null;
+    }
+
+    private MemberLoginResponse loginByApple(final String accessToken){
+        // apple 서버와 통신해서 유저 고유값(clientId) 받기
+        String clientId = appleMemberClient.getappleClientID(accessToken);
+        //존재 여부 파악
+        Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.APPLE);
+
+        //1. 없으면 : Member 객체 생성하고 DB 저장
+        if(getMember.isEmpty()){
+            return saveNewMember(clientId, SocialType.APPLE);
+        }
+        // 2. 있으면 : 새로운 토큰 반환
+        return getNewToken(getMember.get());
+    }
+
+    private MemberLoginResponse loginByKakao(final String accessToken){
+        // kakao 서버와 통신해서 유저 고유값(clientId) 받기
+        String clientId = kakaoMemberClient.getkakaoClientID(accessToken);
+        // 존재 여부 파악
+        Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.KAKAO);
+
+        // 1. 없으면 : Member 객체 생성하고 DB 저장
+        if(getMember.isEmpty()) {
+            return saveNewMember(clientId, SocialType.KAKAO);
+        }
+        // 2. 있으면 : 새로운 토큰 반환
+        return getNewToken(getMember.get());
+    }
+
+    private MemberLoginResponse loginByNaver(final String accessToken){
+        // naver 서버와 통신해서 유저 고유값(clientId) 받기
+        String clientId = naverMemberClient.getnaverClientID(accessToken);
+        // 존재 여부 파악
+        Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId,SocialType.NAVER);
+
+        // 1. 없으면 (처음 로그인 하는 경우)
+        if(getMember.isEmpty()) {
+           return saveNewMember(clientId,SocialType.NAVER);
+        }
+        // 2. 있으면 (이미 로그인 했던 적이 있는 경우)
+        return getNewToken(getMember.get());
+    }
+
+    private MemberLoginResponse loginByGoogle(final String accessToken){
+        // google 서버와 통신해서 유저 고유값(clientId) 받기
+        String clientId = googleMemberClient.getgoogleClientID(accessToken);
+        // 존재 여부 파악
+        Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.GOOGLE);
+
+        // 1. 없으면 : Member 객체 생성하고 DB 저장
+        if(getMember.isEmpty()){
+            return saveNewMember(clientId, SocialType.GOOGLE);
+        }
+        // 2. 있으면 : 새로운 토큰 반환
+        return getNewToken(getMember.get());
+    }
+
+    private MemberLoginResponse saveNewMember(String clientId, SocialType socialType) {
+        Member member = memberMapper.toMember(clientId, socialType);
+        Member newMember =  memberRepository.save(member);
+
+        return getNewToken(newMember);
+    }
+
+    private MemberLoginResponse getNewToken(Member member) {
+        // jwt 토큰 생성
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId());
+        // refreshToken 디비에 저장
+        refreshTokenService.saveTokenInfo(tokenInfo.getRefreshToken(), member.getId());
+
+        return memberMapper.toLoginMember(member, tokenInfo);
+    }
+
+
 
     // 나의 프로필 업데이트 함수
     @Override

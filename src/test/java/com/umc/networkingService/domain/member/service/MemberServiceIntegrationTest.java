@@ -10,6 +10,22 @@ import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
+import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
+import com.umc.networkingService.domain.branch.entity.Branch;
+import com.umc.networkingService.domain.branch.entity.BranchUniversity;
+import com.umc.networkingService.domain.branch.repository.BranchRepository;
+import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.member.client.GoogleMemberClient;
+import com.umc.networkingService.domain.member.client.KakaoMemberClient;
+import com.umc.networkingService.domain.member.client.NaverMemberClient;
+import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.RefreshToken;
+import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.repository.MemberRepository;
+import com.umc.networkingService.domain.university.entity.University;
+import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -31,6 +47,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 
 @DisplayName("Member 서비스의 ")
 @SpringBootTest
@@ -48,10 +65,12 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
     @Autowired
     private FriendRepository friendRepository;
 
-    @MockBean
-    private S3FileComponent s3FileComponent;
-    @MockBean
-    private GithubMemberClient githubMemberClient;
+    @MockBean private S3FileComponent s3FileComponent;
+    @MockBean private GithubMemberClient githubMemberClient;
+    @MockBean private KakaoMemberClient kakaoMemberClient;
+    @MockBean private GoogleMemberClient googleMemberClient;
+    @MockBean private NaverMemberClient naverMemberClient;
+
 
 
     private MemberPoint createMemberPoint(PointType pointType) {
@@ -392,5 +411,92 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
                 .map(MemberInquiryPointsResponse.UsedHistory::getPoint)
                 .toList();
         assertEquals(List.of(10L, 5L), points);
+    }
+
+    @Test
+    @DisplayName("카카오 로그인 테스트")
+    @Transactional
+    public void kakaoLoginTest() {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+        String clientId = "abcdefg";
+
+        given(kakaoMemberClient.getkakaoClientID(any())).willReturn(clientId);
+
+        //when
+        MemberLoginResponse response = memberService.socialLogin(accessToken, SocialType.KAKAO);
+
+        //then
+        // 멤버 저장 상태 테스트
+        Optional<Member> optionalMember = memberRepository.findById(response.getMemberId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(clientId, savedMember.getClientId());
+        assertEquals(Role.MEMBER, savedMember.getRole());
+        assertEquals(SocialType.KAKAO, savedMember.getSocialType());
+
+        // 리프레시 토큰 저장 상태 테스트
+        RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId())
+                        .orElseThrow();
+        assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
+    }
+
+    @Test
+    @DisplayName("구글 로그인 테스트")
+    @Transactional
+    public void googleLoginTest() {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+        String sub = "abcdefg";
+
+        given(googleMemberClient.getgoogleClientID(any())).willReturn(sub);
+
+        //when
+        MemberLoginResponse response = memberService.socialLogin(accessToken, SocialType.GOOGLE);
+
+        //then
+        // 멤버 저장 상태 테스트
+        Optional<Member> optionalMember = memberRepository.findById(response.getMemberId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(sub, savedMember.getClientId());
+        assertEquals(Role.MEMBER, savedMember.getRole());
+        assertEquals(SocialType.GOOGLE, savedMember.getSocialType());
+
+        // 리프레시 토큰 저장 상태 테스트
+        RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId())
+                        .orElseThrow();
+        assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
+    }
+
+    @Test
+    @DisplayName("네이버 로그인 테스트")
+    @Transactional
+    public void naverLoginTest() {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+        String clientId = "abcdefg";
+
+        given(naverMemberClient.getnaverClientID(any())).willReturn(clientId);
+
+        //when
+        MemberLoginResponse response = memberService.socialLogin(accessToken, SocialType.NAVER);
+
+        //then
+        // 멤버 저장 상태 테스트
+        Optional<Member> optionalMember = memberRepository.findById(response.getMemberId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(clientId, savedMember.getClientId());
+        assertEquals(Role.MEMBER, savedMember.getRole());
+        assertEquals(SocialType.NAVER, savedMember.getSocialType());
+
+        // 리프레시 토큰 저장 상태 테스트
+        RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId())
+                        .orElseThrow();
+        assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
     }
 }

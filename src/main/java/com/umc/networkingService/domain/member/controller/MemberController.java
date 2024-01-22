@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.member.controller;
 
+
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
@@ -9,6 +10,10 @@ import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
+import com.umc.networkingService.domain.member.entity.SocialType;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +30,19 @@ import java.util.UUID;
 public class MemberController {
 
     private final MemberService memberService;
+
+    @Operation(summary = "소셜 로그인", description = "네이버, 카카오, 구글, 애플 로그인")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "COMMON500", description = "소셜 서버와의 통신 에러" , content =
+            @Content(schema = @Schema(implementation = BaseResponse.class)))
+    })
+    @PostMapping("/login")
+    public BaseResponse<MemberLoginResponse> socialLogin(@RequestParam(value = "accessToken") String accessToken,
+                                                         @RequestParam(value = "socialType") SocialType socialType) {
+        return BaseResponse.onSuccess(memberService.socialLogin(accessToken, socialType));
+
+    }
 
     @Operation(summary = "나의 프로필 수정 API", description = "본인 프로필 사진, 닉네임, 이름, 상태 메시지를 수정하는 API입니다.")
     @ApiResponses( value = {

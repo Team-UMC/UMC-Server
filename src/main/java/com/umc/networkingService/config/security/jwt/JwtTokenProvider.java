@@ -2,7 +2,6 @@ package com.umc.networkingService.config.security.jwt;
 
 import com.umc.networkingService.config.security.auth.PrincipalDetails;
 import com.umc.networkingService.config.security.auth.PrincipalDetailsService;
-import com.umc.networkingService.domain.member.dto.MemberResponseDto;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import io.jsonwebtoken.*;
@@ -33,7 +32,7 @@ public class JwtTokenProvider {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String REFRESH_HEADER = "refreshToken";
-    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L;  // 유효기간 1시간
+    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L;  // 유효기간 1일
     private static final long REF_TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L * 14L;  // 유효기간 14일
 
     @PostConstruct
@@ -72,12 +71,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public MemberResponseDto.TokenInfo generateToken(UUID memberId) {
+    public TokenInfo generateToken(UUID memberId) {
 
         String accessToken = generateAccessToken(memberId);
         String refreshToken = generateRefreshToken(memberId);
 
-        return new MemberResponseDto.TokenInfo(accessToken, refreshToken);
+        return new TokenInfo(accessToken, refreshToken);
     }
 
     public Authentication getAuthentication(String token) {

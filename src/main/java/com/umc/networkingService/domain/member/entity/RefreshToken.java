@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Builder
-@RedisHash(value = "jwtToken", timeToLive = 60*60*24*30) // 30일
+@RedisHash(value = "jwtToken", timeToLive = 60*60*24*14) // 14일
 public class RefreshToken { //redis에 저장할 객체
 
     @Id

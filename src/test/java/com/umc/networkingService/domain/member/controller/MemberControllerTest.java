@@ -7,6 +7,12 @@ import com.umc.networkingService.domain.member.entity.MemberRelation;
 import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
+import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
+import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
+import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -14,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -31,8 +38,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
 
 @DisplayName("Member 컨트롤러의")
 public class MemberControllerTest extends MemberControllerTestConfig {
@@ -258,5 +263,33 @@ public class MemberControllerTest extends MemberControllerTestConfig {
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result.remainPoint").value(response.getRemainPoint()))
                 .andExpect(jsonPath("$.result.usedHistories", hasSize(response.getUsedHistories().size())));
+    }
+
+    @Test
+    @DisplayName("소셜 로그인 테스트")
+    public void loginTest() throws Exception {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+
+        MemberLoginResponse response = MemberLoginResponse.builder()
+                .memberId(UUID.randomUUID())
+                .accessToken("서버에서 발급받은 accessToken")
+                .refreshToken("서버에서 발급받은 refreshToken")
+                .build();
+
+        // when
+        given(memberService.socialLogin(accessToken, SocialType.KAKAO)).willReturn(response);
+
+        // then
+        this.mockMvc.perform(post("/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("accessToken", accessToken)
+                        .param("socialType", "KAKAO"))
+                .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(response.getMemberId().toString()))
+                .andExpect(jsonPath("$.result.accessToken").value(response.getAccessToken()));
     }
 }
