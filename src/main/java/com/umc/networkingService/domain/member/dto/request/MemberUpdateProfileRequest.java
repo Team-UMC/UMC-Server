@@ -1,7 +1,5 @@
 package com.umc.networkingService.domain.member.dto.request;
 
-import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Semester;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,6 +10,5 @@ import java.util.List;
 public class MemberUpdateProfileRequest {
     private List<String> campusPositions;
     private List<String> centerPositions;
-    private List<Part> parts;
-    private List<Semester> semesters;
+    private List<SemesterPartInfo> semesterParts;
 }

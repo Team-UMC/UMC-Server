@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.member.mapper;
 
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryHomeInfoResponse;
+import com.umc.networkingService.domain.member.dto.request.SemesterPartInfo;
+import com.umc.networkingService.domain.member.dto.response.MemberInquiryInfoWithPointResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryPointsResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.*;
@@ -35,15 +36,14 @@ public class MemberMapper {
                 .universityName(universityName)
                 .name(member.getName())
                 .nickname(member.getNickname())
-                .parts(member.getParts())
-                .semesters(member.getSemesters())
+                .semesterParts(toSemesterPartInfos(member.getSemesterParts()))
                 .statusMessage(member.getStatusMessage())
                 .owner(owner)
                 .build();
     }
 
-    public MemberInquiryHomeInfoResponse toInquiryHomeInfoResponse(Member member, int rank) {
-        return MemberInquiryHomeInfoResponse.builder()
+    public MemberInquiryInfoWithPointResponse toInquiryHomeInfoResponse(Member member, int rank) {
+        return MemberInquiryInfoWithPointResponse.builder()
                 .profileImage(member.getProfileImage())
                 .nickname(member.getNickname())
                 .contributionPoint(member.getContributionPoint())
@@ -65,5 +65,23 @@ public class MemberMapper {
                 .remainPoint(point)
                 .usedHistories(usedHistories)
                 .build();
+    }
+
+    public SemesterPart toSemesterPart(Member member, SemesterPartInfo semesterPartInfo) {
+        return SemesterPart.builder()
+                .member(member)
+                .part(semesterPartInfo.getPart())
+                .semester(semesterPartInfo.getSemester())
+                .build();
+    }
+
+    private List<SemesterPartInfo> toSemesterPartInfos(List<SemesterPart> semesterParts) {
+        return semesterParts.stream()
+                .map(this::toSemesterPartInfo)
+                .toList();
+    }
+
+    private SemesterPartInfo toSemesterPartInfo(SemesterPart semesterPart) {
+        return new SemesterPartInfo(semesterPart.getPart(), semesterPart.getSemester());
     }
 }

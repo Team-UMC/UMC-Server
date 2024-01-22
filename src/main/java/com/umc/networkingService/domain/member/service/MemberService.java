@@ -13,7 +13,7 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     MemberIdResponse updateMyProfile(Member member, MultipartFile profileImage, MemberUpdateMyProfileRequest request);
     MemberIdResponse updateProfile(Member member, UUID memberId, MemberUpdateProfileRequest request);
     MemberInquiryProfileResponse inquiryProfile(Member member, UUID memberId);
-    MemberInquiryHomeInfoResponse inquiryHomeInfo(Member member);
+    MemberInquiryInfoWithPointResponse inquiryInfoWithPoint(Member member);
     MemberAuthenticationGithubResponse authenticationGithub(Member member, String code);
     MemberInquiryGithubResponse inquiryGithubImage(Member member);
     MemberInquiryPointsResponse inquiryMemberPoints(Member member);

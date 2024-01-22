@@ -163,14 +163,14 @@ public class MemberControllerTest extends MemberControllerTestConfig {
     @Test
     public void inquiryHomeInfoTest() throws Exception {
         // given
-        MemberInquiryHomeInfoResponse response = MemberInquiryHomeInfoResponse.builder()
+        MemberInquiryInfoWithPointResponse response = MemberInquiryInfoWithPointResponse.builder()
                 .profileImage("프로필 이미지")
                 .nickname("벡스")
                 .contributionPoint(1000L)
                 .contributionRank(2)
                 .build();
 
-        given(memberService.inquiryHomeInfo(any())).willReturn(response);
+        given(memberService.inquiryInfoWithPoint(any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
