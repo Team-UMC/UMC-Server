@@ -3,15 +3,16 @@ package com.umc.networkingService.domain.schedule.controller;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleId;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoList;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummariesInCalendar;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummaryLists;
 import com.umc.networkingService.domain.schedule.service.ScheduleService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,9 +28,16 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
+    @Operation(summary = "스케줄 조회(Web) - 중앙, 지부, 학교", description = "홈화면의 일정을 조회하는 API입니다.")
+    @GetMapping
+    public BaseResponse<ScheduleInfoSummaryLists> getScheduleLists(@RequestParam Long month) {
+
+        return BaseResponse.onSuccess((scheduleService.getScheduleLists(month)));
+    }
+
     @Operation(summary = "캘린더 조회 API", description = "홈 화면의 달력을 조회하는 API입니다.")
     @PostMapping("/calendar")
-    public BaseResponse<ScheduleInfoList> getSchedule(@RequestParam Long month) {
+    public BaseResponse<ScheduleInfoSummariesInCalendar> getSchedule(@RequestParam Long month) {
 
         return BaseResponse.onSuccess(scheduleService.getCalendarByMonth(month));
     }
