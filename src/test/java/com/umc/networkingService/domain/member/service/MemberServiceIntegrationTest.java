@@ -6,7 +6,9 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.member.client.GoogleMemberClient;
 import com.umc.networkingService.domain.member.client.KakaoMemberClient;
+import com.umc.networkingService.domain.member.client.NaverMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -50,6 +52,7 @@ public class MemberServiceIntegrationTest {
     @Autowired private RefreshTokenService refreshTokenService;
 
     @MockBean private KakaoMemberClient kakaoMemberClient;
+    @MockBean private GoogleMemberClient googleMemberClient;
 
     private Member member;
     private University university;
@@ -162,4 +165,31 @@ public class MemberServiceIntegrationTest {
         assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
     }
 
+    @Test
+    @DisplayName("구글 로그인 테스트")
+    @Transactional
+    public void googleLoginTest() {
+        // given
+        String accessToken = "ya29.a0AfB_byD6";
+        String sub = "abcdefg";
+
+        given(googleMemberClient.getgoogleClientID(any())).willReturn(sub);
+
+        //when
+        MemberLoginResponse response = memberService.socialLogin(accessToken, SocialType.GOOGLE);
+
+        //then
+        // 멤버 저장 상태 테스트
+        Optional<Member> optionalMember = memberRepository.findById(response.getMemberId());
+        assertTrue(optionalMember.isPresent());
+        Member savedMember = optionalMember.get();
+
+        assertEquals(sub, savedMember.getClientId());
+        assertEquals(Role.MEMBER, savedMember.getRole());
+        assertEquals(SocialType.GOOGLE, savedMember.getSocialType());
+
+        // 리프레시 토큰 저장 상태 테스트
+        RefreshToken refreshToken = refreshTokenService.findByMemberId(savedMember.getId());
+        assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
+    }
 }
