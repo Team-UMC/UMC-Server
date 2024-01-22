@@ -40,6 +40,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardPagingResponse showBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable) {
+        //워크북게시판은 다른기수가 못보도록 하는거 추가
         return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
 

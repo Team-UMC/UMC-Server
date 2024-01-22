@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest
 import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentIdResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardCommentPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.service.BoardCommentService;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -15,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,6 +65,18 @@ public class BoardCommentController {
     public BaseResponse<BoardCommentIdResponse> deleteBoardComment(@CurrentMember Member member,
                                                                    @PathVariable(value = "commentId") UUID commentId) {
         return BaseResponse.onSuccess(boardCommentService.deleteBoardComment(member, commentId));
+    }
+
+    @Operation(summary = " 특정 게시글 댓글 목록 조회 API", description = "특정 게시글의 댓글 목록을 조회하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @GetMapping("/{boardId}")
+    public BaseResponse<BoardCommentPagingResponse> showBoardComments(@CurrentMember Member member,
+                                                                      @PathVariable(value = "boardId") UUID boardId,
+                                                                      @PageableDefault(page =1, sort = "created_at")
+                                                                          Pageable pageable) {
+        return BaseResponse.onSuccess(boardCommentService.showBoardComments(member, boardId,pageable));
     }
 
 

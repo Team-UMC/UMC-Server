@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.board.service;
 import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentIdResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardCommentPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.mapper.BoardCommentMapper;
@@ -11,6 +12,7 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +62,14 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         return new BoardCommentIdResponse(comment.getId());
     }
+
+    @Override
+    public BoardCommentPagingResponse showBoardComments(Member member, UUID boardId, Pageable pageable) {
+        Board board = boardService.loadEntity(boardId);
+        return boardCommentMapper.toBoardCommentPagingResponse(
+                boardCommentRepository.findAllBoardComments(member, board, pageable));
+    }
+
 
     @Override
     public BoardComment loadEntity(UUID commentId) {
