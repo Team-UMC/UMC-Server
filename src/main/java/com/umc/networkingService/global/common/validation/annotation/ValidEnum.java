@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = EnumValidator.class)
 public @interface ValidEnum {
 
-    String message() default "옳지 않은 값입니다.";
+    String message() default "옳지 않은 ENUM 값입니다.";
 
     Class<?>[] groups() default {};
 

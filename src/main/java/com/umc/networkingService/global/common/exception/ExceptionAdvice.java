@@ -64,7 +64,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                     errors.merge(fieldName, errorMessage, (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
                 });
 
-        return handleExceptionInternalArgs(ErrorCode.valueOf("_BAD_REQUEST"), errors);
+        return handleExceptionInternalArgs(ErrorCode._VALIDATION_ERROR, errors);
 
     }
 
