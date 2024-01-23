@@ -4,6 +4,7 @@ import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest
 import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.mapper.BoardCommentMapper;
@@ -70,6 +71,11 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         return boardCommentMapper.toBoardCommentPagingResponse(
                 boardCommentRepository.findAllBoardComments(member, board, pageable));
     }
+
+    public BoardCommentPagingResponse showMemberBoardComments(Member member, String keyword, Pageable pageable) {
+        return boardCommentMapper.toBoardCommentPagingResponse(boardCommentRepository.findBoardCommentsByWriter(member, keyword, pageable));
+    }
+
 
 
     @Override

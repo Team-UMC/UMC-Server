@@ -117,8 +117,7 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.searchBoard(member, keyword, pageable));
     }
 
-    //내가 쓴 글 조회, 검색 api
-    @Operation(summary = "내가쓴 게시글 조회/검색 API", description = "keyword를 주지 않으면 내가쓴 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다.")
+    @Operation(summary = "내가 쓴 게시글 조회/검색 API", description = "keyword를 주지 않으면 내가쓴 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
     })
@@ -146,7 +145,19 @@ public class BoardController {
     }
 
 
-    //내가 좋아요한 글 조회, 검색 api
+    @Operation(summary = "내가 좋아요한 게시글 조회/검색 API", description = "keyword를 주지 않으면 내가 좋아요한 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @GetMapping("/hearts/member")
+    public BaseResponse<BoardPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
+                                                              @RequestParam(name = "keyword", required = false) String keyword,
+                                                              @PageableDefault(page = 1, sort = "created_at",
+                                                                      direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return BaseResponse.onSuccess(boardService.showMemberBoardHearts(member, keyword, pageable));
+    }
+
 
 
 }

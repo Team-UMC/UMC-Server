@@ -90,6 +90,10 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.toBoardPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
     }
 
+    public BoardPagingResponse showMemberBoardHearts(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toBoardPagingResponse(boardRepository.findBoardHeartsByWriter(member, keyword, pageable));
+    }
+
 
     @Override
     @Transactional

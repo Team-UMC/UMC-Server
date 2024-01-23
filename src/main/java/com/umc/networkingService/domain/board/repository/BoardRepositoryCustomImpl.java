@@ -114,4 +114,65 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     }
 
+    @Override
+    public Page<BoardComment> findBoardCommentsByWriter(Member member, String keyword, Pageable pageable) {
+        QBoardComment comment = QBoardComment.boardComment;
+
+        BooleanBuilder predicate = new BooleanBuilder()
+                .and(comment.deletedAt.isNull())
+                .and(comment.writer.eq(member));
+
+        //keyword가 비지 않았으면 keyword검색 조건 추가
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate.and(comment.content.contains(keyword));
+        }
+
+        List<BoardComment> comments = query.selectFrom(comment)
+                .where(predicate)
+                .orderBy(comment.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(comments, pageable, query.selectFrom(comment)
+                .where(predicate)
+                .fetch().size());
+    }
+
+    @Override
+    public Page<Board> findBoardHeartsByWriter(Member member, String keyword, Pageable pageable) {
+        QBoard board = QBoard.board;
+        QBoardHeart boardHeart = QBoardHeart.boardHeart;
+
+
+        BooleanBuilder predicate = new BooleanBuilder()
+                .and(boardHeart.member.eq(member))
+                        .and(boardHeart.isChecked.isTrue())
+                        .and(board.deletedAt.isNull());
+
+        //keyword가 비지 않았으면 keyword검색 조건 추가
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate.and(board.title.contains(keyword).or(board.content.contains(keyword)));
+        }
+
+        List<Board> boards = query.selectFrom(board)
+                .select(board)
+                .from(boardHeart)
+                .join(boardHeart.board, board)
+                .where(predicate)
+                .orderBy(board.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(boards, pageable, query.selectFrom(board)
+                .select(board)
+                .from(boardHeart)
+                .join(boardHeart.board, board)
+                .where(predicate)
+                .fetch().size());
+
+    }
+
+
 }
