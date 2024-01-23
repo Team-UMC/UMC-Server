@@ -13,6 +13,7 @@ import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.support.ControllerTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,37 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("StaffMember 컨트롤러의")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class StaffMemberControllerTest {
+public class StaffMemberControllerTest extends ControllerTestConfig {
 
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private JwtTokenProvider jwtTokenProvider;
     @Autowired private MemberMapper memberMapper;
     @MockBean private MemberService memberService;
-    @MockBean private MemberRepository memberRepository;
-
-    private Member member;
-    private String accessToken;
-
-    @BeforeEach
-    public void setUp() {
-        member = createMember();
-        setToken(member);
-    }
-
-    private Member createMember() {
-        return Member.builder()
-                .id(UUID.randomUUID())
-                .clientId("111111")
-                .socialType(SocialType.KAKAO)
-                .role(Role.MEMBER)
-                .build();
-    }
-
-    private void setToken(Member member) {
-        accessToken = jwtTokenProvider.generateAccessToken(member.getId());
-    }
-
     // 에러 해결해야함
     @DisplayName("유저 정보 수정 API 테스트")
     @Test
@@ -86,12 +60,12 @@ public class StaffMemberControllerTest {
                 .build();
 
         MemberIdResponse response = new MemberIdResponse(member.getId());
+
         given(memberService.updateProfile(any(Member.class), any(UUID.class), any(MemberUpdateProfileRequest.class))).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
         mockMvc.perform(post("/staff/members/" + memberId + "/update")
-                        .with(user(member.getClientId())) // RequestPostProcessor를 사용하여 요청에 인증 정보 추가
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", accessToken)
                         .content(objectMapper.writeValueAsString(request)))
