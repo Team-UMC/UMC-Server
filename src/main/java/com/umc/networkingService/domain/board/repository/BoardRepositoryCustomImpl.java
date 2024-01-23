@@ -62,9 +62,9 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         List<BoardComment> boardComments = query.selectFrom(boardComment)
                 .where(boardComment.board.eq(board)
-                .and(boardComment.deletedAt.isNull()))
+                        .and(boardComment.deletedAt.isNull()))
                 .fetch();
-        return new PageImpl<>(boardComments,pageable,boardComments.size());
+        return new PageImpl<>(boardComments, pageable, boardComments.size());
     }
 
 

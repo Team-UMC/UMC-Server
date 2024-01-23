@@ -57,10 +57,10 @@ public class BoardController {
     })
     @PatchMapping("/{boardId}")
     public BaseResponse<BoardIdResponse> updateBoard(@CurrentMember Member member,
-                                                         @PathVariable(value="boardId") UUID boardId,
-                                                         @Valid @RequestPart("request") BoardUpdateRequest request,
+                                                     @PathVariable(value = "boardId") UUID boardId,
+                                                     @Valid @RequestPart("request") BoardUpdateRequest request,
                                                      @RequestPart(name = "file", required = false) List<MultipartFile> files) {
-        return BaseResponse.onSuccess(boardService.updateBoard(member,boardId, request, files));
+        return BaseResponse.onSuccess(boardService.updateBoard(member, boardId, request, files));
     }
 
     @Operation(summary = "게시글 삭제 API", description = "게시글을 삭제하는 API입니다.")
@@ -70,8 +70,8 @@ public class BoardController {
     })
     @DeleteMapping("/{boardId}")
     public BaseResponse<BoardIdResponse> deleteBoard(@CurrentMember Member member,
-                                                     @PathVariable(value="boardId") UUID boardId) {
-        return BaseResponse.onSuccess(boardService.deleteBoard(member,boardId));
+                                                     @PathVariable(value = "boardId") UUID boardId) {
+        return BaseResponse.onSuccess(boardService.deleteBoard(member, boardId));
     }
 
 
@@ -87,7 +87,7 @@ public class BoardController {
                                                         @PageableDefault(page = 1, sort = "created_at",
                                                                 direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return BaseResponse.onSuccess(boardService.showBoards(member,hostType,boardType,pageable));
+        return BaseResponse.onSuccess(boardService.showBoards(member, hostType, boardType, pageable));
     }
 
     @Operation(summary = "특정 게시글 상세 조회 API", description = "단일 게시글을 boardId를 통해 조회합니다.")
@@ -98,7 +98,7 @@ public class BoardController {
     })
     @GetMapping("/{boardId}")
     public BaseResponse<BoardDetailResponse> showBoardDetail(@CurrentMember Member member,
-                                                             @PathVariable(value="boardId") UUID boardId) {
+                                                             @PathVariable(value = "boardId") UUID boardId) {
         return BaseResponse.onSuccess(boardService.showBoardDetail(member, boardId));
     }
 
@@ -117,15 +117,18 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.searchBoard(member, keyword, pageable));
     }
 
-    @Operation(summary = "게시글 추천/취소 API", description = "한번 클릭하면 추천, 한번 더 클릭하면 취소됩니다.")
-    @ApiResponses(value= {
+    @Operation(summary = "게시글 좋아요/취소 API", description = "한번 클릭하면 좋아요, 한번 더 클릭하면 취소됩니다.")
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
     })
-    @PostMapping ("/{boardId}/heart")
+    @PostMapping("/{boardId}/heart")
     public BaseResponse<BoardIdResponse> toggleBoardLike(@CurrentMember Member member,
-                                                   @PathVariable(value = "boardId") UUID boardId) {
-        return BaseResponse.onSuccess(boardService.toggleBoardLike(member,boardId));
+                                                         @PathVariable(value = "boardId") UUID boardId) {
+        return BaseResponse.onSuccess(boardService.toggleBoardLike(member, boardId));
     }
+
+    //내가 쓴 글 조회, 검색 api 하나로
+    //내가 좋아요 글 조회, 검색 api 하나로
 
 }

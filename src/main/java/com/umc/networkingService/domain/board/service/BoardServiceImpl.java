@@ -77,7 +77,6 @@ public class BoardServiceImpl implements BoardService {
                 .orElseGet(() -> {
                     BoardHeart newHeart = boardHeartMapper.toBoardHeartEntity(board, member);
                     boardHeartRepository.save(newHeart);
-                    board.addBoardHeart(newHeart);
                     return newHeart;
                 });
 

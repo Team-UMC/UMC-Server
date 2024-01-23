@@ -66,7 +66,6 @@ public class BoardControllerTest {
     private SemesterPartRepository semesterPartRepository;
 
 
-
     private Member member;
     private Board board;
     private String accessToken;
@@ -98,7 +97,6 @@ public class BoardControllerTest {
 
         return semesterPartRepository.saveAll(semesterParts);
     }
-
 
 
     private Board createBoard() {
@@ -331,10 +329,10 @@ public class BoardControllerTest {
         this.mockMvc.perform(
                         post("/boards/{boardId}/heart", board.getId())
                                 .header("Authorization", accessToken))
-                    .andDo(print())
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.code").value("COMMON200"))
-                    .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                    .andExpect(jsonPath("$.result").exists());
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
     }
 }

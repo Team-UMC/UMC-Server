@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.board.entity;
 
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
-import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;

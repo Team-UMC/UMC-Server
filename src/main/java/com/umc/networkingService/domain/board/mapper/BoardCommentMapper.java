@@ -38,7 +38,7 @@ public class BoardCommentMapper {
     public BoardPageCommentResponse toBoardPageCommentResponse(BoardComment comment) {
         return BoardPageCommentResponse.builder()
                 .commentId(comment.getId())
-                .writer(comment.getWriter().getNickname()+"/"+comment.getWriter().getName())
+                .writer(comment.getWriter().getNickname() + "/" + comment.getWriter().getName())
                 .profileImage(comment.getWriter().getProfileImage())
                 .part(comment.getWriter().getRecentPart())
                 .semester(comment.getWriter().getRecentSemester())

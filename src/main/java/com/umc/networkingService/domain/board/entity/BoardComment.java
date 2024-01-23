@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class BoardComment extends BaseEntity {
 
@@ -25,16 +25,16 @@ public class BoardComment extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,name = "member_id")
+    @JoinColumn(nullable = false, name = "member_id")
     private Member writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,name="board_id")
+    @JoinColumn(nullable = false, name = "board_id")
     private Board board;
 
     //최상위 댓글인 경우 null
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="parent_comment_id")
+    @JoinColumn(name = "parent_comment_id")
     private BoardComment parentComment;
 
     @Column(nullable = false)
