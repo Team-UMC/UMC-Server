@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public class UniversityConverter {
 
+    // 대학교 리스트 조회
     public static UniversityResponse.joinUniversityList toJoinUniversityList(
             List<University> universityList
     ) {
@@ -20,6 +21,18 @@ public class UniversityConverter {
                                         .build()
                         ).collect(Collectors.toList())
                 )
+                .build();
+    }
+
+    // 학교 별 세부 정보 조회
+    public static UniversityResponse.joinUniversityDetail toJoinUniversityDetail(
+            University university
+    ) {
+        return UniversityResponse.joinUniversityDetail.builder()
+                .universityId(university.getId())
+                .universityName(university.getName())
+                .universityLogo(university.getUniversityLogo())
+                .universityPoint(university.getTotalPoint())
                 .build();
     }
 

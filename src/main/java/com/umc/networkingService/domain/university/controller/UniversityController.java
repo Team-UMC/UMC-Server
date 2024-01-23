@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.domain.university.service.UniversityServiceImpl;
+import com.umc.networkingService.domain.university.validation.annotation.ExistUniversity;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Slf4j
 @Tag(name = "대학교 API", description = "일반 유저용 멤버 관련 API")
@@ -33,10 +36,13 @@ public class UniversityController {
         return BaseResponse.onSuccess(universityService.joinUniversityList());
     }
 
-    @Operation(summary = "우리 학교 정보 조회 API",description = "우리 학교 정보 조회 API")
+    @Operation(summary = "학교별 세부 정보 조회 API",description = "우리 학교 정보 조회 API")
     @GetMapping("/details")
-    public BaseResponse<>
-    joinUniversityDetail( ){
+    public BaseResponse<UniversityResponse.joinUniversityDetail>
+    joinUniversityDetail(
+            @CurrentMember Member member
+    ){
+        return BaseResponse.onSuccess(universityService.joinUniversityDetail(member));
     }
 
     @Operation(summary = "전체 학교 랭킹 조회 API",description = "전체 학교 랭킹 조회 API")

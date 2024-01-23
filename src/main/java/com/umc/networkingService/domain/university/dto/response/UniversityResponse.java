@@ -26,4 +26,22 @@ public class UniversityResponse {
         UUID universityId;
         String universityName;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor // 학교 별 세부 정보 조회
+    public static class joinUniversityDetail {
+        UUID universityId;
+        String universityName;
+        String universityLogo;
+        Long universityPoint;
+        Integer universityRank;
+
+        public static joinUniversityDetail setUniversityRank(joinUniversityDetail universityDetail, Integer rank) {
+            universityDetail.universityRank = rank;
+            return universityDetail;
+        }
+    }
+
 }
