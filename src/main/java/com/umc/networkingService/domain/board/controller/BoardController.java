@@ -63,6 +63,7 @@ public class BoardController {
                                                      @PathVariable(value = "boardId") UUID boardId,
                                                      @Valid @RequestPart("request") BoardUpdateRequest request,
                                                      @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+
         return BaseResponse.onSuccess(boardService.updateBoard(member, boardId, request, files));
     }
 

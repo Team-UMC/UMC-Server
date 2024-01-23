@@ -126,6 +126,10 @@ public class BoardServiceImpl implements BoardService {
         //boardType과 HostType에 따라 권한 판단
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
+        //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
+        if(!board.getWriter().equals(member))
+            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+
         board.update(request, semesterPermission);
 
         boardFileService.updateBoardFiles(board, files);
@@ -138,6 +142,9 @@ public class BoardServiceImpl implements BoardService {
     public BoardIdResponse deleteBoard(Member member, UUID boardId) {
         Board board = loadEntity(boardId);
 
+        //현재 로그인한 member와 writer가 같지 않으면 삭제 권한 없음
+        if(!board.getWriter().equals(member))
+            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
         boardFileService.deleteBoardFiles(board);
         board.delete();
 

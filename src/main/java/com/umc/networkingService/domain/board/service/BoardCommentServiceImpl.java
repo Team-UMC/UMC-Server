@@ -46,6 +46,10 @@ public class BoardCommentServiceImpl implements BoardCommentService {
                                                      BoardCommentUpdateRequest request) {
         BoardComment comment = loadEntity(commentId);
 
+        //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
+        if(!comment.getWriter().equals(member))
+            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+
         comment.update(request);
 
         return new BoardCommentIdResponse(comment.getId());
@@ -57,6 +61,10 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         BoardComment comment = loadEntity(commentId);
         Board board = comment.getBoard();
+
+        //현재 로그인한 member와 writer가 같지 않으면 삭제 권한 없음
+        if(!comment.getWriter().equals(member))
+            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
 
         board.decreaseCommentCount();
         comment.delete();
