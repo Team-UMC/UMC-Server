@@ -38,4 +38,6 @@ public class University extends BaseEntity {
 
     @ColumnDefault("0")
     private Long totalPoint;
+
+
 }

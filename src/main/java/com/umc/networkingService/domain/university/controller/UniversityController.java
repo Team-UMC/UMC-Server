@@ -30,7 +30,7 @@ public class UniversityController {
 
     @Operation(summary = "전체 학교 조회 API",description = "전체 학교 조회 API")
     @GetMapping("")
-    public BaseResponse<List<UniversityResponse.UniversityList>>
+    public BaseResponse<List<UniversityResponse.joinUniversity>>
     joinUniversityList(
             @CurrentMember Member member //학교 많으면 추후에 페이징 처리하기
     ){
@@ -55,10 +55,13 @@ public class UniversityController {
         return BaseResponse.onSuccess(universityService.joinUniversityRankingList(member));
     }
 
-    @Operation(summary = "학교 전체 기여도 조회 API",description = "학교 전체 기여도 조회 API")
+    @Operation(summary = "학교 전체 기여도 랭킹 조회 API",description = "학교 전체 기여도 조회 API")
     @GetMapping("/members")
-    public BaseResponse<>
-    joinUniversityContribution( ){
+    public BaseResponse<List<UniversityResponse.joinContributionRank>>
+    joinUniversityContribution(
+            @CurrentMember Member member
+    ){
+        return BaseResponse.onSuccess(universityService.joinContributionRankingList(member));
     }
 
     @Operation(summary = "학교 마스코트 조회 API",description = "학교 마스코트 조회 API")

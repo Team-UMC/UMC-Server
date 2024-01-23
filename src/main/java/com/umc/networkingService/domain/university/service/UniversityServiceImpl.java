@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.university.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.converter.UniversityConverter;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.entity.University;
@@ -19,6 +20,8 @@ import java.util.UUID;
 public class UniversityServiceImpl implements UniversityService {
 
     private final UniversityRepository universityRepository;
+    private final MemberRepository memberRepository;
+
     @Override
     public University findUniversityByName(String universityName) {
         return universityRepository.findByName(universityName)
@@ -50,7 +53,11 @@ public class UniversityServiceImpl implements UniversityService {
         return UniversityConverter.toJoinUniversityRankList(universityRankList);
     }
 
-
+    @Transactional(readOnly = true)     //대학교별 기여도 랭킹 조회  todo: 다른 학교도 랭킹 조회 할 수 있는지 확인하기
+    public List<UniversityResponse.joinContributionRank> joinContributionRankingList(Member member){
+        List<Member> contributionRankList = memberRepository.findAllByUniversityOrderByContributionPointDesc(member.getUniversity());
+        return UniversityConverter.toJoinContributionRankList(contributionRankList);
+    }
 
     //유효한 대학 확인
     public boolean isUniversityValid(UUID universityId) {

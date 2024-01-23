@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.university.converter;
 
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.entity.University;
 
@@ -45,6 +46,22 @@ public class UniversityConverter {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    // 학교 기여도 랭킹 조회
+    public static List<UniversityResponse.joinContributionRank> toJoinContributionRankList(
+            List<Member> contributionRankList
+    ){
+        return contributionRankList.stream()
+                .map(member -> UniversityResponse.joinContributionRank.builder()
+                        .nickname(member.getNickname())
+                        .name(member.getName())
+                        .profileImage(member.getProfileImage())
+                        .usedPoint(member.getContributionPoint())
+                        .rank(contributionRankList.indexOf(member)+1)
+                        .build())
+                .collect(Collectors.toList());
+    }
+    
 
 }
 

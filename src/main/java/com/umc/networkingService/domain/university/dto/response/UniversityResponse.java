@@ -47,5 +47,17 @@ public class UniversityResponse {
         Integer universityRank;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor // 학교 랭킹 기여도
+    public static class joinContributionRank {
+        String nickname;
+        String name;
+        String profileImage;
+        Long usedPoint;
+        Integer rank; //todo: 랭킹 얼마까지? , 랭킹 패이징 해?
+    }
+
 
 }
