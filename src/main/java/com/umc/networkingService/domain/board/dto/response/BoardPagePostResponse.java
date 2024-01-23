@@ -1,5 +1,7 @@
 package com.umc.networkingService.domain.board.dto.response;
 
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +15,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class BoardPagePostResponse {
+    private HostType hostType;
+    private BoardType boardType;
     private UUID boardId;
     private String writer;
     private String profileImage;
