@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -69,7 +70,7 @@ public class BoardCommentController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
     })
-    @GetMapping("/{boardId}")
+    @GetMapping(value ="/{boardId}")
     public BaseResponse<BoardCommentPagingResponse> showBoardComments(@CurrentMember Member member,
                                                                       @PathVariable(value = "boardId") UUID boardId,
                                                                       @PageableDefault(sort = "created_at",
@@ -82,7 +83,7 @@ public class BoardCommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
     })
-    @GetMapping("/member")
+    @GetMapping(value = "/member")
     public BaseResponse<BoardCommentPagingResponse> showMemberBoardComments(@CurrentMember Member member,
                                                               @RequestParam(name = "keyword", required = false) String keyword,
                                                               @PageableDefault(sort = "created_at",

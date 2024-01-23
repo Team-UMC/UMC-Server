@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +42,7 @@ public class BoardController {
             @ApiResponse(responseCode = "BOARD001", description = "WORKBOOK 게시판과 CENTER, BRANCH를 선택했을 경우 금지된 요청"),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패할 경우 발생")
     })
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<BoardIdResponse> createBoard(@CurrentMember Member member,
                                                      @Valid @RequestPart("request") BoardCreateRequest request,
                                                      @RequestPart(name = "file", required = false) List<MultipartFile> files) {
@@ -57,7 +58,7 @@ public class BoardController {
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패할 경우 발생")
     })
-    @PatchMapping("/{boardId}")
+    @PatchMapping(value ="/{boardId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<BoardIdResponse> updateBoard(@CurrentMember Member member,
                                                      @PathVariable(value = "boardId") UUID boardId,
                                                      @Valid @RequestPart("request") BoardUpdateRequest request,
@@ -111,7 +112,7 @@ public class BoardController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
 
     })
-    @GetMapping("/search")
+    @GetMapping(value = "/search",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<BoardPagingResponse> searchBoard(@CurrentMember Member member,
                                                          @RequestParam(name = "keyword") String keyword,
                                                          @PageableDefault(sort = "created_at",
@@ -125,7 +126,7 @@ public class BoardController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    @GetMapping("/member")
+    @GetMapping(value = "/member")
     public BaseResponse<BoardPagingResponse> showMemberBoards(@CurrentMember Member member,
                                                                @RequestParam(name = "keyword", required = false) String keyword,
                                                                @PageableDefault(sort = "created_at",
@@ -154,7 +155,7 @@ public class BoardController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    @GetMapping("/hearts/member")
+    @GetMapping(value ="/hearts/member")
     public BaseResponse<BoardPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
                                                               @RequestParam(name = "keyword", required = false) String keyword,
                                                               @PageableDefault(sort = "created_at",
