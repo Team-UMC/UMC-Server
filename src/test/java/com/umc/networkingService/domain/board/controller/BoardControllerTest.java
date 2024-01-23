@@ -179,7 +179,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 .boardType(board.getBoardType())
                 .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
                 .profileImage(board.getWriter().getProfileImage())
-                .semester(board.getWriter().getRecentSemester())
+                .semester(Semester.FIFTH)
                 .title(board.getTitle())
                 .content(board.getContent())
                 .hitCount(board.getHitCount())

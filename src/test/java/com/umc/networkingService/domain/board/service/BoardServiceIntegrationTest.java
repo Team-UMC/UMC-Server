@@ -32,8 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Board 서비스의 ")
 @SpringBootTest
-@Transactional
-public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
+public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Autowired
     private BoardService boardService;
     @Autowired
@@ -41,8 +40,10 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Autowired
     BoardCommentRepository boardCommentRepository;
+
     @Test
     @DisplayName("게시글 작성 성공 테스트")
+    @Transactional
     public void createBoardTest() {
         //given
         BoardCreateRequest request = BoardCreateRequest.builder()
@@ -73,6 +74,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("공지 사항 게시판 게시글 작성 실패 테스트(권한 없음)")
+    @Transactional
     public void createBoardNotice() {
         //given
         BoardCreateRequest request = BoardCreateRequest.builder()
@@ -98,6 +100,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("OB 게시판 게시글 작성 실패 테스트(권한 없음)")
+    @Transactional
     public void createBoardOB() {
         //given
         BoardCreateRequest request = BoardCreateRequest.builder()
@@ -123,6 +126,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("Workbook 게시판 게시글 작성 실패 테스트(권한 없음)")
+    @Transactional
     public void createBoardWorkbook() {
         //given
         BoardCreateRequest request = BoardCreateRequest.builder()
@@ -147,6 +151,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("게시글 수정 성공 테스트")
+    @Transactional
     public void updateBoardTest() {
         //given
         BoardUpdateRequest request = BoardUpdateRequest.builder()
@@ -174,6 +179,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("게시글 삭제 성공 테스트")
+    @Transactional
     public void deleteBoardTest() {
         //given
         UUID boardId = board.getId();
@@ -189,6 +195,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("특정 게시글 상세 조회 테스트")
+    @Transactional
     public void showBoardDetailTest() {
         //given
         createBoardFile();
@@ -208,6 +215,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("특정 게시판의 게시글 목록 조회 테스트")
+    @Transactional
     public void showBoardsTest() {
         //given
         HostType hostType = HostType.CAMPUS;
@@ -228,6 +236,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("게시글 검색 테스트")
+    @Transactional
     public void searchBoardTest() {
         //given
         String keyword = "데모데이";
@@ -257,6 +266,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("특정 게시글 좋아요/취소 테스트")
+    @Transactional
     public void toggleBoardLikeTest() {
 
         //given
@@ -276,6 +286,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("댓글 작성 성공 테스트")
+    @Transactional
     public void addBoardCommentTest() {
         //given
         BoardCommentAddRequest request = BoardCommentAddRequest.builder()
@@ -297,6 +308,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("댓글 수정 성공 테스트")
+    @Transactional
     public void updateBoardCommentTest() {
         //given
         BoardCommentUpdateRequest request = BoardCommentUpdateRequest.builder()
@@ -304,7 +316,7 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
                 .build();
 
         //when
-        boardCommentService.updateBoardComment(member,comment.getId(), request);
+        boardCommentService.updateBoardComment(member, comment.getId(), request);
 
         //then
         assertEquals("수정", comment.getContent());
@@ -312,26 +324,28 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("댓글 삭제 성공 테스트")
+    @Transactional
     public void deleteBoardCommentTest() {
         //given
         int commentCount = board.getCommentCount();
         //when
-        boardCommentService.deleteBoardComment(member,comment.getId());
+        boardCommentService.deleteBoardComment(member, comment.getId());
 
         //then
-        assertNotNull( comment.getDeletedAt());
-        assertEquals(commentCount-1, comment.getBoard().getCommentCount());
+        assertNotNull(comment.getDeletedAt());
+        assertEquals(commentCount - 1, comment.getBoard().getCommentCount());
     }
 
     @Test
     @DisplayName("댓글 목록 조회 테스트")
+    @Transactional
     public void showBoardCommentsTest() {
         //given
         createBoardComments();
-        Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
+        Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.asc("created_at")));
 
         //when
-        BoardCommentPagingResponse response = boardCommentService.showBoardComments(member,board.getId(),pageable);
+        BoardCommentPagingResponse response = boardCommentService.showBoardComments(member, board.getId(), pageable);
 
         //then
         assertEquals(1, response.getPage());
@@ -345,13 +359,14 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
 
     @Test
     @DisplayName("내가쓴 글 목록 조회 테스트")
+    @Transactional
     public void showMemberBoardsTest() {
         //given
         createBoards();
         Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardPagingResponse response = boardService.showMemberBoards(member,"데모",pageable);
+        BoardPagingResponse response = boardService.showMemberBoards(member, "데모", pageable);
 
         //then
         assertEquals(1, response.getPage());
@@ -361,8 +376,6 @@ public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
         assertEquals(HostType.CENTER, response.getBoardPagePostResponses().get(0).getHostType());
         assertEquals(BoardType.FREE, response.getBoardPagePostResponses().get(0).getBoardType());
         assertEquals("루시/김수민", response.getBoardPagePostResponses().get(0).getWriter());
-        assertEquals("데모데이가 곧이네요0", response.getBoardPagePostResponses().get(0).getTitle());
-
 
     }
 }

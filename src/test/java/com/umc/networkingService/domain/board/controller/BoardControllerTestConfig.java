@@ -87,7 +87,7 @@ public abstract class BoardControllerTestConfig {
                 SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FOURTH).build()
         );
 
-        return semesterPartRepository.saveAll(semesterParts);
+        return semesterParts;
     }
 
 
