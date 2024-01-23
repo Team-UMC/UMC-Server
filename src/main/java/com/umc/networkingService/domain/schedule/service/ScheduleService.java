@@ -14,7 +14,7 @@ public interface ScheduleService {
     public ScheduleId createSchedule(Member member, CreateSchedule request);
     public ScheduleId updateSchedule(Member member, UUID scheduleId, UpdateSchedule request);
 
-    public ScheduleId deleteSchedule(UUID scheduleId);
+    public ScheduleId deleteSchedule(Member member, UUID scheduleId);
 
     public ScheduleInfoSummaryLists getScheduleLists(Long month);
 

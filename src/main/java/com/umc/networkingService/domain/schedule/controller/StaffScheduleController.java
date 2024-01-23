@@ -47,9 +47,10 @@ public class StaffScheduleController {
 
     @Operation(summary = "일정 삭제 API", description = "운영진 관리 페이지의 일정을 삭제하는 API입니다.")
     @DeleteMapping("/{scheduleId}")
-    public BaseResponse<ScheduleId> deleteSchedule(@PathVariable("scheduleId") UUID scheduleId) {
+    public BaseResponse<ScheduleId> deleteSchedule(@CurrentMember Member member,
+                                                   @PathVariable("scheduleId") UUID scheduleId) {
 
-        return BaseResponse.onSuccess(scheduleService.deleteSchedule(scheduleId));
+        return BaseResponse.onSuccess(scheduleService.deleteSchedule(member, scheduleId));
     }
 
 }

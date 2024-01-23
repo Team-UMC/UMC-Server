@@ -87,9 +87,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduleId deleteSchedule(UUID scheduleId) {
+    public ScheduleId deleteSchedule(Member member, UUID scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
-
+        // 만약 삭제하려는 멤버와 일정 작성자가 일치하지 않을 경우 에러 반환
+        if (!schedule.getWriter().getId().equals(member.getId())) {
+            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
+        }
         schedule.delete();
         scheduleRepository.save(schedule);
 
