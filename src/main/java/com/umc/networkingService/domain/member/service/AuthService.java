@@ -10,6 +10,7 @@ import com.umc.networkingService.global.common.base.EntityLoader;
 
 import java.util.UUID;
 
+
 public interface AuthService extends EntityLoader<Member, UUID> {
     MemberLoginResponse socialLogin(final String accessToken, SocialType socialType);
     MemberIdResponse signUp(Member member, MemberSignUpRequest request);

@@ -98,8 +98,7 @@ public class Member extends BaseEntity {
     public void updateSemesterParts(List<SemesterPart> semesterParts) {
         this.semesterParts = semesterParts;
     }
-
-    public void authenticationGithub(String gitNickname) {
+    public void authenticateGithub(String gitNickname) {
         this.gitNickname = gitNickname;
     }
 
@@ -133,6 +132,4 @@ public class Member extends BaseEntity {
     public void updateRole(Role role) {
         this.role = role;
     }
-
-
 }

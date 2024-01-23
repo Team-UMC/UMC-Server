@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.member.service;
+package com.umc.networkingService.support;
 
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.branch.entity.Branch;
@@ -12,11 +12,13 @@ import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
+import com.umc.networkingService.domain.member.service.RefreshTokenService;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SpringBootTest
-public abstract class MemberServiceTestConfig {
+public abstract class ServiceIntegrationTestConfig {
 
     @Autowired protected MemberMapper memberMapper;
     @Autowired protected MemberRepository memberRepository;
@@ -50,6 +52,14 @@ public abstract class MemberServiceTestConfig {
         university = createUniversity();
         branch = createBranch();
         branchUniversity = createBranchUniversity();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        memberRepository.deleteAll();
+        branchUniversityRepository.deleteAll();
+        universityRepository.deleteAll();
+        branchRepository.deleteAll();
     }
 
     protected Member createMember(String clientId, Role role) {

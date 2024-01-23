@@ -14,6 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MemberPositionServiceImpl implements MemberPositionService {
+
     private final MemberPositionRepository memberPositionRepository;
     private final MemberMapper memberMapper;
 

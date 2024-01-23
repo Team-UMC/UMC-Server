@@ -67,9 +67,9 @@ public class MemberController {
             @ApiResponse(responseCode = "AUTH008", description = "깃허브 서버와 통신 실패할 경우 발생")
     })
     @PostMapping("/github")
-    public BaseResponse<MemberAuthenticationGithubResponse> authenticationGithub(@CurrentMember Member member,
-                                                                                 @RequestParam String code) {
-        return BaseResponse.onSuccess(memberService.authenticationGithub(member, code));
+    public BaseResponse<MemberAuthenticateGithubResponse> authenticationGithub(@CurrentMember Member member,
+                                                                               @RequestParam String code) {
+        return BaseResponse.onSuccess(memberService.authenticateGithub(member, code));
     }
 
     @Operation(summary = "깃허브 데이터 조회 API", description = "깃허브 잔디 이미지를 조회하는 API입니다.")

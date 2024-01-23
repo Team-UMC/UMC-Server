@@ -10,6 +10,7 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.support.ControllerTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Member 컨트롤러의")
-public class MemberControllerTest extends MemberControllerTestConfig {
+public class MemberControllerTest extends ControllerTestConfig {
 
     @Autowired private MemberMapper memberMapper;
 
@@ -192,11 +193,11 @@ public class MemberControllerTest extends MemberControllerTestConfig {
 
     @DisplayName("깃허브 연동 API 테스트")
     @Test
-    public void authenticationGithub() throws Exception {
+    public void authenticateGithub() throws Exception {
         // given
-        MemberAuthenticationGithubResponse response = new MemberAuthenticationGithubResponse("junseokkim");
+        MemberAuthenticateGithubResponse response = new MemberAuthenticateGithubResponse("junseokkim");
 
-        given(memberService.authenticationGithub(any(), any())).willReturn(response);
+        given(memberService.authenticateGithub(any(), any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then

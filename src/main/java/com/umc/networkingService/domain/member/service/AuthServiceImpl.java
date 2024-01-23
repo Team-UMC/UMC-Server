@@ -31,6 +31,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+    private final MemberService memberService;
+
     private final MemberMapper memberMapper;
     private final MemberRepository memberRepository;
 
@@ -85,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
         member.setMemberInfo(request.getName(), request.getNickname(),
                 university, branchUniversityService.findBranchByUniversity(university));
 
-        return new MemberIdResponse(memberRepository.save(member).getId());
+        return new MemberIdResponse(memberService.saveEntity(member).getId());
     }
 
     // 새로운 액세스 토큰 발급 함수
@@ -119,6 +121,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public MemberIdResponse withdrawal(Member loginMember) {
+        // 멤버 soft delete
         Member member = loadEntity(loginMember.getId());
 
         // refreshToken 삭제
@@ -155,7 +158,8 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.KAKAO);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get(), true);
+        boolean isServiceMember = getMember.get().getName() != null;
+        return getNewToken(getMember.get(), isServiceMember);
     }
 
     private MemberLoginResponse loginByNaver(final String accessToken){

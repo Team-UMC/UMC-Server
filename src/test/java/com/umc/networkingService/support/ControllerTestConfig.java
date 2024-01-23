@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.member.controller;
+package com.umc.networkingService.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public abstract class MemberControllerTestConfig {
+public abstract class ControllerTestConfig {
     @Autowired protected MockMvc mockMvc;
     @Autowired protected ObjectMapper objectMapper;
     @Autowired protected JwtTokenProvider jwtTokenProvider;

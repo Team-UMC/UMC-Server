@@ -130,7 +130,8 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     @Transactional
-    public MemberAuthenticationGithubResponse authenticationGithub(Member loginMember, String code) {
+    public MemberAuthenticateGithubResponse authenticateGithub(Member loginMember, String code) {
+
         Member member = loadEntity(loginMember.getId());
 
         String gitNickname = githubMemberClient.getGithubNickname(code);
@@ -138,11 +139,11 @@ public class MemberServiceImpl implements MemberService{
         if (gitNickname == null || gitNickname.isBlank())
             throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
-        member.authenticationGithub(gitNickname);
+        member.authenticateGithub(gitNickname);
 
         Member savedMember = memberRepository.save(member);
 
-        return new MemberAuthenticationGithubResponse(savedMember.getGitNickname());
+        return new MemberAuthenticateGithubResponse(savedMember.getGitNickname());
     }
 
     @Override
@@ -236,5 +237,9 @@ public class MemberServiceImpl implements MemberService{
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
+    }
+
+    public Member saveEntity(Member member) {
+        return memberRepository.save(member);
     }
 }
