@@ -6,9 +6,7 @@ import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.exception.ErrorCode;
-import com.umc.networkingService.validation.annotation.ExistUniversity;
 import lombok.RequiredArgsConstructor;
-import org.attoparser.ParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
