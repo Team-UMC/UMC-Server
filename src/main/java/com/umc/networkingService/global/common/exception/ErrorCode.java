@@ -37,6 +37,9 @@ public enum ErrorCode {
     //page
     PAGE_NOT_VALID(HttpStatus.BAD_REQUEST, "PAGE001", "페이지 값이 유효하지 않습니다."),
 
+    //semester
+    SEMESTER_NOT_VALID(HttpStatus.BAD_REQUEST, "SEMESTER001", "Semester 값이 유효하지 않습니다."),
+
     //Branch
     BRANCH_NOT_FOUND(HttpStatus.CONFLICT, "BRANCH001", "존재하지 않는 Branch입니다."),
     BRANCH_SEMESTER_EMPTY(HttpStatus.CONFLICT, "BRANCH004", "Branch 기수가 비어있거나, 잘못된 값임니다."),

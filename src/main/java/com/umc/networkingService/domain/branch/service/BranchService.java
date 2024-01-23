@@ -53,7 +53,9 @@ public class BranchService {
     public void patchBranch(BranchRequest.PatchBranchDTO request) {
 
         Optional<Branch> optionalBranch = branchRepository.findById(request.getBranchId()); //이미 검증된 branchId가 들어옴
-
+        if(optionalBranch.isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
+        }
         Branch branch = optionalBranch.get();
         branch.updateBranch(request, uploadImageS3(BRANCH_CATEGORY, request.getImage()));
         branchRepository.save(branch);
@@ -63,7 +65,9 @@ public class BranchService {
     @Transactional          //지부 삭제
     public void deleteBranch(UUID branchId) {
         Optional<Branch> optionalBranch = branchRepository.findById(branchId); //이미 검증된 branchId가 들어옴
-
+        if(optionalBranch.isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
+        }
         Branch branch = optionalBranch.get();
         branchRepository.delete(branch);
 
@@ -71,16 +75,20 @@ public class BranchService {
 
     @Transactional(readOnly = true)        //지부 리스트 조회
     public BranchResponse.JoinBranchListDTO joinBranchList(Semester semester) {
+        if(semester == null){
+            throw new BranchHandler(ErrorCode.SEMESTER_NOT_VALID);
+        }
 
         List<Branch> branchs = branchRepository.findBySemester(semester);
-
         return BranchConverter.toJoinBranchListDTO(branchs);
     }
 
     @Transactional(readOnly = true)        //지부 상세 조회
     public BranchResponse.JoinBranchDetailDTO joinBranchDetail(UUID branchId) {
         Optional<Branch> optionalBranch = branchRepository.findById(branchId); //이미 검증된 branchId가 들어옴
-
+        if(optionalBranch.isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
+        }
         Branch branch = optionalBranch.get();
 
         List<BranchUniversity> branchUniversities
@@ -97,7 +105,7 @@ public class BranchService {
 
     //s3에 이미지 업로드
     private String uploadImageS3(String category,MultipartFile image){
-        if(image == null){
+        if(image == null || image.isEmpty()){
             return null;
         }
         return s3FileComponent.uploadFile(category, image);
