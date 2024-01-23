@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class UniversityController {
 
     @Operation(summary = "전체 학교 조회 API",description = "전체 학교 조회 API")
     @GetMapping("")
-    public BaseResponse<UniversityResponse.joinUniversityList>
+    public BaseResponse<List<UniversityResponse.UniversityList>>
     joinUniversityList(
             @CurrentMember Member member //학교 많으면 추후에 페이징 처리하기
     ){

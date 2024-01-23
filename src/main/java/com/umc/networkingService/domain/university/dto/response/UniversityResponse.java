@@ -13,16 +13,8 @@ public class UniversityResponse {
     @Builder
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor // 대학교 리스트 조회
-    public static class joinUniversityList {
-        List<UniversityList> universityList;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor // 대학교 리스트
-    public static class UniversityList {
+    @AllArgsConstructor // 대학교
+    public static class joinUniversity {
         UUID universityId;
         String universityName;
     }
@@ -43,5 +35,13 @@ public class UniversityResponse {
             return universityDetail;
         }
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor // 학교 랭킹
+    public static class joinUniversityRank {
+    }
+
 
 }

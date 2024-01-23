@@ -9,19 +9,15 @@ import java.util.stream.Collectors;
 public class UniversityConverter {
 
     // 대학교 리스트 조회
-    public static UniversityResponse.joinUniversityList toJoinUniversityList(
+    public static List<UniversityResponse.joinUniversity> toJoinUniversityList(
             List<University> universityList
     ) {
-        return UniversityResponse.joinUniversityList.builder()
-                .universityList(
-                        universityList.stream().map(
-                                university -> UniversityResponse.UniversityList.builder()
-                                        .universityId(university.getId())
-                                        .universityName(university.getName())
-                                        .build()
-                        ).collect(Collectors.toList())
-                )
-                .build();
+        return universityList.stream()
+                .map(university -> UniversityResponse.joinUniversity.builder()
+                        .universityId(university.getId())
+                        .universityName(university.getName())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     // 학교 별 세부 정보 조회
