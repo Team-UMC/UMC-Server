@@ -86,6 +86,11 @@ public class BoardServiceImpl implements BoardService {
         return new BoardIdResponse(boardId);
     }
 
+    public BoardPagingResponse showMemberBoards(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toBoardPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
+    }
+
+
     @Override
     @Transactional
     public BoardIdResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {

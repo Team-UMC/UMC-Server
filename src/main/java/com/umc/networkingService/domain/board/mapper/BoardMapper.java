@@ -33,6 +33,8 @@ public class BoardMapper {
 
     public BoardPagePostResponse toBoardPagePostResponse(Board board) {
         return BoardPagePostResponse.builder()
+                .hostType(board.getHostType())
+                .boardType(board.getBoardType())
                 .boardId(board.getId())
                 .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
                 .profileImage(board.getWriter().getProfileImage())

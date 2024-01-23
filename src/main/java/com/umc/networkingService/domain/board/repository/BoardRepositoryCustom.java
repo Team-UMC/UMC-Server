@@ -15,5 +15,7 @@ public interface BoardRepositoryCustom {
     Page<Board> findKeywordBoards(Member member, String keyword, Pageable pageable);
 
     Page<BoardComment> findAllBoardComments(Member member, Board board, Pageable pageable);
+    Page<Board> findBoardsByWriter(Member member, String keyword, Pageable pageable);
+
     //Page<BoardComment> findAllNotices(Member member, Pageable pageable);
 }
