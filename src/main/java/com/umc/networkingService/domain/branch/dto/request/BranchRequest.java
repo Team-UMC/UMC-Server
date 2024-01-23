@@ -1,8 +1,7 @@
 package com.umc.networkingService.domain.branch.dto.request;
 
-import com.umc.networkingService.validation.annotation.ExistBranch;
+import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
 import com.umc.networkingService.global.common.Semester;
-import com.umc.networkingService.validation.annotation.ExistUniversity;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
