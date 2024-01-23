@@ -32,6 +32,10 @@ public enum ErrorCode {
     // SemesterPart
     EMPTY_SEMESTER_PART(HttpStatus.BAD_REQUEST, "PART006", "존재하지 않는 기수의 파트입니다."),
 
+    // Invite
+    EXPIRED_INVITE_CODE(HttpStatus.BAD_REQUEST, "INVITE001", "이미 만료된 초대 코드입니다."),
+    UNAUTHORIZED_CREATE_INVITE(HttpStatus.BAD_REQUEST, "INVITE002", "해당 역할에 대해서 초대 코드를 생성할 권한이 없습니다."),
+
     // Auth
     EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AUTH001", "JWT가 없습니다."),
     EXPIRED_MEMBER_JWT(HttpStatus.UNAUTHORIZED, "AUTH002", "만료된 JWT입니다."),

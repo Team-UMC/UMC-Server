@@ -14,6 +14,7 @@ import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
+import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ import static org.mockito.BDDMockito.given;
 
 @DisplayName("Member 서비스의 ")
 @SpringBootTest
-public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
+public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
     @Autowired
     private MemberService memberService;
@@ -304,14 +305,14 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
     @Test
     @DisplayName("깃허브 연동 테스트")
     @Transactional
-    public void authenticationGithub() {
+    public void authenticateGithub() {
         // given
 
         // 실제 깃허브 서버와 통신 x
         given(githubMemberClient.getGithubNickname(any())).willReturn("junseokkim");
 
         // when
-        MemberAuthenticationGithubResponse response = memberService.authenticationGithub(member, "깃허브 인가 코드");
+        MemberAuthenticateGithubResponse response = memberService.authenticateGithub(member, "깃허브 인가 코드");
 
         // then
         assertEquals("junseokkim", response.getGithubNickname());
@@ -322,7 +323,7 @@ public class MemberServiceIntegrationTest extends MemberServiceTestConfig {
     @Transactional
     public void inquiryGithubImage() {
         // given
-        member.authenticationGithub("junseokkim");
+        member.authenticateGithub("junseokkim");
 
         // when
         MemberInquiryGithubResponse response = memberService.inquiryGithubImage(member);

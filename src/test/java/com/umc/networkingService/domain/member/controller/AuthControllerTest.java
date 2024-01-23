@@ -10,6 +10,7 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.AuthService;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.support.ControllerTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Auth 컨트롤러의")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthControllerTest extends MemberControllerTestConfig {
+public class AuthControllerTest extends ControllerTestConfig {
 
     @MockBean private AuthService authService;
 

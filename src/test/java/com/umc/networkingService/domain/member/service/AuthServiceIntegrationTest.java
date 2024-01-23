@@ -10,10 +10,10 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.RefreshToken;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Auth 서비스의 ")
-@SpringBootTest
-public class AuthServiceIntegrationTest extends MemberServiceTestConfig {
+public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
     @Autowired AuthService authService;
 
@@ -120,7 +119,6 @@ public class AuthServiceIntegrationTest extends MemberServiceTestConfig {
                 .orElseThrow();
         assertEquals(response.getRefreshToken(), refreshToken.getRefreshToken());
     }
-
 
     @Test
     @DisplayName("회원 가입 테스트")
