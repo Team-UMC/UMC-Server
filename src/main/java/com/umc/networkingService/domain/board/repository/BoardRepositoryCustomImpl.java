@@ -147,16 +147,15 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(boardHeart.member.eq(member))
-                        .and(boardHeart.isChecked.isTrue())
-                        .and(board.deletedAt.isNull());
+                .and(boardHeart.isChecked.isTrue())
+                .and(board.deletedAt.isNull());
 
         //keyword가 비지 않았으면 keyword검색 조건 추가
         if (keyword != null && !keyword.trim().isEmpty()) {
             predicate.and(board.title.contains(keyword).or(board.content.contains(keyword)));
         }
 
-        List<Board> boards = query.selectFrom(board)
-                .select(board)
+        List<Board> boards = query.select(board)
                 .from(boardHeart)
                 .join(boardHeart.board, board)
                 .where(predicate)
@@ -165,8 +164,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(boards, pageable, query.selectFrom(board)
-                .select(board)
+        return new PageImpl<>(boards, pageable, query.select(board)
                 .from(boardHeart)
                 .join(boardHeart.board, board)
                 .where(predicate)
