@@ -1,6 +1,10 @@
 package com.umc.networkingService.domain.university.controller;
 
+import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.service.UniversityService;
+import com.umc.networkingService.domain.university.service.UniversityServiceImpl;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,12 +22,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UniversityController {
 
-    private final UniversityService universityService;
+    private final UniversityServiceImpl universityService;
 
     @Operation(summary = "전체 학교 조회 API",description = "전체 학교 조회 API")
     @GetMapping("")
-    public BaseResponse<>
-    joinUniversityList( ){
+    public BaseResponse<UniversityResponse.joinUniversityList>
+    joinUniversityList(
+            @CurrentMember Member member //학교 많으면 추후에 페이징 처리하기
+    ){
+        return BaseResponse.onSuccess(universityService.joinUniversityList());
     }
 
     @Operation(summary = "우리 학교 정보 조회 API",description = "우리 학교 정보 조회 API")
