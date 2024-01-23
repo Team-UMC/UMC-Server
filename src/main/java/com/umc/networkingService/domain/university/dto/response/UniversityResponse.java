@@ -41,6 +41,10 @@ public class UniversityResponse {
     @NoArgsConstructor
     @AllArgsConstructor // 학교 랭킹
     public static class joinUniversityRank {
+        String universityName;
+        String universityLogo;
+        Long universityPoint;
+        Integer universityRank;
     }
 
 

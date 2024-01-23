@@ -44,6 +44,12 @@ public class UniversityServiceImpl implements UniversityService {
 
     }
 
+    @Transactional(readOnly = true)     //전체 대학교 랭킹 조회
+    public List<UniversityResponse.joinUniversityRank> joinUniversityRankingList(Member member){
+        List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc();
+        return UniversityConverter.toJoinUniversityRankList(universityRankList);
+    }
+
 
 
     //유효한 대학 확인

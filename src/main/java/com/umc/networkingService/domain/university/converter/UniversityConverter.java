@@ -32,5 +32,19 @@ public class UniversityConverter {
                 .build();
     }
 
+    // 학교 랭킹 조회
+    public static List<UniversityResponse.joinUniversityRank> toJoinUniversityRankList(
+            List<University> universityRankList
+    ) {
+        return universityRankList.stream()
+                .map(university -> UniversityResponse.joinUniversityRank.builder()
+                        .universityName(university.getName())
+                        .universityLogo(university.getUniversityLogo())
+                        .universityPoint(university.getTotalPoint())
+                        .universityRank(universityRankList.indexOf(university)+1)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }
 

@@ -48,8 +48,11 @@ public class UniversityController {
 
     @Operation(summary = "전체 학교 랭킹 조회 API",description = "전체 학교 랭킹 조회 API")
     @GetMapping("/ranks")
-    public BaseResponse<>
-    joinUniversityRanking( ){
+    public BaseResponse<List<UniversityResponse.joinUniversityRank>>
+    joinUniversityRanking(
+            @CurrentMember Member member
+    ){
+        return BaseResponse.onSuccess(universityService.joinUniversityRankingList(member));
     }
 
     @Operation(summary = "학교 전체 기여도 조회 API",description = "학교 전체 기여도 조회 API")
