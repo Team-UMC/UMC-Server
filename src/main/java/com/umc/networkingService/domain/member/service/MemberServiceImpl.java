@@ -170,6 +170,21 @@ public class MemberServiceImpl implements MemberService{
         return memberMapper.toInquiryPointsResponse(member.getRemainPoint(), usedHistories);
     }
 
+    @Override
+    public List<MemberSearchInfoResponse> searchMemberInfo(Member member, String keyword) {
+
+        // keyword 양식 검증
+        String[] nicknameAndName = validateKeyword(keyword);
+
+        List<Member> searchedMembers = memberRepository.findAllByNicknameAndName(nicknameAndName[0], nicknameAndName[1]);
+
+        return searchedMembers.stream()
+                .map(searchedMember -> memberMapper.toSearchMembersResponse(
+                        searchedMember,
+                        getPositionNamesByType(searchedMember, PositionType.CAMPUS),
+                        getPositionNamesByType(searchedMember, PositionType.CENTER)
+                )).toList();
+    }
 
     // 멤버의 새로운 Role 찾기 함수
     private Role findMemberRole(List<MemberPosition> memberPositions) {
@@ -233,13 +248,34 @@ public class MemberServiceImpl implements MemberService{
         throw new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY);
     }
 
+    // 올바른 키워드인지 확인
+    private String[] validateKeyword(final String keyword) {
+        // {닉네임/이름} 양식 검증
+        String[] splits = keyword.split("/");
+        if (splits.length != 2)
+            throw new RestApiException(ErrorCode.INVALID_MEMBER_KEYWORD);
+        return splits;
+    }
+
+    // 타입에 따른 직책 찾기 함수
+    private List<String> getPositionNamesByType(Member member, PositionType type) {
+        return member.getPositions().stream()
+                .filter(position -> position.getType() == type)
+                .map(MemberPosition::getName)
+                .toList();
+    }
+
+
+    @Override
+    public Member saveEntity(Member member) {
+        return memberRepository.save(member);
+    }
+
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
     }
 
-    public Member saveEntity(Member member) {
-        return memberRepository.save(member);
-    }
+
 }

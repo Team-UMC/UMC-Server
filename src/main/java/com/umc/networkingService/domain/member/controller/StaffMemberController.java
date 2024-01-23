@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.member.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberSearchInfoResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -13,9 +14,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "멤버 API", description = "운영진용 멤버 관련 API")
+@Tag(name = "운영진용 멤버 API", description = "운영진용 멤버 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/staff/members")
@@ -33,4 +35,15 @@ public class StaffMemberController {
                                                         @RequestBody MemberUpdateProfileRequest request) {
         return BaseResponse.onSuccess(memberService.updateProfile(member, memberId, request));
     }
+
+    @Operation(summary = "유저 검색 API", description = "운")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @GetMapping("/search")
+    public BaseResponse<List<MemberSearchInfoResponse>> searchMemberInfo(@CurrentMember Member member,
+                                                                        @RequestParam String keyword) {
+        return BaseResponse.onSuccess(memberService.searchMemberInfo(member, keyword));
+    }
+
 }
