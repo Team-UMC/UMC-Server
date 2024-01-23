@@ -1,5 +1,7 @@
 package com.umc.networkingService.domain.university.service;
 
+import com.umc.networkingService.domain.branch.entity.Branch;
+import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.converter.UniversityConverter;
@@ -21,6 +23,7 @@ public class UniversityServiceImpl implements UniversityService {
 
     private final UniversityRepository universityRepository;
     private final MemberRepository memberRepository;
+    private final BranchUniversityRepository branchUniversityRepository;
 
     @Override
     public University findUniversityByName(String universityName) {
@@ -53,11 +56,31 @@ public class UniversityServiceImpl implements UniversityService {
         return UniversityConverter.toJoinUniversityRankList(universityRankList);
     }
 
-    @Transactional(readOnly = true)     //대학교별 기여도 랭킹 조회  todo: 다른 학교도 랭킹 조회 할 수 있는지 확인하기
+    @Transactional(readOnly = true)     //우리 학교 기여도 랭킹 조회
     public List<UniversityResponse.joinContributionRank> joinContributionRankingList(Member member){
         List<Member> contributionRankList = memberRepository.findAllByUniversityOrderByContributionPointDesc(member.getUniversity());
         return UniversityConverter.toJoinContributionRankList(contributionRankList);
     }
+
+    @Transactional(readOnly = true)    //우리 대학교 마스코트 조회
+    public UniversityResponse.joinUniversityMascot joinUniversityMascot(Member member){
+
+        UniversityResponse.joinUniversityMascot universityMascot
+                = UniversityConverter.toJoinUniversityMascot(member.getUniversity());
+
+        //지부 찾기
+        Branch branch = branchUniversityRepository.findByUniversityAndIsActive(member.getUniversity(),true)
+                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH)).getBranch();
+
+        List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
+
+        return UniversityResponse.joinUniversityMascot.setRankAndBranch(
+                universityMascot
+                ,universityRankList.indexOf(member.getUniversity())+1
+                ,branch
+        );
+    }
+
 
     //유효한 대학 확인
     public boolean isUniversityValid(UUID universityId) {

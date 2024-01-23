@@ -37,7 +37,7 @@ public class UniversityController {
         return BaseResponse.onSuccess(universityService.joinUniversityList());
     }
 
-    @Operation(summary = "학교별 세부 정보 조회 API",description = "우리 학교 정보 조회 API")
+    @Operation(summary = "우리 학교 세부 정보 조회 API",description = "우리 학교 정보 조회 API")
     @GetMapping("/details")
     public BaseResponse<UniversityResponse.joinUniversityDetail>
     joinUniversityDetail(
@@ -55,7 +55,7 @@ public class UniversityController {
         return BaseResponse.onSuccess(universityService.joinUniversityRankingList(member));
     }
 
-    @Operation(summary = "학교 전체 기여도 랭킹 조회 API",description = "학교 전체 기여도 조회 API")
+    @Operation(summary = "우리 학교 전체 기여도 랭킹 조회 API",description = "학교 전체 기여도 조회 API")
     @GetMapping("/members")
     public BaseResponse<List<UniversityResponse.joinContributionRank>>
     joinUniversityContribution(
@@ -64,13 +64,16 @@ public class UniversityController {
         return BaseResponse.onSuccess(universityService.joinContributionRankingList(member));
     }
 
-    @Operation(summary = "학교 마스코트 조회 API",description = "학교 마스코트 조회 API")
+    @Operation(summary = "우리 학교 마스코트 조회 API",description = "학교 마스코트 조회 API")
     @GetMapping("/mascot")
-    public BaseResponse<>
-    joinUniversityMascot( ){
+    public BaseResponse<UniversityResponse.joinUniversityMascot>
+    joinUniversityMascot(
+            @CurrentMember Member member
+    ){
+        return BaseResponse.onSuccess(universityService.joinUniversityMascot(member));
     }
 
-    @Operation(summary = "학교 마스코트 먹이주기 API",description = "학교 마스코트 먹이주기 API")
+    @Operation(summary = "우리 학교 마스코트 먹이주기 API",description = "학교 마스코트 먹이주기 API")
     @PostMapping("/mascot")
     public BaseResponse<>
     join( ){

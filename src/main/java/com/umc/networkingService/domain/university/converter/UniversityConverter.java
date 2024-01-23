@@ -61,7 +61,19 @@ public class UniversityConverter {
                         .build())
                 .collect(Collectors.toList());
     }
-    
+
+    // 학교 마스코트 조회
+    public static UniversityResponse.joinUniversityMascot toJoinUniversityMascot(
+            University university
+    ){
+        return UniversityResponse.joinUniversityMascot.builder()
+                .mascotDialog(university.getMascot().getDialogue())
+                .mascotImage(university.getMascot().getImage())
+                .level(university.getMascot().getEndLevel())
+                .point(university.getTotalPoint())
+                .build();
+    }
+
 
 }
 

@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.university.dto.response;
 
+import com.umc.networkingService.domain.branch.entity.Branch;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,5 +60,23 @@ public class UniversityResponse {
         Integer rank; //todo: 랭킹 얼마까지? , 랭킹 패이징 해?
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor // 학교 마스코트
+    public static class joinUniversityMascot {
+        Integer level;
+        Long point;
+        Integer rank;
+        String mascotImage;
+        String mascotDialog;
+        String branchImage;
+
+        public static joinUniversityMascot setRankAndBranch(joinUniversityMascot universityMascot, Integer rank, Branch branch) {
+            universityMascot.rank = rank;
+            universityMascot.branchImage = branch.getImage();
+            return universityMascot;
+        }
+    }
 
 }
