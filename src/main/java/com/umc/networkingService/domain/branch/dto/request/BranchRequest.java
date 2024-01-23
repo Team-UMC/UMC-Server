@@ -16,9 +16,9 @@ public class BranchRequest {
     @Getter
     public static class PostBranchDTO{
         @NotNull
-        private String name;
+        private String name; //todo: 글자수 제한 .. 중복 검증도?
         @NotNull
-        private String description;
+        private String description; //todo: 글자수 제한
         private MultipartFile image;
         @NotNull
         private Semester semester;
@@ -30,9 +30,9 @@ public class BranchRequest {
         @ExistBranch
         private UUID branchId;
         @NotNull
-        private String name;
+        private String name; //todo: 글자수 제한 .. 중복 검증도?
         @NotNull
-        private String description;
+        private String description; //todo: 글자수 제한
         private MultipartFile image;
         @NotNull
         private Semester semester;
