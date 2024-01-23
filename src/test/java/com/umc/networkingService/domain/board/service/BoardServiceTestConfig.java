@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.board.service;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
 import com.umc.networkingService.domain.board.repository.BoardFileRepository;
+import com.umc.networkingService.domain.board.repository.BoardHeartRepository;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
@@ -42,6 +43,8 @@ public abstract class BoardServiceTestConfig {
     protected BoardFileRepository boardFileRepository;
     @Autowired
     protected BoardCommentRepository boardCommentRepository;
+    @Autowired
+    protected BoardHeartRepository boardHeartRepository;
     @Autowired
     protected UniversityRepository universityRepository;
     @Autowired
@@ -179,6 +182,10 @@ public abstract class BoardServiceTestConfig {
                     .content("좋아요." + i)
                     .build());
         }
+    }
+
+    protected void setBoardHeart(Member member, Board board) {
+        boardService.toggleBoardLike(member,board.getId());
     }
 
 
