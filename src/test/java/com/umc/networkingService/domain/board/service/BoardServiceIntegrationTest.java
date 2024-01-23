@@ -1,32 +1,17 @@
 package com.umc.networkingService.domain.board.service;
 
 
+import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.entity.Board;
-import com.umc.networkingService.domain.board.entity.BoardFile;
-import com.umc.networkingService.domain.board.entity.BoardType;
-import com.umc.networkingService.domain.board.entity.HostType;
-import com.umc.networkingService.domain.board.repository.BoardFileRepository;
-import com.umc.networkingService.domain.board.repository.BoardRepository;
-import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.domain.branch.repository.BranchRepository;
-import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.SemesterPart;
-import com.umc.networkingService.domain.member.entity.SocialType;
-import com.umc.networkingService.domain.member.repository.MemberRepository;
-import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
-import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.domain.university.repository.UniversityRepository;
+import com.umc.networkingService.domain.board.dto.response.*;
+import com.umc.networkingService.domain.board.entity.*;
+import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
 import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,132 +33,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Board 서비스의 ")
 @SpringBootTest
 @Transactional
-public class BoardServiceIntegrationTest {
+public class BoardServiceIntegrationTest  extends BoardServiceTestConfig{
     @Autowired
     private BoardService boardService;
     @Autowired
-    private MemberRepository memberRepository;
+    private BoardCommentService boardCommentService;
+
     @Autowired
-    private BoardRepository boardRepository;
-    @Autowired
-    private BoardFileRepository boardFileRepository;
-    @Autowired
-    private UniversityRepository universityRepository;
-    @Autowired
-    private BranchRepository branchRepository;
-    @Autowired
-    private SemesterPartRepository semesterPartRepository;
-
-
-    private Member member;
-    private Member member2;
-    private Board board;
-    private University university;
-    private Branch branch;
-
-    @BeforeEach
-    public void setUp() {
-        university = createUniversity();
-        branch = createBranch();
-        member = createMember();
-        member2 = createMember2();
-        board = createBoard();
-    }
-
-    private Member createMember() {
-        return memberRepository.save(Member.builder()
-                .id(UUID.randomUUID())
-                .clientId("123456")
-                .socialType(SocialType.KAKAO)
-                .university(university)
-                .branch(branch)
-                .role(Role.MEMBER)
-                .name("김준석")
-                .nickname("벡스")
-                .semesterParts(createSemesterPart(member))
-                .build());
-    }
-
-    protected List<SemesterPart> createSemesterPart(Member member) {
-        List<SemesterPart> semesterParts = List.of(
-                SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.FIFTH).build(),
-                SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.THIRD).build()
-        );
-
-        return semesterPartRepository.saveAll(semesterParts);
-    }
-
-
-    private Member createMember2() {
-        return memberRepository.save(Member.builder()
-                .id(UUID.randomUUID())
-                .clientId("11111")
-                .socialType(SocialType.KAKAO)
-                .university(university)
-                .branch(branch)
-                .role(Role.MEMBER)
-                .name("김수민")
-                .nickname("루시")
-                .semesterParts(createSemesterPart(member2))
-                .build());
-    }
-
-
-    private University createUniversity() {
-        return universityRepository.save(
-                University.builder()
-                        .name("인하대학교")
-                        .build()
-        );
-    }
-
-    private Branch createBranch() {
-        return branchRepository.save(
-                Branch.builder()
-                        .name("GACI")
-                        .description("가치 지부입니다.")
-                        .semester(Semester.FIFTH)
-                        .build()
-        );
-    }
-
-    private Board createBoard() {
-        return boardRepository.save(Board.builder()
-                .writer(member)
-                .title("제목")
-                .content("내용")
-                .boardType(BoardType.FREE)
-                .hostType(HostType.CAMPUS)
-                .semesterPermission(List.of(Semester.FIFTH))
-                .hitCount(0)
-                .heartCount(0)
-                .commentCount(0)
-                .build());
-    }
-
-    private void createBoardFile() {
-        boardFileRepository.save(BoardFile.builder()
-                .board(board)
-                .url("dfsefe.img")
-                .build());
-    }
-
-    private void createBoards() {
-        for (int i = 0; i < 11; i++) {
-            boardRepository.save(Board.builder()
-                    .writer(member)
-                    .title("데모데이가 곧이에용")
-                    .content("신난다~~")
-                    .boardType(BoardType.FREE)
-                    .hostType(HostType.CAMPUS)
-                    .semesterPermission(List.of(Semester.FIFTH))
-                    .hitCount(0)
-                    .heartCount(1)
-                    .commentCount(1)
-                    .build());
-        }
-    }
-
+    BoardCommentRepository boardCommentRepository;
     @Test
     @DisplayName("게시글 작성 성공 테스트")
     public void createBoardTest() {
@@ -331,12 +198,12 @@ public class BoardServiceIntegrationTest {
         BoardDetailResponse boardDetailResponse = boardService.showBoardDetail(member, boardId);
 
         //then
-        assertEquals("벡스/김준석", boardDetailResponse.getWriter());
+        assertEquals("루시/김수민", boardDetailResponse.getWriter());
         assertEquals(1, boardDetailResponse.getHitCount());
         assertEquals(Semester.FIFTH, boardDetailResponse.getSemester());
-        assertEquals(Part.ANDROID, boardDetailResponse.getPart());
+        assertEquals(Part.SPRING, boardDetailResponse.getPart());
         assertEquals(0, boardDetailResponse.getHeartCount());
-        assertEquals(1, boardDetailResponse.getBoardFiles().size());
+        assertEquals(2, boardDetailResponse.getBoardFiles().size());
     }
 
     @Test
@@ -364,44 +231,140 @@ public class BoardServiceIntegrationTest {
     public void searchBoardTest() {
         //given
         String keyword = "데모데이";
+        String keyword2 = "2";
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
         createBoards();
 
         //when
         BoardPagingResponse boardPagingResponse = boardService.searchBoard(member, keyword, pageable);
+        BoardPagingResponse boardPagingResponse2 = boardService.searchBoard(member, keyword2, pageable);
 
         //then
         assertEquals(0, boardPagingResponse.getPage());
         assertEquals(2, boardPagingResponse.getTotalPages());
         assertEquals(11, boardPagingResponse.getTotalElements());
-        assertEquals(11, boardPagingResponse.getBoardPagePostResponses().size());
-        assertEquals("데모데이가 곧이에용", boardPagingResponse.getBoardPagePostResponses().get(1).getTitle());
+        assertEquals(10, boardPagingResponse.getBoardPagePostResponses().size());
+        assertEquals("데모데이가 곧이네요10", boardPagingResponse.getBoardPagePostResponses().get(0).getTitle());
+
+
+        assertEquals(0, boardPagingResponse2.getPage());
+        assertEquals(1, boardPagingResponse2.getTotalPages());
+        assertEquals(1, boardPagingResponse2.getTotalElements());
+        assertEquals(1, boardPagingResponse2.getBoardPagePostResponses().size());
+
+
     }
 
     @Test
-    @DisplayName("특정 게시글 추천/취소 테스트")
+    @DisplayName("특정 게시글 좋아요/취소 테스트")
     public void toggleBoardLikeTest() {
 
         //given
         UUID boardId = board.getId();
 
         //when
-        BoardIdResponse like = boardService.toggleBoardLike(member2, boardId);
+        BoardIdResponse like = boardService.toggleBoardLike(member, boardId);
 
         //then
         assertEquals(1, board.getHeartCount());
-    /*  assertEquals(1, board.getHearts().size());
-        assertEquals("루시", board.getHearts().get(0).getMember().getNickname());
-        assertEquals(true, board.getHearts().get(0).isChecked());
-    */
         //given
-        BoardIdResponse cancel = boardService.toggleBoardLike(member2, boardId);
+        BoardIdResponse cancel = boardService.toggleBoardLike(member, boardId);
 
         //then
         assertEquals(0, board.getHeartCount());
-    /*  assertEquals(1, board.getHearts().size());
-        assertEquals("루시", board.getHearts().get(0).getMember().getNickname());
-        assertEquals(false, board.getHearts().get(0).isChecked());
-    */
+    }
+
+    @Test
+    @DisplayName("댓글 작성 성공 테스트")
+    public void addBoardCommentTest() {
+        //given
+        BoardCommentAddRequest request = BoardCommentAddRequest.builder()
+                .content("내용")
+                .boardId(board.getId())
+                .build();
+
+        //when
+        BoardCommentIdResponse response = boardCommentService.addBoardComment(member, request);
+        Optional<BoardComment> optionalBoardComment = boardCommentRepository.findById(response.getBoardCommentId());
+        assertTrue(optionalBoardComment.isPresent());
+        BoardComment comment = optionalBoardComment.get();
+
+        //then
+        assertEquals("내용", comment.getContent());
+        assertEquals(board.getId(), comment.getBoard().getId());
+        assertEquals(1, board.getCommentCount());
+    }
+
+    @Test
+    @DisplayName("댓글 수정 성공 테스트")
+    public void updateBoardCommentTest() {
+        //given
+        BoardCommentUpdateRequest request = BoardCommentUpdateRequest.builder()
+                .content("수정")
+                .build();
+
+        //when
+        boardCommentService.updateBoardComment(member,comment.getId(), request);
+
+        //then
+        assertEquals("수정", comment.getContent());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 성공 테스트")
+    public void deleteBoardCommentTest() {
+        //given
+        int commentCount = board.getCommentCount();
+        //when
+        boardCommentService.deleteBoardComment(member,comment.getId());
+
+        //then
+        assertNotNull( comment.getDeletedAt());
+        assertEquals(commentCount-1, comment.getBoard().getCommentCount());
+    }
+
+    @Test
+    @DisplayName("댓글 목록 조회 테스트")
+    public void showBoardCommentsTest() {
+        //given
+        createBoardComments();
+        Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
+
+        //when
+        BoardCommentPagingResponse response = boardCommentService.showBoardComments(member,board.getId(),pageable);
+
+        //then
+        assertEquals(1, response.getPage());
+        assertEquals(2, response.getTotalPages());
+        assertEquals(16, response.getTotalElements());
+        assertEquals(6, response.getBoardPageCommentResponses().size());
+        assertEquals("좋아요.9", response.getBoardPageCommentResponses().get(0).getContent());
+        assertEquals("벡스/김준석", response.getBoardPageCommentResponses().get(0).getWriter());
+    }
+
+
+    @Test
+    @DisplayName("내가쓴 글 목록 조회 테스트")
+    public void showMemberBoardsTest() {
+        //given
+        createBoards();
+        Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
+
+        //when
+        BoardPagingResponse response = boardService.showMemberBoards(member,"데모",pageable);
+
+        //then
+        assertEquals(1, response.getPage());
+        assertEquals(2, response.getTotalPages());
+        assertEquals(11, response.getTotalElements());
+        assertEquals(1, response.getBoardPagePostResponses().size());
+        assertEquals(HostType.CENTER, response.getBoardPagePostResponses().get(0).getHostType());
+        assertEquals(BoardType.FREE, response.getBoardPagePostResponses().get(0).getBoardType());
+        assertEquals("루시/김수민", response.getBoardPagePostResponses().get(0).getWriter());
+        assertEquals("데모데이가 곧이네요0", response.getBoardPagePostResponses().get(0).getTitle());
+
+
     }
 }
+
+

@@ -2,15 +2,15 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.*;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
+import com.umc.networkingService.domain.board.service.BoardCommentService;
 import com.umc.networkingService.domain.board.service.BoardService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
@@ -28,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -50,97 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Board 컨트롤러의")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class BoardControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @MockBean
-    private BoardService boardService;
-    @MockBean
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private SemesterPartRepository semesterPartRepository;
-
-
-    private Member member;
-    private Board board;
-    private String accessToken;
-
-    @BeforeEach
-    public void setUp() {
-        member = createMember();
-        board = createBoard();
-        accessToken = jwtTokenProvider.generateToken(member.getId()).getAccessToken();
-    }
-
-    private Member createMember() {
-        return memberRepository.save(Member.builder()
-                .id(UUID.randomUUID())
-                .clientId("123456")
-                .socialType(SocialType.KAKAO)
-                .role(Role.MEMBER)
-                .name("김준석")
-                .nickname("벡스")
-                .semesterParts(createSemesterPart(member))
-                .build());
-    }
-
-    protected List<SemesterPart> createSemesterPart(Member member) {
-        List<SemesterPart> semesterParts = List.of(
-                SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.THIRD).build(),
-                SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FOURTH).build()
-        );
-
-        return semesterPartRepository.saveAll(semesterParts);
-    }
-
-
-    private Board createBoard() {
-        return Board.builder()
-                .id(UUID.randomUUID())
-                .writer(member)
-                .title("제목")
-                .content("내용")
-                .semesterPermission(List.of(Semester.FIFTH))
-                .hostType(HostType.CAMPUS)
-                .boardType(BoardType.FREE)
-                .build();
-
-    }
-
-
-    //가상의 BoardPagingResponse 생성
-    public BoardPagingResponse createMockBoardPagingResponse() {
-        List<BoardPagePostResponse> boardPagePostResponses = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            BoardPagePostResponse boardPagePostResponse = BoardPagePostResponse.builder()
-                    .title("제목")
-                    .content("내용")
-                    .writer("루시/김수민")
-                    .hitCount(1)
-                    .commentCount(1)
-                    .heartCount(1)
-                    .profileImage(".../img")
-                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
-                    .build();
-            boardPagePostResponses.add(boardPagePostResponse);
-        }
-
-
-        // 가상의 페이징 정보 설정
-        return BoardPagingResponse.builder()
-                .page(1)
-                .totalPages(3)
-                .totalElements(30)
-                .boardPagePostResponses(boardPagePostResponses)
-                .isFirst(true)
-                .isLast(false)
-                .build();
-    }
+public class BoardControllerTest extends BoardControllerTestConfig {
 
 
     @Test
@@ -316,7 +227,7 @@ public class BoardControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 추천/취소 테스트")
+    @DisplayName("특정 게시글 좋아요/취소 테스트")
     public void toggleBoardHeart() throws Exception {
         //given
         BoardIdResponse response = new BoardIdResponse(board.getId());
@@ -335,4 +246,109 @@ public class BoardControllerTest {
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result").exists());
     }
+
+    @Test
+    @DisplayName("댓글 작성 성공 테스트")
+    public void addBoardCommentTest() throws Exception {
+        //given
+        BoardCommentAddRequest boardCommentAddRequest = BoardCommentAddRequest.builder()
+                .content("내용")
+                .boardId(board.getId())
+                .build();
+
+        String request = objectMapper.writeValueAsString(boardCommentAddRequest);
+        BoardCommentIdResponse response = new BoardCommentIdResponse(board.getId());
+
+        //when
+        when(boardCommentService.addBoardComment(eq(member), any(BoardCommentAddRequest.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        //then
+        this.mockMvc.perform(
+                        post("/boards/comments")
+                                .header("Authorization", accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(request))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
+
+
+    @Test
+    @DisplayName("댓글 수정 성공 테스트")
+    public void updateBoardCommentTest() throws Exception {
+        //given
+        BoardCommentUpdateRequest boardCommentUpdateRequest = BoardCommentUpdateRequest.builder()
+                .content("수정")
+                .build();
+
+        String request = objectMapper.writeValueAsString(boardCommentUpdateRequest);
+        BoardCommentIdResponse response = new BoardCommentIdResponse(comment.getId());
+
+        //when
+        when(boardCommentService.updateBoardComment(eq(member),eq(comment.getId()), any(BoardCommentUpdateRequest.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        //then
+        this.mockMvc.perform(
+                        patch("/boards/comments/{commentId}",comment.getId())
+                                .header("Authorization", accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(request))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
+
+
+    @Test
+    @DisplayName("댓글 삭제 성공 테스트")
+    public void deleteBoardCommentTest() throws Exception {
+        //given
+        BoardCommentIdResponse response = new BoardCommentIdResponse(comment.getId());
+
+        //when
+        when(boardCommentService.deleteBoardComment(eq(member),eq(comment.getId()))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        //then
+        this.mockMvc.perform(
+                        delete("/boards/comments/{commentId}",comment.getId())
+                                .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
+
+    @Test
+    @DisplayName("특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
+    public void showMemberBoardsTest() throws Exception {
+        // given
+        BoardPagingResponse response = createMockBoardPagingResponse();
+
+        // when
+        when(boardService.showMemberBoards(eq(member),any(String.class), any(Pageable.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/boards/member")
+                        .param("keyword", "데모데이")
+                        .param("page", "0")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
+
 }
+

@@ -35,7 +35,7 @@ public class BoardCommentController {
     })
     @PostMapping
     public BaseResponse<BoardCommentIdResponse> addBoardComment(@CurrentMember Member member,
-                                                                @Valid @RequestPart("request") BoardCommentAddRequest request) {
+                                                                @Valid @RequestBody BoardCommentAddRequest request) {
         return BaseResponse.onSuccess(boardCommentService.addBoardComment(member, request));
     }
 
@@ -44,10 +44,10 @@ public class BoardCommentController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생")
     })
-    @PatchMapping("/commentId")
+    @PatchMapping("/{commentId}")
     public BaseResponse<BoardCommentIdResponse> updateBoardComment(@CurrentMember Member member,
                                                                    @PathVariable(value = "commentId") UUID commentId,
-                                                                   @Valid @RequestPart("request") BoardCommentUpdateRequest request) {
+                                                                   @Valid @RequestBody BoardCommentUpdateRequest request) {
         return BaseResponse.onSuccess(boardCommentService.updateBoardComment(member, commentId, request));
     }
 
@@ -57,7 +57,7 @@ public class BoardCommentController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생")
     })
-    @DeleteMapping("/commentId")
+    @DeleteMapping("/{commentId}")
     public BaseResponse<BoardCommentIdResponse> deleteBoardComment(@CurrentMember Member member,
                                                                    @PathVariable(value = "commentId") UUID commentId) {
         return BaseResponse.onSuccess(boardCommentService.deleteBoardComment(member, commentId));

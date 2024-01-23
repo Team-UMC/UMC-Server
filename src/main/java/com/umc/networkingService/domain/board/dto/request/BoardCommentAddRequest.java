@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.board.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardCommentAddRequest {
-    @NotBlank(message = "boardId는 필수 입력값입니다.")
+    @NotNull(message = "boardId는 필수 입력값입니다.")
     private UUID boardId;
     @NotBlank(message = "content는 필수 입력값입니다.")
     private String content;
