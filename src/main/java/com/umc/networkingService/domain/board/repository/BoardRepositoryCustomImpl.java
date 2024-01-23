@@ -68,4 +68,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
 
+
+
 }
