@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.university.validation.validator;
 
-import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.domain.university.service.UniversityServiceImpl;
 import com.umc.networkingService.domain.university.validation.annotation.ExistUniversity;
 import com.umc.networkingService.global.common.exception.ErrorCode;

@@ -4,9 +4,7 @@ import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
-import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.domain.university.service.UniversityServiceImpl;
-import com.umc.networkingService.domain.university.validation.annotation.ExistUniversity;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Tag(name = "대학교 API", description = "일반 유저용 멤버 관련 API")
@@ -85,7 +82,7 @@ public class UniversityController {
         universityService.feedUniversityMascot(member, pointType);
         return BaseResponse.onSuccess("먹이주기 성공");
     }
-    
+
     /*
     @Operation(summary = "학교 생성하기 API",description = "학교 생성하기 API")
     @PostMapping("")
