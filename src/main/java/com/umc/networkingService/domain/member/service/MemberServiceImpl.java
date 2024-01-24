@@ -97,7 +97,7 @@ public class MemberServiceImpl implements MemberService{
 
         Member member = loadEntity(loginMember.getId());
         // 본인 프로필 조회인 경우
-        if (memberId == null) {
+        if (memberId == null || member.getId().equals(memberId)) {
             return memberMapper.toInquiryProfileResponse(member, MemberRelation.MINE);
         }
 
