@@ -29,5 +29,6 @@ public class BoardDetailResponse {
     private int hitCount;
     private int heartCount;
     private int commentCount;
+    private boolean isLiked;
     private LocalDateTime createdAt;
 }

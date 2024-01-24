@@ -224,8 +224,10 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(1, boardDetailResponse.getHitCount());
         assertEquals(Semester.FIFTH, boardDetailResponse.getSemester());
         assertEquals(Part.SPRING, boardDetailResponse.getPart());
+        assertEquals(false,boardDetailResponse.isLiked());
         assertEquals(0, boardDetailResponse.getHeartCount());
         assertEquals(2, boardDetailResponse.getBoardFiles().size());
+
     }
 
     @Test
@@ -268,8 +270,8 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         BoardPagingResponse boardPagingResponse2 = boardService.showBoards(campusStaff, hostType, boardType, pageable);
 
         //then
-        assertEquals(1, boardPagingResponse.getBoardPageResponses().size());
-        assertEquals(1, boardPagingResponse.getTotalElements());
+        assertEquals(1, boardPagingResponse2.getBoardPageResponses().size());
+        assertEquals(1, boardPagingResponse2.getTotalElements());
     }
 
 

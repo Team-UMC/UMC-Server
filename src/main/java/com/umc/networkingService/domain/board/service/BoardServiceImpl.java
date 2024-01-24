@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -60,6 +61,12 @@ public class BoardServiceImpl implements BoardService {
         //게시글을 열람할 권한이 있는지 check
         checkSemesterPermission(member, board);
 
+        //좋아요 여부 확인
+        boolean isLike = false;
+        Optional<BoardHeart> boardHeart = boardHeartRepository.findByMemberAndBoard(member, board);
+        if (boardHeart.isPresent())
+            isLike = boardHeart.get().isChecked();
+
         //조회수 증가
         board.increaseHitCount();
 
@@ -67,7 +74,7 @@ public class BoardServiceImpl implements BoardService {
         List<String> boardFiles = boardFileService.findBoardFiles(board).stream()
                 .map(BoardFile::getUrl).toList();
 
-        return boardMapper.toBoardDetailResponse(board, boardFiles);
+        return boardMapper.toBoardDetailResponse(board, boardFiles, isLike);
 
     }
 

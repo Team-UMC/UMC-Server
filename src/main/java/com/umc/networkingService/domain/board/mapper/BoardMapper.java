@@ -90,7 +90,7 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardDetailResponse toBoardDetailResponse(Board board, List<String> boardFiles) {
+    public BoardDetailResponse toBoardDetailResponse(Board board, List<String> boardFiles, boolean isLiked) {
         return BoardDetailResponse.builder()
                 .hostType(board.getHostType())
                 .boardType(board.getBoardType())
@@ -104,6 +104,7 @@ public class BoardMapper {
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())
                 .boardFiles(boardFiles)
+                .isLiked(isLiked)
                 .createdAt(board.getCreatedAt())
                 .build();
     }
