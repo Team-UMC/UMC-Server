@@ -74,6 +74,11 @@ public class Member extends BaseEntity {
 
     private  String notionLink;
 
+    //포인트 차감
+    public void usePoint(Long usedPoint) {
+        this.remainPoint -= usedPoint;
+    }
+
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
         this.name = name;
         this.nickname = nickname;

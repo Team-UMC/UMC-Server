@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.university.service;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.converter.UniversityConverter;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
@@ -79,6 +80,15 @@ public class UniversityServiceImpl implements UniversityService {
                 ,universityRankList.indexOf(member.getUniversity())+1
                 ,branch
         );
+    }
+
+    @Transactional    //우리 대학교 마스코트 먹이주기
+    public void feedUniversityMascot(Member member, PointType pointType){
+
+        //포인트 차감
+        member.usePoint(pointType.getPoint());
+        //학교 포인트 증가
+        member.getUniversity().increasePoint(pointType.getPoint());
     }
 
 

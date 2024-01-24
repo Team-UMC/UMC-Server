@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.university.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.domain.university.service.UniversityServiceImpl;
@@ -74,11 +75,18 @@ public class UniversityController {
     }
 
     @Operation(summary = "우리 학교 마스코트 먹이주기 API",description = "학교 마스코트 먹이주기 API")
-    @PostMapping("/mascot")
-    public BaseResponse<>
-    join( ){
-    }
+    @PostMapping("/mascot")    //현재 학교 포인트 반환
+    public BaseResponse<String>
+    postMascotPoint(
+            @CurrentMember Member member,
+            @RequestBody @Valid PointType pointType
+            ){
 
+        universityService.feedUniversityMascot(member, pointType);
+        return BaseResponse.onSuccess("먹이주기 성공");
+    }
+    
+    /*
     @Operation(summary = "학교 생성하기 API",description = "학교 생성하기 API")
     @PostMapping("")
     public BaseResponse<>
@@ -96,6 +104,7 @@ public class UniversityController {
     public BaseResponse<>
     patchUniversity( ){
     }
+    */
 
 }
 

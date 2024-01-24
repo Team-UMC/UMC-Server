@@ -39,5 +39,10 @@ public class University extends BaseEntity {
     @ColumnDefault("0")
     private Long totalPoint;
 
+    //포인트 증가
+    public void increasePoint(Long point) {
+        this.totalPoint += point;
+    }
+
 
 }
