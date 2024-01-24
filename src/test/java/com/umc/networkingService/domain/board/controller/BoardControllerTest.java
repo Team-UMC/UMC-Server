@@ -270,12 +270,12 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardCommentIdResponse response = new BoardCommentIdResponse(comment.getId());
 
         //when
-        when(boardCommentService.updateBoardComment(eq(member),eq(comment.getId()), any(BoardCommentUpdateRequest.class))).thenReturn(response);
+        when(boardCommentService.updateBoardComment(eq(member), eq(comment.getId()), any(BoardCommentUpdateRequest.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         //then
         this.mockMvc.perform(
-                        patch("/boards/comments/{commentId}",comment.getId())
+                        patch("/boards/comments/{commentId}", comment.getId())
                                 .header("Authorization", accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(request))
@@ -294,12 +294,12 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardCommentIdResponse response = new BoardCommentIdResponse(comment.getId());
 
         //when
-        when(boardCommentService.deleteBoardComment(eq(member),eq(comment.getId()))).thenReturn(response);
+        when(boardCommentService.deleteBoardComment(eq(member), eq(comment.getId()))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         //then
         this.mockMvc.perform(
-                        delete("/boards/comments/{commentId}",comment.getId())
+                        delete("/boards/comments/{commentId}", comment.getId())
                                 .header("Authorization", accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -315,7 +315,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardSearchPagingResponse response = createMockBoardSearchPagingResponse();
 
         // when
-        when(boardService.showBoardsByMember(eq(member),any(String.class), any(Pageable.class))).thenReturn(response);
+        when(boardService.showBoardsByMember(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         // then

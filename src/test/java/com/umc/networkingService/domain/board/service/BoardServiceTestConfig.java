@@ -1,6 +1,9 @@
 package com.umc.networkingService.domain.board.service;
 
-import com.umc.networkingService.domain.board.entity.*;
+import com.umc.networkingService.domain.board.entity.Board;
+import com.umc.networkingService.domain.board.entity.BoardComment;
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
 import com.umc.networkingService.domain.board.repository.BoardFileRepository;
 import com.umc.networkingService.domain.board.repository.BoardHeartRepository;
@@ -185,10 +188,8 @@ public abstract class BoardServiceTestConfig {
     }
 
     protected void setBoardHeart(Member member, Board board) {
-        boardService.toggleBoardLike(member,board.getId());
+        boardService.toggleBoardLike(member, board.getId());
     }
-
-
 
 
 }

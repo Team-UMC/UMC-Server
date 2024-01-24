@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Tag(name= "BOARD API", description = "운영진용 BOARD API")
+@Tag(name = "STAFF BOARD API", description = "운영진용 BOARD API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/staff/boards")
@@ -32,9 +32,9 @@ public class StaffBoardController {
     })
     @GetMapping("notices")
     public BaseResponse<BoardPagingResponse> showAllCampusNotices(@CurrentMember Member member,
-                                                            @RequestParam(name = "keyword", required = false) String keyword,
-                                                            @PageableDefault(page = 1, sort = "created_at",
-                                                direction = Sort.Direction.DESC) Pageable pageable) {
+                                                                  @RequestParam(name = "keyword", required = false) String keyword,
+                                                                  @PageableDefault(sort = "created_at",
+                                                                          direction = Sort.Direction.DESC) Pageable pageable) {
         return BaseResponse.onSuccess(staffBoardService.showAllCampusNotices(member, keyword, pageable));
     }
 

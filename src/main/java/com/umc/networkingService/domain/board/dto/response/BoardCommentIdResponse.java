@@ -10,5 +10,5 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardCommentIdResponse {
-    private UUID boardCommentId;
+    private UUID commentId;
 }

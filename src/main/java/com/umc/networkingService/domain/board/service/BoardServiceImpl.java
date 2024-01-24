@@ -3,7 +3,10 @@ package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
-import com.umc.networkingService.domain.board.dto.response.*;
+import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
@@ -89,6 +92,7 @@ public class BoardServiceImpl implements BoardService {
     public BoardSearchPagingResponse showBoardsByMember(Member member, String keyword, Pageable pageable) {
         return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
     }
+
     @Override
     public BoardSearchPagingResponse showBoardsByMemberHearts(Member member, String keyword, Pageable pageable) {
         return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByMemberHearts(member, keyword, pageable));
@@ -98,7 +102,6 @@ public class BoardServiceImpl implements BoardService {
     public BoardSearchPagingResponse showBoardsByMemberComments(Member member, String keyword, Pageable pageable) {
         return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByMemberComments(member, keyword, pageable));
     }
-
 
 
     @Override
@@ -133,7 +136,7 @@ public class BoardServiceImpl implements BoardService {
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
-        if(!board.getWriter().equals(member))
+        if (!board.getWriter().equals(member))
             throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
 
         board.update(request, semesterPermission);
@@ -149,7 +152,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = loadEntity(boardId);
 
         //현재 로그인한 member와 writer가 같지 않고, 로그인한 멤버가 운영진이 아니라면 삭제 불가
-        if(!board.getWriter().equals(member)) {
+        if (!board.getWriter().equals(member)) {
             // staff 역할을 가진 경우에는 삭제 권한이 있음
             if (member.getRole().getPriority() == Role.MEMBER.getPriority()) {
                 throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);

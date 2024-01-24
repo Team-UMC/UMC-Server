@@ -11,9 +11,12 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
-public interface BoardCommentService  extends EntityLoader<BoardComment, UUID> {
+public interface BoardCommentService extends EntityLoader<BoardComment, UUID> {
     BoardCommentIdResponse addBoardComment(Member member, BoardCommentAddRequest request);
+
     BoardCommentIdResponse updateBoardComment(Member member, UUID commentId, BoardCommentUpdateRequest request);
+
     BoardCommentIdResponse deleteBoardComment(Member member, UUID commentId);
+
     BoardCommentPagingResponse showBoardComments(Member member, UUID boardId, Pageable pageable);
-    }
+}

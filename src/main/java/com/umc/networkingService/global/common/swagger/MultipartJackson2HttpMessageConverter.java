@@ -1,4 +1,4 @@
-package com.umc.networkingService.global.common.base;
+package com.umc.networkingService.global.common.swagger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;

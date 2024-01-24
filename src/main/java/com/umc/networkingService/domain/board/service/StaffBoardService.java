@@ -9,5 +9,6 @@ import java.util.UUID;
 
 public interface StaffBoardService {
     BoardPagingResponse showAllCampusNotices(Member member, String keyword, Pageable pageable);
+
     BoardIdResponse toggleNoticePin(Member member, UUID boardId, boolean isPinned);
 }

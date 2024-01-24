@@ -59,7 +59,7 @@ public class BoardController {
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패할 경우 발생")
     })
-    @PatchMapping(value ="/{boardId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<BoardIdResponse> updateBoard(@CurrentMember Member member,
                                                      @PathVariable(value = "boardId") UUID boardId,
                                                      @Valid @RequestPart("request") BoardUpdateRequest request,
@@ -118,7 +118,7 @@ public class BoardController {
     public BaseResponse<BoardSearchPagingResponse> searchBoard(@CurrentMember Member member,
                                                                @RequestParam(name = "keyword") String keyword,
                                                                @PageableDefault(sort = "created_at",
-                                                                 direction = Sort.Direction.DESC) Pageable pageable) {
+                                                                       direction = Sort.Direction.DESC) Pageable pageable) {
 
         return BaseResponse.onSuccess(boardService.searchBoard(member, keyword, pageable));
     }
@@ -130,9 +130,9 @@ public class BoardController {
     })
     @GetMapping(value = "/member")
     public BaseResponse<BoardSearchPagingResponse> showBoardsByMember(@CurrentMember Member member,
-                                                               @RequestParam(name = "keyword", required = false) String keyword,
-                                                               @PageableDefault(sort = "created_at",
-                                                                       direction = Sort.Direction.DESC) Pageable pageable) {
+                                                                      @RequestParam(name = "keyword", required = false) String keyword,
+                                                                      @PageableDefault(sort = "created_at",
+                                                                              direction = Sort.Direction.DESC) Pageable pageable) {
 
         return BaseResponse.onSuccess(boardService.showBoardsByMember(member, keyword, pageable));
     }
@@ -144,9 +144,9 @@ public class BoardController {
     })
     @GetMapping(value = "/member/comments")
     public BaseResponse<BoardSearchPagingResponse> showBoardsByMemberComments(@CurrentMember Member member,
-                                                                           @RequestParam(name = "keyword", required = false) String keyword,
-                                                                           @PageableDefault(sort = "created_at",
-                                                                                   direction = Sort.Direction.DESC) Pageable pageable) {
+                                                                              @RequestParam(name = "keyword", required = false) String keyword,
+                                                                              @PageableDefault(sort = "created_at",
+                                                                                      direction = Sort.Direction.DESC) Pageable pageable) {
         return BaseResponse.onSuccess(boardService.showBoardsByMemberComments(member, keyword, pageable));
     }
 
@@ -155,7 +155,7 @@ public class BoardController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    @GetMapping(value ="/member/hearts")
+    @GetMapping(value = "/member/hearts")
     public BaseResponse<BoardSearchPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
                                                                          @RequestParam(name = "keyword", required = false) String keyword,
                                                                          @PageableDefault(sort = "created_at",

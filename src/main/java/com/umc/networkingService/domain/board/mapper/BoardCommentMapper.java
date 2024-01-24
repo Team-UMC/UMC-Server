@@ -1,8 +1,8 @@
 package com.umc.networkingService.domain.board.mapper;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardCommentPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentPageResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardCommentPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.member.entity.Member;

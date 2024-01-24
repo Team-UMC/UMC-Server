@@ -58,7 +58,7 @@ public class BoardMapper {
 
     }
 
-    public BoardSearchPagingResponse toBoardSearchPagingResponse (Page<Board> boards) {
+    public BoardSearchPagingResponse toBoardSearchPagingResponse(Page<Board> boards) {
 
         List<BoardSearchPageResponse> boardSearchPageResponses = boards.map(this::toBoardSearchPageResponse).stream().toList();
         return BoardSearchPagingResponse.builder()
