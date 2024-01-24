@@ -5,6 +5,8 @@ import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Part;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
@@ -13,8 +15,10 @@ import org.hibernate.annotations.UuidGenerator;
 import java.util.UUID;
 
 @Getter
+@Builder
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
+@AllArgsConstructor
 @SQLRestriction("deleted_at is null")
 @Table(name = "today_i_learned")
 public class TodayILearned extends BaseEntity {
@@ -39,5 +43,5 @@ public class TodayILearned extends BaseEntity {
     @Column(nullable = false)
     private Part part;
 
-    private Boolean linkedNotion;
+//    private Boolean linkedNotion;
 }

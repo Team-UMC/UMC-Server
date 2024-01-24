@@ -1,10 +1,23 @@
 package com.umc.networkingService.domain.todayILearned.controller;
 
+import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest;
+import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.service.TodayILearnedService;
+import com.umc.networkingService.global.common.base.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Today I Learned API", description = "Today I Learned 관련 API")
 @RestController
@@ -13,4 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class TodayILearnedController {
 
     private final TodayILearnedService todayILearnedService;
+
+    // POST
+    @Operation(summary = "Today I Learned 추가", description = "TIL을 추가하는 API입니다.")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<TodayILearnedId> createTodayILearned(@CurrentMember Member member,
+                                                             @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                                             @RequestPart("request") TodayILearnedCreate request) {
+
+        return BaseResponse.onSuccess(todayILearnedService.createTodayILearned(member, request, files));
+    }
 }
