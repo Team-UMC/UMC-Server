@@ -3,9 +3,7 @@ package com.umc.networkingService.domain.session.entity;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
@@ -15,25 +13,22 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 @DynamicInsert
 public class Session extends BaseEntity {
     @Id
     @UuidGenerator
-    @Column(name = "session_id")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @Column(nullable = false)
-    private LocalDateTime startTime;
+    private LocalDateTime lastActiveTime;
 
-    @Column(nullable = false)
-    private LocalDateTime endTime;
-
-    @Column(columnDefinition = "boolean default true")
-    private boolean isConnected;
-
+    public void updateLastActiveTime(LocalDateTime lastActiveTime) {
+        this.lastActiveTime = lastActiveTime;
+    }
 }
