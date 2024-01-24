@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class BoardCommentPagingResponse {
-    private List<BoardPageCommentResponse> boardPageCommentResponses = new ArrayList<>();
+    private List<BoardCommentPageResponse> boardCommentPageResponses = new ArrayList<>();
     private int page;
     private int totalPages;
     private int totalElements;

@@ -4,7 +4,6 @@ import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest
 import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.EntityLoader;
@@ -17,5 +16,4 @@ public interface BoardCommentService  extends EntityLoader<BoardComment, UUID> {
     BoardCommentIdResponse updateBoardComment(Member member, UUID commentId, BoardCommentUpdateRequest request);
     BoardCommentIdResponse deleteBoardComment(Member member, UUID commentId);
     BoardCommentPagingResponse showBoardComments(Member member, UUID boardId, Pageable pageable);
-    BoardCommentPagingResponse showMemberBoardComments(Member member, String keyword, Pageable pageable);
     }

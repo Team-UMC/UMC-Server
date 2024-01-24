@@ -115,26 +115,31 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<BoardComment> findBoardCommentsByWriter(Member member, String keyword, Pageable pageable) {
-        QBoardComment comment = QBoardComment.boardComment;
+    public Page<Board> findBoardCommentsByWriter(Member member, String keyword, Pageable pageable) {
+        QBoard board = QBoard.board;
+        QBoardComment boardComment = QBoardComment.boardComment;
 
         BooleanBuilder predicate = new BooleanBuilder()
-                .and(comment.deletedAt.isNull())
-                .and(comment.writer.eq(member));
+                .and(boardComment.writer.eq(member))
+                .and(boardComment.deletedAt.isNull());
 
         //keyword가 비지 않았으면 keyword검색 조건 추가
         if (keyword != null && !keyword.trim().isEmpty()) {
-            predicate.and(comment.content.contains(keyword));
+            predicate.and(board.content.contains(keyword));
         }
 
-        List<BoardComment> comments = query.selectFrom(comment)
+        List<Board> boards = query.select(board)
+                .from(boardComment)
+                .join(boardComment.board, board)
                 .where(predicate)
-                .orderBy(comment.createdAt.desc())
+                .orderBy(board.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(comments, pageable, query.selectFrom(comment)
+        return new PageImpl<>(boards, pageable, query.select(board)
+                .from(boardComment)
+                .join(boardComment.board, board)
                 .where(predicate)
                 .fetch().size());
     }

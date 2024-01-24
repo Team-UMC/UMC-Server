@@ -2,18 +2,19 @@ package com.umc.networkingService.domain.board.mapper;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPageCommentResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardCommentPageResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.member.entity.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class BoardCommentMapper {
-
     public BoardComment toEntity(Member member, Board board, BoardCommentAddRequest request) {
         return BoardComment.builder()
                 .writer(member)
@@ -23,10 +24,10 @@ public class BoardCommentMapper {
     }
 
     public BoardCommentPagingResponse toBoardCommentPagingResponse(Page<BoardComment> comments) {
-        List<BoardPageCommentResponse> responses = comments.map(this::toBoardPageCommentResponse)
+        List<BoardCommentPageResponse> responses = comments.map(this::toBoardCommentPageResponse)
                 .stream().toList();
         return BoardCommentPagingResponse.builder()
-                .boardPageCommentResponses(responses)
+                .boardCommentPageResponses(responses)
                 .page(comments.getNumber())
                 .totalPages(comments.getTotalPages())
                 .totalElements((int) comments.getTotalElements())
@@ -35,8 +36,8 @@ public class BoardCommentMapper {
                 .build();
     }
 
-    public BoardPageCommentResponse toBoardPageCommentResponse(BoardComment comment) {
-        return BoardPageCommentResponse.builder()
+    public BoardCommentPageResponse toBoardCommentPageResponse(BoardComment comment) {
+        return BoardCommentPageResponse.builder()
                 .commentId(comment.getId())
                 .writer(comment.getWriter().getNickname() + "/" + comment.getWriter().getName())
                 .profileImage(comment.getWriter().getProfileImage())

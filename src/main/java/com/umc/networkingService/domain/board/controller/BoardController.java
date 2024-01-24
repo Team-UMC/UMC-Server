@@ -137,9 +137,33 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.showMemberBoards(member, keyword, pageable));
     }
 
-    /*
-    boardHeart 관련
-     */
+    @Operation(summary = "내가 댓글 쓴 글 조회/검색 API", description = "keyword를 주지 않으면 내가 댓글을 단 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
+            "page 시작은 0번부터, 내림차순으로 조회됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @GetMapping(value = "/member/comments")
+    public BaseResponse<BoardSearchPagingResponse> showBoardsByMemberComments(@CurrentMember Member member,
+                                                                           @RequestParam(name = "keyword", required = false) String keyword,
+                                                                           @PageableDefault(sort = "created_at",
+                                                                                   direction = Sort.Direction.DESC) Pageable pageable) {
+        return BaseResponse.onSuccess(boardService.showBoardsByMemberComments(member, keyword, pageable));
+    }
+
+    @Operation(summary = "내가 좋아요한 게시글 조회/검색 API", description = "keyword를 주지 않으면 내가 좋아요한 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
+            "page 시작은 0번부터, 내림차순으로 조회됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @GetMapping(value ="/member/hearts")
+    public BaseResponse<BoardSearchPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
+                                                                         @RequestParam(name = "keyword", required = false) String keyword,
+                                                                         @PageableDefault(sort = "created_at",
+                                                                                 direction = Sort.Direction.DESC) Pageable pageable) {
+        return BaseResponse.onSuccess(boardService.showMemberBoardHearts(member, keyword, pageable));
+    }
+
+
     @Operation(summary = "게시글 좋아요/취소 API", description = "한번 클릭하면 좋아요, 한번 더 클릭하면 취소됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
@@ -151,18 +175,5 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.toggleBoardLike(member, boardId));
     }
 
-
-    @Operation(summary = "내가 좋아요한 게시글 조회/검색 API", description = "keyword를 주지 않으면 내가 좋아요한 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
-            "page 시작은 0번부터, 내림차순으로 조회됩니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
-    })
-    @GetMapping(value ="/hearts/member")
-    public BaseResponse<BoardSearchPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
-                                                              @RequestParam(name = "keyword", required = false) String keyword,
-                                                              @PageableDefault(sort = "created_at",
-                                                                      direction = Sort.Direction.DESC) Pageable pageable) {
-        return BaseResponse.onSuccess(boardService.showMemberBoardHearts(member, keyword, pageable));
-    }
 
 }

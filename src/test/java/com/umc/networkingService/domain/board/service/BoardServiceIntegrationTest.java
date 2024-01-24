@@ -382,22 +382,22 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     }
 
     @Test
-    @DisplayName("내가쓴 댓글 목록 조회 테스트")
+    @DisplayName("내가 댓글 쓴 글 목록 조회 테스트")
     @Transactional
-    public void showMemberBoardCommentsTest() {
+    public void showBoardsByMemberComments() {
         //given
         createBoardComments();
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardCommentPagingResponse response = boardCommentService.showMemberBoardComments(campusStaff, null, pageable);
+        BoardSearchPagingResponse response = boardService.showBoardsByMemberComments(campusStaff, null, pageable);
 
         //then
         assertEquals(0, response.getPage());
-        assertEquals(2, response.getTotalPages());
-        assertEquals(15, response.getTotalElements());
-        assertEquals(10, response.getBoardCommentPageResponses().size());
-        assertEquals("벡스/김준석", response.getBoardCommentPageResponses().get(0).getWriter());
+        assertEquals(1, response.getTotalPages());
+        assertEquals(1, response.getTotalElements());
+        assertEquals(1, response.getBoardSearchPageResponses().size());
+        assertEquals("루시/김수민", response.getBoardSearchPageResponses().get(0).getWriter());
 
     }
 

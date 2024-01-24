@@ -3,10 +3,7 @@ package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.*;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
@@ -94,6 +91,11 @@ public class BoardServiceImpl implements BoardService {
     public BoardSearchPagingResponse showMemberBoardHearts(Member member, String keyword, Pageable pageable) {
         return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardHeartsByWriter(member, keyword, pageable));
     }
+
+    public BoardSearchPagingResponse showBoardsByMemberComments(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardCommentsByWriter(member, keyword, pageable));
+    }
+
 
 
     @Override
