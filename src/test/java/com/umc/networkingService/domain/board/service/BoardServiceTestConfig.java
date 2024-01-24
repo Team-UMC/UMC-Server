@@ -59,6 +59,7 @@ public abstract class BoardServiceTestConfig {
     protected Member member;
     protected Member campusStaff;
     protected Board board;
+    protected Board workbookBoard;
     protected University university;
     protected Branch branch;
     protected BoardComment comment;
@@ -71,6 +72,7 @@ public abstract class BoardServiceTestConfig {
         member = createMember();
         board = createBoard();
         comment = createBoardComment();
+        workbookBoard = createWorkbookBoard();
     }
 
     protected Member createCampusStaff() {
@@ -97,7 +99,7 @@ public abstract class BoardServiceTestConfig {
                 .role(Role.MEMBER)
                 .name("김수민")
                 .nickname("루시")
-                .semesterParts(createSemesterPart(member))
+                .semesterParts(createSemesterPart2(member))
                 .build());
     }
 
@@ -105,6 +107,14 @@ public abstract class BoardServiceTestConfig {
         List<SemesterPart> semesterParts = List.of(
                 SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FIFTH).build(),
                 SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.THIRD).build()
+        );
+
+        return semesterPartRepository.saveAll(semesterParts);
+    }
+
+    protected List<SemesterPart> createSemesterPart2(Member member) {
+        List<SemesterPart> semesterParts = List.of(
+                SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FIFTH).build()
         );
 
         return semesterPartRepository.saveAll(semesterParts);
@@ -137,6 +147,20 @@ public abstract class BoardServiceTestConfig {
                 .boardType(BoardType.FREE)
                 .hostType(HostType.CAMPUS)
                 .semesterPermission(List.of(Semester.FIFTH))
+                .hitCount(0)
+                .heartCount(0)
+                .commentCount(0)
+                .build());
+    }
+
+    protected Board createWorkbookBoard() {
+        return boardRepository.save(Board.builder()
+                .writer(campusStaff)
+                .title("워크북")
+                .content("내용")
+                .boardType(BoardType.WORKBOOK)
+                .hostType(HostType.CAMPUS)
+                .semesterPermission(List.of(Semester.THIRD))
                 .hitCount(0)
                 .heartCount(0)
                 .commentCount(0)

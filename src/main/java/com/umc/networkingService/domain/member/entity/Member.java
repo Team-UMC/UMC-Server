@@ -125,7 +125,14 @@ public class Member extends BaseEntity {
                 .filter(part -> part.getSemester() == recentSemester)
                 .findFirst();
 
-        return recentSemesterPart.map(SemesterPart::getPart).orElse(null);
+        return recentSemesterPart.map(SemesterPart::getPart)
+                .orElseThrow(()-> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
+    }
+
+    public List<Semester> getSemesters() {
+        return this.getSemesterParts().stream()
+                .map(SemesterPart::getSemester)
+                .collect(Collectors.toList());
     }
 
     // 테스트 코드용

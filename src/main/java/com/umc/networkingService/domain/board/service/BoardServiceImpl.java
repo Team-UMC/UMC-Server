@@ -41,14 +41,24 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardPagingResponse showBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable) {
-        //워크북게시판은 다른기수가 못보도록 하는거 추가
+
         return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member, hostType, boardType, pageable));
+    }
+
+    @Override
+    public BoardSearchPagingResponse searchBoard(Member member, String keyword, Pageable pageable) {
+
+        return boardMapper.toBoardSearchPagingResponse(boardRepository.findKeywordBoards(member, keyword, pageable));
+
     }
 
     @Override
     public BoardDetailResponse showBoardDetail(Member member, UUID boardId) {
 
         Board board = loadEntity(boardId);
+
+        //게시글을 열람할 권한이 있는지 check
+        checkSemesterPermission(member, board);
 
         //조회수 증가
         board.increaseHitCount();
@@ -61,12 +71,6 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
-    @Override
-    public BoardSearchPagingResponse searchBoard(Member member, String keyword, Pageable pageable) {
-
-        return boardMapper.toBoardSearchPagingResponse(boardRepository.findKeywordBoards(member, keyword, pageable));
-
-    }
 
     @Override
     @Transactional
@@ -166,6 +170,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
+    //게시글 작성, 수정 시 권한 Check
     public List<Semester> checkPermission(Member member, HostType hostType, BoardType boardType) {
         //현재 기수
         Semester nowSemester = Semester.findActiveSemester();
@@ -215,6 +220,15 @@ public class BoardServiceImpl implements BoardService {
             throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
     }
 
+    //게시글 열람시 semester 권한 check
+    private static void checkSemesterPermission(Member member, Board board) {
+        List<Semester> memberSemesters = member.getSemesters();
+        List<Semester> boardSemesterPermissions = board.getSemesterPermission();
+
+        if(!memberSemesters.stream()
+                .anyMatch(boardSemesterPermissions::contains))
+            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+    }
 
     @Override
     public Board loadEntity(UUID id) {

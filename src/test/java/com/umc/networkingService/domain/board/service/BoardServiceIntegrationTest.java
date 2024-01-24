@@ -150,6 +150,21 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     }
 
     @Test
+    @DisplayName("Workbook 게시판 게시글 조회 실패 테스트(권한 없음)")
+    @Transactional
+    public void showBoardWorkbook() {
+
+        //when
+        RestApiException exception = assertThrows(RestApiException.class, () -> {
+            boardService.showBoardDetail(member, workbookBoard.getId());
+        });
+
+        //then
+        assertEquals(ErrorCode.FORBIDDEN_MEMBER, exception.getErrorCode());
+    }
+
+
+    @Test
     @DisplayName("게시글 수정 성공 테스트")
     @Transactional
     public void updateBoardTest() {
@@ -233,6 +248,30 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(1, boardPagingResponse.getTotalElements());
     }
 
+    @Test
+    @DisplayName("특정 게시판의 게시글 목록 조회 테스트 - 기수 권한 체크")
+    @Transactional
+    public void showBoardsSemesterPermissionsTest() {
+        //given
+        HostType hostType = HostType.CAMPUS;
+        BoardType boardType = BoardType.WORKBOOK;
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
+
+        //when
+        BoardPagingResponse boardPagingResponse = boardService.showBoards(member, hostType, boardType, pageable);
+
+        //then
+        assertEquals(0, boardPagingResponse.getBoardPageResponses().size());
+        assertEquals(0, boardPagingResponse.getTotalElements());
+
+        //when
+        BoardPagingResponse boardPagingResponse2 = boardService.showBoards(campusStaff, hostType, boardType, pageable);
+
+        //then
+        assertEquals(1, boardPagingResponse.getBoardPageResponses().size());
+        assertEquals(1, boardPagingResponse.getTotalElements());
+    }
+
 
     @Test
     @DisplayName("게시글 검색 테스트")
@@ -261,8 +300,6 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(1, response2.getTotalPages());
         assertEquals(1, response2.getTotalElements());
         assertEquals(1, response2.getBoardSearchPageResponses().size());
-
-
     }
 
     @Test
@@ -297,7 +334,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
 
         //when
         BoardCommentIdResponse response = boardCommentService.addBoardComment(member, request);
-        Optional<BoardComment> optionalBoardComment = boardCommentRepository.findById(response.getBoardCommentId());
+        Optional<BoardComment> optionalBoardComment = boardCommentRepository.findById(response.getCommentId());
         assertTrue(optionalBoardComment.isPresent());
         BoardComment comment = optionalBoardComment.get();
 

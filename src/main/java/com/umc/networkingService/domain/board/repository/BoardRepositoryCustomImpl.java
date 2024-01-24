@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.global.common.enums.Semester;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,15 +21,16 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     @Override
     public Page<Board> findAllBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable) {
         QBoard board = QBoard.board;
+        List<Semester> memberSemesters = member.getSemesters();
 
         BooleanBuilder predicate = new BooleanBuilder();
-
         //hostType에 따른 동적 쿼리
         switch (hostType) {
             case CAMPUS -> predicate.and(board.writer.university.eq(member.getUniversity())
-                    .and(board.hostType.eq(HostType.CAMPUS))
-                    .and(board.boardType.eq(boardType))
-                    .and(board.deletedAt.isNull()));
+                        .and(board.hostType.eq(HostType.CAMPUS))
+                        .and(board.boardType.eq(boardType))
+                        .and(board.deletedAt.isNull())
+                        .and(board.semesterPermission.any().in(memberSemesters))); //semester 권한 check
             case BRANCH -> predicate.and(board.writer.branch.eq(member.getBranch())
                     .and(board.hostType.eq(HostType.BRANCH))
                     .and(board.boardType.eq(boardType))
@@ -51,11 +53,13 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     @Override
     public Page<Board> findKeywordBoards(Member member, String keyword, Pageable pageable) {
         QBoard board = QBoard.board;
+        List<Semester> memberSemesters = member.getSemesters();
 
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(board.title.contains(keyword))
                 .or(board.content.contains(keyword))
-                .and(board.deletedAt.isNull());
+                .and(board.deletedAt.isNull())
+                .and(board.semesterPermission.any().in(memberSemesters)); //semester 권한 check
 
         List<Board> boards = query.selectFrom(board)
                 .where(predicate)
@@ -202,6 +206,4 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         return new PageImpl<>(boards, pageable, query.selectFrom(board).where(predicate).fetch().size());
 
     }
-
-
 }

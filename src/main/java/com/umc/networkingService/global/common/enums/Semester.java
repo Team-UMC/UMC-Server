@@ -3,6 +3,8 @@ package com.umc.networkingService.global.common.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+
 @Getter
 @RequiredArgsConstructor
 public enum Semester {
@@ -21,12 +23,9 @@ public enum Semester {
 
     //현재 기수 찾기
     public static Semester findActiveSemester() {
-        for (Semester semester : Semester.values()) {
-            if (semester.isActive()) {
-                return semester;
-            }
-        }
-        return FIFTH;
+        return Arrays.stream(Semester.values())
+                .filter(Semester::isActive)
+                .findFirst()
+                .orElse(FIFTH);
     }
-
 }
