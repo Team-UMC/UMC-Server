@@ -44,5 +44,12 @@ public class University extends BaseEntity {
         this.totalPoint += point;
     }
 
+    //정보 수정
+    public void updateUniversity(String name, String universityLogo, String semesterLogo) {
+        this.name = name;
+        this.universityLogo = universityLogo;
+        this.semesterLogo = semesterLogo;
+    }
+
 
 }

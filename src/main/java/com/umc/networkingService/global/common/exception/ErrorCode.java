@@ -48,6 +48,7 @@ public enum ErrorCode {
 
     // University
     EMPTY_UNIVERSITY(HttpStatus.BAD_REQUEST, "UNIVERSITY001", "존재하지 않는 대학교입니다."),
+    DUPLICATE_UNIVERSITY_NAME(HttpStatus.BAD_REQUEST, "UNIVERSITY002", "이미 존재하는 대학교 이름입니다."),
 
     // Branch
     EMPTY_BRANCH(HttpStatus.BAD_REQUEST, "BRANCH001", "존재하지 않는 지부입니다."),

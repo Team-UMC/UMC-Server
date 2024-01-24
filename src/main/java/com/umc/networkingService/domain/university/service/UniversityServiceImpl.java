@@ -6,14 +6,17 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.converter.UniversityConverter;
+import com.umc.networkingService.domain.university.dto.request.UniversityRequest;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +28,7 @@ public class UniversityServiceImpl implements UniversityService {
     private final UniversityRepository universityRepository;
     private final MemberRepository memberRepository;
     private final BranchUniversityRepository branchUniversityRepository;
+    private final S3FileComponent s3FileComponent;
 
     @Override
     public University findUniversityByName(String universityName) {
@@ -89,6 +93,45 @@ public class UniversityServiceImpl implements UniversityService {
         member.usePoint(pointType.getPoint());
         //학교 포인트 증가
         member.getUniversity().increasePoint(pointType.getPoint());
+    }
+
+    @Transactional    //학교 생성
+    public UUID createUniversity(UniversityRequest.createUniversity request){
+        if(universityRepository.findByName(request.getUniversityName()).isPresent()){
+            throw new RestApiException(ErrorCode.DUPLICATE_UNIVERSITY_NAME);
+        }
+        universityRepository.save(University.builder()
+                .name(request.getUniversityName())
+                .universityLogo(uploadImage("university",request.getUniversityLogo()))
+                .semesterLogo(uploadImage("semester",request.getSemesterLogo()))
+                .build());
+        return universityRepository.findByName(request.getUniversityName()).get().getId();
+    }
+
+    @Transactional   //학교 삭제
+    public void deleteUniversity(UUID universityId){
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
+        university.delete();
+    }
+
+    @Transactional    //학교 정보 수정
+    public void patchUniversity(UniversityRequest.patchUniversity request){
+
+        University university;
+        university = universityRepository.findById(request.getUniversityId())
+                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
+
+        university.updateUniversity(request.getUniversityName(),uploadImage("university",request.getUniversityLogo()),uploadImage("semester",request.getSemesterLogo()));
+        universityRepository.save(university);
+    }
+
+    //s3에 이미지 업로드
+    public String uploadImage(String category,MultipartFile imageFile){
+        if(!imageFile.isEmpty()){
+            return s3FileComponent.uploadFile(category, imageFile);
+        }
+        return null;
     }
 
 
