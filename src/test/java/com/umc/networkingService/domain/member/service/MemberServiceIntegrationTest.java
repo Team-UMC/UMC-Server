@@ -1,8 +1,6 @@
 package com.umc.networkingService.domain.member.service;
 
 
-import com.umc.networkingService.domain.friend.entity.Friend;
-import com.umc.networkingService.domain.friend.repository.FriendRepository;
 import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
@@ -48,8 +46,6 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
     @MockBean private S3FileComponent s3FileComponent;
     @MockBean private GithubMemberClient githubMemberClient;
-
-
 
     private MemberPoint createMemberPoint(PointType pointType) {
         return MemberPoint.builder()
