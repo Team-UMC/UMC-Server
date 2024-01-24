@@ -31,8 +31,8 @@ public interface BoardService extends EntityLoader<Board, UUID> {
     BoardSearchPagingResponse searchBoard(Member member, String keyword, Pageable pageable);
 
     BoardIdResponse toggleBoardLike(Member member, UUID boardId);
-    BoardSearchPagingResponse showMemberBoards(Member member, String keyword, Pageable pageable);
-    BoardSearchPagingResponse showMemberBoardHearts(Member member, String keyword, Pageable pageable);
+    BoardSearchPagingResponse showBoardsByMember(Member member, String keyword, Pageable pageable);
+    BoardSearchPagingResponse showBoardsByMemberHearts(Member member, String keyword, Pageable pageable);
     BoardSearchPagingResponse showBoardsByMemberComments(Member member, String keyword, Pageable pageable);
 
 }

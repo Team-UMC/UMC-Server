@@ -115,7 +115,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<Board> findBoardCommentsByWriter(Member member, String keyword, Pageable pageable) {
+    public Page<Board> findBoardsByMemberComments(Member member, String keyword, Pageable pageable) {
         QBoard board = QBoard.board;
         QBoardComment boardComment = QBoardComment.boardComment;
 
@@ -145,7 +145,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<Board> findBoardHeartsByWriter(Member member, String keyword, Pageable pageable) {
+    public Page<Board> findBoardsByMemberHearts(Member member, String keyword, Pageable pageable) {
         QBoard board = QBoard.board;
         QBoardHeart boardHeart = QBoardHeart.boardHeart;
 

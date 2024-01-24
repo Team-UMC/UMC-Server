@@ -84,16 +84,19 @@ public class BoardServiceImpl implements BoardService {
         return new BoardIdResponse(boardId);
     }
 
-    public BoardSearchPagingResponse showMemberBoards(Member member, String keyword, Pageable pageable) {
+
+    @Override
+    public BoardSearchPagingResponse showBoardsByMember(Member member, String keyword, Pageable pageable) {
         return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
     }
-
-    public BoardSearchPagingResponse showMemberBoardHearts(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardHeartsByWriter(member, keyword, pageable));
+    @Override
+    public BoardSearchPagingResponse showBoardsByMemberHearts(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByMemberHearts(member, keyword, pageable));
     }
 
+    @Override
     public BoardSearchPagingResponse showBoardsByMemberComments(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardCommentsByWriter(member, keyword, pageable));
+        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByMemberComments(member, keyword, pageable));
     }
 
 

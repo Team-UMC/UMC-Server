@@ -129,12 +129,12 @@ public class BoardController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping(value = "/member")
-    public BaseResponse<BoardSearchPagingResponse> showMemberBoards(@CurrentMember Member member,
+    public BaseResponse<BoardSearchPagingResponse> showBoardsByMember(@CurrentMember Member member,
                                                                @RequestParam(name = "keyword", required = false) String keyword,
                                                                @PageableDefault(sort = "created_at",
                                                                        direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return BaseResponse.onSuccess(boardService.showMemberBoards(member, keyword, pageable));
+        return BaseResponse.onSuccess(boardService.showBoardsByMember(member, keyword, pageable));
     }
 
     @Operation(summary = "내가 댓글 쓴 글 조회/검색 API", description = "keyword를 주지 않으면 내가 댓글을 단 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
@@ -160,7 +160,7 @@ public class BoardController {
                                                                          @RequestParam(name = "keyword", required = false) String keyword,
                                                                          @PageableDefault(sort = "created_at",
                                                                                  direction = Sort.Direction.DESC) Pageable pageable) {
-        return BaseResponse.onSuccess(boardService.showMemberBoardHearts(member, keyword, pageable));
+        return BaseResponse.onSuccess(boardService.showBoardsByMemberHearts(member, keyword, pageable));
     }
 
 

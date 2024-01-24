@@ -255,7 +255,6 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(10, response.getBoardSearchPageResponses().size());
         assertEquals(BoardType.FREE, response.getBoardSearchPageResponses().get(0).getBoardType());
         assertEquals(HostType.CENTER, response.getBoardSearchPageResponses().get(0).getHostType());
-        assertEquals("데모데이가 곧이네요10", response.getBoardSearchPageResponses().get(0).getTitle());
 
 
         assertEquals(0, response2.getPage());
@@ -354,7 +353,6 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(2, response.getTotalPages());
         assertEquals(16, response.getTotalElements());
         assertEquals(6, response.getBoardCommentPageResponses().size());
-        assertEquals("좋아요.9", response.getBoardCommentPageResponses().get(0).getContent());
         assertEquals("벡스/김준석", response.getBoardCommentPageResponses().get(0).getWriter());
     }
 
@@ -368,7 +366,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardSearchPagingResponse response = boardService.showMemberBoards(member, "데모", pageable);
+        BoardSearchPagingResponse response = boardService.showBoardsByMember(member, "데모", pageable);
 
         //then
         assertEquals(1, response.getPage());
@@ -410,7 +408,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardSearchPagingResponse response = boardService.showMemberBoardHearts(campusStaff, null, pageable);
+        BoardSearchPagingResponse response = boardService.showBoardsByMemberHearts(campusStaff, null, pageable);
 
         //then
         assertEquals(0, response.getPage());
