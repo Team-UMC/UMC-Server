@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
+import com.umc.networkingService.domain.session.entity.Session;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Role;
@@ -72,7 +73,10 @@ public class Member extends BaseEntity {
 
     private String gitNickname;
 
-    private  String notionLink;
+    private String notionLink;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Session session;
 
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
         this.name = name;

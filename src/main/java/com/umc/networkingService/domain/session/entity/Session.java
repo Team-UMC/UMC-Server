@@ -24,6 +24,7 @@ public class Session extends BaseEntity {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private Member member;
 
     private LocalDateTime lastActiveTime;
