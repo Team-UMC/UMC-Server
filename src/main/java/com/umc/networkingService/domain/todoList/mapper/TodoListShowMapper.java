@@ -12,9 +12,10 @@ public class TodoListShowMapper {
 
     public TodoListGetResponse showTodoListToTodoList(ToDoList toDoList){
         return TodoListGetResponse.builder()
+                .todoListId(toDoList.getId())
                 .title(toDoList.getTitle())
                 .deadline(toDoList.getDeadline())
-                .isCompleted()
+                .isCompleted(toDoList.isCompleted())
                 .build();
     }
 }

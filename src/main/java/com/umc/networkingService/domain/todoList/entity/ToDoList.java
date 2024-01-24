@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
@@ -36,4 +35,13 @@ public class ToDoList extends BaseEntity {
 
     @Column(nullable = false)
     private boolean isCompleted;
+
+    public void completeTodoList() {
+        this.isCompleted = true;
+    }
+
+    public void updateTodoList(String title, LocalDateTime deadline) {
+        this.title = title;
+        this.deadline = deadline;
+    }
 }

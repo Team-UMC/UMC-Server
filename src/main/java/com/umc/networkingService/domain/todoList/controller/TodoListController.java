@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListCreateRequest;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListUpdateRequest;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListGetResponse;
+import com.umc.networkingService.domain.todoList.dto.response.TodoListGetResponses;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListIdResponse;
 import com.umc.networkingService.domain.todoList.service.TodoListService;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Tag(name = "TodoList API", description = "TodoList 관련 API")
@@ -30,8 +32,8 @@ public class TodoListController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @PostMapping
-    public BaseResponse<TodoListIdResponse> createTodoList(@CurrentMember Member member, @RequestBody TodoListCreateRequest todoListCreateRequest){
-        return BaseResponse.onSuccess(todoListService.createTodoList(member, todoListCreateRequest));
+    public BaseResponse<TodoListIdResponse> createTodoList(@CurrentMember Member member, @RequestBody TodoListCreateRequest request){
+        return BaseResponse.onSuccess(todoListService.createTodoList(member, request));
     }
 
     @Operation(summary = "투두리스트 수정 API", description = "투두리스트를 수정하는 API입니다.")
@@ -39,9 +41,9 @@ public class TodoListController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @PostMapping("/update/{todoListId}")
-    public BaseResponse<TodoListIdResponse> updateTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId, @RequestBody TodoListUpdateRequest todoListUpdateRequest) {
+    public BaseResponse<TodoListIdResponse> updateTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId, @RequestBody TodoListUpdateRequest request) {
 
-        return BaseResponse.onSuccess(todoListService.updateTodoList(member, todoListId, todoListUpdateRequest));
+        return BaseResponse.onSuccess(todoListService.updateTodoList(member, todoListId, request));
     }
 
     @Operation(summary = "투두리스트 완성 API", description = "투두리스트 완성 체크하는 API입니다.")
@@ -54,7 +56,6 @@ public class TodoListController {
         return BaseResponse.onSuccess(todoListService.completeTodoList(member, todoListId));
     }
 
-
     @Operation(summary = "투두리스트 삭제 API", description = "투두리스트를 삭제하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
@@ -65,13 +66,12 @@ public class TodoListController {
         return BaseResponse.onSuccess(todoListService.deleteTodoList(member, todoListId));
     }
 
-    @Operation(summary = "투두리스트 조회 API", description = "투두리스트를 조회하는 API입니다.")
+    @Operation(summary = "투두리스트 조회 API", description = "요청하는 일자에 해당하는 투두리스트를 조회하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping
-    public BaseResponse<TodoListGetResponse> showTodoList(@CurrentMember Member member){
-        return BaseResponse.onSuccess(todoListService.showTodoList(member));
+    public BaseResponse<TodoListGetResponses> showTodoList(@CurrentMember Member member, @RequestParam LocalDate date){
+        return BaseResponse.onSuccess(todoListService.showTodoList(member, date));
     }
-
 }
