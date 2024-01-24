@@ -27,9 +27,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/test")
 public class TestController {
     private final TestService testService;
-    private final UniversityRepository universityRepository;
-    private final BranchRepository branchRepository;
-    private final BranchUniversityRepository branchUniversityRepository;
 
     @Operation(summary = "성공적인 응답 반환 API", description = "테스트 문자열을 반환하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "테스트 문자열을 성공적으로 반환")
@@ -65,28 +62,5 @@ public class TestController {
         return BaseResponse.onSuccess(TestResponse.TempTestDTO.builder()
                 .testString(request.getTestString())
                 .build());
-    }
-
-    @Operation(summary = "테스트 데이터 생성 API")
-    @PostMapping("/etc")
-    public void createMember(@RequestParam Role role) {
-        Branch branch = branchRepository.save(
-                Branch.builder()
-                        .name("가지")
-                        .description("가치 지부입니다.")
-                        .semester(Semester.FIFTH)
-                        .build());
-
-        University university = universityRepository.save(
-                University.builder()
-                        .name("인하대학교")
-                        .build());
-
-        BranchUniversity branchUniversity = branchUniversityRepository.save(
-                BranchUniversity.builder()
-                        .branch(branch)
-                        .university(university)
-                        .isActive(Boolean.TRUE)
-                        .build());
     }
 }
