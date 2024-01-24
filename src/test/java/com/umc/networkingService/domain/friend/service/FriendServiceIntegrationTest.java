@@ -52,11 +52,14 @@ public class FriendServiceIntegrationTest extends ServiceIntegrationTestConfig {
     }
 
     @Test
-    @DisplayName("친구 추가 테스트")
+    @DisplayName("친구 추가 테스트 - 이미 친구인 경우")
     @Transactional
     public void createNewFriendWithAlreadyFriend() {
         // given
         Member friend = createMember("222222", Role.MEMBER);
+        friendRepository.save(
+                Friend.builder().sender(member).receiver(friend).build()
+        );
 
         // when
         RestApiException exception = assertThrows(RestApiException.class,
@@ -64,6 +67,40 @@ public class FriendServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
         // then
         assertEquals(ErrorCode.ALREADY_FRIEND_RELATION, exception.getErrorCode());
+        assertTrue(friendRepository.existsBySenderAndReceiver(member, friend));
+    }
+
+    @Test
+    @DisplayName("친구 삭제 테스트")
+    @Transactional
+    public void deleteFriend() {
+        // given
+        Member friend = createMember("222222", Role.MEMBER);
+        friendRepository.save(
+                Friend.builder().sender(member).receiver(friend).build()
+        );
+
+        // when
+        FriendIdResponse response = friendService.deleteFriend(member, friend.getId());
+
+        // then
+        Optional<Friend> optionalFriend = friendRepository.findById(response.getFriendId());
+        assertNotNull(optionalFriend.get().getDeletedAt());
+    }
+
+    @Test
+    @DisplayName("친구 삭제 테스트 - 친구가 아닌 상태")
+    @Transactional
+    public void deleteFriendWithNotFriend() {
+        // given
+        Member friend = createMember("222222", Role.MEMBER);
+
+        // when
+        RestApiException exception = assertThrows(RestApiException.class,
+                () -> friendService.deleteFriend(member, friend.getId()));
+
+        // then
+        assertEquals(ErrorCode.NOT_FRIEND_RELATION, exception.getErrorCode());
         assertFalse(friendRepository.existsBySenderAndReceiver(member, friend));
     }
 }
