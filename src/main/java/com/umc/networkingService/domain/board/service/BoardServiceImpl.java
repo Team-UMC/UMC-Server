@@ -194,17 +194,12 @@ public class BoardServiceImpl implements BoardService {
     //workbook 게시판 권한 확인 함수
     public void checkPermissionForWorkbookBoard(Member member, HostType hostType) {
 
-        //멤버의 역할
-        Role memberRole = member.getRole();
-        //Campus 권한이 있는 멤버의 역할
-        List<Role> campusStaffRoles = Role.campusStaffRoles();
-
         //hostType이 CAMPUS가 아닐 경우 금지된 요청
         if (hostType != HostType.CAMPUS)
             throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
 
-        //CAMPUS && WORKBOOK -> ROLE이 CAMPUS_STAFF, STAFF인 사람만
-        if (!campusStaffRoles.contains(memberRole))
+        //CAMPUS && WORKBOOK -> ROLE이 CAMPUS_STAFF인 사람만
+        if (member.getRole().getPriority() != Role.CAMPUS_STAFF.getPriority())
             throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
     }
 

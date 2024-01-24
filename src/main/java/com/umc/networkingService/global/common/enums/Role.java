@@ -20,17 +20,4 @@ public enum Role {
 
     private final int priority;
 
-
-
-    public static List<Role> centerStaffRoles() {
-        return List.of(Role.TOTAL_STAFF, Role.CENTER_STAFF);
-    }
-
-    public static Role branchStaffRole() {
-        return Role.BRANCH_STAFF;
-    }
-
-    public static List<Role> campusStaffRoles() {
-        return List.of(Role.CAMPUS_STAFF,Role.STAFF);
-    }
 }
