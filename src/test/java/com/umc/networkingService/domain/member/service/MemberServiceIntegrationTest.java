@@ -44,8 +44,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     private MemberPositionRepository memberPositionRepository;
     @Autowired
     private MemberPointRepository memberPointRepository;
-    @Autowired
-    private FriendRepository friendRepository;
+
 
     @MockBean private S3FileComponent s3FileComponent;
     @MockBean private GithubMemberClient githubMemberClient;
@@ -213,63 +212,6 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
         assertEquals(0, savedMember.getPositions().size());
         assertEquals(0, savedMember.getSemesterParts().size());
-    }
-
-    @Test
-    @DisplayName("유저 프로필 조회 테스트 - 본인")
-    @Transactional
-    public void inquiryMyProfile() {
-        // given
-        authService.signUp(member, getInfoRequest());
-
-        // when
-        MemberInquiryProfileResponse response = memberService.inquiryProfile(member, null);
-
-        // then
-        assertEquals("김준석", response.getName());
-        assertEquals("인하대학교", response.getUniversityName());
-        assertEquals(MemberRelation.MINE, response.getOwner());
-    }
-
-    @Test
-    @DisplayName("유저 프로필 조회 테스트 - 친구")
-    @Transactional
-    public void inquiryFriendProfile() {
-        // given
-        Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
-
-        authService.signUp(member, getInfoRequest());
-
-        friendRepository.save(Friend.builder()
-                .sender(loginMember)
-                .receiver(member)
-                .build());
-
-        // when
-        MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
-
-        // then
-        assertEquals("김준석", response.getName());
-        assertEquals("인하대학교", response.getUniversityName());
-        assertEquals(MemberRelation.FRIEND, response.getOwner());
-    }
-
-    @Test
-    @DisplayName("유저 프로필 조회 테스트 - 그 외")
-    @Transactional
-    public void inquiryOthersProfile() {
-        // given
-        Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
-
-        authService.signUp(member, getInfoRequest());
-
-        // when
-        MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
-
-        // then
-        assertEquals("김준석", response.getName());
-        assertEquals("인하대학교", response.getUniversityName());
-        assertEquals(MemberRelation.OTHERS, response.getOwner());
     }
 
     @Test

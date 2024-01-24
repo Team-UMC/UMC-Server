@@ -34,7 +34,6 @@ public class InviteControllerTest extends ControllerTestConfig {
         // given
         member.updateRole(Role.CAMPUS_STAFF);
 
-
         InviteCreateResponse response = new InviteCreateResponse("초대 코드", Role.MEMBER);
 
         given(inviteService.createInviteCode(any(), any())).willReturn(response);

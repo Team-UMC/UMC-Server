@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.controller;
 
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.friend.service.FriendShipService;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public class MemberController {
 
     private final MemberService memberService;
+    private final FriendShipService friendShipService;
 
     @Operation(summary = "나의 프로필 수정 API", description = "본인 프로필 사진, 닉네임, 이름, 상태 메시지를 수정하는 API입니다.")
     @ApiResponses( value = {
@@ -48,7 +50,7 @@ public class MemberController {
     @GetMapping(value = {"", "/{memberId}"})
     public BaseResponse<MemberInquiryProfileResponse> inquiryProfile(@CurrentMember Member member,
                                                                      @PathVariable(required = false) UUID memberId) {
-        return BaseResponse.onSuccess(memberService.inquiryProfile(member, memberId));
+        return BaseResponse.onSuccess(friendShipService.inquiryProfile(member, memberId));
     }
 
     @Operation(summary = "포인트 관련 유저 정보 조회 API", description = "닉네임, 프로필 사진, 기여도, 랭킹을 조회하는 API입니다.")

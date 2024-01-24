@@ -13,7 +13,6 @@ import java.util.UUID;
 public interface MemberService extends EntityLoader<Member, UUID> {
     MemberIdResponse updateMyProfile(Member member, MultipartFile profileImage, MemberUpdateMyProfileRequest request);
     MemberIdResponse updateProfile(Member member, UUID memberId, MemberUpdateProfileRequest request);
-    MemberInquiryProfileResponse inquiryProfile(Member member, UUID memberId);
     MemberAuthenticateGithubResponse authenticateGithub(Member member, String code);
     MemberInquiryInfoWithPointResponse inquiryInfoWithPoint(Member member);
     MemberInquiryGithubResponse inquiryGithubImage(Member member);

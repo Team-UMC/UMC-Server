@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.member.service;
 
 
-import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
@@ -37,7 +36,6 @@ public class MemberServiceImpl implements MemberService{
 
     private final SemesterPartService semesterPartService;
     private final MemberPositionService memberPositionService;
-    private final FriendService friendService;
 
     private final S3FileComponent s3FileComponent;
     private final GithubMemberClient githubMemberClient;
@@ -89,27 +87,6 @@ public class MemberServiceImpl implements MemberService{
         semesterPartService.saveSemesterPartInfos(updateMember, request.getSemesterParts());
 
         return new MemberIdResponse(memberRepository.save(updateMember).getId());
-    }
-
-    // 프로필 조회 함수
-    @Override
-    public MemberInquiryProfileResponse inquiryProfile(Member member, UUID memberId) {
-
-        Member loginMember = loadEntity(member.getId());
-        // 본인 프로필 조회인 경우
-        if (memberId == null || loginMember.getId().equals(memberId)) {
-            return memberMapper.toInquiryProfileResponse(loginMember, MemberRelation.MINE);
-        }
-
-        Member inquiryMember = loadEntity(memberId);
-
-        // 친구 프로필 조회인 경우
-        if (friendService.checkFriend(loginMember, inquiryMember)) {
-            return memberMapper.toInquiryProfileResponse(inquiryMember, MemberRelation.FRIEND);
-        }
-
-        // 이외의 프로필 조회인 경우
-        return memberMapper.toInquiryProfileResponse(inquiryMember, MemberRelation.OTHERS);
     }
 
     // 포인트 관련 정보 조회
