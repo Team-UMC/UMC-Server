@@ -2,8 +2,10 @@ package com.umc.networkingService.domain.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
+import com.umc.networkingService.domain.member.dto.SemesterPartInfo;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberSearchInfoResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.entity.SocialType;
@@ -29,9 +31,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -53,6 +59,7 @@ public class StaffMemberControllerTest extends ControllerTestConfig {
         );
 
         UUID memberId = UUID.randomUUID();
+        member.updateRole(Role.CENTER_STAFF);
         MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
                 .campusPositions(List.of())
                 .centerPositions(List.of("회장"))
@@ -69,6 +76,43 @@ public class StaffMemberControllerTest extends ControllerTestConfig {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", accessToken)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.memberId").value(response.getMemberId().toString()))
+                .andExpect(jsonPath("$.result.memberId").value(response.getMemberId().toString()));
+    }
+
+    @DisplayName("유저 검색 API 테스트")
+    @Test
+    public void searchMembersInfo() throws Exception {
+        // given
+        String keyword = "벡스/김준석";
+        member.updateRole(Role.CENTER_STAFF);
+
+        MemberSearchInfoResponse response = MemberSearchInfoResponse.builder()
+                .memberId(UUID.randomUUID())
+                .universityName("인하대학교")
+                .campusPositions(List.of("회장"))
+                .centerPositions(List.of())
+                .semesterParts(List.of(
+                        new SemesterPartInfo(Part.ANDROID, Semester.THIRD),
+                        new SemesterPartInfo(Part.SPRING, Semester.FOURTH),
+                        new SemesterPartInfo(Part.SPRING, Semester.FIFTH)
+                )).build();
+
+        given(memberService.searchMemberInfo(any(), eq(keyword))).willReturn(List.of(response));
+        given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
+
+        // when & then
+        mockMvc.perform(get("/staff/members/search")
+                        .header("Authorization", accessToken)
+                        .param("keyword", keyword))
+                .andDo(print())  // 응답 출력
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result.length()").value(1));
     }
 }

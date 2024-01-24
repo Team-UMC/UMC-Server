@@ -128,6 +128,7 @@ public class MemberServiceImpl implements MemberService{
         return memberMapper.toInquiryHomeInfoResponse(member, rank);
     }
 
+    // 깃허브 인증 함수
     @Override
     @Transactional
     public MemberAuthenticateGithubResponse authenticateGithub(Member loginMember, String code) {
@@ -146,6 +147,7 @@ public class MemberServiceImpl implements MemberService{
         return new MemberAuthenticateGithubResponse(savedMember.getGitNickname());
     }
 
+    // 깃허브 잔디 이미지 조회 함수
     @Override
     public MemberInquiryGithubResponse inquiryGithubImage(Member loginMember) {
         Member member = loadEntity(loginMember.getId());
@@ -156,6 +158,7 @@ public class MemberServiceImpl implements MemberService{
         return new MemberInquiryGithubResponse("https://ghchart.rshah.org/2965FF/" + gitNickName);
     }
 
+    // 포인트 관련 멤버 정보 조회 함수
     @Override
     public MemberInquiryPointsResponse inquiryMemberPoints(Member loginMember) {
         Member member = loadEntity(loginMember.getId());
@@ -170,13 +173,19 @@ public class MemberServiceImpl implements MemberService{
         return memberMapper.toInquiryPointsResponse(member.getRemainPoint(), usedHistories);
     }
 
+    // 멤버 검색 함수(운영진용)
     @Override
-    public List<MemberSearchInfoResponse> searchMemberInfo(Member member, String keyword) {
+    public List<MemberSearchInfoResponse> searchMemberInfo(Member loginMember, String keyword) {
+        Member member = loadEntity(loginMember.getId());
 
         // keyword 양식 검증
         String[] nicknameAndName = validateKeyword(keyword);
 
-        List<Member> searchedMembers = memberRepository.findAllByNicknameAndName(nicknameAndName[0], nicknameAndName[1]);
+        // 해당 유저가 본인보다 상위 운영진인 경우 검색 대상에서 제외
+        List<Member> searchedMembers = memberRepository.findAllByNicknameAndName(nicknameAndName[0], nicknameAndName[1]).stream()
+                        .filter(searchedMember -> searchedMember.getRole().getPriority() > member.getRole().getPriority())
+                        .toList();
+
 
         return searchedMembers.stream()
                 .map(searchedMember -> memberMapper.toSearchMembersResponse(
@@ -264,7 +273,6 @@ public class MemberServiceImpl implements MemberService{
                 .map(MemberPosition::getName)
                 .toList();
     }
-
 
     @Override
     public Member saveEntity(Member member) {
