@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.friend.service;
 
 import com.umc.networkingService.domain.friend.dto.response.FriendIdResponse;
+import com.umc.networkingService.domain.friend.dto.response.FriendInquiryByStatusResponse;
 import com.umc.networkingService.domain.friend.entity.Friend;
 import com.umc.networkingService.domain.friend.mapper.FriendMapper;
 import com.umc.networkingService.domain.friend.repository.FriendRepository;
@@ -9,6 +10,7 @@ import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -49,6 +51,12 @@ public class FriendServiceImpl implements FriendService {
         friend.delete();
 
         return new FriendIdResponse(friend.getId());
+    }
+
+    @Override
+    public FriendInquiryByStatusResponse inquiryFriendsByStatus(Member member, boolean status, Pageable pageable) {
+
+        return null;
     }
 
     // 친구 여부 확인 함수
