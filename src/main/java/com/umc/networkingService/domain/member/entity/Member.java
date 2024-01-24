@@ -2,7 +2,6 @@ package com.umc.networkingService.domain.member.entity;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
-import com.umc.networkingService.domain.session.entity.Session;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Role;
@@ -13,6 +12,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -75,8 +75,8 @@ public class Member extends BaseEntity {
 
     private String notionLink;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Session session;
+    // 가장 최근 호출 시간
+    private LocalDateTime lastActiveTime;
 
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
         this.name = name;
@@ -110,5 +110,9 @@ public class Member extends BaseEntity {
 
     public void updateRole(Role role) {
         this.role = role;
+    }
+
+    public void updateLastActiveTime(LocalDateTime lastActiveTime) {
+        this.lastActiveTime = lastActiveTime;
     }
 }
