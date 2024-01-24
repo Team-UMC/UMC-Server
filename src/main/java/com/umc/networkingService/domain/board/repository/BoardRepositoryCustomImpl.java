@@ -172,5 +172,31 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     }
 
+    @Override
+    public Page<Board> findAllCampusNotices(Member member, String keyword, Pageable pageable) {
+
+        QBoard board = QBoard.board;
+
+        BooleanBuilder predicate = new BooleanBuilder()
+                .and(board.writer.university.eq(member.getUniversity())
+                        .and(board.hostType.eq(HostType.CAMPUS))
+                        .and(board.boardType.eq(BoardType.NOTICE))
+                        .and(board.deletedAt.isNull()));
+
+        //keyword가 비지 않았으면 keyword검색 조건 추가
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate.and(board.title.contains(keyword).or(board.content.contains(keyword)));
+        }
+
+        List<Board> boards = query.selectFrom(board).where(predicate)
+                .orderBy(board.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(boards, pageable, query.selectFrom(board).where(predicate).fetch().size());
+
+    }
+
 
 }

@@ -59,7 +59,7 @@ public class Board extends BaseEntity {
     @ColumnDefault("0")
     private int commentCount;
 
-    private boolean isFixed; //notice가 아니면 null
+    private boolean isFixed;
 
     public void update(BoardUpdateRequest request, List<Semester> semesters) {
         this.hostType = request.getHostType();
@@ -88,5 +88,9 @@ public class Board extends BaseEntity {
         } else {
             this.heartCount--;
         }
+    }
+
+    public void setIsFixed(boolean isFixed) {
+        this.isFixed = isFixed;
     }
 }

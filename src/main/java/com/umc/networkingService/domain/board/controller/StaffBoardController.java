@@ -1,8 +1,9 @@
 package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.service.BoardService;
+import com.umc.networkingService.domain.board.service.StaffBoardService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,27 +14,40 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Tag(name= "BOARD API", description = "운영진용 BOARD API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/staff/boards")
 public class StaffBoardController {
-    private final BoardService boardService;
+    private final StaffBoardService staffBoardService;
 
-   /* @Operation(summary = "특정 게시글 상세 조회 API", description = "단일 게시글을 boardId를 통해 조회합니다.")
+    @Operation(summary = "교내 공지사항 목록 조회/검색 API", description = "keyword를 주지 않으면  모든 교내 공지사항 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
+            " page 시작은 0번부터, 내림차순으로 조회됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @GetMapping("notices")
+    public BaseResponse<BoardPagingResponse> showAllCampusNotices(@CurrentMember Member member,
+                                                            @RequestParam(name = "keyword", required = false) String keyword,
+                                                            @PageableDefault(page = 1, sort = "created_at",
+                                                direction = Sort.Direction.DESC) Pageable pageable) {
+        return BaseResponse.onSuccess(staffBoardService.showAllCampusNotices(member, keyword, pageable));
+    }
+
+    @Operation(summary = "교내 공지사항 핀 설정 API", description = "교내 공지사항 핀을 설정합니다. isPinned = true이면 핀으로 설정됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
 
     })
-    @GetMapping("notices")
-    public BoardPagingResponse showAllNotices(@CurrentMember Member member,
-                                              @PageableDefault(page = 1, sort = "created_at",
-                                                direction = Sort.Direction.DESC) Pageable pageable) {
-        return BaseResponse.onSuccess(boardService.showAllNotices(member, pageable));
-    }*/
+    @PatchMapping("notices/{boardId}/pin")
+    public BaseResponse<BoardIdResponse> toggleNoticePin(@CurrentMember Member member,
+                                                         @PathVariable(value = "boardId") UUID boardId,
+                                                         @RequestParam boolean isPinned) {
+        return BaseResponse.onSuccess(staffBoardService.toggleNoticePin(member, boardId, isPinned));
+    }
 }
