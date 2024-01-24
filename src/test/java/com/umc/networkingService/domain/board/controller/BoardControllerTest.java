@@ -1,42 +1,24 @@
 package com.umc.networkingService.domain.board.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.*;
-import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
-import com.umc.networkingService.domain.board.service.BoardCommentService;
-import com.umc.networkingService.domain.board.service.BoardService;
-import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.SemesterPart;
-import com.umc.networkingService.domain.member.entity.SocialType;
-import com.umc.networkingService.domain.member.repository.MemberRepository;
-import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
-import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -207,8 +189,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("게시글 검색 API 테스트")
     public void searchBoardTest() throws Exception {
         // given
-        BoardPagingResponse response = createMockBoardPagingResponse();
-
+        BoardSearchPagingResponse response = createMockBoardSearchPagingResponse();
         // when
         when(boardService.searchBoard(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
@@ -331,7 +312,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
     public void showMemberBoardsTest() throws Exception {
         // given
-        BoardPagingResponse response = createMockBoardPagingResponse();
+        BoardSearchPagingResponse response = createMockBoardSearchPagingResponse();
 
         // when
         when(boardService.showMemberBoards(eq(member),any(String.class), any(Pageable.class))).thenReturn(response);

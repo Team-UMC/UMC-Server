@@ -6,6 +6,7 @@ import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
@@ -113,10 +114,10 @@ public class BoardController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
 
     })
-    @GetMapping(value = "/search",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<BoardPagingResponse> searchBoard(@CurrentMember Member member,
-                                                         @RequestParam(name = "keyword") String keyword,
-                                                         @PageableDefault(sort = "created_at",
+    @GetMapping(value = "/search")
+    public BaseResponse<BoardSearchPagingResponse> searchBoard(@CurrentMember Member member,
+                                                               @RequestParam(name = "keyword") String keyword,
+                                                               @PageableDefault(sort = "created_at",
                                                                  direction = Sort.Direction.DESC) Pageable pageable) {
 
         return BaseResponse.onSuccess(boardService.searchBoard(member, keyword, pageable));
@@ -128,7 +129,7 @@ public class BoardController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping(value = "/member")
-    public BaseResponse<BoardPagingResponse> showMemberBoards(@CurrentMember Member member,
+    public BaseResponse<BoardSearchPagingResponse> showMemberBoards(@CurrentMember Member member,
                                                                @RequestParam(name = "keyword", required = false) String keyword,
                                                                @PageableDefault(sort = "created_at",
                                                                        direction = Sort.Direction.DESC) Pageable pageable) {
@@ -157,7 +158,7 @@ public class BoardController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping(value ="/hearts/member")
-    public BaseResponse<BoardPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
+    public BaseResponse<BoardSearchPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
                                                               @RequestParam(name = "keyword", required = false) String keyword,
                                                               @PageableDefault(sort = "created_at",
                                                                       direction = Sort.Direction.DESC) Pageable pageable) {

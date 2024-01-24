@@ -6,6 +6,7 @@ import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
@@ -61,9 +62,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardPagingResponse searchBoard(Member member, String keyword, Pageable pageable) {
+    public BoardSearchPagingResponse searchBoard(Member member, String keyword, Pageable pageable) {
 
-        return boardMapper.toBoardPagingResponse(boardRepository.findKeywordBoards(member, keyword, pageable));
+        return boardMapper.toBoardSearchPagingResponse(boardRepository.findKeywordBoards(member, keyword, pageable));
 
     }
 
@@ -86,12 +87,12 @@ public class BoardServiceImpl implements BoardService {
         return new BoardIdResponse(boardId);
     }
 
-    public BoardPagingResponse showMemberBoards(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toBoardPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
+    public BoardSearchPagingResponse showMemberBoards(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
     }
 
-    public BoardPagingResponse showMemberBoardHearts(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toBoardPagingResponse(boardRepository.findBoardHeartsByWriter(member, keyword, pageable));
+    public BoardSearchPagingResponse showMemberBoardHearts(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardHeartsByWriter(member, keyword, pageable));
     }
 
 

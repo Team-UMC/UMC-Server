@@ -1,9 +1,7 @@
 package com.umc.networkingService.domain.board.mapper;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.*;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.service.BoardFileService;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -31,10 +29,8 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardPagePostResponse toBoardPagePostResponse(Board board) {
-        return BoardPagePostResponse.builder()
-                .hostType(board.getHostType())
-                .boardType(board.getBoardType())
+    public BoardPageResponse toBoardPageResponse(Board board) {
+        return BoardPageResponse.builder()
                 .boardId(board.getId())
                 .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
                 .profileImage(board.getWriter().getProfileImage())
@@ -50,9 +46,9 @@ public class BoardMapper {
 
     public BoardPagingResponse toBoardPagingResponse(Page<Board> boards) {
 
-        List<BoardPagePostResponse> boardPagePostResponses = boards.map(this::toBoardPagePostResponse).stream().toList();
+        List<BoardPageResponse> BoardPageResponses = boards.map(this::toBoardPageResponse).stream().toList();
         return BoardPagingResponse.builder()
-                .boardPagePostResponses(boardPagePostResponses)
+                .boardPageResponses(BoardPageResponses)
                 .page(boards.getNumber())
                 .totalPages(boards.getTotalPages())
                 .totalElements((int) boards.getTotalElements())
@@ -60,6 +56,38 @@ public class BoardMapper {
                 .isLast(boards.isLast())
                 .build();
 
+    }
+
+    public BoardSearchPagingResponse toBoardSearchPagingResponse (Page<Board> boards) {
+
+        List<BoardSearchPageResponse> boardSearchPageResponses = boards.map(this::toBoardSearchPageResponse).stream().toList();
+        return BoardSearchPagingResponse.builder()
+                .boardSearchPageResponses(boardSearchPageResponses)
+                .page(boards.getNumber())
+                .totalPages(boards.getTotalPages())
+                .totalElements((int) boards.getTotalElements())
+                .isFirst(boards.isFirst())
+                .isLast(boards.isLast())
+                .build();
+
+    }
+
+
+    public BoardSearchPageResponse toBoardSearchPageResponse(Board board) {
+        return BoardSearchPageResponse.builder()
+                .boardType(board.getBoardType())
+                .hostType(board.getHostType())
+                .boardId(board.getId())
+                .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
+                .profileImage(board.getWriter().getProfileImage())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .thumbnail(boardFileService.findThumbnailImage(board))
+                .hitCount(board.getHitCount())
+                .heartCount(board.getHeartCount())
+                .commentCount(board.getCommentCount())
+                .createdAt(board.getCreatedAt())
+                .build();
     }
 
     public BoardDetailResponse toBoardDetailResponse(Board board, List<String> boardFiles) {

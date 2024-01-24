@@ -12,9 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardPagingResponse {
-
-    private List<BoardPageResponse> boardPageResponses = new ArrayList<>();
+public class BoardSearchPagingResponse {
+    private List<BoardSearchPageResponse> boardSearchPageResponses = new ArrayList<>();
     private int page;
     private int totalPages;
     private int totalElements;

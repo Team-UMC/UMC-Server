@@ -1,11 +1,10 @@
 package com.umc.networkingService.domain.board.dto.response;
 
-import com.umc.networkingService.domain.board.entity.BoardType;
-import com.umc.networkingService.domain.board.entity.HostType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,10 +12,8 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class BoardPagePostResponse {
-    private HostType hostType;
-    private BoardType boardType;
+@SuperBuilder
+public class BoardPageResponse {
     private UUID boardId;
     private String writer;
     private String profileImage;

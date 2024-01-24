@@ -226,10 +226,10 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         BoardPagingResponse boardPagingResponse = boardService.showBoards(member, hostType, boardType, pageable);
 
         //then
-        assertNotNull(boardPagingResponse.getBoardPagePostResponses().get(0).getBoardId());
-        assertFalse(boardPagingResponse.getBoardPagePostResponses().get(0).isFixed());
+        assertNotNull(boardPagingResponse.getBoardPageResponses().get(0).getBoardId());
+        assertFalse(boardPagingResponse.getBoardPageResponses().get(0).isFixed());
         assertEquals(0, boardPagingResponse.getPage());
-        assertEquals(1, boardPagingResponse.getBoardPagePostResponses().size());
+        assertEquals(1, boardPagingResponse.getBoardPageResponses().size());
         assertEquals(1, boardPagingResponse.getTotalElements());
     }
 
@@ -245,21 +245,23 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         createBoards();
 
         //when
-        BoardPagingResponse boardPagingResponse = boardService.searchBoard(member, keyword, pageable);
-        BoardPagingResponse boardPagingResponse2 = boardService.searchBoard(member, keyword2, pageable);
+        BoardSearchPagingResponse response = boardService.searchBoard(member, keyword, pageable);
+        BoardSearchPagingResponse response2 = boardService.searchBoard(member, keyword2, pageable);
 
         //then
-        assertEquals(0, boardPagingResponse.getPage());
-        assertEquals(2, boardPagingResponse.getTotalPages());
-        assertEquals(11, boardPagingResponse.getTotalElements());
-        assertEquals(10, boardPagingResponse.getBoardPagePostResponses().size());
-        assertEquals("데모데이가 곧이네요10", boardPagingResponse.getBoardPagePostResponses().get(0).getTitle());
+        assertEquals(0, response.getPage());
+        assertEquals(2, response.getTotalPages());
+        assertEquals(11, response.getTotalElements());
+        assertEquals(10, response.getBoardSearchPageResponses().size());
+        assertEquals(BoardType.FREE, response.getBoardSearchPageResponses().get(0).getBoardType());
+        assertEquals(HostType.CENTER, response.getBoardSearchPageResponses().get(0).getHostType());
+        assertEquals("데모데이가 곧이네요10", response.getBoardSearchPageResponses().get(0).getTitle());
 
 
-        assertEquals(0, boardPagingResponse2.getPage());
-        assertEquals(1, boardPagingResponse2.getTotalPages());
-        assertEquals(1, boardPagingResponse2.getTotalElements());
-        assertEquals(1, boardPagingResponse2.getBoardPagePostResponses().size());
+        assertEquals(0, response2.getPage());
+        assertEquals(1, response2.getTotalPages());
+        assertEquals(1, response2.getTotalElements());
+        assertEquals(1, response2.getBoardSearchPageResponses().size());
 
 
     }
@@ -351,9 +353,9 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(1, response.getPage());
         assertEquals(2, response.getTotalPages());
         assertEquals(16, response.getTotalElements());
-        assertEquals(6, response.getBoardPageCommentResponses().size());
-        assertEquals("좋아요.9", response.getBoardPageCommentResponses().get(0).getContent());
-        assertEquals("벡스/김준석", response.getBoardPageCommentResponses().get(0).getWriter());
+        assertEquals(6, response.getBoardCommentPageResponses().size());
+        assertEquals("좋아요.9", response.getBoardCommentPageResponses().get(0).getContent());
+        assertEquals("벡스/김준석", response.getBoardCommentPageResponses().get(0).getWriter());
     }
 
 
@@ -366,16 +368,16 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardPagingResponse response = boardService.showMemberBoards(member, "데모", pageable);
+        BoardSearchPagingResponse response = boardService.showMemberBoards(member, "데모", pageable);
 
         //then
         assertEquals(1, response.getPage());
         assertEquals(2, response.getTotalPages());
         assertEquals(11, response.getTotalElements());
-        assertEquals(1, response.getBoardPagePostResponses().size());
-        assertEquals(HostType.CENTER, response.getBoardPagePostResponses().get(0).getHostType());
-        assertEquals(BoardType.FREE, response.getBoardPagePostResponses().get(0).getBoardType());
-        assertEquals("루시/김수민", response.getBoardPagePostResponses().get(0).getWriter());
+        assertEquals(1, response.getBoardSearchPageResponses().size());
+        assertEquals(HostType.CENTER, response.getBoardSearchPageResponses().get(0).getHostType());
+        assertEquals(BoardType.FREE, response.getBoardSearchPageResponses().get(0).getBoardType());
+        assertEquals("루시/김수민", response.getBoardSearchPageResponses().get(0).getWriter());
 
     }
 
@@ -394,8 +396,8 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(0, response.getPage());
         assertEquals(2, response.getTotalPages());
         assertEquals(15, response.getTotalElements());
-        assertEquals(10, response.getBoardPageCommentResponses().size());
-        assertEquals("벡스/김준석", response.getBoardPageCommentResponses().get(0).getWriter());
+        assertEquals(10, response.getBoardCommentPageResponses().size());
+        assertEquals("벡스/김준석", response.getBoardCommentPageResponses().get(0).getWriter());
 
     }
 
@@ -408,15 +410,15 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardPagingResponse response = boardService.showMemberBoardHearts(campusStaff, null, pageable);
+        BoardSearchPagingResponse response = boardService.showMemberBoardHearts(campusStaff, null, pageable);
 
         //then
         assertEquals(0, response.getPage());
         assertEquals(1, response.getTotalPages());
         assertEquals(1, response.getTotalElements());
-        assertEquals(1, response.getBoardPagePostResponses().size());
-        assertEquals("루시/김수민", response.getBoardPagePostResponses().get(0).getWriter());
-        assertEquals(1, response.getBoardPagePostResponses().get(0).getHeartCount());
+        assertEquals(1, response.getBoardSearchPageResponses().size());
+        assertEquals("루시/김수민", response.getBoardSearchPageResponses().get(0).getWriter());
+        assertEquals(1, response.getBoardSearchPageResponses().get(0).getHeartCount());
 
     }
 }

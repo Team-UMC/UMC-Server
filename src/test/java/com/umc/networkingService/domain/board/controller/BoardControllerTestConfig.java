@@ -2,8 +2,10 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
-import com.umc.networkingService.domain.board.dto.response.BoardPagePostResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPageResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardSearchPageResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
@@ -116,11 +118,9 @@ public abstract class BoardControllerTestConfig {
 
     //가상의 BoardPagingResponse 생성
     protected BoardPagingResponse createMockBoardPagingResponse() {
-        List<BoardPagePostResponse> boardPagePostResponses = new ArrayList<>();
+        List<BoardPageResponse> boardPageResponses = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BoardPagePostResponse boardPagePostResponse = BoardPagePostResponse.builder()
-                    .hostType(HostType.CAMPUS)
-                    .boardType(BoardType.FREE)
+            BoardPageResponse boardPageResponse = BoardPageResponse.builder()
                     .title("제목")
                     .content("내용")
                     .writer("루시/김수민")
@@ -130,7 +130,7 @@ public abstract class BoardControllerTestConfig {
                     .profileImage(".../img")
                     .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
                     .build();
-            boardPagePostResponses.add(boardPagePostResponse);
+            boardPageResponses.add(boardPageResponse);
         }
 
 
@@ -139,7 +139,38 @@ public abstract class BoardControllerTestConfig {
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .boardPagePostResponses(boardPagePostResponses)
+                .boardPageResponses(boardPageResponses)
+                .isFirst(true)
+                .isLast(false)
+                .build();
+    }
+
+    protected BoardSearchPagingResponse createMockBoardSearchPagingResponse() {
+        List<BoardSearchPageResponse> boardSearchPageResponses = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            BoardSearchPageResponse boardSearchPageResponse = BoardSearchPageResponse.builder()
+                    .boardType(BoardType.FREE)
+                    .hostType(HostType.CAMPUS)
+                    .boardId(UUID.randomUUID())
+                    .title("제목")
+                    .content("내용")
+                    .writer("루시/김수민")
+                    .hitCount(1)
+                    .commentCount(1)
+                    .heartCount(1)
+                    .profileImage(".../img")
+                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .build();
+            boardSearchPageResponses.add(boardSearchPageResponse);
+        }
+
+
+        // 가상의 페이징 정보 설정
+        return BoardSearchPagingResponse.builder()
+                .page(1)
+                .totalPages(3)
+                .totalElements(30)
+                .boardSearchPageResponses(boardSearchPageResponses)
                 .isFirst(true)
                 .isLast(false)
                 .build();
