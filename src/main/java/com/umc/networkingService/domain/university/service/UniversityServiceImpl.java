@@ -89,6 +89,10 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional    //우리 대학교 마스코트 먹이주기
     public void feedUniversityMascot(Member member, PointType pointType){
 
+        if(member.getRemainPoint() < pointType.getPoint()){
+            throw new RestApiException(ErrorCode.NOT_ENOUGH_POINT);
+        }
+        
         //포인트 차감
         member.usePoint(pointType.getPoint());
         //학교 포인트 증가
