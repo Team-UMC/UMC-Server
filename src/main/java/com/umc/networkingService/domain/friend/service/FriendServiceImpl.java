@@ -29,18 +29,38 @@ public class FriendServiceImpl implements FriendService {
 
         Member friendMember = memberService.loadEntity(memberId);
 
-        // 이미 존재하는 경우 예외 처리
         if (friendRepository.existsBySenderAndReceiver(loginMember, friendMember))
             throw new RestApiException(ErrorCode.ALREADY_FRIEND_RELATION);
 
-        Friend friend = friendMapper.toFriend(loginMember, friendMember);
+        return createAndSaveNewFriend(loginMember, friendMember);
+    }
 
-        return new FriendIdResponse(friendRepository.save(friend).getId());
+    // 친구 삭제 함수
+    @Override
+    public FriendIdResponse deleteFriend(Member member, UUID memberId) {
+        Member loginMember = memberService.loadEntity(member.getId());
+
+        Member friendMember = memberService.loadEntity(memberId);
+
+        // 존재하지 않을 경우 예외 처리
+        Friend friend = friendRepository.findBySenderAndReceiver(loginMember, friendMember)
+                .orElseThrow(() -> new RestApiException(ErrorCode.NOT_FRIEND_RELATION));
+
+        friend.delete();
+
+        return new FriendIdResponse(friend.getId());
     }
 
     // 친구 여부 확인 함수
     @Override
     public boolean checkFriend(Member sender, Member receiver) {
         return friendRepository.existsBySenderAndReceiver(sender, receiver);
+    }
+
+    private FriendIdResponse createAndSaveNewFriend(Member loginMember, Member friendMember) {
+        Friend friend = friendMapper.toFriend(loginMember, friendMember);
+        UUID savedFriendId = friendRepository.save(friend).getId();
+
+        return new FriendIdResponse(savedFriendId);
     }
 }

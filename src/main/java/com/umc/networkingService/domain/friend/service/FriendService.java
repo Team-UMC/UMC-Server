@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface FriendService {
     FriendIdResponse createNewFriend(Member member, UUID memberId);
+    FriendIdResponse deleteFriend(Member member, UUID memberId);
     boolean checkFriend(Member sender, Member receiver);
 }
