@@ -1,17 +1,9 @@
 package com.umc.networkingService.domain.test.controller;
 
-import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.domain.branch.entity.BranchUniversity;
-import com.umc.networkingService.domain.branch.repository.BranchRepository;
-import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.test.dto.TestRequest;
 import com.umc.networkingService.domain.test.dto.TestResponse;
 import com.umc.networkingService.domain.test.service.TestService;
-import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.base.BaseResponse;
-import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.enums.Semester;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
