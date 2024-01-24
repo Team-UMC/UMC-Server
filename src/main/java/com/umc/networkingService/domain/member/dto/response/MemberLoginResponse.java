@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.member.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,4 +11,5 @@ public class MemberLoginResponse {
     private UUID memberId;
     private String accessToken;
     private String refreshToken;
+    private boolean isServiceMember;
 }

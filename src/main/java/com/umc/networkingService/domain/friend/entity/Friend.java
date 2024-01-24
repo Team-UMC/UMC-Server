@@ -1,12 +1,9 @@
 package com.umc.networkingService.domain.friend.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
-import jakarta.persistence.*;
 import com.umc.networkingService.global.common.base.BaseEntity;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -14,6 +11,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class Friend extends BaseEntity  {
