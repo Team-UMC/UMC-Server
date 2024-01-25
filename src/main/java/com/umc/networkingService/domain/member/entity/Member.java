@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -72,7 +73,9 @@ public class Member extends BaseEntity {
 
     private String gitNickname;
 
-    private  String notionLink;
+    private String notionLink;
+    
+    private LocalDateTime lastActiveTime;
 
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
         this.name = name;
