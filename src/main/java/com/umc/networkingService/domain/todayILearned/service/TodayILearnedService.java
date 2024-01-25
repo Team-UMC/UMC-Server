@@ -15,4 +15,6 @@ public interface TodayILearnedService {
     TodayILearnedInfos getTodayILearnedInfos(Member member);
 
     TodayILearnedId updateTodayILearned(Member member, UUID todayILearnedId, List<MultipartFile> files, TodayILearnedUpdate request);
+
+    TodayILearnedId deleteTodayILearned(Member member, UUID todayILearnedId);
 }

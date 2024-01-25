@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,14 @@ public class TodayILearnedController {
     public BaseResponse<TodayILearnedInfos> getTodayILearnedInfos(@CurrentMember Member member) {
 
         return BaseResponse.onSuccess(todayILearnedService.getTodayILearnedInfos(member));
+    }
+
+    // DELETE
+    @Operation(summary = "Today I Learned 삭제", description = "TIL을 삭제하는 API입니다.")
+    @DeleteMapping("/{todayILearned}")
+    public BaseResponse<TodayILearnedId> deleteTodayILearned(@CurrentMember Member member,
+                                                             @PathVariable("todayILearned") UUID todayILearnedId) {
+        return BaseResponse.onSuccess(todayILearnedService.deleteTodayILearned(member, todayILearnedId));
     }
 }
 

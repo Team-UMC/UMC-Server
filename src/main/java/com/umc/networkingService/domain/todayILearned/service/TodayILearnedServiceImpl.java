@@ -65,4 +65,17 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
 
         return todayILearnedMapper.UUIDtoTodayILearnedId(todayILearned.getId());
     }
+
+    @Override
+    public TodayILearnedId deleteTodayILearned(Member member, UUID todayILearnedId) {
+        TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_TODAYILERARNED));
+
+        // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
+        if (!todayILearned.getWriter().getId().equals(member.getId())) {
+            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
+        }
+        todayILearned.delete();
+        todayILearnedRepository.save(todayILearned);
+        return todayILearnedMapper.UUIDtoTodayILearnedId(todayILearned.getId());
+    }
 }
