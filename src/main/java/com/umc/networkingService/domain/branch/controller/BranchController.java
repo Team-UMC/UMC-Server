@@ -45,10 +45,10 @@ public class BranchController {
     }
 
     @Operation(summary = "지부 삭제 API")
-    @DeleteMapping("")
+    @DeleteMapping("/{branchId}")
     public BaseResponse<String> patchBranch(
             @CurrentMember Member member,
-            @ExistBranch @RequestParam("branchId") UUID branchId
+            @Validated @ExistBranch @PathVariable("branchId") UUID branchId
     ){
         branchService.deleteBranch(branchId);
         return BaseResponse.onSuccess("지부 삭제 완료");
@@ -58,7 +58,7 @@ public class BranchController {
     @GetMapping("")
     public BaseResponse<BranchResponse.JoinBranchListDTO> joinBranchList(
             @CurrentMember Member member,
-           @RequestParam("semester") Semester semester //기수별로 조회해서, 페이징 생략
+            @RequestParam("semester") Semester semester //기수별로 조회해서, 페이징 생략
     ){
         return BaseResponse.onSuccess(branchService.joinBranchList(semester));
     }
