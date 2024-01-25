@@ -1,21 +1,12 @@
 package com.umc.networkingService.config.security.jwt;
 
 import com.umc.networkingService.config.security.auth.PrincipalDetails;
-import com.umc.networkingService.domain.member.dto.MemberResponseDto;
-import io.jsonwebtoken.*;
 import com.umc.networkingService.config.security.auth.PrincipalDetailsService;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +32,7 @@ public class JwtTokenProvider {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String REFRESH_HEADER = "refreshToken";
-    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L;  // 유효기간 1시간
+    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L;  // 유효기간 1일
     private static final long REF_TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L * 14L;  // 유효기간 14일
 
     @PostConstruct
@@ -49,9 +41,12 @@ public class JwtTokenProvider {
         refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
 
-    public String generateAccessToken(Claims claims, UUID memberId) {
+    public String generateAccessToken(UUID memberId) {
         Date now = new Date();
         Date accessTokenExpirationTime = new Date(now.getTime() + TOKEN_VALID_TIME);
+
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -61,9 +56,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(Claims claims, UUID memberId) {
+    public String generateRefreshToken(UUID memberId) {
         Date now = new Date();
         Date refreshTokenExpirationTime = new Date(now.getTime() + REF_TOKEN_VALID_TIME);
+
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -73,15 +71,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public MemberResponseDto.TokenInfo generateToken(UUID memberId) {
+    public TokenInfo generateToken(UUID memberId) {
 
-        Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
+        String accessToken = generateAccessToken(memberId);
+        String refreshToken = generateRefreshToken(memberId);
 
-        String accessToken = generateAccessToken(claims, memberId);
-        String refreshToken = generateRefreshToken(claims, memberId);
-
-        return new MemberResponseDto.TokenInfo(accessToken, refreshToken);
+        return new TokenInfo(accessToken, refreshToken);
     }
 
     public Authentication getAuthentication(String token) {
@@ -127,7 +122,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            throw new RestApiException(ErrorCode.INVALID_JWT);
+            throw new RestApiException(ErrorCode.INVALID_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT);
         } catch (UnsupportedJwtException | SignatureException e) {
@@ -141,7 +136,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            throw new RestApiException(ErrorCode.INVALID_JWT);
+            throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT);
         } catch (UnsupportedJwtException | SignatureException e) {

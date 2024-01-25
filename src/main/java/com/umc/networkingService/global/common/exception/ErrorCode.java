@@ -24,15 +24,27 @@ public enum ErrorCode {
 
     // Member
     EMPTY_MEMBER(HttpStatus.CONFLICT, "MEMBER001", "존재하지 않는 사용자입니다."),
+    UNAUTHORIZED_UPDATE_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER002", "상위 운영진의 직책을 수정할 수 없습니다."),
+    UNAUTHORIZED_UPDATE_CENTER_POSITION(HttpStatus.BAD_REQUEST, "MEMBER003", "지부, 학교 운영진은 중앙 직책을 부여할 수 없습니다."),
+    EMPTY_MEMBER_UNIVERSITY(HttpStatus.CONFLICT, "MEMBER004", "소속 대학교가 존재하지 않는 사용자입니다."),
+    UNAUTHENTICATED_GITHUB(HttpStatus.BAD_REQUEST, "MEMBER005", "깃허브 연동이 완료되지 않은 사용자입니다."),
+
+    // SemesterPart
+    EMPTY_SEMESTER_PART(HttpStatus.BAD_REQUEST, "PART006", "존재하지 않는 기수의 파트입니다."),
+
+    // Invite
+    EXPIRED_INVITE_CODE(HttpStatus.BAD_REQUEST, "INVITE001", "이미 만료된 초대 코드입니다."),
+    UNAUTHORIZED_CREATE_INVITE(HttpStatus.BAD_REQUEST, "INVITE002", "해당 역할에 대해서 초대 코드를 생성할 권한이 없습니다."),
 
     // Auth
     EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AUTH001", "JWT가 없습니다."),
-    INVALID_JWT(HttpStatus.UNAUTHORIZED, "AUTH002", "유효하지 않은 JWT입니다."),
-    EXPIRED_MEMBER_JWT(HttpStatus.UNAUTHORIZED, "AUTH003", "만료된 JWT입니다."),
-    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "AUTH004", "지원하지 않는 JWT입니다."),
-    INVALID_ID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH005", "유효하지 않은 ID TOKEN입니다."),
-    INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "AUTH006", "유효하지 않은 ACCESS TOKEN입니다."),
+    EXPIRED_MEMBER_JWT(HttpStatus.UNAUTHORIZED, "AUTH002", "만료된 JWT입니다."),
+    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "AUTH003", "지원하지 않는 JWT입니다."),
+    INVALID_ID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH004", "유효하지 않은 ID TOKEN입니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "AUTH005", "유효하지 않은 ACCESS TOKEN입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH006", "유효하지 않은 REFRESH TOKEN입니다."),
     FAILED_SOCIAL_LOGIN(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH007", "소셜 로그인에 실패하였습니다."),
+    FAILED_GITHUB_AUTHENTICATION(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH008", "깃허브 서버와 통신이 실패하였습니다."),
 
     // University
     EMPTY_UNIVERSITY(HttpStatus.BAD_REQUEST, "UNIVERSITY001", "존재하지 않는 대학교입니다."),
@@ -41,7 +53,10 @@ public enum ErrorCode {
     EMPTY_BRANCH(HttpStatus.BAD_REQUEST, "BRANCH001", "존재하지 않는 지부입니다."),
 
     // Schedule
-    EMPTY_SCHEDULE(HttpStatus.BAD_REQUEST, "SCHEDULE001", "존재하지 않는 스케줄입니다.");
+    EMPTY_SCHEDULE(HttpStatus.BAD_REQUEST, "SCHEDULE001", "존재하지 않는 스케줄입니다."),
+
+    // Image
+    FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
