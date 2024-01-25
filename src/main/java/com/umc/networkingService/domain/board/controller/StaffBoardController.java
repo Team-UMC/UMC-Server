@@ -19,17 +19,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Tag(name = "STAFF BOARD API", description = "운영진용 BOARD API")
+@Tag(name = "운영진 게시판 API", description = "운영진용 게시판 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/staff/boards")
 public class StaffBoardController {
     private final StaffBoardService staffBoardService;
 
-    @Operation(summary = "교내 공지사항 목록 조회/검색 API", description = "keyword를 주지 않으면  모든 교내 공지사항 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
+    @Operation(summary = "공지사항 목록 조회/검색 API", description = "keyword를 주지 않으면  모든 교내 공지사항 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
             " page 시작은 0번부터, 내림차순으로 조회됩니다. hostType은 ALL, CENTER, BRANCH, CAMPUS 중 하나를 주세요.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MEMBER006", description = "해당 hostType의 공지사항을 볼 권한이 없을 경우 발생"),
     })
     @GetMapping("notices")
     public BaseResponse<BoardNoticePagingResponse> showNotices(@CurrentMember Member member,
@@ -43,7 +44,9 @@ public class StaffBoardController {
     @Operation(summary = "교내 공지사항 핀 설정 API", description = "교내 공지사항 핀을 설정합니다. isPinned = true이면 핀으로 설정됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
+            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
+            @ApiResponse(responseCode = "MEMBER006", description = "해당 공지사항 핀 설정 권한이 없을 경우 발생"),
+
 
     })
     @PatchMapping("notices/{boardId}/pin")

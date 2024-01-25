@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Tag(name = "Board Comment API", description = "게시판 댓글 관련 API")
+@Tag(name = "게시판 댓글 API", description = "게시판 댓글 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/boards/comments")

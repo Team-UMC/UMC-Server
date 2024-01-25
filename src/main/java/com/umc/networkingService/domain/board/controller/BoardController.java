@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "Board API", description = "게시판 관련 API")
+@Tag(name = "게시판 API", description = "게시판 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/boards")

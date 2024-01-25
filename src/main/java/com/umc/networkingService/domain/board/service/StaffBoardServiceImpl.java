@@ -29,9 +29,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
     @Override
     public BoardNoticePagingResponse showNotices(Member member, HostType hostType, String keyword, Pageable pageable) {
 
-        //HostType priority와 Member Role priority를 비교하여 권한 CHECK
-        if (member.getRole().getPriority() >= hostType.getPriority())
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+        checkPermissionForNoticeBoard(member,hostType);
 
         //해당 운영진이 조회 가능한 최상위 hostType을 구함
         HostType permissionHostType = HostType.getPermmissionHostType(member.getRole());
@@ -50,9 +48,20 @@ public class StaffBoardServiceImpl implements StaffBoardService {
     public BoardIdResponse toggleNoticePin(Member member, UUID boardId, boolean isPinned) {
 
         Board board = boardService.loadEntity(boardId);
+        HostType hostType = board.getHostType();
+
+        checkPermissionForNoticeBoard(member, hostType);
+
         board.setIsFixed(isPinned);
 
         return new BoardIdResponse(board.getId());
     }
 
+    public void checkPermissionForNoticeBoard(Member member, HostType hostType) {
+
+        //HostType priority와 Member Role priority를 비교하여 권한 CHECK
+        if (member.getRole().getPriority() >= hostType.getPriority())
+            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+
+    }
 }
