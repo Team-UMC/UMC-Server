@@ -5,6 +5,8 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfo;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
 import com.umc.networkingService.domain.todayILearned.service.TodayILearnedService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,4 +39,40 @@ public class TodayILearnedController {
 
         return BaseResponse.onSuccess(todayILearnedService.createTodayILearned(member, request, files));
     }
+
+    //GET
+    @Operation(summary = "Today I Learned 조회(일별)", description = "TIL(일별)을 조회하는 API입니다.")
+    @GetMapping
+    public BaseResponse<TodayILearnedInfos> getTodayILearnedInfos(@CurrentMember Member member) {
+
+        return BaseResponse.onSuccess(todayILearnedService.getTodayILearnedInfos(member));
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
