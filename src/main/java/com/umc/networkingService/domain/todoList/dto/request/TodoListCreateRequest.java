@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TodoListCreateRequest {
 
-    private LocalDateTime deadline;
-
     @NotBlank(message = "할일을 입력해주세요")
     private String title;
+
+    private LocalDateTime deadline;
 }

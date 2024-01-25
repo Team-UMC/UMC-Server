@@ -55,6 +55,7 @@ public class TodoListServiceImpl implements TodoListService{
     }
 
     @Override
+    @Transactional
     public TodoListIdResponse deleteTodoList(Member member, UUID todoListId){
         ToDoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_TODOLIST));
 
