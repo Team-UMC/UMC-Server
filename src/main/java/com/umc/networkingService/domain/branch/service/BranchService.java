@@ -28,8 +28,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BranchService {
 
-    //todo : 관리자 권한 확인 추가하기
-
     private final BranchRepository branchRepository;
     private final BranchUniversityRepository branchUniversityRepository;
     private final S3FileComponent s3FileComponent;
@@ -49,7 +47,7 @@ public class BranchService {
     }
 
     @Transactional          //지부 수정
-    public void patchBranch(BranchRequest.PatchBranchDTO request) {
+    public UUID patchBranch(BranchRequest.PatchBranchDTO request) {
 
         Optional<Branch> optionalBranch = branchRepository.findById(request.getBranchId()); //이미 검증된 branchId가 들어옴
         if(optionalBranch.isEmpty()){
@@ -57,7 +55,7 @@ public class BranchService {
         }
         Branch branch = optionalBranch.get();
         branch.updateBranch(request, uploadImageS3(BRANCH_CATEGORY, request.getImage()));
-        branchRepository.save(branch);
+        return branchRepository.save(branch).getId();
 
     }
 

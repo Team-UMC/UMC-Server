@@ -25,7 +25,7 @@ public class BranchController {
 
     private final BranchService branchService;
     private final BranchUniversityService branchUniversityService;
-    //todo : 헤더
+    //todo : 관리자 분리 시키기
     @Operation(summary = "지부 생성 API")
     @PostMapping("")
     public BaseResponse<UUID> postBranch(
@@ -37,12 +37,11 @@ public class BranchController {
 
     @Operation(summary = "지부 수정 API")
     @PatchMapping("")
-    public BaseResponse<String> patchBranch(
+    public BaseResponse<UUID> patchBranch(
             @CurrentMember Member member,
             @RequestBody BranchRequest.PatchBranchDTO request
     ){
-        branchService.patchBranch(request);
-        return BaseResponse.onSuccess("지부 수정 완료");
+        return BaseResponse.onSuccess(branchService.patchBranch(request));
     }
 
     @Operation(summary = "지부 삭제 API")
