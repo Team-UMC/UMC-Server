@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.todayILearned.mapper;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
+import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedUpdate;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfo;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
@@ -43,6 +44,15 @@ public class TodayILearnedMapper {
         return TodayILearnedInfos.builder()
                 .todayILearnedInfos(todayILearnedInfos)
                 .build();
+    }
+
+    public TodayILearned updateTodayILearnedToTodayILearned(TodayILearnedUpdate request, TodayILearned todayILearned) {
+        todayILearned.setTitle(request.getTitle());
+        todayILearned.setSubtitle(request.getSubTitle());
+        todayILearned.setContent(request.getContent());
+        todayILearned.setPart(request.getPart());
+
+        return todayILearned;
     }
 
 }

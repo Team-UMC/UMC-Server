@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.todayILearned.dto.requeest;
 
 import com.umc.networkingService.global.common.enums.Part;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,11 +15,19 @@ public class TodayILearnedRequest {
     @Builder
     public static class TodayILearnedCreate {
         private Part part;
-//        private Boolean isNotion;
         private String title;
         private String subTitle;
         private String content;
+    }
 
-
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class TodayILearnedUpdate {
+        private Part part;
+        private String title;
+        private String subTitle;
+        private String content;
     }
 }

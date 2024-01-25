@@ -4,6 +4,7 @@ import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
+import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedUpdate;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfo;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
@@ -12,9 +13,11 @@ import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +40,17 @@ public class TodayILearnedController {
                                                              @RequestPart(value = "files", required = false) List<MultipartFile> files,
                                                              @RequestPart("request") TodayILearnedCreate request) {
 
-        return BaseResponse.onSuccess(todayILearnedService.createTodayILearned(member, request, files));
+        return BaseResponse.onSuccess(todayILearnedService.createTodayILearned(member, files, request));
+    }
+
+    @Operation(summary = "Today I Learned 수정", description = "TIL를 수정하는 API입니다.")
+    @PostMapping(value = {"update/{todayILearnedId}"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<TodayILearnedId> updateTodayILearned(@CurrentMember Member member,
+                                                             @PathVariable("todayILearnedId") UUID todayILearnedId,
+                                                             @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                                             @RequestPart("request") TodayILearnedUpdate request) {
+
+        return BaseResponse.onSuccess(todayILearnedService.updateTodayILearned(member, todayILearnedId, files, request));
     }
 
     //GET
