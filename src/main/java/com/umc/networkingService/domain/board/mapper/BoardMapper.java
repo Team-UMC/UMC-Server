@@ -117,6 +117,31 @@ public class BoardMapper {
                 .build();
     }
 
+    public BoardNoticePageResponse toBoardNoticePageResponse(Board board) {
+        return BoardNoticePageResponse.builder()
+                .boardId(board.getId())
+                .hostType(board.getHostType())
+                .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
+                .title(board.getTitle())
+                .hitCount(board.getHitCount())
+                .isFixed(board.isFixed())
+                .createdAt(board.getCreatedAt())
+                .build();
+    }
+
+    public BoardNoticePagingResponse toBoardNoticePagingResponse(Page<Board> boards) {
+        List<BoardNoticePageResponse> boardNoticePageResponses = boards.map(this::toBoardNoticePageResponse).stream().toList();
+
+        return BoardNoticePagingResponse.builder()
+                .boardNoticePageResponses(boardNoticePageResponses)
+                .page(boards.getNumber())
+                .totalPages(boards.getTotalPages())
+                .totalElements((int) boards.getTotalElements())
+                .isFirst(boards.isFirst())
+                .isLast(boards.isLast())
+                .build();
+    }
+
     public BoardDetailResponse toBoardDetailResponse(Board board, List<String> boardFiles, boolean isLiked) {
         return BoardDetailResponse.builder()
                 .hostType(board.getHostType())

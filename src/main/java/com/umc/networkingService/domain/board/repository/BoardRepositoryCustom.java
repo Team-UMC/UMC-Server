@@ -17,10 +17,14 @@ public interface BoardRepositoryCustom {
     Page<BoardComment> findAllBoardComments(Member member, Board board, Pageable pageable);
 
     Page<Board> findBoardsByWriter(Member member, String keyword, Pageable pageable);
+
     Page<Board> findBoardsByMemberCommentsForApp(Member member, String keyword, Pageable pageable);
+
     Page<BoardComment> findBoardsByMemberCommentsForWeb(Member member, String keyword, Pageable pageable);
 
     Page<Board> findBoardsByMemberHearts(Member member, String keyword, Pageable pageable);
 
-    Page<Board> findAllCampusNotices(Member member, String keyword, Pageable pageable);
+    Page<Board> findNoticesByHostType(Member member, HostType hostType, String keyword, Pageable pageable);
+
+    Page<Board> findAllNotices(Member member, HostType permissionHostType, String keyword, Pageable pageable);
 }

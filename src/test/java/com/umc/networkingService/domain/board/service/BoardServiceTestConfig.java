@@ -58,6 +58,7 @@ public abstract class BoardServiceTestConfig {
 
     protected Member member;
     protected Member campusStaff;
+    protected Member centerStaff;
     protected Board board;
     protected Board workbookBoard;
     protected University university;
@@ -69,6 +70,7 @@ public abstract class BoardServiceTestConfig {
         university = createUniversity();
         branch = createBranch();
         campusStaff = createCampusStaff();
+        centerStaff = createCenterStaff();
         member = createMember();
         board = createBoard();
         comment = createBoardComment();
@@ -86,6 +88,19 @@ public abstract class BoardServiceTestConfig {
                 .name("김준석")
                 .nickname("벡스")
                 .semesterParts(createSemesterPart(campusStaff))
+                .build());
+    }
+
+    protected Member createCenterStaff() {
+        return memberRepository.save(Member.builder()
+                .id(UUID.randomUUID())
+                .clientId("122222")
+                .socialType(SocialType.KAKAO)
+                .university(university)
+                .branch(branch)
+                .role(Role.CENTER_STAFF)
+                .name("이서우")
+                .nickname("우디")
                 .build());
     }
 
@@ -167,13 +182,27 @@ public abstract class BoardServiceTestConfig {
                 .build());
     }
 
-    protected Board createNoticeBoard() {
+    protected Board createCampusNoticeBoard() {
         return boardRepository.save(Board.builder()
                 .writer(campusStaff)
                 .title("공지")
                 .content("내용")
                 .boardType(BoardType.NOTICE)
                 .hostType(HostType.CAMPUS)
+                .semesterPermission(List.of(Semester.values()))
+                .hitCount(0)
+                .heartCount(0)
+                .commentCount(0)
+                .build());
+    }
+
+    protected Board createCenterNoticeBoard() {
+        return boardRepository.save(Board.builder()
+                .writer(centerStaff)
+                .title("연합공지")
+                .content("내용")
+                .boardType(BoardType.NOTICE)
+                .hostType(HostType.CENTER)
                 .semesterPermission(List.of(Semester.values()))
                 .hitCount(0)
                 .heartCount(0)

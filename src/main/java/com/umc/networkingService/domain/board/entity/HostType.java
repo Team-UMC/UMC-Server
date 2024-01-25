@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.entity;
 
+import com.umc.networkingService.global.common.enums.Role;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -8,8 +9,20 @@ import lombok.RequiredArgsConstructor;
 public enum HostType {
     CENTER("연합", 3),
     BRANCH("지부", 4),
-    CAMPUS("학교", 5);
+    CAMPUS("학교", 5),
+    ALL("전체(staff 공지사항용)",100); //공지사항 판단을 위함
+
 
     private final String toKorean;
     private final int priority;
+
+    //허용 가능한 최상위 hostType
+    public static HostType getPermmissionHostType(Role role) {
+        if( role.ordinal() <= Role.CENTER_STAFF.ordinal())
+            return CENTER;
+       else if(role.ordinal() == Role.BRANCH_STAFF.ordinal())
+           return BRANCH;
+       else
+           return CAMPUS;
+    }
 }

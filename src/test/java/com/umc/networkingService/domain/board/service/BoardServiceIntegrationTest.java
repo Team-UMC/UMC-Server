@@ -44,7 +44,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Autowired
     private StaffBoardService staffBoardService;
     @Autowired
-    BoardCommentRepository boardCommentRepository;
+    private BoardCommentRepository boardCommentRepository;
 
     @Test
     @DisplayName("게시글 작성 성공 테스트")
@@ -483,16 +483,18 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void showStaffNoticesTest() {
         //given
-        Board notice = createNoticeBoard();
+        Board centerNotice = createCenterNoticeBoard();
+        Board campusNotice = createCampusNoticeBoard();
+
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardPagingResponse boardPagingResponse = staffBoardService.showAllCampusNotices(member, null, pageable);
+        BoardNoticePagingResponse boardNoticePagingResponse = staffBoardService.showNotices(campusStaff,HostType.ALL,null , pageable);
 
         //then
-        assertEquals(1, boardPagingResponse.getBoardPageResponses().size());
-        assertEquals(1, boardPagingResponse.getTotalElements());
-        assertEquals("공지", boardPagingResponse.getBoardPageResponses().get(0).getTitle());
+        assertEquals(1, boardNoticePagingResponse.getBoardNoticePageResponses().size());
+        assertEquals(1, boardNoticePagingResponse.getTotalElements());
+        assertEquals("공지",boardNoticePagingResponse.getBoardNoticePageResponses().get(0).getTitle());
 
     }
 
@@ -502,7 +504,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void showStaffNoticePinTest() {
         //given
-        Board notice = createNoticeBoard();
+        Board notice = createCampusNoticeBoard();
         assertEquals(false, notice.isFixed());
 
         //when
