@@ -38,7 +38,8 @@ public class TodoListController {
 
     @Operation(summary = "투두리스트 수정 API", description = "투두리스트를 수정하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "TODOLIST001", description = "존재하지 않는 투두리스트입니다.")
     })
     @PostMapping("/update/{todoListId}")
     public BaseResponse<TodoListIdResponse> updateTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId, @RequestBody TodoListUpdateRequest request) {
@@ -48,7 +49,8 @@ public class TodoListController {
 
     @Operation(summary = "투두리스트 완성 API", description = "투두리스트 완성 체크하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "TODOLIST001", description = "존재하지 않는 투두리스트입니다.")
     })
     @PostMapping("/{todoListId}")
     public BaseResponse<TodoListIdResponse> completeTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId) {
@@ -58,7 +60,8 @@ public class TodoListController {
 
     @Operation(summary = "투두리스트 삭제 API", description = "투두리스트를 삭제하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "TODOLIST001", description = "존재하지 않는 투두리스트입니다.")
     })
     @DeleteMapping("/{todoListId}")
     public BaseResponse<TodoListIdResponse> deleteTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId) {
