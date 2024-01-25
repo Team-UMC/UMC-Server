@@ -195,6 +195,13 @@ public class MemberServiceImpl implements MemberService{
                 )).toList();
     }
 
+    @Override
+    public void updateMemberActiveTime(UUID memberId) {
+        Member loginMember = loadEntity(memberId);
+
+
+    }
+
     // 멤버의 새로운 Role 찾기 함수
     private Role findMemberRole(List<MemberPosition> memberPositions) {
         if (memberPositions.isEmpty()) {

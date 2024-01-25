@@ -74,7 +74,7 @@ public class Member extends BaseEntity {
     private String gitNickname;
 
     private String notionLink;
-    
+
     private LocalDateTime lastActiveTime;
 
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
@@ -94,7 +94,6 @@ public class Member extends BaseEntity {
     public void updatePositions(List<MemberPosition> memberPositions) {
         this.positions = memberPositions;
     }
-
     public void updateSemesterParts(List<SemesterPart> semesterParts) {
         this.semesterParts = semesterParts;
     }
@@ -110,4 +109,5 @@ public class Member extends BaseEntity {
     public void updateRole(Role role) {
         this.role = role;
     }
+
 }
