@@ -3,9 +3,7 @@ package com.umc.networkingService.domain.university.entity;
 import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
@@ -15,6 +13,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 @DynamicInsert

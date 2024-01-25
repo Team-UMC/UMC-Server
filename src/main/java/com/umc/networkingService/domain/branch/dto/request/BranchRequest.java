@@ -13,6 +13,8 @@ public class BranchRequest {
 
 
     @Getter
+    @AllArgsConstructor
+    @Builder
     public static class PostBranchDTO{
         @NotNull
         private String name; //todo: 글자수 제한 .. 중복 검증도?
@@ -25,6 +27,8 @@ public class BranchRequest {
     }
 
     @Getter
+    @AllArgsConstructor
+    @Builder
     public static class PatchBranchDTO{
         @ExistBranch
         private UUID branchId;

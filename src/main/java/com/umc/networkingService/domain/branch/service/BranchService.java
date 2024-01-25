@@ -38,15 +38,14 @@ public class BranchService {
     private static final Integer PAGE_SIZE = 10;
 
     @Transactional         //지부 생성
-    public void postBranch(BranchRequest.PostBranchDTO request) {
+    public UUID postBranch(BranchRequest.PostBranchDTO request) {
 
         Branch newBranch = BranchConverter
                 .toBranch
                         (request
                         ,uploadImageS3(BRANCH_CATEGORY,request.getImage())
                         );
-
-        branchRepository.save(newBranch);
+        return branchRepository.save(newBranch).getId();
     }
 
     @Transactional          //지부 수정

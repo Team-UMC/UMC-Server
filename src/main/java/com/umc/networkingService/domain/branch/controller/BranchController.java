@@ -28,12 +28,11 @@ public class BranchController {
     //todo : 헤더
     @Operation(summary = "지부 생성 API")
     @PostMapping("")
-    public BaseResponse<String> postBranch(
+    public BaseResponse<UUID> postBranch(
             @CurrentMember Member member,
             @RequestBody BranchRequest.PostBranchDTO request
     ){
-        branchService.postBranch(request);
-        return BaseResponse.onSuccess("지부 생성 완료");
+        return BaseResponse.onSuccess(branchService.postBranch(request));
     }
 
     @Operation(summary = "지부 수정 API")
