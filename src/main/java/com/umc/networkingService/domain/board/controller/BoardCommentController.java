@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAd
 import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentIdResponse;
 import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardCommentPagingWebResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.service.BoardCommentService;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -83,12 +84,24 @@ public class BoardCommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
     })
-    @GetMapping(value = "/member/comments")
-    public BaseResponse<MyBoardPagingResponse> showBoardsByMemberComments(@CurrentMember Member member,
+    @GetMapping(value = "/member/comments/app")
+    public BaseResponse<MyBoardPagingResponse> showBoardsByMemberCommentsforApp(@CurrentMember Member member,
                                                                           @RequestParam(name = "keyword", required = false) String keyword,
                                                                           @PageableDefault(sort = "created_at",
                                                                                   direction = Sort.Direction.DESC) Pageable pageable) {
         return BaseResponse.onSuccess(boardCommentService.showBoardsByMemberCommentsForApp(member, keyword, pageable));
     }
 
+    @Operation(summary = "[WEB] 내가 댓글 쓴 글 조회/검색 API", description = "keyword를 주지 않으면 내가 댓글을 단 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
+            "page 시작은 0번부터, 내림차순으로 조회됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @GetMapping(value = "/member/comments/web")
+    public BaseResponse<MyBoardCommentPagingWebResponse> showBoardsByMemberCommentsForWeb(@CurrentMember Member member,
+                                                                                    @RequestParam(name = "keyword", required = false) String keyword,
+                                                                                    @PageableDefault(sort = "created_at",
+                                                                                  direction = Sort.Direction.DESC) Pageable pageable) {
+        return BaseResponse.onSuccess(boardCommentService.showBoardsByMemberCommentsForWeb(member, keyword, pageable));
+    }
 }

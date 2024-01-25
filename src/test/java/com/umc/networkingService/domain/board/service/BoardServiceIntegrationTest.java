@@ -43,7 +43,6 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     private BoardCommentService boardCommentService;
     @Autowired
     private StaffBoardService staffBoardService;
-
     @Autowired
     BoardCommentRepository boardCommentRepository;
 
@@ -506,14 +505,11 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Board notice = createNoticeBoard();
         assertEquals(false, notice.isFixed());
 
-
         //when
         staffBoardService.toggleNoticePin(member, notice.getId(), true);
 
         //then
         assertEquals(true, notice.isFixed());
-
-
     }
 
 }
