@@ -1,11 +1,15 @@
 package com.umc.networkingService.domain.board.service;
 
 
-import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.*;
+import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentIdResponse;
+import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardCommentPagingWebResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
 import com.umc.networkingService.global.common.enums.Part;
@@ -37,6 +41,8 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     private BoardService boardService;
     @Autowired
     private BoardCommentService boardCommentService;
+    @Autowired
+    private StaffBoardService staffBoardService;
 
     @Autowired
     BoardCommentRepository boardCommentRepository;
@@ -224,7 +230,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(1, boardDetailResponse.getHitCount());
         assertEquals(Semester.FIFTH, boardDetailResponse.getSemester());
         assertEquals(Part.SPRING, boardDetailResponse.getPart());
-        assertEquals(false,boardDetailResponse.isLiked());
+        assertEquals(false, boardDetailResponse.isLiked());
         assertEquals(0, boardDetailResponse.getHeartCount());
         assertEquals(2, boardDetailResponse.getBoardFiles().size());
 
@@ -405,37 +411,51 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardSearchPagingResponse response = boardService.showBoardsByMember(member, "데모", pageable);
+        MyBoardPagingResponse response = boardService.showBoardsByMember(member, "데모", pageable);
 
         //then
         assertEquals(1, response.getPage());
         assertEquals(2, response.getTotalPages());
         assertEquals(11, response.getTotalElements());
-        assertEquals(1, response.getBoardSearchPageResponses().size());
-        assertEquals(HostType.CENTER, response.getBoardSearchPageResponses().get(0).getHostType());
-        assertEquals(BoardType.FREE, response.getBoardSearchPageResponses().get(0).getBoardType());
-        assertEquals("루시/김수민", response.getBoardSearchPageResponses().get(0).getWriter());
-
+        assertEquals(1, response.getMyBoardPageResponses().size());
+        assertEquals(HostType.CENTER, response.getMyBoardPageResponses().get(0).getHostType());
+        assertEquals(BoardType.FREE, response.getMyBoardPageResponses().get(0).getBoardType());
     }
 
     @Test
-    @DisplayName("내가 댓글 쓴 글 목록 조회 테스트")
+    @DisplayName("내가 댓글 쓴 글 목록 조회 테스트 -APP용")
     @Transactional
-    public void showBoardsByMemberComments() {
+    public void showBoardsByMemberCommentsForApp() {
         //given
         createBoardComments();
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardSearchPagingResponse response = boardService.showBoardsByMemberComments(campusStaff, null, pageable);
+        MyBoardPagingResponse response = boardCommentService.showBoardsByMemberCommentsForApp(campusStaff, null, pageable);
 
         //then
         assertEquals(0, response.getPage());
         assertEquals(1, response.getTotalPages());
         assertEquals(1, response.getTotalElements());
-        assertEquals(1, response.getBoardSearchPageResponses().size());
-        assertEquals("루시/김수민", response.getBoardSearchPageResponses().get(0).getWriter());
+        assertEquals(1, response.getMyBoardPageResponses().size());
+    }
 
+    @Test
+    @DisplayName("내가 댓글 쓴 글 목록 조회 테스트 -WEB용")
+    @Transactional
+    public void showBoardsByMemberCommentsForWeb() {
+        //given
+        createBoardComments();
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
+
+        //when
+        MyBoardCommentPagingWebResponse response = boardCommentService.showBoardsByMemberCommentsForWeb(campusStaff, null, pageable);
+
+        //then
+        assertEquals(0, response.getPage());
+        assertEquals(2, response.getTotalPages());
+        assertEquals(15, response.getTotalElements());
+        assertEquals(10, response.getMyBoardCommentPageWebResponses().size());
     }
 
     @Test
@@ -447,17 +467,55 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardSearchPagingResponse response = boardService.showBoardsByMemberHearts(campusStaff, null, pageable);
+        MyBoardPagingResponse response = boardService.showBoardsByMemberHearts(campusStaff, null, pageable);
 
         //then
         assertEquals(0, response.getPage());
         assertEquals(1, response.getTotalPages());
         assertEquals(1, response.getTotalElements());
-        assertEquals(1, response.getBoardSearchPageResponses().size());
-        assertEquals("루시/김수민", response.getBoardSearchPageResponses().get(0).getWriter());
-        assertEquals(1, response.getBoardSearchPageResponses().get(0).getHeartCount());
+        assertEquals(1, response.getMyBoardPageResponses().size());
+        assertEquals(1, response.getMyBoardPageResponses().get(0).getHeartCount());
 
     }
+
+
+    @Test
+    @DisplayName("운영진용 교내 공지사항 조회 테스트")
+    @Transactional
+    public void showStaffNoticesTest() {
+        //given
+        Board notice = createNoticeBoard();
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
+
+        //when
+        BoardPagingResponse boardPagingResponse = staffBoardService.showAllCampusNotices(member, null, pageable);
+
+        //then
+        assertEquals(1, boardPagingResponse.getBoardPageResponses().size());
+        assertEquals(1, boardPagingResponse.getTotalElements());
+        assertEquals("공지", boardPagingResponse.getBoardPageResponses().get(0).getTitle());
+
+    }
+
+
+    @Test
+    @DisplayName("운영진용 교내 공지사항 핀설정 테스트")
+    @Transactional
+    public void showStaffNoticePinTest() {
+        //given
+        Board notice = createNoticeBoard();
+        assertEquals(false, notice.isFixed());
+
+
+        //when
+        staffBoardService.toggleNoticePin(member, notice.getId(), true);
+
+        //then
+        assertEquals(true, notice.isFixed());
+
+
+    }
+
 }
 
 

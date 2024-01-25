@@ -17,8 +17,8 @@ public interface BoardRepositoryCustom {
     Page<BoardComment> findAllBoardComments(Member member, Board board, Pageable pageable);
 
     Page<Board> findBoardsByWriter(Member member, String keyword, Pageable pageable);
-
-    Page<Board> findBoardsByMemberComments(Member member, String keyword, Pageable pageable);
+    Page<Board> findBoardsByMemberCommentsForApp(Member member, String keyword, Pageable pageable);
+    Page<BoardComment> findBoardsByMemberCommentsForWeb(Member member, String keyword, Pageable pageable);
 
     Page<Board> findBoardsByMemberHearts(Member member, String keyword, Pageable pageable);
 

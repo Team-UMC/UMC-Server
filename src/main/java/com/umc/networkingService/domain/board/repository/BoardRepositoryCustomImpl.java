@@ -119,7 +119,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<Board> findBoardsByMemberComments(Member member, String keyword, Pageable pageable) {
+    public Page<Board> findBoardsByMemberCommentsForApp(Member member, String keyword, Pageable pageable) {
         QBoard board = QBoard.board;
         QBoardComment boardComment = QBoardComment.boardComment;
 
@@ -129,7 +129,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         //keyword가 비지 않았으면 keyword검색 조건 추가
         if (keyword != null && !keyword.trim().isEmpty()) {
-            predicate.and(board.content.contains(keyword));
+            predicate.and(board.title.contains(keyword).or(board.content.contains(keyword)));
         }
 
         List<Board> boards = query.select(board)
@@ -143,6 +143,34 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         return new PageImpl<>(boards, pageable, query.select(board)
                 .from(boardComment)
+                .join(boardComment.board, board)
+                .where(predicate)
+                .fetch().size());
+    }
+
+    @Override
+    public Page<BoardComment> findBoardsByMemberCommentsForWeb(Member member, String keyword, Pageable pageable) {
+        QBoard board = QBoard.board;
+        QBoardComment boardComment = QBoardComment.boardComment;
+
+        BooleanBuilder predicate = new BooleanBuilder()
+                .and(boardComment.writer.eq(member))
+                .and(boardComment.deletedAt.isNull());
+
+        //keyword가 비지 않았으면 keyword검색 조건 추가
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate.and(board.title.contains(keyword).or(board.content.contains(keyword)));
+        }
+
+        List<BoardComment> boardComments = query.selectFrom(boardComment)
+                .join(boardComment.board, board)
+                .where(predicate)
+                .orderBy(board.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(boardComments, pageable, query.selectFrom(boardComment)
                 .join(boardComment.board, board)
                 .where(predicate)
                 .fetch().size());

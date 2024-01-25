@@ -12,5 +12,4 @@ public interface BoardRepository extends JpaRepository<Board, UUID>, BoardReposi
     @Query(value = "select b from Board b where b.id = :boardId and b.deletedAt is null")
     Optional<Board> findById(@Param("boardId") UUID boardId);
 
-
 }

@@ -167,6 +167,20 @@ public abstract class BoardServiceTestConfig {
                 .build());
     }
 
+    protected Board createNoticeBoard() {
+        return boardRepository.save(Board.builder()
+                .writer(campusStaff)
+                .title("공지")
+                .content("내용")
+                .boardType(BoardType.NOTICE)
+                .hostType(HostType.CAMPUS)
+                .semesterPermission(List.of(Semester.values()))
+                .hitCount(0)
+                .heartCount(0)
+                .commentCount(0)
+                .build());
+    }
+
     protected void createBoardFile() {
         List<MultipartFile> files = new ArrayList<>();
         files.add(new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes()));

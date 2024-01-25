@@ -6,6 +6,7 @@ import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
@@ -31,8 +32,7 @@ public interface BoardService extends EntityLoader<Board, UUID> {
     BoardSearchPagingResponse searchBoard(Member member, String keyword, Pageable pageable);
 
     BoardIdResponse toggleBoardLike(Member member, UUID boardId);
-    BoardSearchPagingResponse showBoardsByMember(Member member, String keyword, Pageable pageable);
-    BoardSearchPagingResponse showBoardsByMemberHearts(Member member, String keyword, Pageable pageable);
-    BoardSearchPagingResponse showBoardsByMemberComments(Member member, String keyword, Pageable pageable);
+    MyBoardPagingResponse showBoardsByMember(Member member, String keyword, Pageable pageable);
+    MyBoardPagingResponse showBoardsByMemberHearts(Member member, String keyword, Pageable pageable);
 
 }

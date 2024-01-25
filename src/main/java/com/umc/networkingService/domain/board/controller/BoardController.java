@@ -7,6 +7,7 @@ import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
@@ -129,34 +130,20 @@ public class BoardController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping(value = "/member")
-    public BaseResponse<BoardSearchPagingResponse> showBoardsByMember(@CurrentMember Member member,
-                                                                      @RequestParam(name = "keyword", required = false) String keyword,
-                                                                      @PageableDefault(sort = "created_at",
+    public BaseResponse<MyBoardPagingResponse> showBoardsByMember(@CurrentMember Member member,
+                                                                  @RequestParam(name = "keyword", required = false) String keyword,
+                                                                  @PageableDefault(sort = "created_at",
                                                                               direction = Sort.Direction.DESC) Pageable pageable) {
 
         return BaseResponse.onSuccess(boardService.showBoardsByMember(member, keyword, pageable));
     }
-
-    @Operation(summary = "내가 댓글 쓴 글 조회/검색 API", description = "keyword를 주지 않으면 내가 댓글을 단 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
-            "page 시작은 0번부터, 내림차순으로 조회됩니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공"),
-    })
-    @GetMapping(value = "/member/comments")
-    public BaseResponse<BoardSearchPagingResponse> showBoardsByMemberComments(@CurrentMember Member member,
-                                                                              @RequestParam(name = "keyword", required = false) String keyword,
-                                                                              @PageableDefault(sort = "created_at",
-                                                                                      direction = Sort.Direction.DESC) Pageable pageable) {
-        return BaseResponse.onSuccess(boardService.showBoardsByMemberComments(member, keyword, pageable));
-    }
-
     @Operation(summary = "내가 좋아요한 게시글 조회/검색 API", description = "keyword를 주지 않으면 내가 좋아요한 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다." +
             "page 시작은 0번부터, 내림차순으로 조회됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping(value = "/member/hearts")
-    public BaseResponse<BoardSearchPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
+    public BaseResponse<MyBoardPagingResponse> showMemberBoardHearts(@CurrentMember Member member,
                                                                          @RequestParam(name = "keyword", required = false) String keyword,
                                                                          @PageableDefault(sort = "created_at",
                                                                                  direction = Sort.Direction.DESC) Pageable pageable) {

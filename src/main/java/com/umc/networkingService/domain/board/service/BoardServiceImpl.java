@@ -7,6 +7,8 @@ import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
@@ -100,19 +102,15 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public BoardSearchPagingResponse showBoardsByMember(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
+    public MyBoardPagingResponse showBoardsByMember(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
     }
 
     @Override
-    public BoardSearchPagingResponse showBoardsByMemberHearts(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByMemberHearts(member, keyword, pageable));
+    public MyBoardPagingResponse showBoardsByMemberHearts(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPagingResponse(boardRepository.findBoardsByMemberHearts(member, keyword, pageable));
     }
 
-    @Override
-    public BoardSearchPagingResponse showBoardsByMemberComments(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toBoardSearchPagingResponse(boardRepository.findBoardsByMemberComments(member, keyword, pageable));
-    }
 
 
     @Override

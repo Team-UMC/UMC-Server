@@ -2,6 +2,8 @@ package com.umc.networkingService.domain.board.mapper;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.response.*;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.service.BoardFileService;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -90,6 +92,31 @@ public class BoardMapper {
                 .build();
     }
 
+    public MyBoardPagingResponse toMyBoardPagingResponse(Page<Board> boards) {
+        List<MyBoardPageResponse> myBoardPageResponses = boards.map(this::toMyBoardPageResponse).stream().toList();
+
+        return MyBoardPagingResponse.builder()
+                .myBoardPageResponses(myBoardPageResponses)
+                .page(boards.getNumber())
+                .totalPages(boards.getTotalPages())
+                .totalElements((int) boards.getTotalElements())
+                .isFirst(boards.isFirst())
+                .isLast(boards.isLast())
+                .build();
+    }
+
+    public MyBoardPageResponse toMyBoardPageResponse(Board board) {
+        return MyBoardPageResponse.builder()
+                .boardId(board.getId())
+                .hostType(board.getHostType())
+                .boardType(board.getBoardType())
+                .title(board.getTitle())
+                .hitCount(board.getHitCount())
+                .heartCount(board.getHeartCount())
+                .createdAt(board.getCreatedAt())
+                .build();
+    }
+
     public BoardDetailResponse toBoardDetailResponse(Board board, List<String> boardFiles, boolean isLiked) {
         return BoardDetailResponse.builder()
                 .hostType(board.getHostType())
@@ -108,4 +135,5 @@ public class BoardMapper {
                 .createdAt(board.getCreatedAt())
                 .build();
     }
+
 }

@@ -1,4 +1,5 @@
-package com.umc.networkingService.domain.board.dto.response;
+package com.umc.networkingService.domain.board.dto.response.member;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardCommentPagingResponse {
-    private List<BoardCommentPageResponse> boardCommentPageResponses = new ArrayList<>();
+public class MyBoardCommentPagingWebResponse {
+    private List<MyBoardCommentPageWebResponse> myBoardCommentPageWebResponses = new ArrayList<>();
     private int page;
     private int totalPages;
     private int totalElements;

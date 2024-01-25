@@ -6,12 +6,15 @@ import com.umc.networkingService.domain.board.dto.response.BoardPageResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardSearchPageResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardCommentService;
 import com.umc.networkingService.domain.board.service.BoardService;
+import com.umc.networkingService.domain.board.service.StaffBoardService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.entity.SocialType;
@@ -49,6 +52,8 @@ public abstract class BoardControllerTestConfig {
     protected BoardCommentService boardCommentService;
     @MockBean
     protected SemesterPartRepository semesterPartRepository;
+    @MockBean
+    protected StaffBoardService staffBoardService;
 
 
     protected Member member;
@@ -175,6 +180,34 @@ public abstract class BoardControllerTestConfig {
                 .isLast(false)
                 .build();
     }
+
+    protected MyBoardPagingResponse createMockMyBoardPagingResponse() {
+        List<MyBoardPageResponse> myBoardPageResponses = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            MyBoardPageResponse myBoardPageResponse = MyBoardPageResponse.builder()
+                    .boardType(BoardType.FREE)
+                    .hostType(HostType.CAMPUS)
+                    .boardId(UUID.randomUUID())
+                    .title("제목")
+                    .hitCount(1)
+                    .heartCount(1)
+                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .build();
+            myBoardPageResponses.add(myBoardPageResponse);
+        }
+
+
+        // 가상의 페이징 정보 설정
+        return MyBoardPagingResponse.builder()
+                .page(1)
+                .totalPages(3)
+                .totalElements(30)
+                .myBoardPageResponses(myBoardPageResponses)
+                .isFirst(true)
+                .isLast(false)
+                .build();
+    }
+
 
 
 }

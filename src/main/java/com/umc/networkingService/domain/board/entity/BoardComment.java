@@ -1,7 +1,7 @@
 package com.umc.networkingService.domain.board.entity;
 
 
-import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;

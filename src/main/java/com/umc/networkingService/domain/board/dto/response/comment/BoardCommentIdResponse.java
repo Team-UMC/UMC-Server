@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.board.dto.response;
+package com.umc.networkingService.domain.board.dto.response.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

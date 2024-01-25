@@ -1,10 +1,12 @@
 package com.umc.networkingService.domain.board.controller;
 
-import com.umc.networkingService.domain.board.dto.request.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.BoardCommentUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.*;
+import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentIdResponse;
+import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -312,7 +314,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
     public void showMemberBoardsTest() throws Exception {
         // given
-        BoardSearchPagingResponse response = createMockBoardSearchPagingResponse();
+        MyBoardPagingResponse response = createMockMyBoardPagingResponse();
 
         // when
         when(boardService.showBoardsByMember(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
