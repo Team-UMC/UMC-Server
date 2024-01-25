@@ -17,6 +17,8 @@ public interface BranchUniversityRepository extends JpaRepository<BranchUniversi
 
     List<BranchUniversity> findByUniversity(University university);
 
+    BranchUniversity findByBranchIdAndUniversityId(UUID branchId, UUID universityId);
+
     void deleteByBranchIdAndUniversityId(UUID branchId, UUID universityId);
 
 }

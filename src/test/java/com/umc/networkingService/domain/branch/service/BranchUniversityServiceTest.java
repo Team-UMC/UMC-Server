@@ -5,7 +5,9 @@ import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.execption.BranchUniversityHandler;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
+import com.umc.networkingService.global.common.Semester;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -44,20 +47,20 @@ class BranchUniversityServiceTest {
     void connectBranchUniversity_Success() {
         // given
         UUID branchId = UUID.randomUUID();
-        List<UUID> universityIds = List.of(UUID.randomUUID(), UUID.randomUUID());
+        Branch branch = new Branch(branchId, "branch connect test", "branch description", null, Semester.FIRST);
 
-        given(branchRepository.findById(branchId)).willReturn(Optional.of(new Branch()));
-        given(universityRepository.existsById(any(UUID.class))).willReturn(true);
-        given(branchUniversityRepository.existsByBranchIdAndUniversityId(eq(branchId), any(UUID.class))).willReturn(false);
+        University university1 = new University(UUID.randomUUID(), null,"", "", "university1", 100L);
+        University university2 = new University(UUID.randomUUID(), null, "", "", "university2",80L);
+        List<UUID> universityIds = List.of(university1.getId(), university2.getId());
 
         // when
         branchUniversityService.connectBranchUniversity(branchId, universityIds);
 
         // then
-        verify(branchRepository).findById(branchId);
-        verify(universityRepository, times(2)).existsById(any(UUID.class));
-        verify(branchUniversityRepository, times(2)).existsByBranchIdAndUniversityId(eq(branchId), any(UUID.class));
-        verify(branchUniversityRepository, times(2)).save(any(BranchUniversity.class));
+        BranchUniversity branchUniversity = branchUniversityRepository.findByBranchIdAndUniversityId(branchId, university1.getId());
+        assertEquals(2, branchUniversityRepository.findByBranch(branch).size());
+        assertEquals(branchId, branchUniversity.getBranch().getId());
+        assertEquals(university1.getId(), branchUniversity.getUniversity().getId());
     }
 
     @Test
@@ -66,9 +69,6 @@ class BranchUniversityServiceTest {
         // given
         UUID branchId = UUID.randomUUID();
         List<UUID> invalidUniversityIds = List.of(UUID.randomUUID(), UUID.randomUUID());
-
-        given(branchRepository.findById(branchId)).willReturn(Optional.of(new Branch()));
-        given(universityRepository.existsById(any(UUID.class))).willReturn(false);
 
         // when & then
         assertThrows(BranchUniversityHandler.class, () -> branchUniversityService.connectBranchUniversity(branchId, invalidUniversityIds));
@@ -85,10 +85,6 @@ class BranchUniversityServiceTest {
         UUID branchId = UUID.randomUUID();
         UUID connectedUniversityId = UUID.randomUUID();
         List<UUID> universityIds = List.of(connectedUniversityId, UUID.randomUUID());
-
-        given(branchRepository.findById(branchId)).willReturn(Optional.of(new Branch()));
-        given(universityRepository.existsById(any(UUID.class))).willReturn(true);
-        given(branchUniversityRepository.existsByBranchIdAndUniversityId(eq(branchId), eq(connectedUniversityId))).willReturn(true);
 
         // when & then
         assertThrows(BranchUniversityHandler.class, () -> branchUniversityService.connectBranchUniversity(branchId, universityIds));
