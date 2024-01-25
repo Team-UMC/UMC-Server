@@ -6,8 +6,7 @@ import com.umc.networkingService.domain.todoList.dto.request.TodoListUpdateReque
 import com.umc.networkingService.domain.todoList.dto.response.TodoListGetResponses;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListIdResponse;
 import com.umc.networkingService.domain.todoList.entity.ToDoList;
-import com.umc.networkingService.domain.todoList.mapper.TodoListCreateMapper;
-import com.umc.networkingService.domain.todoList.mapper.TodoListShowMapper;
+import com.umc.networkingService.domain.todoList.mapper.TodoListMapper;
 import com.umc.networkingService.domain.todoList.repository.TodoListRepository;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +23,11 @@ import java.util.UUID;
 public class TodoListServiceImpl implements TodoListService{
 
     private final TodoListRepository todoListRepository;
-
-    private final TodoListCreateMapper todoListCreateMapper;
-    private final TodoListShowMapper todoListShowMapper;
+    private final TodoListMapper todoListMapper;
 
     @Override
     public TodoListIdResponse createTodoList(Member member, TodoListCreateRequest todoListRequest){
-        ToDoList todoList = todoListCreateMapper.createTodoListToTodoList(member, todoListRequest);
+        ToDoList todoList = todoListMapper.createTodoListToTodoList(member, todoListRequest);
 
         ToDoList savedtodolist = todoListRepository.save(todoList);
 
@@ -72,7 +69,7 @@ public class TodoListServiceImpl implements TodoListService{
 
         return new TodoListGetResponses(
                 todoLists.stream()
-                        .map(todoListShowMapper::showTodoListToTodoList)
+                        .map(todoListMapper::showTodoListToTodoList)
                         .toList());
     }
 }

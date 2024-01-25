@@ -19,6 +19,7 @@ public interface TodoListService {
     TodoListGetResponses showTodoList(Member member, LocalDate date);
 
     TodoListIdResponse completeTodoList(Member member, UUID todoListId);
+
     TodoListIdResponse updateTodoList(Member member, UUID todoListId, TodoListUpdateRequest request);
 
 }
