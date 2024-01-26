@@ -45,6 +45,10 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardPagingResponse showBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable) {
 
+        //특정 게시판 조회에는 전체 HOST 조회 X
+        if(hostType.equals(HostType.ALL))
+            throw new RestApiException(ErrorCode._VALIDATION_ERROR);
+
         return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
 

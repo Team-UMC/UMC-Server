@@ -242,11 +242,15 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     private BooleanExpression eqUniversity(Member member) {
-        return board.writer.university.eq(member.getUniversity());
+        if (member != null && member.getUniversity() != null)
+            return board.writer.university.eq(member.getUniversity());
+        return null;
     }
 
     private BooleanExpression eqBranch(Member member) {
-        return board.writer.branch.eq(member.getBranch());
+        if (member != null && member.getBranch() != null)
+            return board.writer.branch.eq(member.getBranch());
+        return null;
     }
 
     private BooleanExpression eqHostType(HostType hostType) {
