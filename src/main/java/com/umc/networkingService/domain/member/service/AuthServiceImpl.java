@@ -144,7 +144,8 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.APPLE);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get(), true);
+        boolean isServiceMember = getMember.get().getName() != null;
+        return getNewToken(getMember.get(), isServiceMember);
     }
 
     private MemberLoginResponse loginByKakao(final String accessToken){
@@ -173,7 +174,9 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId,SocialType.NAVER);
         }
         // 2. 있으면 (이미 로그인 했던 적이 있는 경우)
-        return getNewToken(getMember.get(), true);
+        boolean isServiceMember = getMember.get().getName() != null;
+
+        return getNewToken(getMember.get(), isServiceMember);
     }
 
     private MemberLoginResponse loginByGoogle(final String accessToken){
@@ -187,7 +190,8 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.GOOGLE);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get(), true);
+        boolean isServiceMember = getMember.get().getName() != null;
+        return getNewToken(getMember.get(), isServiceMember);
     }
 
     private MemberLoginResponse saveNewMember(String clientId, SocialType socialType) {

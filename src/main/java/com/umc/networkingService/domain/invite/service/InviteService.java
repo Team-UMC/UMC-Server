@@ -6,10 +6,8 @@ import com.umc.networkingService.domain.invite.dto.response.InviteInquiryMineRes
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
 
-import java.util.List;
-
 public interface InviteService {
     InviteCreateResponse createInviteCode(Member member, Role role);
     InviteAuthenticateResponse authenticateInviteCode(Member member, String inviteCode);
-    List<InviteInquiryMineResponse> inquiryMyInviteCode(Member member);
+    InviteInquiryMineResponse inquiryMyInviteCode(Member member);
 }

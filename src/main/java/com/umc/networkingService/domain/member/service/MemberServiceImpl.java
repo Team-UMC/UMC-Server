@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -152,8 +153,8 @@ public class MemberServiceImpl implements MemberService{
 
     // 멤버 검색 함수(운영진용)
     @Override
-    public List<MemberSearchInfoResponse> searchMemberInfo(Member member, String keyword) {
-        Member loginMember = loadEntity(member.getId());
+    public MemberSearchInfosResponse searchMemberInfo(Member loginMember, String keyword) {
+        Member member = loadEntity(loginMember.getId());
 
         // keyword 양식 검증
         String[] nicknameAndName = validateKeyword(keyword);
@@ -163,13 +164,22 @@ public class MemberServiceImpl implements MemberService{
                         .filter(searchedMember -> searchedMember.getRole().getPriority() > loginMember.getRole().getPriority())
                         .toList();
 
-
-        return searchedMembers.stream()
+        List<MemberSearchInfosResponse.MemberInfo> memberInfos = searchedMembers.stream()
                 .map(searchedMember -> memberMapper.toSearchMembersResponse(
                         searchedMember,
                         getPositionNamesByType(searchedMember, PositionType.CAMPUS),
                         getPositionNamesByType(searchedMember, PositionType.CENTER)
                 )).toList();
+
+        return new MemberSearchInfosResponse(memberInfos);
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberActiveTime(UUID memberId) {
+        Member loginMember = loadEntity(memberId);
+
+        loginMember.updateLastActiveTime(LocalDateTime.now());
     }
 
     // 멤버의 새로운 Role 찾기 함수
@@ -261,6 +271,4 @@ public class MemberServiceImpl implements MemberService{
         return memberRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
     }
-
-
 }
