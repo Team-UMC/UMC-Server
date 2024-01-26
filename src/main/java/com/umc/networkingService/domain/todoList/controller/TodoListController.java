@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,8 @@ public class TodoListController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @PostMapping
-    public BaseResponse<TodoListIdResponse> createTodoList(@CurrentMember Member member, @RequestBody TodoListCreateRequest request){
+    public BaseResponse<TodoListIdResponse> createTodoList(@CurrentMember Member member,
+                                                           @Valid @RequestBody TodoListCreateRequest request){
         return BaseResponse.onSuccess(todoListService.createTodoList(member, request));
     }
 
@@ -42,7 +44,9 @@ public class TodoListController {
             @ApiResponse(responseCode = "TODOLIST001", description = "존재하지 않는 투두리스트입니다.")
     })
     @PostMapping("/update/{todoListId}")
-    public BaseResponse<TodoListIdResponse> updateTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId, @RequestBody TodoListUpdateRequest request) {
+    public BaseResponse<TodoListIdResponse> updateTodoList(@CurrentMember Member member,
+                                                           @PathVariable("todoListId") UUID todoListId,
+                                                           @Valid @RequestBody TodoListUpdateRequest request) {
 
         return BaseResponse.onSuccess(todoListService.updateTodoList(member, todoListId, request));
     }
