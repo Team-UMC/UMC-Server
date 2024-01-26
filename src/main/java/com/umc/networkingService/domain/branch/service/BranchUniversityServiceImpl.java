@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class BranchUniversityService {
+public class BranchUniversityServiceImpl {
 
     //todo : 관리자 권한 확인 추가하기
 

@@ -11,11 +11,8 @@ import com.umc.networkingService.domain.branch.repository.BranchUniversityReposi
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
-import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class BranchService {
+public class BranchServiceImpl {
 
     private final BranchRepository branchRepository;
     private final BranchUniversityRepository branchUniversityRepository;

@@ -20,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.BDDAssumptions.given;
@@ -33,7 +32,7 @@ import static org.mockito.Mockito.verify;
 class BranchServiceTest {
 
     @InjectMocks
-    private BranchService branchService;
+    private BranchServiceImpl branchService;
 
     @Mock
     private BranchRepository branchRepository;

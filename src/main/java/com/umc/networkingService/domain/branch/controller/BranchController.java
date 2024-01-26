@@ -3,8 +3,8 @@ package com.umc.networkingService.domain.branch.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
-import com.umc.networkingService.domain.branch.service.BranchService;
-import com.umc.networkingService.domain.branch.service.BranchUniversityService;
+import com.umc.networkingService.domain.branch.service.BranchServiceImpl;
+import com.umc.networkingService.domain.branch.service.BranchUniversityServiceImpl;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.Semester;
 import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
@@ -23,8 +23,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BranchController {
 
-    private final BranchService branchService;
-    private final BranchUniversityService branchUniversityService;
+    private final BranchServiceImpl branchService;
+    private final BranchUniversityServiceImpl branchUniversityService;
     //todo : 관리자 분리 시키기
     @Operation(summary = "지부 생성 API")
     @PostMapping("")

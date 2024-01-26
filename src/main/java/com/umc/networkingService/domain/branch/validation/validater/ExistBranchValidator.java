@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.branch.validation.validater;
 
-import com.umc.networkingService.domain.branch.service.BranchService;
+import com.umc.networkingService.domain.branch.service.BranchServiceImpl;
 import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import jakarta.validation.ConstraintValidator;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ExistBranchValidator implements ConstraintValidator<ExistBranch, UUID> {
 
-    private final BranchService branchService;
+    private final BranchServiceImpl branchService;
 
     @Override
     public void initialize(ExistBranch constraintAnnotation) {
