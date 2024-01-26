@@ -79,13 +79,7 @@ public class ScheduleMapper {
     }
 
     public Schedule updateScheduleToSchedule(UpdateSchedule request, Schedule schedule) {
-        schedule.setTitle(request.getTitle());
-        schedule.setContent(request.getContent());
-        schedule.setStartDateTime(request.getStartDateTime());
-        schedule.setEndDateTime(request.getEndDateTime());
-        schedule.setSemesterPermission(request.getSemesterPermission());
-        schedule.setHostType(request.getHostType());
-        schedule.setPlaceSetting(request.getPlaceSetting());
+        schedule.updateSchedule(request);
         return schedule;
     }
 
