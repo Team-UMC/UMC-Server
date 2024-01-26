@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class AlbumController {
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<AlbumIdResponse> createAlbum(@CurrentMember Member member,
-                                                     @RequestPart("request")AlbumCreateRequest request,
+                                                     @Valid @RequestPart("request")AlbumCreateRequest request,
                                                      @RequestPart(name = "albumImage", required = false) List<MultipartFile> albumImage) {
         return BaseResponse.onSuccess(albumService.createAlbum(member, request, albumImage));
     }
