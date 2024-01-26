@@ -43,6 +43,7 @@ public class AlbumController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "ALBUM001", description = "존재하지 않는 사진첩입니다."),
+            @ApiResponse(responseCode = "ALBUM002", description = "해당 사진첩에 대한 권한이 없습니다."),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패한 경우")
     })
     @PatchMapping(value = "/{albumId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
