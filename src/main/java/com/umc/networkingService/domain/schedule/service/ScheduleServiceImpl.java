@@ -40,22 +40,21 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleInfoSummaryLists getScheduleLists(LocalDate date) {
 
         List<Schedule> schedulesLists = scheduleRepository.findSchedulesByYearAndMonth(date);
-        List<ScheduleInfoSummary> campusSchedules = schedulesLists.stream()
-                .filter(schedule -> schedule.getHostType().equals(HostType.CAMPUS))
-                .map(schedule -> scheduleMapper.toScheduleInfoSummary(schedule))
-                .toList();
 
-        List<ScheduleInfoSummary> branchSchedules = schedulesLists.stream()
-                .filter(schedule -> schedule.getHostType().equals(HostType.BRANCH))
-                .map(schedule -> scheduleMapper.toScheduleInfoSummary(schedule))
-                .toList();
+        List<ScheduleInfoSummary> campusSchedules = filterSchedulesByHostType(schedulesLists, HostType.CAMPUS);
 
-        List<ScheduleInfoSummary> centerSchedules = schedulesLists.stream()
-                .map(schedule -> scheduleMapper.toScheduleInfoSummary(schedule))
-                .filter(schedule -> schedule.getHostType().equals(HostType.CENTER))
-                .toList();
+        List<ScheduleInfoSummary> branchSchedules = filterSchedulesByHostType(schedulesLists, HostType.BRANCH);
+
+        List<ScheduleInfoSummary> centerSchedules = filterSchedulesByHostType(schedulesLists, HostType.CENTER);
 
         return scheduleMapper.toScheduleInfoSummaries(campusSchedules, branchSchedules, centerSchedules);
+    }
+
+    private List<ScheduleInfoSummary> filterSchedulesByHostType(List<Schedule> schedules, HostType hostType) {
+        return schedules.stream()
+                .filter(schedule -> schedule.getHostType().equals(hostType))
+                .map(schedule -> scheduleMapper.toScheduleInfoSummary(schedule))
+                .toList();
     }
 
     @Override
@@ -83,8 +82,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
         schedule = scheduleMapper.updateScheduleToSchedule(request, schedule);
 
-        scheduleRepository.save(schedule);
-
         return scheduleMapper.UUIDtoScheduleId(schedule.getId());
     }
 
@@ -96,7 +93,6 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
         }
         schedule.delete();
-        scheduleRepository.save(schedule);
 
         return scheduleMapper.UUIDtoScheduleId(schedule.getId());
     }
