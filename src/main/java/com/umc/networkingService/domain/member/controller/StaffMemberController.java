@@ -36,9 +36,10 @@ public class StaffMemberController {
         return BaseResponse.onSuccess(memberService.updateProfile(member, memberId, request));
     }
 
-    @Operation(summary = "유저 검색 API", description = "운")
+    @Operation(summary = "유저 검색 API", description = "운영진이 [닉네임/이름] 검색어를 통해서 특정 유저를 검색하는 API입니다.")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MEMBER006", description = "[닉네임/이름] 양식에 맞지 않을 경우 발생")
     })
     @GetMapping("/search")
     public BaseResponse<List<MemberSearchInfoResponse>> searchMemberInfo(@CurrentMember Member member,
