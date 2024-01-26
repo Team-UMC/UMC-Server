@@ -43,7 +43,7 @@ public class InviteController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping("/staff/invites")
-    public BaseResponse<List<InviteInquiryMineResponse>> inquiryMyInviteCode(@CurrentMember Member member) {
+    public BaseResponse<InviteInquiryMineResponse> inquiryMyInviteCode(@CurrentMember Member member) {
         return BaseResponse.onSuccess(inviteService.inquiryMyInviteCode(member));
     }
 

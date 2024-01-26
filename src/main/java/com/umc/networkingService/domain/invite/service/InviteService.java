@@ -11,5 +11,5 @@ import java.util.List;
 public interface InviteService {
     InviteCreateResponse createInviteCode(Member member, Role role);
     InviteAuthenticateResponse authenticateInviteCode(Member member, String inviteCode);
-    List<InviteInquiryMineResponse> inquiryMyInviteCode(Member member);
+    InviteInquiryMineResponse inquiryMyInviteCode(Member member);
 }

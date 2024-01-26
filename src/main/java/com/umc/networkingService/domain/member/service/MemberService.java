@@ -18,7 +18,7 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     MemberInquiryInfoWithPointResponse inquiryInfoWithPoint(Member member);
     MemberInquiryGithubResponse inquiryGithubImage(Member member);
     MemberInquiryPointsResponse inquiryMemberPoints(Member member);
-    List<MemberSearchInfoResponse> searchMemberInfo(Member member, String keyword);
+    MemberSearchInfosResponse searchMemberInfo(Member member, String keyword);
     void updateMemberActiveTime(UUID memberId);
     Member saveEntity(Member member);
 }
