@@ -10,5 +10,5 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AlbumIdResponse {
-    private UUID boardId;
+    private UUID albumId;
 }

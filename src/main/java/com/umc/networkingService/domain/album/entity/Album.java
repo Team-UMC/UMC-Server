@@ -10,6 +10,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -49,4 +50,9 @@ public class Album extends BaseEntity {
     @ColumnDefault("0")
     private int commentCount;
 
+    public void updateAlbum(String title, String content, Semester semester) {
+        this.title = title;
+        this.content = content;
+        this.semester = semester;
+    }
 }

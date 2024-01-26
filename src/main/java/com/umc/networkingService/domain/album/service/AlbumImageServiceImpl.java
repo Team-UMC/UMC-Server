@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.album.service;
 
 import com.umc.networkingService.domain.album.entity.Album;
+import com.umc.networkingService.domain.album.entity.AlbumImage;
 import com.umc.networkingService.domain.album.mapper.AlbumImageMapper;
 import com.umc.networkingService.domain.album.repository.AlbumImageRepository;
 import com.umc.networkingService.global.utils.S3FileComponent;
@@ -22,8 +23,27 @@ public class AlbumImageServiceImpl implements AlbumImageService{
 
     @Override
     @Transactional
-    public void uploadAlbumImages(Album album, List<MultipartFile> imageFiles) {
-        imageFiles.forEach(imageFile -> albumImageRepository.save(albumImageMapper
-                .toAlbumImage(album, s3FileComponent.uploadFile("Album", imageFile))));
+    public void uploadAlbumImages(Album album, List<MultipartFile> albumImages) {
+        albumImages.forEach(albumImage -> albumImageRepository.save(albumImageMapper
+                .toAlbumImage(album, s3FileComponent.uploadFile("Album", albumImage))));
+    }
+
+    @Override
+    @Transactional
+    public void updateAlbumImages(Album album, List<MultipartFile> albumImages) {
+        List<AlbumImage> Images = findAlbumImages(album);
+
+        Images.forEach(albumImage -> {
+            s3FileComponent.deleteFile(albumImage.getUrl());
+            albumImageRepository.deleteById(albumImage.getId());
+        });
+
+        if(Images != null)
+            uploadAlbumImages(album, albumImages);
+    }
+
+    @Override
+    public List<AlbumImage> findAlbumImages(Album album){
+        return albumImageRepository.findAllByAlbum(album);
     }
 }
