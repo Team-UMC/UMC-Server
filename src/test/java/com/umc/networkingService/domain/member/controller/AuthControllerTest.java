@@ -1,7 +1,7 @@
 package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
@@ -110,7 +110,7 @@ public class AuthControllerTest extends ControllerTestConfig {
     @Test
     public void generateNewAccessTokenTest() throws Exception {
         // given
-        MemberGenerateNewAccessTokenResponse response = new MemberGenerateNewAccessTokenResponse("newAccessToken");
+        MemberGenerateTokenResponse response = new MemberGenerateTokenResponse("newAccessToken");
 
         given(authService.generateNewAccessToken(any(), any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));

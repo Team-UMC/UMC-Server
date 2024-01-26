@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.member.service;
 
-import com.umc.networkingService.domain.member.dto.request.SemesterPartInfo;
+import com.umc.networkingService.domain.member.dto.SemesterPartInfo;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.global.common.base.EntityLoader;
