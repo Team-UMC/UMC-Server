@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.schedule.mapper;
 
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleDetail;
@@ -64,9 +65,10 @@ public class ScheduleMapper {
     }
 
 
-    public Schedule createScheduleToSchedule(CreateSchedule request) {
+    public Schedule createScheduleToSchedule(Member member, CreateSchedule request) {
         return Schedule.builder()
                 .title(request.getTitle())
+                .writer(member)
                 .content(request.getContent())
                 .startDateTime(request.getStartDateTime())
                 .endDateTime(request.getEndDateTime())

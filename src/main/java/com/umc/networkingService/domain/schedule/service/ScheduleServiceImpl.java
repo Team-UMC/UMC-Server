@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.schedule.service;
 
 import com.umc.networkingService.domain.board.entity.HostType;
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleDetail;
@@ -56,15 +57,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduleDetail getScheduleDetail(UUID scheduleId) {
+    public ScheduleDetail getScheduleDetail(Member member, UUID scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
 
         return scheduleMapper.toScheduleDetail(schedule);
     }
 
     @Override
-    public ScheduleId createSchedule(CreateSchedule request) {
-        Schedule schedule = scheduleMapper.createScheduleToSchedule(request);
+    public ScheduleId createSchedule(Member member, CreateSchedule request) {
+        Schedule schedule = scheduleMapper.createScheduleToSchedule(member, request);
 
         scheduleRepository.save(schedule);
 
@@ -72,8 +73,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduleId updateSchedule(UUID scheduleId, UpdateSchedule request) {
+    public ScheduleId updateSchedule(Member member, UUID scheduleId, UpdateSchedule request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
+        // 만약 수정하려는 멤버와 일정 작성자가 일치하지 않을 경우 에러 반환
+        if (!schedule.getWriter().getId().equals(member.getId())) {
+            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
+        }
         schedule = scheduleMapper.updateScheduleToSchedule(request, schedule);
 
         scheduleRepository.save(schedule);
@@ -90,8 +95,4 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return scheduleMapper.UUIDtoScheduleId(schedule.getId());
     }
-
-
-
-
 }
