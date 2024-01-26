@@ -21,7 +21,7 @@ public class LastActiveInterceptor implements HandlerInterceptor {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Member member = principalDetails.getMember();
-        memberService.updateUserActiveTime(member.getId());
+        memberService.updateMemberActiveTime(member.getId());
 
         return true;
     }

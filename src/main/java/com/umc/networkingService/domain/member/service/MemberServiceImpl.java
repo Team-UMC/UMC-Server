@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -197,10 +198,11 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @Transactional
     public void updateMemberActiveTime(UUID memberId) {
         Member loginMember = loadEntity(memberId);
 
-
+        loginMember.updateLastActiveTime(LocalDateTime.now());
     }
 
     // 멤버의 새로운 Role 찾기 함수
