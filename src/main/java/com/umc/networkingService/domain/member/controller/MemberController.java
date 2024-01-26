@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +35,7 @@ public class MemberController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "IMAGE001", description = "이미지 S3 업로드 실패할 경우 발생")
     })
-    @PostMapping("/update")
+    @PostMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<MemberIdResponse> updateMyProfile(@CurrentMember Member member,
                                                           @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
                                                           @RequestPart MemberUpdateMyProfileRequest request) {

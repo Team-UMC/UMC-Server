@@ -6,13 +6,18 @@ import com.umc.networkingService.domain.friend.entity.Friend;
 import com.umc.networkingService.domain.friend.mapper.FriendMapper;
 import com.umc.networkingService.domain.friend.repository.FriendRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.PositionType;
+import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,6 +26,7 @@ public class FriendServiceImpl implements FriendService {
 
     private final FriendRepository friendRepository;
     private final FriendMapper friendMapper;
+    private final MemberMapper memberMapper;
 
     private final MemberService memberService;
 
@@ -55,8 +61,19 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public FriendInquiryByStatusResponse inquiryFriendsByStatus(Member member, boolean status, Pageable pageable) {
+        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
+        Page<Member> friends = friendRepository.findFriendsByStatus(member, status, fiveMinutesAgo, pageable);
 
-        return null;
+        List<FriendInquiryByStatusResponse.FriendInfo> friendInfos = friends.stream()
+                .map(friend -> friendMapper.toFriendInfo(
+                        friend,
+                        memberService.getPositionNamesByType(friend, PositionType.CAMPUS),
+                        memberService.getPositionNamesByType(friend, PositionType.CENTER),
+                        memberMapper.toSemesterPartInfos(friend.getSemesterParts())
+                )).toList();
+
+
+        return new FriendInquiryByStatusResponse(friendInfos, friends.hasNext());
     }
 
     // 친구 여부 확인 함수

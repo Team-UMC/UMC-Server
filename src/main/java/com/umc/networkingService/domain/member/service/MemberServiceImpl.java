@@ -254,7 +254,8 @@ public class MemberServiceImpl implements MemberService{
     }
 
     // 타입에 따른 직책 찾기 함수
-    private List<String> getPositionNamesByType(Member member, PositionType type) {
+    @Override
+    public List<String> getPositionNamesByType(Member member, PositionType type) {
         return member.getPositions().stream()
                 .filter(position -> position.getType() == type)
                 .map(MemberPosition::getName)

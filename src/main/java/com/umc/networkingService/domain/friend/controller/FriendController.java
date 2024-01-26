@@ -2,7 +2,6 @@ package com.umc.networkingService.domain.friend.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.friend.dto.response.FriendIdResponse;
-import com.umc.networkingService.domain.friend.dto.response.FriendInfoResponse;
 import com.umc.networkingService.domain.friend.dto.response.FriendInquiryByStatusResponse;
 import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.entity.Member;
