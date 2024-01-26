@@ -35,6 +35,15 @@ public class BranchServiceImpl {
     @Transactional         //지부 생성
     public UUID postBranch(BranchRequest.PostBranchDTO request) {
 
+        //이름이 없는 경우
+        if(request.getName() == null || request.getName().isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_NAME_EMPTY);
+        }
+        //설명이 없는 경우
+        if(request.getDescription() == null || request.getDescription().isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_DESCRIPTION_EMPTY);
+        }
+
         Branch newBranch = BranchConverter
                 .toBranch
                         (request
@@ -46,10 +55,21 @@ public class BranchServiceImpl {
     @Transactional          //지부 수정
     public UUID patchBranch(BranchRequest.PatchBranchDTO request) {
 
-        Optional<Branch> optionalBranch = branchRepository.findById(request.getBranchId()); //이미 검증된 branchId가 들어옴
+        Optional<Branch> optionalBranch = branchRepository.findById(request.getBranchId());
         if(optionalBranch.isEmpty()){
             throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
         }
+        //이름이 없는 경우
+        if(request.getName() == null || request.getName().isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_NAME_EMPTY);
+        }
+        //설명이 없는 경우
+        if(request.getDescription() == null || request.getDescription().isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_DESCRIPTION_EMPTY);
+        }
+
+
+
         Branch branch = optionalBranch.get();
         branch.updateBranch(request, uploadImageS3(BRANCH_CATEGORY, request.getImage()));
         return branchRepository.save(branch).getId();

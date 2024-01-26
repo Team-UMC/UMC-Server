@@ -52,7 +52,7 @@ class BranchServiceTest {
     void postBranch_Success() {
         // given
         BranchRequest.PostBranchDTO request = BranchRequest.PostBranchDTO.builder()
-                .name("post branch test")
+                .name("branchTestPost")
                 .semester(Semester.FIRST)
                 .description("Branch Description")
                 .image(null)
@@ -64,6 +64,8 @@ class BranchServiceTest {
         // then
         assertEquals(request.getName(), branchRepository.findById(id).get().getName());
         assertEquals(request.getDescription(), branchRepository.findById(id).get().getDescription());
+
+        branchRepository.deleteById(id);
     }
 
     @Test
@@ -92,8 +94,10 @@ class BranchServiceTest {
         branchService.patchBranch(request);
 
         // then
-        assertEquals(request.getName(), existingBranch.getName());
-        assertEquals(request.getDescription(), existingBranch.getDescription());
+        assertEquals(request.getName(), branchRepository.findById(branchId).get().getName());
+        assertEquals(request.getDescription(), branchRepository.findById(branchId).get().getDescription());
+
+        branchRepository.deleteById(branchId);
     }
 
     @Test
@@ -184,6 +188,8 @@ class BranchServiceTest {
         assertEquals(branches.size(), result.getBranchList().size());
         assertEquals(branches.get(0).getName(), result.getBranchList().get(0).getName());
         assertEquals(branches.get(1).getName(), result.getBranchList().get(1).getName());
+
+        branchRepository.deleteAll(branches);
     }
 
     @Test
@@ -218,6 +224,9 @@ class BranchServiceTest {
         // then
         assertEquals(university.getName(), result.getUniversityList().get(0).getName());
         assertEquals(0, result.getUniversityList().size());
+
+        branchRepository.delete(branch);
+        universityRepository.delete(university);
     }
 
     @Test

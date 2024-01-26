@@ -43,6 +43,8 @@ public enum ErrorCode {
     //Branch
     BRANCH_NOT_FOUND(HttpStatus.CONFLICT, "BRANCH001", "존재하지 않는 Branch입니다."),
     BRANCH_SEMESTER_EMPTY(HttpStatus.CONFLICT, "BRANCH004", "Branch 기수가 비어있거나, 잘못된 값임니다."),
+    BRANCH_NAME_EMPTY(HttpStatus.CONFLICT, "BRANCH002", "Branch 이름이 없습니다."),
+    BRANCH_DESCRIPTION_EMPTY(HttpStatus.CONFLICT, "BRANCH003", "Branch 설명이 없습니다."),
 
     //BranchUniversity
     BRANCH_UNIVERSITY_NOT_FOUND(HttpStatus.CONFLICT, "BRANCH_UNIVERSITY001", "존재하지 않는 BranchUniversity입니다."),
