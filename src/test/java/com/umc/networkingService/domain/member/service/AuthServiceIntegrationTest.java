@@ -4,7 +4,7 @@ import com.umc.networkingService.domain.member.client.GoogleMemberClient;
 import com.umc.networkingService.domain.member.client.KakaoMemberClient;
 import com.umc.networkingService.domain.member.client.NaverMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.RefreshToken;
@@ -154,7 +154,7 @@ public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
     @DisplayName("access 토큰 재발급 테스트")
     public void generateNewAccessTokenTest() {
         // when
-        MemberGenerateNewAccessTokenResponse response = authService.generateNewAccessToken(refreshToken, member);
+        MemberGenerateTokenResponse response = authService.generateNewAccessToken(refreshToken, member);
 
         // then
         assertNotNull(response);

@@ -16,4 +16,5 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
     Optional<Member> findById(@Param("memberId") UUID memberId);
     Optional<Member> findByClientIdAndSocialType(String clientId, SocialType socialType);
     List<Member> findAllByUniversityOrderByContributionPointDesc(University university);
+    List<Member> findAllByNicknameAndName(String nickname, String name);
 }
