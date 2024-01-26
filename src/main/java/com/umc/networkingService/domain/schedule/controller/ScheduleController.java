@@ -13,6 +13,7 @@ import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,9 +37,9 @@ public class ScheduleController {
     // GET
     @Operation(summary = "일정 조회(Web) - 중앙, 지부, 학교", description = "홈화면의 일정을 조회하는 API입니다.")
     @GetMapping
-    public BaseResponse<ScheduleInfoSummaryLists> getScheduleLists(@RequestParam Long month) {
+    public BaseResponse<ScheduleInfoSummaryLists> getScheduleLists(@RequestParam LocalDate date) {
 
-        return BaseResponse.onSuccess((scheduleService.getScheduleLists(month)));
+        return BaseResponse.onSuccess((scheduleService.getScheduleLists(date)));
     }
 
     @Operation(summary = "일정 조회(상세조회)", description = "홈화면의 달력에서 일정을 상세조회하는 API입니다.")
@@ -53,9 +54,9 @@ public class ScheduleController {
 
     @Operation(summary = "캘린더 조회 API", description = "홈 화면의 달력을 조회하는 API입니다.")
     @PostMapping("/calendar")
-    public BaseResponse<ScheduleInfoSummariesInCalendar> getSchedule(@RequestParam Long month) {
+    public BaseResponse<ScheduleInfoSummariesInCalendar> getSchedule(@RequestParam LocalDate date) {
 
-        return BaseResponse.onSuccess(scheduleService.getCalendarByMonth(month));
+        return BaseResponse.onSuccess(scheduleService.getCalendarByMonth(date));
     }
 
 

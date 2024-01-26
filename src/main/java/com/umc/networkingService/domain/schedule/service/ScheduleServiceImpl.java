@@ -14,6 +14,8 @@ import com.umc.networkingService.domain.schedule.mapper.ScheduleMapper;
 import com.umc.networkingService.domain.schedule.repository.ScheduleRepository;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,18 +28,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleMapper scheduleMapper;
 
     @Override
-    public ScheduleInfoSummariesInCalendar getCalendarByMonth(Long month) {
-
+    public ScheduleInfoSummariesInCalendar getCalendarByMonth(LocalDate date) {
 
         return scheduleMapper.toScheduleInfoSummariesInCalendar(
-                scheduleRepository.findSchedulesByMonth(month).stream()
+                scheduleRepository.findSchedulesByYearAndMonth(date).stream()
                 .map(schedule -> scheduleMapper.toScheduleInfoSummaryInCalendar(schedule))
                 .toList());
     }
 
     @Override
-    public ScheduleInfoSummaryLists getScheduleLists(Long month) {
-        List<Schedule> schedulesLists = scheduleRepository.findSchedulesByMonth(month);
+    public ScheduleInfoSummaryLists getScheduleLists(LocalDate date) {
+
+        List<Schedule> schedulesLists = scheduleRepository.findSchedulesByYearAndMonth(date);
         List<ScheduleInfoSummary> campusSchedules = schedulesLists.stream()
                 .filter(schedule -> schedule.getHostType().equals(HostType.CAMPUS))
                 .map(schedule -> scheduleMapper.toScheduleInfoSummary(schedule))
