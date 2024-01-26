@@ -7,7 +7,6 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.EntityLoader;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface MemberService extends EntityLoader<Member, UUID> {
