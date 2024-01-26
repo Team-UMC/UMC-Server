@@ -21,7 +21,7 @@ public class ScheduleMapper {
     public ScheduleDetail toScheduleDetail(Schedule schedule) {
         return ScheduleDetail.builder()
                 .scheduleId(schedule.getId())
-                .writer(schedule.getWriter())
+                .writerId(schedule.getWriter().getId())
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
                 .startDateTime(schedule.getStartDateTime())

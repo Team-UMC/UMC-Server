@@ -8,6 +8,8 @@ import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.S
 import com.umc.networkingService.domain.schedule.service.ScheduleService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "운영진 달력 API", description = "운영진 달력 관련 API")
+@Tag(name = "운영진 스케줄 API", description = "운영진 스케줄 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/staff/schedules")
@@ -36,6 +38,10 @@ public class StaffScheduleController {
 
     @Operation(summary = "일정 수정 API", description = "운영진 관리 페이지의 일정을 수정하는 API입니다.")
     @PostMapping("/update/{scheduleId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "존재하지 않은 스케줄입니다.")
+    })
     public BaseResponse<ScheduleId> updateSchedule(@CurrentMember Member member,
                                                    @PathVariable("scheduleId") UUID scheduleId,
                                                    @RequestBody UpdateSchedule request) {
@@ -47,6 +53,10 @@ public class StaffScheduleController {
 
     @Operation(summary = "일정 삭제 API", description = "운영진 관리 페이지의 일정을 삭제하는 API입니다.")
     @DeleteMapping("/{scheduleId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "존재하지 않은 스케줄입니다.")
+    })
     public BaseResponse<ScheduleId> deleteSchedule(@CurrentMember Member member,
                                                    @PathVariable("scheduleId") UUID scheduleId) {
 

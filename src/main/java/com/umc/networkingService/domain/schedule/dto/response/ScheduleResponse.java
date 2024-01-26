@@ -68,7 +68,7 @@ public class ScheduleResponse {
     @Builder
     public static class ScheduleDetail {
         private UUID scheduleId;
-        private Member writer;
+        private UUID writerId;
         private String title;
         private String content;
         private LocalDateTime startDateTime;
