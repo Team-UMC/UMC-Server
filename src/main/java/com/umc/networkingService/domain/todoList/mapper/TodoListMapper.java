@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TodoListMapper {
 
-    public ToDoList createTodoListToTodoList(Member member, TodoListCreateRequest request){
+    public ToDoList createTodoList(Member member, TodoListCreateRequest request){
         return ToDoList.builder()
                 .writer(member)
                 .deadline(request.getDeadline())
@@ -18,7 +18,7 @@ public class TodoListMapper {
                 .build();
     }
 
-    public TodoListGetResponse showTodoListToTodoList(ToDoList toDoList){
+    public TodoListGetResponse toTodoListGetResponse(ToDoList toDoList){
         return TodoListGetResponse.builder()
                 .todoListId(toDoList.getId())
                 .title(toDoList.getTitle())

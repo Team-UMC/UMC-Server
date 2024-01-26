@@ -27,7 +27,7 @@ public class TodoListServiceImpl implements TodoListService{
 
     @Override
     public TodoListIdResponse createTodoList(Member member, TodoListCreateRequest todoListRequest){
-        ToDoList todoList = todoListMapper.createTodoListToTodoList(member, todoListRequest);
+        ToDoList todoList = todoListMapper.createTodoList(member, todoListRequest);
 
         ToDoList savedtodolist = todoListRepository.save(todoList);
 
@@ -70,7 +70,7 @@ public class TodoListServiceImpl implements TodoListService{
 
         return new TodoListGetResponses(
                 todoLists.stream()
-                        .map(todoListMapper::showTodoListToTodoList)
+                        .map(todoListMapper::toTodoListGetResponse)
                         .toList());
     }
 }
