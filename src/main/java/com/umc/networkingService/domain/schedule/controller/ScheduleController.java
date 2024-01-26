@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "달력 API", description = "달력 관련 API")
+@Tag(name = "일정 API", description = "일정 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/schedules")
