@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -28,6 +30,7 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("BranchUniversity 서비스의 ")
 @SpringBootTest
+@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 class BranchUniversityServiceTest extends ServiceIntegrationTestConfig {
 
     @Autowired
@@ -48,6 +51,7 @@ class BranchUniversityServiceTest extends ServiceIntegrationTestConfig {
     @Transactional
     void connectBranchUniversity_Success() {
         // given
+        University notLinkedBranchUniversity = createUniversity("notLinkedBranchUniversity");
         List<UUID> universityIds = List.of(notLinkedBranchUniversity.getId());
 
         // when

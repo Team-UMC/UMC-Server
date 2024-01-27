@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.verify;
 
 @DisplayName("Branch 서비스의 ")
 @SpringBootTest
+@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 class BranchServiceTest extends ServiceIntegrationTestConfig {
 
     @Autowired
@@ -83,8 +86,6 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
                 "image/png",
                 "이미지 데이터".getBytes()
         );
-        // 테스트에서는 s3 파일 생성 X
-        given(s3FileComponent.uploadFile(any(), any())).willReturn("s3 url");
 
         BranchRequest.PatchBranchDTO request =BranchRequest.PatchBranchDTO.builder()
                 .branchId(branch.getId())
@@ -93,6 +94,9 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
                 .image(image)
                 .semester(Semester.FIFTH)
                 .build();
+
+        // 테스트에서는 s3 파일 생성 X
+        given(s3FileComponent.uploadFile(any(), any())).willReturn("s3 url", "s3 url");
 
         // when
         branchService.patchBranch(request);
@@ -151,9 +155,35 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
 
 
     @Test
-    @DisplayName("지부 리스트 조회 - 성공")
+    @DisplayName("지부 리스트 조회 - 성공 (사이즈) ")
     @Transactional(readOnly = true)
     void joinBranchList_Success() {
+
+        Semester semester = branch.getSemester();
+        System.out.println("Test Semester: " + semester); //로그
+        Branch branch2 = createBranch("branch2");
+        Branch branch3 = createBranch("branch3");
+
+        // when
+        BranchResponse.JoinBranchListDTO result = branchService.joinBranchList(semester);
+
+        // then
+        List<BranchResponse.BranchDTO> branchList = result.getBranchList();
+
+        System.out.println("Actual Branch List Size: " + branchList.size()); // 로그
+        System.out.println("Expected Branch List Size: " + branchRepository.findAllBySemester(semester).size()); // 로그
+
+        List<Branch> branchs = branchRepository.findAllBySemester(semester);
+
+        assertEquals(branchs.size(), branchList.size());
+
+    }
+
+
+    @Test
+    @DisplayName("지부 리스트 조회 - 성공 (이름 비교) ")
+    @Transactional(readOnly = true)
+    void joinBranchList_Success_detail() {
 
         Semester semester = branch.getSemester();
         System.out.println("Test Semester: " + semester); //로그
@@ -166,12 +196,8 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
 
         System.out.println("Actual Branch List Size: " + branchList.size()); // 로그
         System.out.println("Expected Branch List Size: " + branchRepository.findAllBySemester(semester).size()); // 로그
-        System.out.println("Actual Branch List: " + branchList); // 로그
-        System.out.println("Expected Branch List: " + branchRepository.findAllBySemester(semester)); // 로그
 
-        List<Branch> branchs = branchRepository.findAllBySemester(semester);
-
-        assertEquals(branchs.size(), branchList.size());
+        assertEquals(branch.getName(), branchList.get(0).getName());
 
     }
 
@@ -180,17 +206,29 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
     @Transactional(readOnly = true)
     void joinBranchDetail_Success() {
         // given
-
+        University university1 = createUniversity("university1");
+        University university2 = createUniversity("university2");
+        branchUniversityRepository.save(
+                BranchUniversity.builder()
+                        .branch(branch)
+                        .university(university1)
+                        .isActive(Boolean.TRUE)
+                        .build()
+        );
+        branchUniversityRepository.save(
+                BranchUniversity.builder()
+                        .branch(branch)
+                        .university(university2)
+                        .isActive(Boolean.TRUE)
+                        .build()
+        );
 
         // when
         BranchResponse.JoinBranchDetailDTO result = branchService.joinBranchDetail(branch.getId());
 
         // then
-        List<BranchUniversity> branchUniversities = branchUniversityRepository.findAllByBranch(branch);
-
-        System.out.println("Actual Branch University List Size: " + branchUniversities.size()); // 로그
         System.out.println("Expected Branch University List Size: " + result.getUniversities()); // 로그
-        assertEquals(branchUniversities.size(), result.getUniversities().size());
+        assertEquals(branchUniversityRepository.findAllByBranch(branch).size(), result.getUniversities().size());
 
     }
 

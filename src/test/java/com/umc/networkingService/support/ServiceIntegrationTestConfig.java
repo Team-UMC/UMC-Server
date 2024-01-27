@@ -42,19 +42,17 @@ public abstract class ServiceIntegrationTestConfig {
     protected String refreshToken;
     protected University university;
     protected Branch branch;
+
     protected BranchUniversity branchUniversity;
     protected Member member;
 
-    protected University notLinkedBranchUniversity;
-
     @BeforeEach
     public void setUp() {
-        member = createMember("111111", Role.MEMBER);
-        setToken(member.getId());
         university = createUniversity();
         branch = createBranch();
         branchUniversity = createBranchUniversity();
-        notLinkedBranchUniversity = createNotLinkBranchUniversity();
+        member = createMember("111111", Role.MEMBER);
+        setToken(member.getId());
     }
 
     @AfterEach
@@ -71,6 +69,8 @@ public abstract class ServiceIntegrationTestConfig {
                         .clientId(clientId)
                         .socialType(SocialType.KAKAO)
                         .role(role)
+                        .university(university)
+                        .remainPoint(100L)
                         .build()
         );
     }
@@ -104,6 +104,7 @@ public abstract class ServiceIntegrationTestConfig {
         return universityRepository.save(
                 University.builder()
                         .name("인하대학교")
+                        .totalPoint(0L)
                         .build()
         );
     }
@@ -124,14 +125,25 @@ public abstract class ServiceIntegrationTestConfig {
                         .branch(branch)
                         .university(university)
                         .isActive(Boolean.TRUE)
-                        .isActive(Boolean.TRUE)
                         .build()
         );
     }
-    protected  University createNotLinkBranchUniversity() {
+
+    protected  University createUniversity(String name) {
         return universityRepository.save(
                 University.builder()
-                        .name("연결안함")
+                        .name(name)
+                        .totalPoint(0L)
+                        .build()
+        );
+    }
+
+    protected Branch createBranch(String name) {
+        return branchRepository.save(
+                Branch.builder()
+                        .name(name)
+                        .description("가치 지부입니다.")
+                        .semester(Semester.FIFTH)
                         .build()
         );
     }
