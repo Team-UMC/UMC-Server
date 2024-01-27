@@ -29,6 +29,7 @@ public enum ErrorCode {
     EMPTY_MEMBER_UNIVERSITY(HttpStatus.CONFLICT, "MEMBER004", "소속 대학교가 존재하지 않는 사용자입니다."),
     UNAUTHENTICATED_GITHUB(HttpStatus.BAD_REQUEST, "MEMBER005", "깃허브 연동이 완료되지 않은 사용자입니다."),
     INVALID_MEMBER_KEYWORD(HttpStatus.BAD_REQUEST, "MEMBER006", "검색어 양식[닉네임/이름]에 맞추어 작성해주세요. ex) 벡스/김준석"),
+    NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER006", "권한이 없는 사용자입니다."),
 
     // SemesterPart
     EMPTY_SEMESTER_PART(HttpStatus.BAD_REQUEST, "PART006", "존재하지 않는 기수의 파트입니다."),
@@ -55,13 +56,18 @@ public enum ErrorCode {
 
     // TodoList
     EMPTY_TODOLIST(HttpStatus.BAD_REQUEST, "TODOLIST001", "존재하지 않은 투두리스트입니다."),
+    NO_AUTHORIZATION_TODOLIST(HttpStatus.BAD_REQUEST, "TODOLIST002", "해당 투두리스트에 대한 수정 권한이 없습니다."),
 
     // Album
     EMPTY_ALBUM(HttpStatus.BAD_REQUEST, "ALBUM001", "존재하지 않은 앨범입니다."),
     NO_AUTHORIZATION_ALBUM(HttpStatus.BAD_REQUEST, "ALBUM002", "해당 앨범에 대한 수정 권한이 없습니다."),
 
     // Image
-    FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다.");
+    FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다."),
+
+    // Schedule
+    EMPTY_SCHEDULE(HttpStatus.BAD_REQUEST, "SCHEDULE001", "존재하지 않는 스케줄입니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

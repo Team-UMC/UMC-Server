@@ -84,9 +84,10 @@ public class MemberMapper {
                 .build();
     }
 
-    public MemberSearchInfoResponse toSearchMembersResponse(Member member, List<String> campusPositions, List<String> centerPositions) {
+    public MemberSearchInfosResponse.MemberInfo toSearchMembersResponse(
+            Member member, List<String> campusPositions, List<String> centerPositions) {
 
-        return  MemberSearchInfoResponse.builder()
+        return  MemberSearchInfosResponse.MemberInfo.builder()
                 .memberId(member.getId())
                 .universityName(member.getUniversity().getName())
                 .campusPositions(campusPositions)
