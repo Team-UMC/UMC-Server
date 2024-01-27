@@ -3,7 +3,7 @@ package com.umc.networkingService.domain.member.controller;
 import com.umc.networkingService.domain.member.dto.SemesterPartInfo;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberSearchInfoResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberSearchInfosResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
@@ -84,7 +84,7 @@ public class StaffMemberControllerTest extends ControllerTestConfig {
         String keyword = "벡스/김준석";
         member.updateRole(Role.CENTER_STAFF);
 
-        MemberSearchInfoResponse response = MemberSearchInfoResponse.builder()
+        MemberSearchInfosResponse.MemberInfo responses = MemberSearchInfosResponse.MemberInfo.builder()
                 .memberId(UUID.randomUUID())
                 .universityName("인하대학교")
                 .campusPositions(List.of("회장"))
@@ -95,7 +95,7 @@ public class StaffMemberControllerTest extends ControllerTestConfig {
                         new SemesterPartInfo(Part.SPRING, Semester.FIFTH)
                 )).build();
 
-        given(memberService.searchMemberInfo(any(), eq(keyword))).willReturn(List.of(response));
+        given(memberService.searchMemberInfo(any(), eq(keyword))).willReturn(new MemberSearchInfosResponse(List.of(responses)));
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
