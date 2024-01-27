@@ -2,7 +2,7 @@ package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -57,8 +57,8 @@ public class AuthController {
             @ApiResponse(responseCode = "AUTH006", description = "유효하지 않는 RefreshToken일 경우 발생")
     })
     @GetMapping("/token/refresh")
-    public BaseResponse<MemberGenerateNewAccessTokenResponse> regenerateToken(@CurrentMember Member member,
-                                                                              @RequestHeader(value = "refreshToken") String refreshToken) {
+    public BaseResponse<MemberGenerateTokenResponse> regenerateToken(@CurrentMember Member member,
+                                                                     @RequestHeader(value = "refreshToken") String refreshToken) {
         return BaseResponse.onSuccess(authService.generateNewAccessToken(refreshToken, member));
     }
 

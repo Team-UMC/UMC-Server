@@ -8,7 +8,7 @@ import com.umc.networkingService.domain.member.client.GoogleMemberClient;
 import com.umc.networkingService.domain.member.client.KakaoMemberClient;
 import com.umc.networkingService.domain.member.client.NaverMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -93,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
     // 새로운 액세스 토큰 발급 함수
     @Override
     @Transactional
-    public MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member loginMember) {
+    public MemberGenerateTokenResponse generateNewAccessToken(String refreshToken, Member loginMember) {
 
         Member member = loadEntity(loginMember.getId());
 
@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
         if (!refreshToken.equals(savedRefreshToken.getRefreshToken()))
             throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
 
-        return new MemberGenerateNewAccessTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
+        return new MemberGenerateTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
     }
 
     // 로그아웃 함수
