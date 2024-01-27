@@ -7,7 +7,6 @@ import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
@@ -47,7 +46,7 @@ public class BoardServiceImpl implements BoardService {
 
         //특정 게시판 조회에는 전체 HOST 조회 X
         if (hostType.equals(HostType.ALL))
-            throw new RestApiException(ErrorCode._VALIDATION_ERROR);
+            throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
 
         return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
@@ -106,13 +105,21 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public MyBoardPagingResponse showBoardsByMember(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPagingResponse(boardRepository.findBoardsByWriter(member, keyword, pageable));
+    public MyBoardPagingResponse showBoardsByMemberForApp(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPagingResponse(boardRepository.findBoardsByWriterForApp(member, keyword, pageable));
+    }
+    @Override
+    public MyBoardPagingResponse showBoardsByMemberForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPagingResponse(boardRepository.findBoardsByWriterForWeb(member, hostType, boardType, keyword, pageable));
+    }
+    @Override
+    public MyBoardPagingResponse showBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPagingResponse(boardRepository.findBoardsByMemberHeartForApp(member, keyword, pageable));
     }
 
     @Override
-    public MyBoardPagingResponse showBoardsByMemberHearts(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPagingResponse(boardRepository.findBoardsByMemberHearts(member, keyword, pageable));
+    public MyBoardPagingResponse showBoardsByMemberHeartForWeb(Member member,HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPagingResponse(boardRepository.findBoardsByMemberHeartForWeb(member,hostType, boardType, keyword, pageable));
     }
 
 
@@ -122,6 +129,11 @@ public class BoardServiceImpl implements BoardService {
         //연합, 지부, 학교 타입
         HostType hostType = request.getHostType();
         BoardType boardType = request.getBoardType();
+
+        //게시글 작성에 HostType ALL 불가능
+        if (hostType.equals(HostType.ALL))
+            throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
+
 
         //boardType과 HostType에 따라 권한 판단
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
@@ -144,13 +156,18 @@ public class BoardServiceImpl implements BoardService {
         HostType hostType = request.getHostType();
         BoardType boardType = request.getBoardType();
 
+        //게시글 수정에 HostType ALL 불가능
+        if (hostType.equals(HostType.ALL))
+            throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
+
+
         //boardType과 HostType에 따라 권한 판단
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
         if (!board.getWriter().equals(member))
             throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
-        
+
         board.update(request, semesterPermission);
         boardFileService.updateBoardFiles(board, files);
 
@@ -211,7 +228,6 @@ public class BoardServiceImpl implements BoardService {
         //HostType priority와 Member Role priority를 비교하여 권한 CHECK
         if (member.getRole().getPriority() >= hostType.getPriority())
             throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
-
     }
 
     //workbook 게시판 권한 확인 함수

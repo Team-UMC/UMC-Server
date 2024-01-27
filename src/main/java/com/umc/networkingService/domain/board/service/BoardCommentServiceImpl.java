@@ -8,6 +8,8 @@ import com.umc.networkingService.domain.board.dto.response.member.MyBoardComment
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.mapper.BoardCommentMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
@@ -85,13 +87,13 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
 
     @Override
-    public MyBoardPagingResponse showBoardsByMemberCommentsForApp(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPagingResponse(boardCommentRepository.findBoardsByMemberCommentsForApp(member, keyword, pageable));
+    public MyBoardPagingResponse showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPagingResponse(boardCommentRepository.findBoardsByMemberCommentForApp(member, keyword, pageable));
     }
 
     @Override
-    public MyBoardCommentPagingWebResponse showBoardsByMemberCommentsForWeb(Member member, String keyword, Pageable pageable) {
-        return boardCommentMapper.toMyBoardCommentPagingWebResponse(boardCommentRepository.findBoardsByMemberCommentsForWeb(member, keyword, pageable));
+    public MyBoardCommentPagingWebResponse showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        return boardCommentMapper.toMyBoardCommentPagingWebResponse(boardCommentRepository.findBoardsByMemberCommentForWeb(member, hostType, boardType, keyword, pageable));
     }
 
     @Override

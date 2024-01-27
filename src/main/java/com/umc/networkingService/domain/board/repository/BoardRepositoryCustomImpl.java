@@ -32,7 +32,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(eqBoardType(boardType));
 
-        //hostType에 따른 동적 쿼리
         switch (hostType) {
             case CAMPUS -> predicate.and(CampusPermission(member))
                     .and(board.semesterPermission.any().in(memberSemesters));
@@ -72,7 +71,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     @Override
     public Page<BoardComment> findAllBoardComments(Member member, Board board, Pageable pageable) {
 
-
         List<BoardComment> boardComments = query.selectFrom(boardComment)
                 .where(boardComment.board.eq(board))
                 .orderBy(boardComment.createdAt.asc())
@@ -87,7 +85,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 
     @Override
-    public Page<Board> findBoardsByWriter(Member member, String keyword, Pageable pageable) {
+    public Page<Board> findBoardsByWriterForApp(Member member, String keyword, Pageable pageable) {
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(board.writer.eq(member));
 
@@ -106,8 +104,30 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     }
 
+
     @Override
-    public Page<Board> findBoardsByMemberCommentsForApp(Member member, String keyword, Pageable pageable) {
+    public Page<Board> findBoardsByWriterForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+
+        BooleanBuilder predicate = addHostTypeAndBoardTypeCondition(member, hostType, boardType)
+                .and(board.writer.eq(member));
+
+        addKeywordSearchCondition(predicate, keyword);
+
+        List<Board> boards = query.selectFrom(board)
+                .where(predicate)
+                .orderBy(board.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(boards, pageable, query.selectFrom(board)
+                .where(predicate)
+                .fetch().size());
+
+    }
+
+    @Override
+    public Page<Board> findBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
 
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(boardComment.writer.eq(member));
@@ -131,9 +151,10 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<BoardComment> findBoardsByMemberCommentsForWeb(Member member, String keyword, Pageable pageable) {
+    public Page<BoardComment> findBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType,
+                                                              String keyword, Pageable pageable) {
 
-        BooleanBuilder predicate = new BooleanBuilder()
+        BooleanBuilder predicate = addHostTypeAndBoardTypeCondition(member, hostType, boardType)
                 .and(boardComment.writer.eq(member));
 
         addKeywordSearchCondition(predicate, keyword);
@@ -153,17 +174,13 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<Board> findBoardsByMemberHearts(Member member, String keyword, Pageable pageable) {
+    public Page<Board> findBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
 
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(boardHeart.member.eq(member))
-                .and(boardHeart.isChecked.isTrue())
-                .and(board.deletedAt.isNull());
+                .and(boardHeart.isChecked.isTrue());
 
-        //keyword가 비지 않았으면 keyword검색 조건 추가
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            predicate.and(board.title.contains(keyword).or(board.content.contains(keyword)));
-        }
+        addKeywordSearchCondition(predicate, keyword);
 
         List<Board> boards = query.select(board)
                 .from(boardHeart)
@@ -183,18 +200,37 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
+    public Page<Board> findBoardsByMemberHeartForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+
+
+        BooleanBuilder predicate = addHostTypeAndBoardTypeCondition(member, hostType, boardType)
+                .and(boardHeart.member.eq(member))
+                .and(boardHeart.isChecked.isTrue());
+
+        addKeywordSearchCondition(predicate, keyword);
+
+        List<Board> boards = query.select(board)
+                .from(boardHeart)
+                .join(boardHeart.board, board)
+                .where(predicate)
+                .orderBy(board.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(boards, pageable, query.select(board)
+                .from(boardHeart)
+                .join(boardHeart.board, board)
+                .where(predicate)
+                .fetch().size());
+
+    }
+
+
+    @Override
     public Page<Board> findNoticesByHostType(Member member, HostType hostType, String keyword, Pageable pageable) {
 
-        BooleanBuilder predicate = new BooleanBuilder()
-                .and(board.boardType.eq(BoardType.NOTICE));
-
-        //hostType에 따른 동적 쿼리
-        switch (hostType) {
-            case CAMPUS -> predicate.and(CampusPermission(member));
-            case BRANCH -> predicate.and(BranchPermission(member));
-            case CENTER -> predicate.and(CenterPermission());
-        }
-
+        BooleanBuilder predicate = addHostTypeAndBoardTypeCondition(member, hostType, BoardType.NOTICE);
         addKeywordSearchCondition(predicate, keyword);
 
         List<Board> boards = query.selectFrom(board).where(predicate)
@@ -234,7 +270,21 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     }
 
-    //keyword가 비지 않았으면 keyword검색 조건 추가
+
+    private BooleanBuilder addHostTypeAndBoardTypeCondition(Member member, HostType hostType, BoardType boardType) {
+        List<Semester> memberSemesters = member.getSemesters();
+        BooleanBuilder predicate = new BooleanBuilder().and(eqBoardType(boardType));
+
+        switch (hostType) {
+            case CAMPUS -> predicate.and(CampusPermission(member));
+            case BRANCH -> predicate.and(BranchPermission(member));
+            case CENTER -> predicate.and(CenterPermission());
+        }
+
+        return predicate;
+    }
+
+    //keyword가 비지 않았으면 keyword검색 조건 추가하는 함수
     private void addKeywordSearchCondition(BooleanBuilder predicate, String keyword) {
         if (keyword != null && !keyword.trim().isEmpty()) {
             predicate.and(board.title.contains(keyword).or(board.content.contains(keyword)));
@@ -270,7 +320,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     private BooleanExpression CampusPermission(Member member) {
-        return eqHostType(CAMPUS).and(eqUniversity(member)); //semester 권한 check);
+        return eqHostType(CAMPUS).and(eqUniversity(member));
     }
 }
 

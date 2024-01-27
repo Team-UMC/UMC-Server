@@ -7,6 +7,8 @@ import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentI
 import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardCommentPagingWebResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardCommentService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -99,10 +101,12 @@ public class BoardCommentController {
                                                                                 @RequestParam(name = "keyword", required = false) String keyword,
                                                                                 @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                                 @Parameter(hidden = true) Pageable pageable) {
-        return BaseResponse.onSuccess(boardCommentService.showBoardsByMemberCommentsForApp(member, keyword, pageable));
+        return BaseResponse.onSuccess(boardCommentService.showBoardsByMemberCommentForApp(member, keyword, pageable));
     }
 
-    @Operation(summary = "[WEB] 내가 댓글 쓴 글 조회/검색 API", description = "WEB용 내가 댓글 쓴 글을 조회/검색하는 API입니다.")
+    @Operation(summary = "[WEB] 내가 댓글 쓴 글 조회/검색 API", description = "WEB용 내가 댓글 쓴 글을 조회/검색하는 API입니다.  "+
+            "host: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
+            "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
     })
@@ -110,10 +114,12 @@ public class BoardCommentController {
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 내가 댓글 쓴 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다.")})
     @GetMapping(value = "/member/comments/web")
-    public BaseResponse<MyBoardCommentPagingWebResponse> showBoardsByMemberCommentsForWeb(@CurrentMember Member member,
+    public BaseResponse<MyBoardCommentPagingWebResponse> showBoardsByMemberCommentForWeb(@CurrentMember Member member,
+                                                                                          @RequestParam(name = "host") HostType hostType,
+                                                                                          @RequestParam(name = "board") BoardType boardType,
                                                                                           @RequestParam(name = "keyword", required = false) String keyword,
                                                                                           @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                                           @Parameter(hidden = true) Pageable pageable) {
-        return BaseResponse.onSuccess(boardCommentService.showBoardsByMemberCommentsForWeb(member, keyword, pageable));
+        return BaseResponse.onSuccess(boardCommentService.showBoardsByMemberCommentForWeb(member, hostType, boardType,keyword, pageable));
     }
 }
