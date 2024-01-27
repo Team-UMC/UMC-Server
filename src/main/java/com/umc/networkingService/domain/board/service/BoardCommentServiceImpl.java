@@ -51,7 +51,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
         if(!comment.getWriter().equals(member))
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
 
         comment.update(request);
 
@@ -67,7 +67,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         //현재 로그인한 member와 writer가 같지 않으면 삭제 권한 없음
         if(!comment.getWriter().equals(member))
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
 
         board.decreaseCommentCount();
         comment.delete();

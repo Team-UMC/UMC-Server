@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -97,7 +98,7 @@ public class MemberServiceImpl implements MemberService{
 
         Member member = loadEntity(loginMember.getId());
         // 본인 프로필 조회인 경우
-        if (memberId == null) {
+        if (memberId == null || member.getId().equals(memberId)) {
             return memberMapper.toInquiryProfileResponse(member, MemberRelation.MINE);
         }
 
@@ -128,6 +129,7 @@ public class MemberServiceImpl implements MemberService{
         return memberMapper.toInquiryHomeInfoResponse(member, rank);
     }
 
+    // 깃허브 인증 함수
     @Override
     @Transactional
     public MemberAuthenticateGithubResponse authenticateGithub(Member loginMember, String code) {
@@ -146,6 +148,7 @@ public class MemberServiceImpl implements MemberService{
         return new MemberAuthenticateGithubResponse(savedMember.getGitNickname());
     }
 
+    // 깃허브 잔디 이미지 조회 함수
     @Override
     public MemberInquiryGithubResponse inquiryGithubImage(Member loginMember) {
         Member member = loadEntity(loginMember.getId());
@@ -156,6 +159,7 @@ public class MemberServiceImpl implements MemberService{
         return new MemberInquiryGithubResponse("https://ghchart.rshah.org/2965FF/" + gitNickName);
     }
 
+    // 포인트 관련 멤버 정보 조회 함수
     @Override
     public MemberInquiryPointsResponse inquiryMemberPoints(Member loginMember) {
         Member member = loadEntity(loginMember.getId());
@@ -170,6 +174,36 @@ public class MemberServiceImpl implements MemberService{
         return memberMapper.toInquiryPointsResponse(member.getRemainPoint(), usedHistories);
     }
 
+    // 멤버 검색 함수(운영진용)
+    @Override
+    public MemberSearchInfosResponse searchMemberInfo(Member loginMember, String keyword) {
+        Member member = loadEntity(loginMember.getId());
+
+        // keyword 양식 검증
+        String[] nicknameAndName = validateKeyword(keyword);
+
+        // 해당 유저가 본인보다 상위 운영진인 경우 검색 대상에서 제외
+        List<Member> searchedMembers = memberRepository.findAllByNicknameAndName(nicknameAndName[0], nicknameAndName[1]).stream()
+                        .filter(searchedMember -> searchedMember.getRole().getPriority() > member.getRole().getPriority())
+                        .toList();
+
+        List<MemberSearchInfosResponse.MemberInfo> memberInfos = searchedMembers.stream()
+                .map(searchedMember -> memberMapper.toSearchMembersResponse(
+                        searchedMember,
+                        getPositionNamesByType(searchedMember, PositionType.CAMPUS),
+                        getPositionNamesByType(searchedMember, PositionType.CENTER)
+                )).toList();
+
+        return new MemberSearchInfosResponse(memberInfos);
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberActiveTime(UUID memberId) {
+        Member loginMember = loadEntity(memberId);
+
+        loginMember.updateLastActiveTime(LocalDateTime.now());
+    }
 
     // 멤버의 새로운 Role 찾기 함수
     private Role findMemberRole(List<MemberPosition> memberPositions) {
@@ -233,13 +267,33 @@ public class MemberServiceImpl implements MemberService{
         throw new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY);
     }
 
+    // 올바른 키워드인지 확인
+    private String[] validateKeyword(final String keyword) {
+        // {닉네임/이름} 양식 검증
+        String[] splits = keyword.split("/");
+        if (splits.length != 2)
+            throw new RestApiException(ErrorCode.INVALID_MEMBER_KEYWORD);
+        return splits;
+    }
+
+    // 타입에 따른 직책 찾기 함수
+    private List<String> getPositionNamesByType(Member member, PositionType type) {
+        return member.getPositions().stream()
+                .filter(position -> position.getType() == type)
+                .map(MemberPosition::getName)
+                .toList();
+    }
+
+    @Override
+    public Member saveEntity(Member member) {
+        return memberRepository.save(member);
+    }
+
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
     }
 
-    public Member saveEntity(Member member) {
-        return memberRepository.save(member);
-    }
+
 }

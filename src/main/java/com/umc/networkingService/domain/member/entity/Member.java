@@ -18,6 +18,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -75,8 +76,11 @@ public class Member extends BaseEntity {
 
     private String gitNickname;
 
-    private  String notionLink;
+    private String notionLink;
 
+    private LocalDateTime lastActiveTime;
+
+    // 기본 정보 설정 함수
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
         this.name = name;
         this.nickname = nickname;
@@ -84,6 +88,7 @@ public class Member extends BaseEntity {
         this.branch = branch;
     }
 
+    // 기본 정보 업데이트 함수
     public void updateMemberInfo(MemberUpdateMyProfileRequest request, String profileImage) {
         this.name = request.getName();
         this.nickname = request.getNickname();
@@ -91,22 +96,28 @@ public class Member extends BaseEntity {
         this.profileImage = profileImage;
     }
 
+    // 직책 업데이트 함수
     public void updatePositions(List<MemberPosition> memberPositions) {
         this.positions = memberPositions;
     }
 
+    // 기수별 파트 업데이트 함수
     public void updateSemesterParts(List<SemesterPart> semesterParts) {
         this.semesterParts = semesterParts;
     }
+
+    // 깃허브 닉네임 업데이트 함수
     public void authenticateGithub(String gitNickname) {
         this.gitNickname = gitNickname;
     }
 
+    // 기여도 포인트 업데이트 함수
     public void updateContributionPoint(Long usedPoint) {
         if (this.contributionPoint == null) this.contributionPoint = usedPoint;
         else this.contributionPoint += usedPoint;
     }
 
+    //가장 최근 기수 찾기
     public Semester getRecentSemester() {
         List<SemesterPart> semesterParts = this.getSemesterParts();
 
@@ -116,11 +127,13 @@ public class Member extends BaseEntity {
                 .orElseThrow(()-> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
     }
 
+
+    //가장 최신 파트 찾기
     public Part getRecentPart() {
+        // 최신 Semester에 해당하는 SemesterPart 찾기
         Semester recentSemester = getRecentSemester();
         List<SemesterPart> semesterParts = this.getSemesterParts();
 
-        // 최신 Semester에 해당하는 SemesterPart 찾기
         Optional<SemesterPart> recentSemesterPart = semesterParts.stream()
                 .filter(part -> part.getSemester() == recentSemester)
                 .findFirst();
@@ -129,6 +142,7 @@ public class Member extends BaseEntity {
                 .orElseThrow(()-> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
     }
 
+    //사용자가 활동한 기수를 몯 ㅜ찾기
     public List<Semester> getSemesters() {
         return this.getSemesterParts().stream()
                 .map(SemesterPart::getSemester)
@@ -139,4 +153,10 @@ public class Member extends BaseEntity {
     public void updateRole(Role role) {
         this.role = role;
     }
+
+    // 최근 활동 시간 업데이트 함수
+    public void updateLastActiveTime(LocalDateTime lastActiveTime) {
+        this.lastActiveTime = lastActiveTime;
+    }
+
 }

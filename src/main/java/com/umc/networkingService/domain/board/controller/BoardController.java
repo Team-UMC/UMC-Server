@@ -39,14 +39,14 @@ public class BoardController {
     private final BoardService boardService;
 
 
-    @Operation(summary = "댓글 작성 API", description = "댓글을 작성하는 API입니다." +
-            " hostType : CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요. " +
-            " boardType : NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요." +
+    @Operation(summary = "게시글 작성 API", description = "게시글을 작성하는 API입니다.  " +
+            " hostType : CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
+            " boardType : NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.  " +
             " NOTICE는 해당 hostType 이하 운영진만 작성 가능합니다. WORKBOOK 게시판은 CAMPUS에서 교내 운영진만 작성 가능합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "MEMBER006", description = "게시글을 쓸 권한이 없을 경우 발생"),
             @ApiResponse(responseCode = "BOARD001", description = "WORKBOOK 게시판과 CENTER, BRANCH를 선택했을 경우 금지된 요청"),
+            @ApiResponse(responseCode = "BOARD003", description = "게시글을 작성할 권한이 없을 경우 발생"),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패할 경우 발생")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -57,15 +57,15 @@ public class BoardController {
     }
 
 
-    @Operation(summary = "게시글 수정 API", description = "게시글을 수정하는 API입니다.\n" +
-            "hostType : CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.\n" +
-            "boardType : NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.\n" +
+    @Operation(summary = "게시글 수정 API", description = "게시글을 수정하는 API입니다.  " +
+            "hostType : CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
+            "boardType : NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.  " +
             "NOTICE는 해당 hostType 이하 운영진만 수정 가능합니다. WORKBOOK 게시판은 CAMPUS에서 교내 운영진만 수정 가능합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "MEMBER006", description = "게시글을 수정할 권한이 없을 경우 발생"),
             @ApiResponse(responseCode = "BOARD001", description = "WORKBOOK 게시판과 CENTER, BRANCH를 선택했을 경우 금지된 요청"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
+            @ApiResponse(responseCode = "BOARD003", description = "게시글을 수정할 권한이 없을 경우 발생"),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패할 경우 발생")
     })
     @PatchMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -81,7 +81,7 @@ public class BoardController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
-            @ApiResponse(responseCode = "MEMBER006", description = "게시글 삭제 권한이 없을 경우 발생"),
+            @ApiResponse(responseCode = "BOARD003", description = "게시글을 삭제할 권한이 없을 경우 발생"),
     })
     @DeleteMapping("/{boardId}")
     public BaseResponse<BoardIdResponse> deleteBoard(@CurrentMember Member member,
@@ -90,8 +90,8 @@ public class BoardController {
     }
 
 
-    @Operation(summary = "특정 게시판의 게시글 목록 조회 API", description = "특정 게시판의 게시글 목록을 조회하는 API입니다.\n" +
-            "hostType: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.\n" +
+    @Operation(summary = "특정 게시판의 게시글 목록 조회 API", description = "특정 게시판의 게시글 목록을 조회하는 API입니다.  " +
+            "hostType: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
             "boardType: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
@@ -113,7 +113,8 @@ public class BoardController {
     @Operation(summary = "특정 게시글 상세 조회 API", description = "단일 게시글을 boardId를 통해 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
+            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
+            @ApiResponse(responseCode = "BOARD003", description = "게시글을 조회할 권한이 없을 경우 발생"),
     })
     @GetMapping("/{boardId}")
     public BaseResponse<BoardDetailResponse> showBoardDetail(@CurrentMember Member member,

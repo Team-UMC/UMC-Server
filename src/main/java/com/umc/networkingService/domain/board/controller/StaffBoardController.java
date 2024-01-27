@@ -31,7 +31,7 @@ public class StaffBoardController {
     @Operation(summary = "공지사항 목록 조회/검색 API", description = "공지사항 목록을 조회합니다. keyword를 주면 검색됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "MEMBER006", description = "해당 hostType의 공지사항을 볼 권한이 없을 경우 발생"),
+            @ApiResponse(responseCode = "BOARD003", description = "해당 hostType의 공지사항을 볼 권한이 없을 경우 발생"),
     })
     @Parameters(value = {
             @Parameter(name = "hostType", description = "ALL, CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요."),
@@ -52,7 +52,7 @@ public class StaffBoardController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
-            @ApiResponse(responseCode = "MEMBER006", description = "해당 공지사항 핀 설정 권한이 없을 경우 발생"),
+            @ApiResponse(responseCode = "BOARD003", description = "해당 공지사항 핀 설정 권한이 없을 경우 발생"),
     })
     @Parameters(value = {
             @Parameter(name = "boardId", description = "핀을 설정하고자 하는 boardId입니다."),

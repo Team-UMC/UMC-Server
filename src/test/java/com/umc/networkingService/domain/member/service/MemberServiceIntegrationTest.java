@@ -220,7 +220,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     @Transactional
     public void inquiryMyProfile() {
         // given
-        authService.signUp(member, getInfoRequest(member));
+        authService.signUp(member, getInfoRequest());
 
         // when
         MemberInquiryProfileResponse response = memberService.inquiryProfile(member, null);
@@ -238,7 +238,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         // given
         Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
 
-        authService.signUp(member, getInfoRequest(member));
+        authService.signUp(member, getInfoRequest());
 
         friendRepository.save(Friend.builder()
                 .sender(loginMember)
@@ -261,7 +261,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         // given
         Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
 
-        authService.signUp(member, getInfoRequest(member));
+        authService.signUp(member, getInfoRequest());
 
         // when
         MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
@@ -277,20 +277,20 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     @Transactional
     public void inquiryHomeInfo() {
         // given
-        authService.signUp(member, getInfoRequest(member));
+        authService.signUp(member, getInfoRequest());
         member.updateContributionPoint(1000L);
 
         Member universityMember1 = createMember("222222", Role.MEMBER);
-        authService.signUp(universityMember1, getInfoRequest(universityMember1));
+        authService.signUp(universityMember1, getInfoRequest());
         universityMember1.updateContributionPoint(2000L);
         Member universityMember2 = createMember("333333", Role.MEMBER);
-        authService.signUp(universityMember2, getInfoRequest(universityMember2));
+        authService.signUp(universityMember2, getInfoRequest());
         universityMember2.updateContributionPoint(2000L);
         Member universityMember3 = createMember("444444", Role.MEMBER);
-        authService.signUp(universityMember3, getInfoRequest(universityMember3));
+        authService.signUp(universityMember3, getInfoRequest());
         universityMember3.updateContributionPoint(3000L);
         Member universityMember4 = createMember("555555", Role.MEMBER);
-        authService.signUp(universityMember4, getInfoRequest(universityMember4));
+        authService.signUp(universityMember4, getInfoRequest());
         universityMember4.updateContributionPoint(1000L);
 
         // when
@@ -391,4 +391,66 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 .toList();
         assertEquals(List.of(10L, 5L), points);
     }
+
+    @Test
+    @DisplayName("운영진용 유저 검색 테스트")
+    @Transactional
+    public void searchMemberInfo() {
+        // given
+        String keyword = "벡스/김준석";
+        authService.signUp(member, getInfoRequest());
+
+        Member staff = createMember("222222", Role.CENTER_STAFF);
+
+        // when
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
+
+        // then
+        assertEquals(1, responses.getMembers().size());
+        assertEquals(member.getId(), responses.getMembers().get(0).getMemberId());
+    }
+
+    @Test
+    @DisplayName("운영진용 유저 검색 테스트 - 여러명인 경우")
+    @Transactional
+    public void searchMembersInfo() {
+        // given
+        String keyword = "벡스/김준석";
+
+        authService.signUp(member, getInfoRequest());
+
+        Member anotherMember = createMember("222222", Role.CAMPUS_STAFF);
+        authService.signUp(anotherMember, getInfoRequest());
+
+        Member staff = createMember("333333", Role.CENTER_STAFF);
+
+        // when
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
+
+        // then
+        assertEquals(2, responses.getMembers().size());
+    }
+
+    @Test
+    @DisplayName("운영진용 유저 검색 테스트 - 상위 운영진 미조회")
+    @Transactional
+    public void searchMembersInfoByLowRole() {
+        // given
+        String keyword = "벡스/김준석";
+
+        authService.signUp(member, getInfoRequest());
+
+        Member anotherMember = createMember("222222", Role.TOTAL_STAFF);
+        authService.signUp(anotherMember, getInfoRequest());
+
+        Member staff = createMember("333333", Role.CENTER_STAFF);
+
+        // when
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
+
+        // then
+        assertEquals(1, responses.getMembers().size());
+    }
+
+
 }

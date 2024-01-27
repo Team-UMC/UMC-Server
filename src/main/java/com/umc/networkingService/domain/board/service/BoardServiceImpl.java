@@ -46,7 +46,7 @@ public class BoardServiceImpl implements BoardService {
     public BoardPagingResponse showBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable) {
 
         //특정 게시판 조회에는 전체 HOST 조회 X
-        if(hostType.equals(HostType.ALL))
+        if (hostType.equals(HostType.ALL))
             throw new RestApiException(ErrorCode._VALIDATION_ERROR);
 
         return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member, hostType, boardType, pageable));
@@ -116,7 +116,6 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-
     @Override
     @Transactional
     public BoardIdResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {
@@ -150,10 +149,9 @@ public class BoardServiceImpl implements BoardService {
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
         if (!board.getWriter().equals(member))
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
-
+            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+        
         board.update(request, semesterPermission);
-
         boardFileService.updateBoardFiles(board, files);
 
         return new BoardIdResponse(board.getId());
@@ -166,9 +164,8 @@ public class BoardServiceImpl implements BoardService {
 
         //현재 로그인한 member와 writer가 같지 않고, 로그인한 멤버가 운영진이 아니라면 삭제 불가
         if (!board.getWriter().equals(member)) {
-            // staff 역할을 가진 경우에는 삭제 권한이 있음
             if (member.getRole().getPriority() == Role.MEMBER.getPriority()) {
-                throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+                throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
             }
         }
         boardFileService.deleteBoardFiles(board);
@@ -205,7 +202,7 @@ public class BoardServiceImpl implements BoardService {
     public void checkPermissionForOBBoard(Member member, Semester nowSemester) {
         // OB -> Semester의 isActive가 활성화되지 않은 사용자만 가능
         if (member.getRecentSemester().equals(nowSemester))
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
     }
 
     //공지사항 게시판 권한 확인 함수
@@ -213,7 +210,7 @@ public class BoardServiceImpl implements BoardService {
 
         //HostType priority와 Member Role priority를 비교하여 권한 CHECK
         if (member.getRole().getPriority() >= hostType.getPriority())
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
 
     }
 
@@ -226,7 +223,7 @@ public class BoardServiceImpl implements BoardService {
 
         //CAMPUS && WORKBOOK -> ROLE이 CAMPUS_STAFF인 사람만
         if (member.getRole().getPriority() != Role.CAMPUS_STAFF.getPriority())
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
     }
 
     //게시글 열람시 semester 권한 check
@@ -234,9 +231,10 @@ public class BoardServiceImpl implements BoardService {
         List<Semester> memberSemesters = member.getSemesters();
         List<Semester> boardSemesterPermissions = board.getSemesterPermission();
 
-        if(!memberSemesters.stream()
+        if (!memberSemesters.stream()
                 .anyMatch(boardSemesterPermissions::contains))
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+
     }
 
     @Override

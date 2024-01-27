@@ -2,7 +2,7 @@ package com.umc.networkingService.domain.member.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -28,7 +28,7 @@ public class AuthController {
 
     @Operation(summary = "소셜 로그인", description = "네이버, 카카오, 구글, 애플 로그인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "COMMON200", description = "로그인 성공"),
             @ApiResponse(responseCode = "AUTH007", description = "외부 소셜 서버와의 통신 에러" , content =
             @Content(schema = @Schema(implementation = BaseResponse.class)))
     })
@@ -57,8 +57,8 @@ public class AuthController {
             @ApiResponse(responseCode = "AUTH006", description = "유효하지 않는 RefreshToken일 경우 발생")
     })
     @GetMapping("/token/refresh")
-    public BaseResponse<MemberGenerateNewAccessTokenResponse> regenerateToken(@CurrentMember Member member,
-                                                                              @RequestHeader(value = "refreshToken") String refreshToken) {
+    public BaseResponse<MemberGenerateTokenResponse> regenerateToken(@CurrentMember Member member,
+                                                                     @RequestHeader(value = "refreshToken") String refreshToken) {
         return BaseResponse.onSuccess(authService.generateNewAccessToken(refreshToken, member));
     }
 

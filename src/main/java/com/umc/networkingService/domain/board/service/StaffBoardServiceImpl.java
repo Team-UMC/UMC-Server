@@ -61,7 +61,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
         //HostType priority와 Member Role priority를 비교하여 권한 CHECK
         if (member.getRole().getPriority() >= hostType.getPriority())
-            throw new RestApiException(ErrorCode.FORBIDDEN_MEMBER);
+            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
 
     }
 }

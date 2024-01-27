@@ -72,7 +72,7 @@ public abstract class ServiceIntegrationTestConfig {
         );
     }
 
-    protected MemberSignUpRequest getInfoRequest(Member nowMember) {
+    protected MemberSignUpRequest getInfoRequest() {
         return MemberSignUpRequest.builder()
                 .name("김준석")
                 .nickname("벡스")

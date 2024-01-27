@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.member.dto.request;
 
+import com.umc.networkingService.domain.member.dto.SemesterPartInfo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

@@ -46,7 +46,9 @@ public class BoardCommentController {
     @Operation(summary = "댓글 수정 API", description = "댓글을 수정하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생")
+            @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생"),
+            @ApiResponse(responseCode = "COMMENT002", description = "댓글 수정 권한이 없을 경우 발생"),
+            
     })
     @PatchMapping("/{commentId}")
     public BaseResponse<BoardCommentIdResponse> updateBoardComment(@CurrentMember Member member,
@@ -59,7 +61,8 @@ public class BoardCommentController {
     @Operation(summary = "댓글 삭제 API", description = "댓글을 삭제하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생")
+            @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생"),
+            @ApiResponse(responseCode = "COMMENT002", description = "댓글 삭제 권한이 없을 경우 발생")
     })
     @DeleteMapping("/{commentId}")
     public BaseResponse<BoardCommentIdResponse> deleteBoardComment(@CurrentMember Member member,

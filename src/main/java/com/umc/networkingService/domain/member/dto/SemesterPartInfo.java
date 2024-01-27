@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.member.dto.request;
+package com.umc.networkingService.domain.member.dto;
 
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
