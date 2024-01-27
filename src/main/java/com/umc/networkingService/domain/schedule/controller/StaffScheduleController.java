@@ -43,7 +43,7 @@ public class StaffScheduleController {
     @PostMapping("/update/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않은 스케줄입니다.")
+            @ApiResponse(responseCode = "SCHEDULE001", description = "존재하지 않은 스케줄입니다.")
     })
     public BaseResponse<ScheduleId> updateSchedule(@CurrentMember Member member,
                                                    @PathVariable("scheduleId") UUID scheduleId,
@@ -58,7 +58,7 @@ public class StaffScheduleController {
     @DeleteMapping("/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않은 스케줄입니다.")
+            @ApiResponse(responseCode = "SCHEDULE001", description = "존재하지 않은 스케줄입니다.")
     })
     public BaseResponse<ScheduleId> deleteSchedule(@CurrentMember Member member,
                                                    @PathVariable("scheduleId") UUID scheduleId) {

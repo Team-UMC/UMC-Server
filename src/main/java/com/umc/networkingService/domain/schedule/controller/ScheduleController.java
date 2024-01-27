@@ -51,7 +51,7 @@ public class ScheduleController {
     @GetMapping("/detail/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않은 스케줄입니다.")
+            @ApiResponse(responseCode = "SCHEDULE001", description = "존재하지 않은 스케줄입니다.")
     })
     public BaseResponse<ScheduleDetail> getScheduleDetail(@CurrentMember Member member,
                                                           @PathVariable("scheduleId") UUID scheduleId) {
