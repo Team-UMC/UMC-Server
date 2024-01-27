@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class FriendController {
 
     @Operation(summary = "친구 추가 API", description = "새로운 친구를 추가하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "MEMBER001", description = "존재하지 않는 멤버를 친구 추가한 경우 발생"),
             @ApiResponse(responseCode = "FRIEND001", description = "이미 친구 관계일 경우 발생")
     })
@@ -45,7 +46,7 @@ public class FriendController {
 
     @Operation(summary = "친구 삭제 API", description = "친구 관계를 삭제하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "MEMBER001", description = "존재하지 않는 멤버를 친구 삭제한 경우 발생"),
             @ApiResponse(responseCode = "FRIEND002", description = "친구 관계가 아닌데 삭제한 경우 발생")
     })
@@ -58,17 +59,18 @@ public class FriendController {
 
     @Operation(summary = "접속/비접속 중인 친구 목록 조회 API", description = "친구 관계인 멤버 중 접속 또는 비접속 중인 멤버 조회 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @Parameters(value = {
             @Parameter(name = "status", required = true, description = "접속 상태입니다."),
-            @Parameter(name = "size", description = "한 페이지 당 데이터 개수입니다.(미입력 시 20개)")
+            @Parameter(name = "pageable", hidden = true),
+            @Parameter(name = "size", required = true, description = "한 페이지에 포함되는 목록 개수입니다.")
     })
     @GetMapping
     public BaseResponse<FriendInquiryByStatusResponse> inquiryFriendsByStatus(
             @CurrentMember Member member,
             @RequestParam boolean status,
-            @PageableDefault(page = 1, sort = "nickname", direction = Sort.Direction.ASC) Pageable pageable) {
+            @PageableDefault(page = 1, sort = "receiver.nickname", direction = Sort.Direction.ASC) Pageable pageable) {
         return BaseResponse.onSuccess(friendService.inquiryFriendsByStatus(member, status, pageable));
     }
 
