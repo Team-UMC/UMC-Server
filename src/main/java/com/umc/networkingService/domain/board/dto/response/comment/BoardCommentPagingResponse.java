@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.board.dto.response.comment;
 
-import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentPageResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class BoardNoticePageResponse {
     private UUID boardId;

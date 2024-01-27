@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class BoardDetailResponse {
     private HostType hostType;
