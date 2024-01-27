@@ -17,8 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "초대 API", description = "초대 관련 API")
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +41,7 @@ public class InviteController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping("/staff/invites")
-    public BaseResponse<List<InviteInquiryMineResponse>> inquiryMyInviteCode(@CurrentMember Member member) {
+    public BaseResponse<InviteInquiryMineResponse> inquiryMyInviteCode(@CurrentMember Member member) {
         return BaseResponse.onSuccess(inviteService.inquiryMyInviteCode(member));
     }
 

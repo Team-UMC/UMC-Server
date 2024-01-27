@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -72,8 +73,11 @@ public class Member extends BaseEntity {
 
     private String gitNickname;
 
-    private  String notionLink;
+    private String notionLink;
 
+    private LocalDateTime lastActiveTime;
+
+    // 기본 정보 설정 함수
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
         this.name = name;
         this.nickname = nickname;
@@ -81,6 +85,7 @@ public class Member extends BaseEntity {
         this.branch = branch;
     }
 
+    // 기본 정보 업데이트 함수
     public void updateMemberInfo(MemberUpdateMyProfileRequest request, String profileImage) {
         this.name = request.getName();
         this.nickname = request.getNickname();
@@ -88,23 +93,35 @@ public class Member extends BaseEntity {
         this.profileImage = profileImage;
     }
 
+    // 직책 업데이트 함수
     public void updatePositions(List<MemberPosition> memberPositions) {
         this.positions = memberPositions;
     }
 
+    // 기수별 파트 업데이트 함수
     public void updateSemesterParts(List<SemesterPart> semesterParts) {
         this.semesterParts = semesterParts;
     }
+
+    // 깃허브 닉네임 업데이트 함수
     public void authenticateGithub(String gitNickname) {
         this.gitNickname = gitNickname;
     }
 
+    // 기여도 포인트 업데이트 함수
     public void updateContributionPoint(Long usedPoint) {
         if (this.contributionPoint == null) this.contributionPoint = usedPoint;
         else this.contributionPoint += usedPoint;
     }
 
+    // Role 업데이트 함수
     public void updateRole(Role role) {
         this.role = role;
     }
+
+    // 최근 활동 시간 업데이트 함수
+    public void updateLastActiveTime(LocalDateTime lastActiveTime) {
+        this.lastActiveTime = lastActiveTime;
+    }
+
 }

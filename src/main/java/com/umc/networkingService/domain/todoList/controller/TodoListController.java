@@ -4,7 +4,6 @@ import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListCreateRequest;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListUpdateRequest;
-import com.umc.networkingService.domain.todoList.dto.response.TodoListGetResponse;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListGetResponses;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListIdResponse;
 import com.umc.networkingService.domain.todoList.service.TodoListService;
