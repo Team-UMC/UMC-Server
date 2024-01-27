@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import com.umc.networkingService.global.common.exception.RestApiException;]
+import com.umc.networkingService.global.common.exception.RestApiException;
 import java.util.UUID;
 
 @Service
