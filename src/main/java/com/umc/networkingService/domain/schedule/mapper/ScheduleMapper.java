@@ -2,18 +2,12 @@ package com.umc.networkingService.domain.schedule.mapper;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
-import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleDetail;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleId;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummary;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummaryInCalendar;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummariesInCalendar;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummaryLists;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.*;
 import com.umc.networkingService.domain.schedule.entity.Schedule;
-import java.time.LocalDateTime;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduleMapper {

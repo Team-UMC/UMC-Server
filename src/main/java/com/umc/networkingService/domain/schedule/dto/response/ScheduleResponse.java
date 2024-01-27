@@ -1,17 +1,14 @@
 package com.umc.networkingService.domain.schedule.dto.response;
 
 import com.umc.networkingService.domain.board.entity.HostType;
-import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.PositionType;
-import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.enums.Semester;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 public class ScheduleResponse {
 
