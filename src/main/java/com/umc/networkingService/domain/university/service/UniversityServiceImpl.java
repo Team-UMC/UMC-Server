@@ -75,7 +75,7 @@ public class UniversityServiceImpl implements UniversityService {
 
         //지부 찾기
         Branch branch = branchUniversityRepository.findByUniversityAndIsActive(member.getUniversity(),true)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH)).getBranch();
+               .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH)).getBranch();
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
@@ -132,10 +132,10 @@ public class UniversityServiceImpl implements UniversityService {
 
     //s3에 이미지 업로드
     public String uploadImage(String category,MultipartFile imageFile){
-        if(!imageFile.isEmpty()){
-            return s3FileComponent.uploadFile(category, imageFile);
+        if(imageFile==null ||imageFile.isEmpty()){
+            return "";
         }
-        return null;
+        return s3FileComponent.uploadFile(category, imageFile);
     }
 
 
