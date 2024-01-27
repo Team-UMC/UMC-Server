@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface BranchUniversityRepository extends JpaRepository<BranchUniversity, UUID> {
+    Optional<BranchUniversity> findByUniversityAndIsActive(University university, Boolean isActive);
+
     List<BranchUniversity> findByBranch(Branch branch);
 
     Boolean existsByBranchIdAndUniversityId(UUID branchId, UUID universityId);
@@ -20,5 +23,4 @@ public interface BranchUniversityRepository extends JpaRepository<BranchUniversi
     BranchUniversity findByBranchIdAndUniversityId(UUID branchId, UUID universityId);
 
     void deleteByBranchIdAndUniversityId(UUID branchId, UUID universityId);
-
 }

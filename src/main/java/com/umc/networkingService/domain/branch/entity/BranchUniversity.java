@@ -11,8 +11,8 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class BranchUniversity extends BaseEntity {
@@ -20,6 +20,10 @@ public class BranchUniversity extends BaseEntity {
     @UuidGenerator
     @Column(name = "branch_university_id")
     private UUID id;
+
+    // 현재 기수인지 여부
+    @Column(nullable = false)
+    private Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn

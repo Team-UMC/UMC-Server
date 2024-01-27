@@ -1,11 +1,14 @@
 package com.umc.networkingService.domain.branch.service;
 
+import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.execption.BranchUniversityHandler;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +18,22 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class BranchUniversityServiceImpl {
+public class BranchUniversityServiceImpl implements BranchUniversityService {
 
     //todo : 관리자 권한 확인 추가하기
 
     private final BranchRepository branchRepository;
     private final UniversityRepository universityRepository;
     private final BranchUniversityRepository branchUniversityRepository;
+
+    @Override
+    public Branch findBranchByUniversity(University university) {
+
+        return branchUniversityRepository.findByUniversityAndIsActive(university, Boolean.TRUE)
+                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH))
+                .getBranch();
+
+    }
 
     //지부, 대학 연결하기
     @Transactional

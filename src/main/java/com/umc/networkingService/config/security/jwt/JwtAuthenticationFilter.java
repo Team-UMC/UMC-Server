@@ -21,16 +21,28 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         // refresh Token이 있다면 refresh Token 사용
-        String refreshToken = jwtTokenProvider.resolveRefreshToken((HttpServletRequest) request);
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
-        if (refreshToken != null && ((HttpServletRequest) request).getRequestURI()
-                .equals("/members/refresh") && jwtTokenProvider.validateRefreshToken(refreshToken)) {
-            Authentication authentication = jwtTokenProvider.getRefreshAuthentication(refreshToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtTokenProvider.resolveRefreshToken((HttpServletRequest) request);
+
+        if(token != null) {
+            if (token.startsWith("Bearer ")) token = token.substring(7);
+
+            if (((HttpServletRequest) request).getRequestURI()
+                    .equals("/members/token/refresh") && jwtTokenProvider.validateRefreshToken(token)) {
+                Authentication authentication = jwtTokenProvider.getRefreshAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } else {
+           token =  jwtTokenProvider.resolveToken((HttpServletRequest) request);
+           if (token != null) {
+               if (token.startsWith("Bearer ")) token = token.substring(7);
+
+               if (jwtTokenProvider.validateToken(token)) {
+                   Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                   SecurityContextHolder.getContext().setAuthentication(authentication);
+               }
+           }
         }
+
         chain.doFilter(request, response);
     }
 }

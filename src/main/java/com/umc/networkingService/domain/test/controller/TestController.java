@@ -4,7 +4,6 @@ import com.umc.networkingService.domain.test.dto.TestRequest;
 import com.umc.networkingService.domain.test.dto.TestResponse;
 import com.umc.networkingService.domain.test.service.TestService;
 import com.umc.networkingService.global.common.base.BaseResponse;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/test")
 public class TestController {
     private final TestService testService;
-
 
     @Operation(summary = "성공적인 응답 반환 API", description = "테스트 문자열을 반환하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "테스트 문자열을 성공적으로 반환")

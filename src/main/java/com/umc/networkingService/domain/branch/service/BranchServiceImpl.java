@@ -9,7 +9,7 @@ import com.umc.networkingService.domain.branch.execption.BranchHandler;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.common.Semester;
+import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import com.umc.networkingService.global.common.exception.RestApiException;]
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class BranchServiceImpl {
+public class BranchServiceImpl implements BranchService {
 
     private final BranchRepository branchRepository;
     private final BranchUniversityRepository branchUniversityRepository;
@@ -130,4 +131,9 @@ public class BranchServiceImpl {
         return branchRepository.existsById(branchId);
     }
 
+    @Override
+    public Branch loadEntity(UUID id) {
+        return branchRepository.findById(id)
+                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH));
+    }
 }

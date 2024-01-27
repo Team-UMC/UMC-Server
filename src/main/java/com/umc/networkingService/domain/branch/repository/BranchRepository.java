@@ -1,7 +1,7 @@
 package com.umc.networkingService.domain.branch.repository;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.global.common.Semester;
+import com.umc.networkingService.global.common.enums.Semester;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

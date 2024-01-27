@@ -34,9 +34,10 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/staff/**").hasAnyRole("STAFF", "CENTERSTAFF", "BRANCHSTAFF", "CAMPUSSTAFF", "ADMIN")
+                                .requestMatchers("/v3/**", "/swagger-ui/**", "/members/login").permitAll()
+                                .requestMatchers("/staff/**").hasAnyRole("STAFF", "TOTAL_STAFF", "CENTER_STAFF", "BRANCH_STAFF", "CAMPUS_STAFF", "ADMIN")
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .anyRequest().permitAll()
+                                .anyRequest().authenticated()
                 )
                 .exceptionHandling((exceptionConfig) ->
                         exceptionConfig.accessDeniedHandler(customAccessDeniedHandler))
