@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Member 서비스의 ")
@@ -215,20 +216,20 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     @Transactional
     public void inquiryHomeInfo() {
         // given
-        authService.signUp(member, getInfoRequest());
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
         member.updateContributionPoint(1000L);
 
-        Member universityMember1 = createMember("222222", Role.MEMBER);
-        authService.signUp(universityMember1, getInfoRequest());
+        Member universityMember1 = createMember("222222", Role.CAMPUS_STAFF);
+        authService.signUp(universityMember1, getInfoRequest("이경수", "리버", List.of("iOS 파트장"), List.of()));
         universityMember1.updateContributionPoint(2000L);
         Member universityMember2 = createMember("333333", Role.MEMBER);
-        authService.signUp(universityMember2, getInfoRequest());
+        authService.signUp(universityMember2, getInfoRequest("김보민", "밈보", List.of(), List.of()));
         universityMember2.updateContributionPoint(2000L);
         Member universityMember3 = createMember("444444", Role.MEMBER);
-        authService.signUp(universityMember3, getInfoRequest());
+        authService.signUp(universityMember3, getInfoRequest("김수민", "루시", List.of(), List.of()));
         universityMember3.updateContributionPoint(3000L);
         Member universityMember4 = createMember("555555", Role.MEMBER);
-        authService.signUp(universityMember4, getInfoRequest());
+        authService.signUp(universityMember4, getInfoRequest("박재우", "다재", List.of(), List.of()));
         universityMember4.updateContributionPoint(1000L);
 
         // when
@@ -336,7 +337,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     public void searchMemberInfo() {
         // given
         String keyword = "벡스/김준석";
-        authService.signUp(member, getInfoRequest());
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
 
         Member staff = createMember("222222", Role.CENTER_STAFF);
 
@@ -355,10 +356,10 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         // given
         String keyword = "벡스/김준석";
 
-        authService.signUp(member, getInfoRequest());
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
 
         Member anotherMember = createMember("222222", Role.CAMPUS_STAFF);
-        authService.signUp(anotherMember, getInfoRequest());
+        authService.signUp(anotherMember, getInfoRequest("김준석", "벡스", List.of(), List.of()));
 
         Member staff = createMember("333333", Role.CENTER_STAFF);
 
@@ -376,10 +377,10 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         // given
         String keyword = "벡스/김준석";
 
-        authService.signUp(member, getInfoRequest());
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
 
         Member anotherMember = createMember("222222", Role.TOTAL_STAFF);
-        authService.signUp(anotherMember, getInfoRequest());
+        authService.signUp(anotherMember, getInfoRequest("김준석", "벡스", List.of(), List.of("회장")));
 
         Member staff = createMember("333333", Role.CENTER_STAFF);
 

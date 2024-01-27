@@ -179,7 +179,8 @@ public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
         authService.withdrawal(member);
 
         // then
-        assertFalse(memberRepository.findById(member.getId()).isPresent());
+        Optional<Member> optionalMember = memberRepository.findById(member.getId());
+        assertNotNull(optionalMember.get().getDeletedAt());
         assertFalse(refreshTokenService.findByMemberId(member.getId()).isPresent());
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("FriendShip 서비스의 ")
@@ -32,7 +34,7 @@ public class FriendShipServiceImplIntegrationTest extends ServiceIntegrationTest
     @Transactional
     public void inquiryMyProfile() {
         // given
-        authService.signUp(member, getInfoRequest());
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
 
         // when
         MemberInquiryProfileResponse response = friendShipService.inquiryProfile(member, null);
@@ -50,7 +52,7 @@ public class FriendShipServiceImplIntegrationTest extends ServiceIntegrationTest
         // given
         Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
 
-        authService.signUp(member, getInfoRequest());
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
 
         friendRepository.save(Friend.builder()
                 .sender(loginMember)
@@ -73,7 +75,7 @@ public class FriendShipServiceImplIntegrationTest extends ServiceIntegrationTest
         // given
         Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
 
-        authService.signUp(member, getInfoRequest());
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
 
         // when
         MemberInquiryProfileResponse response = friendShipService.inquiryProfile(loginMember, member.getId());
