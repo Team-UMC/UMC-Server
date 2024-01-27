@@ -53,6 +53,10 @@ public enum ErrorCode {
     // Branch
     EMPTY_BRANCH(HttpStatus.BAD_REQUEST, "BRANCH001", "존재하지 않는 지부입니다."),
 
+    // TodoList
+    EMPTY_TODOLIST(HttpStatus.BAD_REQUEST, "TODOLIST001", "존재하지 않은 투두리스트입니다."),
+    NO_AUTHORIZATION_TODOLIST(HttpStatus.BAD_REQUEST, "TODOLIST002", "해당 투두리스트에 대한 수정 권한이 없습니다."),
+
     // Image
     FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다.");
 
