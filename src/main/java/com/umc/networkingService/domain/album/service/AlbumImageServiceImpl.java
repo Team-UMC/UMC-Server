@@ -43,7 +43,15 @@ public class AlbumImageServiceImpl implements AlbumImageService{
     }
 
     @Override
-    public List<AlbumImage> findAlbumImages(Album album){
+    @Transactional
+    public void deleteAlbumImages(Album album) {
+        List<AlbumImage> albumImages = findAlbumImages(album);
+
+        albumImages.forEach(AlbumImage::delete);
+    }
+
+    @Override
+    public List<AlbumImage> findAlbumImages(Album album) {
         return albumImageRepository.findAllByAlbum(album);
     }
 }

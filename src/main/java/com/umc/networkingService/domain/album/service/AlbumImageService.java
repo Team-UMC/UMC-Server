@@ -9,8 +9,7 @@ import java.util.List;
 
 public interface AlbumImageService {
     void uploadAlbumImages(Album album, List<MultipartFile> albumImages);
-
     void updateAlbumImages(Album album, List<MultipartFile> albumImages);
-
     List<AlbumImage> findAlbumImages(Album album);
+    void deleteAlbumImages(Album album);
 }

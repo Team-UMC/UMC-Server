@@ -53,4 +53,16 @@ public class AlbumController {
                                                      @RequestPart(name = "albumImage", required = false) List<MultipartFile> albumImages) {
         return BaseResponse.onSuccess(albumService.updateAlbum(member, albumId, request, albumImages));
     }
+
+    @Operation(summary = "사진첩 삭제 API", description = "사진첩을 삭제하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "ALBUM001", description = "존재하지 않는 사진첩입니다."),
+            @ApiResponse(responseCode = "ALBUM002", description = "해당 사진첩에 대한 권한이 없습니다.")
+    })
+    @DeleteMapping("/{albumId}")
+    public BaseResponse<AlbumIdResponse> deleteAlbum(@CurrentMember Member member,
+                                                     @PathVariable(value = "albumId") UUID albumId) {
+        return BaseResponse.onSuccess(albumService.deleteAlbum(member, albumId));
+    }
 }

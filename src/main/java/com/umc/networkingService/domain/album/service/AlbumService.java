@@ -11,6 +11,6 @@ import java.util.UUID;
 
 public interface AlbumService {
     AlbumIdResponse createAlbum(Member member, AlbumCreateRequest request, List<MultipartFile> albumImages);
-
     AlbumIdResponse updateAlbum(Member member, UUID albumId, AlbumUpdateRequest request, List<MultipartFile> albumImages);
+    AlbumIdResponse deleteAlbum(Member member, UUID albumId);
 }
