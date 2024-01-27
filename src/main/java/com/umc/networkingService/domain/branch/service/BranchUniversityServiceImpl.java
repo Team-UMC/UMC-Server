@@ -28,10 +28,10 @@ public class BranchUniversityServiceImpl {
     public void connectBranchUniversity(UUID branchId, List<UUID> universityIds) {
         //유효한 지부가 값으로 들어옴
         universityIds.forEach(universityId -> {
-            if(!isUniversityValid(universityId)){ //유효한 대학인지 확인
+            if(!universityRepository.existsById(universityId)){ //유효한 대학인지 확인
                 throw new BranchUniversityHandler(ErrorCode.UNIVERSITY_NOT_FOUND);
             }
-            if (isBranchUniversityExist(branchId, universityId)) { //지부-대학 연결 여부 확인
+            if (branchUniversityRepository.existsByBranchIdAndUniversityId(branchId, universityId)) { //지부-대학 연결 여부 확인
                 throw new BranchUniversityHandler(ErrorCode.BRANCH_UNIVERSITY_ALREADY_EXIST); //이미 연결됨
             }
             branchUniversityRepository.save
