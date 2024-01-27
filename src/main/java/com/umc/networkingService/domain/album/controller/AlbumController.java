@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "앨범 API", description = "앨범 관련 API")
+@Tag(name = "사진첩 API", description = "사진첩 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/albums")

@@ -55,4 +55,12 @@ public class Album extends BaseEntity {
         this.content = content;
         this.semester = semester;
     }
+
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decreaseCommentCount() {
+        this.commentCount--;
+    }
 }

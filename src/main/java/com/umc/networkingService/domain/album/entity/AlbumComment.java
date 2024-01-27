@@ -3,9 +3,7 @@ package com.umc.networkingService.domain.album.entity;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -13,6 +11,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class AlbumComment extends BaseEntity {
@@ -30,7 +30,6 @@ public class AlbumComment extends BaseEntity {
     @JoinColumn(nullable = false,name = "album_id")
     private Album album;
 
-
     //최상위 댓글인 경우 null
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="parent_comment_id")
@@ -38,7 +37,5 @@ public class AlbumComment extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
-
-
 
 }
