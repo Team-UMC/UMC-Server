@@ -28,8 +28,8 @@ public class AuthController {
 
     @Operation(summary = "소셜 로그인 API", description = "네이버, 카카오, 구글 로그인을 수행하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "AUTH007", description = "외부 소셜 서버와의 통신 에러 시 발생" , content =
+            @ApiResponse(responseCode = "COMMON200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "AUTH007", description = "외부 소셜 서버와의 통신 에러" , content =
             @Content(schema = @Schema(implementation = BaseResponse.class)))
     })
     @PostMapping("/login")
