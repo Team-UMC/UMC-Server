@@ -3,7 +3,7 @@ package com.umc.networkingService.domain.member.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberSearchInfoResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberSearchInfosResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "운영진용 멤버 API", description = "운영진용 멤버 관련 API")
@@ -42,8 +41,8 @@ public class StaffMemberController {
             @ApiResponse(responseCode = "MEMBER006", description = "[닉네임/이름] 양식에 맞지 않을 경우 발생")
     })
     @GetMapping("/search")
-    public BaseResponse<List<MemberSearchInfoResponse>> searchMemberInfo(@CurrentMember Member member,
-                                                                        @RequestParam String keyword) {
+    public BaseResponse<MemberSearchInfosResponse> searchMemberInfo(@CurrentMember Member member,
+                                                                    @RequestParam String keyword) {
         return BaseResponse.onSuccess(memberService.searchMemberInfo(member, keyword));
     }
 

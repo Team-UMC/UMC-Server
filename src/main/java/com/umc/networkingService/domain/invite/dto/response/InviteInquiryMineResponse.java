@@ -5,11 +5,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 public class InviteInquiryMineResponse {
-    private String inviteCode;
-    private Role role;
-    private LocalDateTime createdAt;
+
+    private List<InviteInfo> invites;
+
+    @Getter
+    @AllArgsConstructor
+    public static class InviteInfo {
+        private String inviteCode;
+        private Role role;
+        private LocalDateTime createdAt;
+    }
+
 }

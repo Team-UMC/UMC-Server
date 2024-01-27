@@ -82,10 +82,10 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
         createInvite("secondInviteCode", Role.CAMPUS_STAFF);
 
         // when
-        List<InviteInquiryMineResponse> response = inviteService.inquiryMyInviteCode(member);
+        InviteInquiryMineResponse response = inviteService.inquiryMyInviteCode(member);
 
         // then
-        assertEquals(2, response.size());
+        assertEquals(2, response.getInvites().size());
     }
 
     @Test
@@ -94,10 +94,10 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
     public void inquiryMyInviteCodeWithNone() {
 
         // when
-        List<InviteInquiryMineResponse> response = inviteService.inquiryMyInviteCode(member);
+        InviteInquiryMineResponse response = inviteService.inquiryMyInviteCode(member);
 
         // then
-        assertEquals(0, response.size());
+        assertEquals(0, response.getInvites().size());
     }
 
     @Test

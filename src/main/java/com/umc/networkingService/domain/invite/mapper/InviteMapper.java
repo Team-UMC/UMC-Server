@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class InviteMapper {
 
-    public InviteInquiryMineResponse toInquiryMineResponse(Invite invite) {
-        return new InviteInquiryMineResponse(invite.getCode(), invite.getRole(), invite.getCreatedAt());
+    public InviteInquiryMineResponse.InviteInfo toInquiryMineResponse(Invite invite) {
+        return new InviteInquiryMineResponse.InviteInfo(invite.getCode(), invite.getRole(), invite.getCreatedAt());
     }
 }

@@ -8,10 +8,10 @@ import com.umc.networkingService.domain.todoList.dto.response.TodoListIdResponse
 import com.umc.networkingService.domain.todoList.entity.ToDoList;
 import com.umc.networkingService.domain.todoList.mapper.TodoListMapper;
 import com.umc.networkingService.domain.todoList.repository.TodoListRepository;
+import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;

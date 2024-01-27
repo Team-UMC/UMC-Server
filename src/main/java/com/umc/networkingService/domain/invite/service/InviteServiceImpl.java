@@ -62,13 +62,15 @@ public class InviteServiceImpl implements InviteService {
 
     // 나의 초대 코드 조회 함수
     @Override
-    public List<InviteInquiryMineResponse> inquiryMyInviteCode(Member member) {
+    public InviteInquiryMineResponse inquiryMyInviteCode(Member member) {
         // 본인이 생성한 초대 코드 조회
         List<Invite> savedInvites = inviteRepository.findAllByMember(member);
 
-        return savedInvites.stream()
+        List<InviteInquiryMineResponse.InviteInfo> invites = savedInvites.stream()
                 .map(inviteMapper::toInquiryMineResponse)
                 .toList();
+
+        return new InviteInquiryMineResponse(invites);
     }
 
     // 본인의 역할 이상의 역할 부여를 확인하는 함수

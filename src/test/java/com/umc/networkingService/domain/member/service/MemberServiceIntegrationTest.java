@@ -403,11 +403,11 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         Member staff = createMember("222222", Role.CENTER_STAFF);
 
         // when
-        List<MemberSearchInfoResponse> responses = memberService.searchMemberInfo(staff, keyword);
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
 
         // then
-        assertEquals(1, responses.size());
-        assertEquals(member.getId(), responses.get(0).getMemberId());
+        assertEquals(1, responses.getMembers().size());
+        assertEquals(member.getId(), responses.getMembers().get(0).getMemberId());
     }
 
     @Test
@@ -425,10 +425,10 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         Member staff = createMember("333333", Role.CENTER_STAFF);
 
         // when
-        List<MemberSearchInfoResponse> responses = memberService.searchMemberInfo(staff, keyword);
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
 
         // then
-        assertEquals(2, responses.size());
+        assertEquals(2, responses.getMembers().size());
     }
 
     @Test
@@ -446,10 +446,10 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         Member staff = createMember("333333", Role.CENTER_STAFF);
 
         // when
-        List<MemberSearchInfoResponse> responses = memberService.searchMemberInfo(staff, keyword);
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
 
         // then
-        assertEquals(1, responses.size());
+        assertEquals(1, responses.getMembers().size());
     }
 
 
