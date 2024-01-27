@@ -82,7 +82,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (!schedule.getWriter().getId().equals(member.getId())) {
             throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
         }
-        schedule = scheduleMapper.updateScheduleToSchedule(request, schedule);
+
+        schedule.updateSchedule(request);
 
         return scheduleMapper.UUIDtoScheduleId(schedule.getId());
     }

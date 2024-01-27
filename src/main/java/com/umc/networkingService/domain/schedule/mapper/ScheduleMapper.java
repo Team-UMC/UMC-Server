@@ -79,10 +79,6 @@ public class ScheduleMapper {
                 .build();
     }
 
-    public Schedule updateScheduleToSchedule(UpdateSchedule request, Schedule schedule) {
-        schedule.updateSchedule(request);
-        return schedule;
-    }
 
     public ScheduleId UUIDtoScheduleId(UUID scheduleId) {
         return ScheduleId.builder()
