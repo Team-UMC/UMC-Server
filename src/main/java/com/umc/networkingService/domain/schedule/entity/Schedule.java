@@ -2,12 +2,16 @@ package com.umc.networkingService.domain.schedule.entity;
 
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -18,6 +22,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class Schedule extends BaseEntity {
@@ -52,4 +58,14 @@ public class Schedule extends BaseEntity {
 
     @Column(nullable = false)
     private HostType hostType;
+
+    public void updateSchedule(UpdateSchedule request) {
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.startDateTime = request.getStartDateTime();
+        this.endDateTime = request.getEndDateTime();
+        this.semesterPermission = request.getSemesterPermission();
+        this.hostType = request.getHostType();
+        this.placeSetting = request.getPlaceSetting();
+    }
 }
