@@ -317,7 +317,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         MyBoardPagingResponse response = createMockMyBoardPagingResponse();
 
         // when
-        when(boardService.showBoardsByMember(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
+        when(boardService.showBoardsByMemberForApp(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         // then

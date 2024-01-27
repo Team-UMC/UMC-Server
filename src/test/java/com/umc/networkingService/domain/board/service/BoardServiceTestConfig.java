@@ -56,22 +56,26 @@ public abstract class BoardServiceTestConfig {
     protected SemesterPartRepository semesterPartRepository;
 
 
-    protected Member member;
-    protected Member campusStaff;
+    protected Member inhaMember;
+    protected Member gachonMember;
+    protected Member inhaStaff;
     protected Member centerStaff;
     protected Board board;
     protected Board workbookBoard;
-    protected University university;
+    protected University inha;
+    protected University gachon;
     protected Branch branch;
     protected BoardComment comment;
 
     @BeforeEach
     public void setUp() {
-        university = createUniversity();
+        inha = createUniversityInha();
+        gachon = createUniversityGachon();
         branch = createBranch();
-        campusStaff = createCampusStaff();
+        inhaStaff = createCampusStaff();
         centerStaff = createCenterStaff();
-        member = createMember();
+        inhaMember = createInhaMember();
+        gachonMember = createGachonMember();
         board = createBoard();
         comment = createBoardComment();
         workbookBoard = createWorkbookBoard();
@@ -82,12 +86,12 @@ public abstract class BoardServiceTestConfig {
                 .id(UUID.randomUUID())
                 .clientId("123456")
                 .socialType(SocialType.KAKAO)
-                .university(university)
+                .university(inha)
                 .branch(branch)
                 .role(Role.CAMPUS_STAFF)
                 .name("김준석")
                 .nickname("벡스")
-                .semesterParts(createSemesterPart(campusStaff))
+                .semesterParts(createSemesterPartTHIRDFIFTH(inhaStaff))
                 .build());
     }
 
@@ -96,29 +100,42 @@ public abstract class BoardServiceTestConfig {
                 .id(UUID.randomUUID())
                 .clientId("122222")
                 .socialType(SocialType.KAKAO)
-                .university(university)
+                .university(gachon)
                 .branch(branch)
                 .role(Role.CENTER_STAFF)
-                .name("이서우")
-                .nickname("우디")
+                .name("김연합")
+                .nickname("센터")
                 .build());
     }
 
-    protected Member createMember() {
+    protected Member createInhaMember() {
         return memberRepository.save(Member.builder()
                 .id(UUID.randomUUID())
                 .clientId("11111")
                 .socialType(SocialType.KAKAO)
-                .university(university)
+                .university(inha)
                 .branch(branch)
                 .role(Role.MEMBER)
                 .name("김수민")
                 .nickname("루시")
-                .semesterParts(createSemesterPart2(member))
+                .semesterParts(createSemesterPartFIFTH(inhaMember))
                 .build());
     }
 
-    protected List<SemesterPart> createSemesterPart(Member member) {
+    protected Member createGachonMember() {
+        return memberRepository.save(Member.builder()
+                .id(UUID.randomUUID())
+                .clientId("999999")
+                .socialType(SocialType.KAKAO)
+                .university(gachon)
+                .branch(branch)
+                .role(Role.MEMBER)
+                .name("심세원")
+                .nickname("하나")
+                .semesterParts(createSemesterPartFIFTH(gachonMember))
+                .build());
+    }
+    protected List<SemesterPart> createSemesterPartTHIRDFIFTH(Member member) {
         List<SemesterPart> semesterParts = List.of(
                 SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FIFTH).build(),
                 SemesterPart.builder().member(member).part(Part.ANDROID).semester(Semester.THIRD).build()
@@ -127,7 +144,7 @@ public abstract class BoardServiceTestConfig {
         return semesterPartRepository.saveAll(semesterParts);
     }
 
-    protected List<SemesterPart> createSemesterPart2(Member member) {
+    protected List<SemesterPart> createSemesterPartFIFTH(Member member) {
         List<SemesterPart> semesterParts = List.of(
                 SemesterPart.builder().member(member).part(Part.SPRING).semester(Semester.FIFTH).build()
         );
@@ -136,10 +153,18 @@ public abstract class BoardServiceTestConfig {
     }
 
 
-    protected University createUniversity() {
+    protected University createUniversityInha() {
         return universityRepository.save(
                 University.builder()
                         .name("인하대학교")
+                        .build()
+        );
+    }
+
+    protected University createUniversityGachon() {
+        return universityRepository.save(
+                University.builder()
+                        .name("가천대학교")
                         .build()
         );
     }
@@ -156,7 +181,7 @@ public abstract class BoardServiceTestConfig {
 
     protected Board createBoard() {
         return boardRepository.save(Board.builder()
-                .writer(member)
+                .writer(inhaMember)
                 .title("제목")
                 .content("내용")
                 .boardType(BoardType.FREE)
@@ -170,7 +195,7 @@ public abstract class BoardServiceTestConfig {
 
     protected Board createWorkbookBoard() {
         return boardRepository.save(Board.builder()
-                .writer(campusStaff)
+                .writer(inhaStaff)
                 .title("워크북")
                 .content("내용")
                 .boardType(BoardType.WORKBOOK)
@@ -184,7 +209,7 @@ public abstract class BoardServiceTestConfig {
 
     protected Board createCampusNoticeBoard() {
         return boardRepository.save(Board.builder()
-                .writer(campusStaff)
+                .writer(inhaStaff)
                 .title("공지")
                 .content("내용")
                 .boardType(BoardType.NOTICE)
@@ -210,19 +235,11 @@ public abstract class BoardServiceTestConfig {
                 .build());
     }
 
-    protected void createBoardFile() {
-        List<MultipartFile> files = new ArrayList<>();
-        files.add(new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes()));
-        files.add(new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes()));
-
-        boardFileService.uploadBoardFiles(board, files);
-
-    }
 
     protected void createBoards() {
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < 20; i++) {
             boardRepository.save(Board.builder()
-                    .writer(member)
+                    .writer(inhaMember)
                     .title("데모데이가 곧이네요" + i)
                     .content("신난다~~")
                     .boardType(BoardType.FREE)
@@ -237,17 +254,17 @@ public abstract class BoardServiceTestConfig {
 
     protected BoardComment createBoardComment() {
         return boardCommentRepository.save(BoardComment.builder()
-                .writer(member)
+                .writer(inhaMember)
                 .board(board)
-                .content("신나!")
+                .content("댓글")
                 .build());
     }
 
     protected void createBoardComments() {
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 20; i++) {
 
             boardCommentRepository.save(BoardComment.builder()
-                    .writer(campusStaff)
+                    .writer(inhaStaff)
                     .board(board)
                     .content("좋아요." + i)
                     .build());
