@@ -46,6 +46,6 @@ public class BranchRequest {
     public static class ConnectBranchDTO{
 
         @NotNull
-        private List<UUID> universityIdList;
+        private List<UUID> universityIds;
     }
 }

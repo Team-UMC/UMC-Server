@@ -1,103 +1,137 @@
 package com.umc.networkingService.domain.branch.service;
 
 
+import com.umc.networkingService.domain.branch.converter.BranchConverter;
 import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.execption.BranchHandler;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
-import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.domain.university.repository.UniversityRepository;
-import com.umc.networkingService.global.common.Semester;
+import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.utils.S3FileComponent;
+import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.BDDAssumptions.given;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+@DisplayName("Branch 서비스의 ")
 @SpringBootTest
-class BranchServiceTest {
+class BranchServiceTest extends ServiceIntegrationTestConfig {
 
-    @InjectMocks
+    @Autowired
     private BranchServiceImpl branchService;
 
-    @Mock
+    @Autowired
     private BranchRepository branchRepository;
 
-    @Mock
-    private UniversityRepository universityRepository;
-
-    @Mock
-    private BranchUniversityRepository branchUniversityRepository;
-
-    @Mock
+    @MockBean
     private S3FileComponent s3FileComponent;
 
+
     @Test
-    @DisplayName("지부 생성 - 성공")
+    @DisplayName("지부 생성 (이미지 없는 경우) - 성공")
     @Transactional
     void postBranch_Success() {
         // given
         BranchRequest.PostBranchDTO request = BranchRequest.PostBranchDTO.builder()
                 .name("branchTestPost")
                 .semester(Semester.FIRST)
-                .description("Branch Description")
                 .image(null)
+                .description("Branch Description")
                 .build();
 
         // when
         UUID id = branchService.postBranch(request);
 
         // then
-        assertEquals(request.getName(), branchRepository.findById(id).get().getName());
-        assertEquals(request.getDescription(), branchRepository.findById(id).get().getDescription());
+        Optional<Branch> optionalBranch = branchRepository.findById(id);
+        assertTrue(optionalBranch.isPresent());
+        Branch newBranch=optionalBranch.get();
+
+        assertEquals(request.getName(), newBranch.getName());
+        assertEquals(request.getDescription(), newBranch.getDescription());
 
         branchRepository.deleteById(id);
     }
 
     @Test
-    @DisplayName("지부 수정 - 성공")
+    @DisplayName("지부 수정 (이미지 있는 경우) - 성공")
     @Transactional
-    void patchBranch_Success() {
+    void patchBranch_Success_img() {
         // given
-        UUID branchId = UUID.randomUUID();
+        MockMultipartFile image = new MockMultipartFile(
+                "image",
+                "branch.png",
+                "image/png",
+                "이미지 데이터".getBytes()
+        );
+        // 테스트에서는 s3 파일 생성 X
+        given(s3FileComponent.uploadFile(any(), any())).willReturn("s3 url");
+
         BranchRequest.PatchBranchDTO request =BranchRequest.PatchBranchDTO.builder()
-                .branchId(branchId)
+                .branchId(branch.getId())
                 .name("Updated Branch")
                 .description("Updated Description")
-                .image(null)
+                .image(image)
+                .semester(Semester.FIFTH)
                 .build();
-
-        Branch existingBranch = Branch.builder()
-                .id(branchId)
-                .name("Branch Name")
-                .description("Branch Description")
-                .semester(Semester.FIRST)
-                .build();
-
-        branchRepository.save(existingBranch);
 
         // when
         branchService.patchBranch(request);
 
         // then
-        assertEquals(request.getName(), branchRepository.findById(branchId).get().getName());
-        assertEquals(request.getDescription(), branchRepository.findById(branchId).get().getDescription());
+        Optional<Branch> optionalBranch = branchRepository.findById(branch.getId());
+        assertTrue(optionalBranch.isPresent());
+        Branch updatedBranch=optionalBranch.get();
 
-        branchRepository.deleteById(branchId);
+        assertEquals(request.getName(), updatedBranch.getName());
+        assertEquals(request.getDescription(), updatedBranch.getDescription());
+
+    }
+
+
+    @Test
+    @DisplayName("지부 수정 (이미지 없는 경우) - 성공")
+    @Transactional
+    void patchBranch_Success() {
+        // given
+        BranchRequest.PatchBranchDTO request =BranchRequest.PatchBranchDTO.builder()
+                .branchId(branch.getId())
+                .name("Updated Branch")
+                .description("Updated Description")
+                .image(null)
+                .semester(Semester.FIFTH)
+                .build();
+
+        // when
+        branchService.patchBranch(request);
+
+        // then
+        Optional<Branch> optionalBranch = branchRepository.findById(branch.getId());
+        assertTrue(optionalBranch.isPresent());
+        Branch updatedBranch=optionalBranch.get();
+
+        assertEquals(request.getName(), updatedBranch.getName());
+        assertEquals(request.getDescription(), updatedBranch.getDescription());
+
     }
 
     @Test
@@ -115,81 +149,30 @@ class BranchServiceTest {
         assertThrows(BranchHandler.class, () -> branchService.patchBranch(request));
     }
 
-    @Test
-    @DisplayName("지부 삭제 - 성공")
-    @Transactional
-    void deleteBranch_Success() {
-        // given
-        UUID branchId = UUID.randomUUID();
-        Branch existingBranch =
-                Branch.builder()
-                        .id(branchId)
-                        .name("delete branch")
-                        .description("")
-                        .image(null)
-                        .semester(Semester.FIRST)
-                        .build();
-        branchRepository.save(existingBranch);
-
-        // when
-        branchService.deleteBranch(branchId);
-
-        // then
-        verify(branchRepository).findById(branchId);
-        verify(branchRepository).delete(existingBranch);
-        assertNotEquals(null, existingBranch.getDeletedAt());
-    }
-
-    @Test
-    @DisplayName("지부 삭제 - 존재하지 않는 지부로 실패")
-    @Transactional
-    void deleteBranch_NonExisting_Failure() {
-        // given
-        UUID nonExistingBranchId = UUID.randomUUID();
-
-
-        // when & then
-        assertThrows(BranchHandler.class, () -> branchService.deleteBranch(nonExistingBranchId));
-        verify(branchRepository).findById(nonExistingBranchId);
-        verify(branchRepository, never()).delete(any());
-    }
 
     @Test
     @DisplayName("지부 리스트 조회 - 성공")
     @Transactional(readOnly = true)
     void joinBranchList_Success() {
-        // given
-        Semester semester = Semester.FIFTH;
-        Branch branch1 =
-                Branch.builder()
-                        .image(null)
-                        .name("join branch list 1")
-                        .description("")
-                        .semester(Semester.FIFTH)
-                        .build();
 
-        Branch branch2 =
-                Branch.builder()
-                        .image(null)
-                        .name("join branch list 2")
-                        .description("")
-                        .semester(Semester.FIFTH)
-                        .build();
-        List<Branch> branches = List.of(
-                branch1
-                , branch2
-        );
-        branchRepository.saveAll(branches);
+        Semester semester = branch.getSemester();
+        System.out.println("Test Semester: " + semester); //로그
 
         // when
         BranchResponse.JoinBranchListDTO result = branchService.joinBranchList(semester);
 
         // then
-        assertEquals(branches.size(), result.getBranchList().size());
-        assertEquals(branches.get(0).getName(), result.getBranchList().get(0).getName());
-        assertEquals(branches.get(1).getName(), result.getBranchList().get(1).getName());
+        List<BranchResponse.BranchDTO> branchList = result.getBranchList();
 
-        branchRepository.deleteAll(branches);
+        System.out.println("Actual Branch List Size: " + branchList.size()); // 로그
+        System.out.println("Expected Branch List Size: " + branchRepository.findAllBySemester(semester).size()); // 로그
+        System.out.println("Actual Branch List: " + branchList); // 로그
+        System.out.println("Expected Branch List: " + branchRepository.findAllBySemester(semester)); // 로그
+
+        List<Branch> branchs = branchRepository.findAllBySemester(semester);
+
+        assertEquals(branchs.size(), branchList.size());
+
     }
 
     @Test
@@ -197,36 +180,18 @@ class BranchServiceTest {
     @Transactional(readOnly = true)
     void joinBranchDetail_Success() {
         // given
-        UUID branchId = UUID.randomUUID();
-        Branch branch =
-                Branch.builder()
-                        .id(branchId)
-                        .name("join branch detail")
-                        .description("")
-                        .image(null)
-                        .semester(Semester.FIRST)
-                        .build();
-        branchRepository.save(branch);
-
-        University university =
-                University.builder()
-                        .name("join branch detail university")
-                        .build();
-        universityRepository.save(university);
-
-        BranchUniversity branchUniversity = new BranchUniversity(UUID.randomUUID(),branch, university);
-        branchUniversityRepository.save(branchUniversity);
 
 
         // when
-        BranchResponse.JoinBranchDetailDTO result = branchService.joinBranchDetail(branchId);
+        BranchResponse.JoinBranchDetailDTO result = branchService.joinBranchDetail(branch.getId());
 
         // then
-        assertEquals(university.getName(), result.getUniversityList().get(0).getName());
-        assertEquals(0, result.getUniversityList().size());
+        List<BranchUniversity> branchUniversities = branchUniversityRepository.findAllByBranch(branch);
 
-        branchRepository.delete(branch);
-        universityRepository.delete(university);
+        System.out.println("Actual Branch University List Size: " + branchUniversities.size()); // 로그
+        System.out.println("Expected Branch University List Size: " + result.getUniversities()); // 로그
+        assertEquals(branchUniversities.size(), result.getUniversities().size());
+
     }
 
     @Test
@@ -239,4 +204,30 @@ class BranchServiceTest {
         // when & then
         assertThrows(BranchHandler.class, () -> branchService.joinBranchDetail(nonExistingBranchId));
     }
+
+    @Test
+    @DisplayName("지부 삭제 - 성공")
+    @Transactional
+    void deleteBranch_Success() {
+        // given
+
+        // when
+        branchService.deleteBranch(branch.getId());
+
+        // then
+        assertFalse(branchRepository.existsById(branch.getId()));
+    }
+
+    @Test
+    @DisplayName("지부 삭제 - 존재하지 않는 지부로 실패")
+    @Transactional
+    void deleteBranch_NonExisting_Failure() {
+        // given
+        UUID nonExistingBranchId = UUID.randomUUID();
+
+
+        // when & then
+        assertThrows(BranchHandler.class, () -> branchService.deleteBranch(nonExistingBranchId));
+    }
+
 }

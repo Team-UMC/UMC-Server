@@ -39,11 +39,11 @@ public enum ErrorCode {
 
     // Auth
     EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AUTH001", "JWT가 없습니다."),
-    INVALID_JWT(HttpStatus.UNAUTHORIZED, "AUTH002", "유효하지 않은 JWT입니다."),
-    EXPIRED_MEMBER_JWT(HttpStatus.UNAUTHORIZED, "AUTH003", "만료된 JWT입니다."),
-    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "AUTH004", "지원하지 않는 JWT입니다."),
-    INVALID_ID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH005", "유효하지 않은 ID TOKEN입니다."),
-    INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "AUTH006", "유효하지 않은 ACCESS TOKEN입니다."),
+    EXPIRED_MEMBER_JWT(HttpStatus.UNAUTHORIZED, "AUTH002", "만료된 JWT입니다."),
+    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "AUTH003", "지원하지 않는 JWT입니다."),
+    INVALID_ID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH004", "유효하지 않은 ID TOKEN입니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "AUTH005", "유효하지 않은 ACCESS TOKEN입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH006", "유효하지 않은 REFRESH TOKEN입니다."),
     FAILED_SOCIAL_LOGIN(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH007", "소셜 로그인에 실패하였습니다."),
     FAILED_GITHUB_AUTHENTICATION(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH008", "깃허브 서버와 통신이 실패하였습니다."),
 
@@ -59,6 +59,7 @@ public enum ErrorCode {
     BRANCH_SEMESTER_EMPTY(HttpStatus.CONFLICT, "BRANCH004", "Branch 기수가 비어있거나, 잘못된 값임니다."),
     BRANCH_NAME_EMPTY(HttpStatus.CONFLICT, "BRANCH002", "Branch 이름이 없습니다."),
     BRANCH_DESCRIPTION_EMPTY(HttpStatus.CONFLICT, "BRANCH003", "Branch 설명이 없습니다."),
+    BRANCH_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR,"BRANCH005", "Branch 저장에 실패 했습니다"),
 
     //BranchUniversity
     BRANCH_UNIVERSITY_NOT_FOUND(HttpStatus.CONFLICT, "BRANCH_UNIVERSITY001", "존재하지 않는 BranchUniversity입니다."),

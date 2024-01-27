@@ -50,6 +50,13 @@ public class BranchServiceImpl implements BranchService {
                         (request
                         ,uploadImageS3(BRANCH_CATEGORY,request.getImage())
                         );
+
+        Branch savedBranch = branchRepository.save(newBranch);
+        if (savedBranch.getId() == null) {
+            throw new BranchHandler(ErrorCode.BRANCH_SAVE_FAIL);
+        }
+
+
         return branchRepository.save(newBranch).getId();
     }
 
@@ -84,6 +91,7 @@ public class BranchServiceImpl implements BranchService {
             throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
         }
         Branch branch = optionalBranch.get();
+        branchUniversityRepository.deleteByBranch(branch);
         branchRepository.delete(branch);
 
     }
@@ -94,20 +102,20 @@ public class BranchServiceImpl implements BranchService {
             throw new BranchHandler(ErrorCode.SEMESTER_NOT_VALID);
         }
 
-        List<Branch> branchs = branchRepository.findBySemester(semester);
+        List<Branch> branchs = branchRepository.findAllBySemester(semester);
         return BranchConverter.toJoinBranchListDTO(branchs);
     }
 
     @Transactional(readOnly = true)        //지부 상세 조회
     public BranchResponse.JoinBranchDetailDTO joinBranchDetail(UUID branchId) {
-        Optional<Branch> optionalBranch = branchRepository.findById(branchId); //이미 검증된 branchId가 들어옴
+        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
         if(optionalBranch.isEmpty()){
             throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
         }
         Branch branch = optionalBranch.get();
 
         List<BranchUniversity> branchUniversities
-                = branchUniversityRepository.findByBranch(branch);
+                = branchUniversityRepository.findAllByBranch(branch);
 
         List<University> universityList = branchUniversities.stream()
                 .map(BranchUniversity::getUniversity)

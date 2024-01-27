@@ -45,6 +45,8 @@ public abstract class ServiceIntegrationTestConfig {
     protected BranchUniversity branchUniversity;
     protected Member member;
 
+    protected University notLinkedBranchUniversity;
+
     @BeforeEach
     public void setUp() {
         member = createMember("111111", Role.MEMBER);
@@ -52,6 +54,7 @@ public abstract class ServiceIntegrationTestConfig {
         university = createUniversity();
         branch = createBranch();
         branchUniversity = createBranchUniversity();
+        notLinkedBranchUniversity = createNotLinkBranchUniversity();
     }
 
     @AfterEach
@@ -121,6 +124,14 @@ public abstract class ServiceIntegrationTestConfig {
                         .branch(branch)
                         .university(university)
                         .isActive(Boolean.TRUE)
+                        .isActive(Boolean.TRUE)
+                        .build()
+        );
+    }
+    protected  University createNotLinkBranchUniversity() {
+        return universityRepository.save(
+                University.builder()
+                        .name("연결안함")
                         .build()
         );
     }

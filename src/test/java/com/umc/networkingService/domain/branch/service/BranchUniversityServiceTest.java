@@ -7,11 +7,13 @@ import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
-import com.umc.networkingService.global.common.Semester;
+import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,45 +26,42 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@DisplayName("BranchUniversity 서비스의 ")
 @SpringBootTest
-@Transactional
-class BranchUniversityServiceTest {
+class BranchUniversityServiceTest extends ServiceIntegrationTestConfig {
 
-    @InjectMocks
+    @Autowired
     private BranchUniversityServiceImpl branchUniversityService;
 
-    @Mock
+    @Autowired
     private BranchRepository branchRepository;
 
-    @Mock
+    @Autowired
     private UniversityRepository universityRepository;
 
-    @Mock
+    @Autowired
     private BranchUniversityRepository branchUniversityRepository;
+
 
     @Test
     @DisplayName("지부, 대학 연결 - 성공")
+    @Transactional
     void connectBranchUniversity_Success() {
         // given
-        UUID branchId = UUID.randomUUID();
-        Branch branch = new Branch(branchId, "branch connect test", "branch description", null, Semester.FIRST);
-
-        University university1 = new University(UUID.randomUUID(), null,"", "", "university1", 100L);
-        University university2 = new University(UUID.randomUUID(), null, "", "", "university2",80L);
-        List<UUID> universityIds = List.of(university1.getId(), university2.getId());
+        List<UUID> universityIds = List.of(notLinkedBranchUniversity.getId());
 
         // when
-        branchUniversityService.connectBranchUniversity(branchId, universityIds);
+        branchUniversityService.connectBranchUniversity(branch.getId(), universityIds);
 
         // then
-        BranchUniversity branchUniversity = branchUniversityRepository.findByBranchIdAndUniversityId(branchId, university1.getId());
-        assertEquals(2, branchUniversityRepository.findByBranch(branch).size());
-        assertEquals(branchId, branchUniversity.getBranch().getId());
-        assertEquals(university1.getId(), branchUniversity.getUniversity().getId());
+        BranchUniversity branchUniversity = branchUniversityRepository.findByBranchAndUniversity(branch, notLinkedBranchUniversity);
+        assertEquals(branch.getId(), branchUniversity.getBranch().getId());
+        assertEquals(notLinkedBranchUniversity.getId(), branchUniversity.getUniversity().getId());
     }
 
     @Test
     @DisplayName("지부, 대학 연결 - 실패 (유효하지 않은 대학)")
+    @Transactional
     void connectBranchUniversity_InvalidUniversity_Failure() {
         // given
         UUID branchId = UUID.randomUUID();
@@ -70,26 +69,17 @@ class BranchUniversityServiceTest {
 
         // when & then
         assertThrows(BranchUniversityHandler.class, () -> branchUniversityService.connectBranchUniversity(branchId, invalidUniversityIds));
-        verify(branchRepository).findById(branchId);
-        verify(universityRepository, times(2)).existsById(any(UUID.class));
-        verify(branchUniversityRepository, never()).existsByBranchIdAndUniversityId(any(UUID.class), any(UUID.class));
-        verify(branchUniversityRepository, never()).save(any(BranchUniversity.class));
     }
 
     @Test
     @DisplayName("지부, 대학 연결 - 실패 (이미 연결된 대학)")
+    @Transactional
     void connectBranchUniversity_AlreadyConnectedUniversity_Failure() {
         // given
-        UUID branchId = UUID.randomUUID();
-        UUID connectedUniversityId = UUID.randomUUID();
-        List<UUID> universityIds = List.of(connectedUniversityId, UUID.randomUUID());
+        List<UUID> universityIds = List.of(university.getId());
 
         // when & then
-        assertThrows(BranchUniversityHandler.class, () -> branchUniversityService.connectBranchUniversity(branchId, universityIds));
-        verify(branchRepository).findById(branchId);
-        verify(universityRepository, times(2)).existsById(any(UUID.class));
-        verify(branchUniversityRepository, times(2)).existsByBranchIdAndUniversityId(eq(branchId), any(UUID.class));
-        verify(branchUniversityRepository, never()).save(any(BranchUniversity.class));
+        assertThrows(BranchUniversityHandler.class, () -> branchUniversityService.connectBranchUniversity(branch.getId(), universityIds));
     }
 
 }

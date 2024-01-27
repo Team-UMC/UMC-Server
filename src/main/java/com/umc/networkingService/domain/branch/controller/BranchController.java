@@ -6,9 +6,9 @@ import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.service.BranchServiceImpl;
 import com.umc.networkingService.domain.branch.service.BranchUniversityServiceImpl;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.global.common.Semester;
 import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
 import com.umc.networkingService.global.common.base.BaseResponse;
+import com.umc.networkingService.global.common.enums.Semester;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -77,9 +77,9 @@ public class BranchController {
     public BaseResponse<String> connectBranch(
             @CurrentMember Member member,
             @RequestParam("branchId") @ExistBranch UUID branchId,
-            @RequestBody List<UUID> request
+            @RequestBody BranchRequest.ConnectBranchDTO request
     ){
-        branchUniversityService.connectBranchUniversity(branchId,request);
+        branchUniversityService.connectBranchUniversity(branchId,request.getUniversityIds());
         return BaseResponse.onSuccess("지부 대학교 연결 완료");
     }
 
@@ -88,9 +88,9 @@ public class BranchController {
     public BaseResponse<String> disconnectBranch(
             @CurrentMember Member member,
             @RequestParam("branchId") @ExistBranch UUID branchId,
-            @RequestBody List<UUID> request
+            @RequestBody BranchRequest.ConnectBranchDTO request
     ){
-        branchUniversityService.disconnectBranchUniversity(branchId, request);
+        branchUniversityService.disconnectBranchUniversity(branchId, request.getUniversityIds());
         return BaseResponse.onSuccess("지부 대학교 연결 해제 완료");
     }
 

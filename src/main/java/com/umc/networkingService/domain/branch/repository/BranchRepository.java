@@ -12,5 +12,5 @@ import java.util.UUID;
 @Repository
 public interface BranchRepository extends JpaRepository<Branch, UUID>{
     //기수 별로 지부 조회
-    List<Branch> findBySemester(Semester semester);
+    List<Branch> findAllBySemester(Semester semester);
 }

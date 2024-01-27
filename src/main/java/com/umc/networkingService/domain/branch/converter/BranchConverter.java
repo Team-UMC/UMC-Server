@@ -43,7 +43,7 @@ public class BranchConverter {
             List<University> universityList
     ){
         return BranchResponse.JoinBranchDetailDTO.builder()
-                .universityList(universityList.stream()
+                .universities(universityList.stream()
                         .map(university -> BranchResponse.BranchUniversityDTO.builder()
                                 .universityId(university.getId())
                                 .name(university.getName())

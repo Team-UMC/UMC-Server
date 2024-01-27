@@ -14,13 +14,13 @@ import java.util.UUID;
 public interface BranchUniversityRepository extends JpaRepository<BranchUniversity, UUID> {
     Optional<BranchUniversity> findByUniversityAndIsActive(University university, Boolean isActive);
 
-    List<BranchUniversity> findByBranch(Branch branch);
+    List<BranchUniversity> findAllByBranch(Branch branch);
 
     Boolean existsByBranchIdAndUniversityId(UUID branchId, UUID universityId);
 
-    List<BranchUniversity> findByUniversity(University university);
-
-    BranchUniversity findByBranchIdAndUniversityId(UUID branchId, UUID universityId);
+    BranchUniversity findByBranchAndUniversity(Branch branch, University university);
 
     void deleteByBranchIdAndUniversityId(UUID branchId, UUID universityId);
+
+    void deleteByBranch(Branch branch);
 }
