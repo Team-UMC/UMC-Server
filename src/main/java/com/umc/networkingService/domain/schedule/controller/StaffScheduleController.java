@@ -30,6 +30,9 @@ public class StaffScheduleController {
 
     @Operation(summary = "일정 추가 API", description = "운영진 관리 페이지의 일정을 추가하는 API입니다.")
     @PostMapping
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공")
+    })
     public BaseResponse<ScheduleId> createSchedule(@CurrentMember Member member,
                                                    @RequestBody CreateSchedule request) {
 
