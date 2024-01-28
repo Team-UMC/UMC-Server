@@ -5,6 +5,8 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfile
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -14,6 +16,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -101,6 +104,13 @@ public class Member extends BaseEntity {
     // 기수별 파트 업데이트 함수
     public void updateSemesterParts(List<SemesterPart> semesterParts) {
         this.semesterParts = semesterParts;
+    }
+
+    // 가장 마지막 기수 파트를 반환하는 함수
+    public SemesterPart getLatestSemesterPart() {
+        return semesterParts.stream()
+                .max(Comparator.comparing(SemesterPart::getSemester))
+                .orElseThrow(() -> new RestApiException(ErrorCode.NO_SEMESTER_PARTS));
     }
 
     // 깃허브 닉네임 업데이트 함수

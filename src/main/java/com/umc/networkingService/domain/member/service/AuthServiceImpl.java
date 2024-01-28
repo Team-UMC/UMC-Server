@@ -84,8 +84,9 @@ public class AuthServiceImpl implements AuthService {
         semesterPartService.saveSemesterPartInfos(member, request.getSemesterParts());
 
         // 이외의 기본 정보 저장
-        member.setMemberInfo(request.getName(), request.getNickname(),
-                university, branchUniversityService.findBranchByUniversity(university));
+        member.setMemberInfo(request.getName(), request.getNickname(), university,
+                // 대학교와 멤버의 마지막 기수를 통해 지부 정보 조회
+                branchUniversityService.findBranchByUniversityAndSemester(university, member.getLatestSemesterPart().getSemester()));
 
         return new MemberIdResponse(memberService.saveEntity(member).getId());
     }
