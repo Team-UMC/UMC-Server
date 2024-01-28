@@ -55,12 +55,16 @@ public enum ErrorCode {
     EMPTY_BRANCH(HttpStatus.BAD_REQUEST, "BRANCH001", "존재하지 않는 지부입니다."),
 
     // TodoList
-    EMPTY_TODOLIST(HttpStatus.BAD_REQUEST, "TODOLIST001", "존재하지 않은 투두리스트입니다."),
+    EMPTY_TODOLIST(HttpStatus.BAD_REQUEST, "TODOLIST001", "존재하지 않는 투두리스트입니다."),
     NO_AUTHORIZATION_TODOLIST(HttpStatus.BAD_REQUEST, "TODOLIST002", "해당 투두리스트에 대한 수정 권한이 없습니다."),
 
     // Album
-    EMPTY_ALBUM(HttpStatus.BAD_REQUEST, "ALBUM001", "존재하지 않은 앨범입니다."),
+    EMPTY_ALBUM(HttpStatus.BAD_REQUEST, "ALBUM001", "존재하지 않는 앨범입니다."),
     NO_AUTHORIZATION_ALBUM(HttpStatus.BAD_REQUEST, "ALBUM002", "해당 앨범에 대한 수정 권한이 없습니다."),
+
+    // AlbumComment
+    EMPTY_ALBUM_COMMENT(HttpStatus.BAD_REQUEST, "COMMENT001", "존재하지 않는 댓글입니다."),
+    NO_AUTHORIZATION_ALBUM_COMMENT(HttpStatus.BAD_REQUEST, "COMMENT002", "해당 댓글에 대한 수정 권한이 없습니다."),
 
     // Image
     FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다."),

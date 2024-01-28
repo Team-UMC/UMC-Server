@@ -35,7 +35,7 @@ public class AlbumController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<AlbumIdResponse> createAlbum(@CurrentMember Member member,
                                                      @Valid @RequestPart("request")AlbumCreateRequest request,
-                                                     @RequestPart(name = "albumImage", required = false) List<MultipartFile> albumImages) {
+                                                     @RequestPart(name = "albumImages", required = false) List<MultipartFile> albumImages) {
         return BaseResponse.onSuccess(albumService.createAlbum(member, request, albumImages));
     }
 
@@ -50,7 +50,7 @@ public class AlbumController {
     public BaseResponse<AlbumIdResponse> updateAlbum(@CurrentMember Member member,
                                                      @PathVariable(value = "albumId") UUID albumId,
                                                      @Valid @RequestPart("request")AlbumUpdateRequest request,
-                                                     @RequestPart(name = "albumImage", required = false) List<MultipartFile> albumImages) {
+                                                     @RequestPart(name = "albumImages", required = false) List<MultipartFile> albumImages) {
         return BaseResponse.onSuccess(albumService.updateAlbum(member, albumId, request, albumImages));
     }
 

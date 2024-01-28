@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.album.entity;
 
+import com.umc.networkingService.domain.album.dto.request.AlbumCommentUpdateRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
@@ -38,4 +39,7 @@ public class AlbumComment extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    public void update(AlbumCommentUpdateRequest request) {
+        this.content = request.getContent();
+    }
 }
