@@ -13,6 +13,11 @@ public enum Semester {
     FIFTH("5기", "BLUE");
 
     private final String name;
-
     private final String color;
+
+    // 가장 마지막 기수를 반환하는 함수
+    public static Semester getLastSemester() {
+        Semester[] semesters = Semester.values();
+        return semesters[semesters.length - 1];
+    }
 }
