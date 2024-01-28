@@ -50,16 +50,10 @@ public class MemberServiceImpl implements MemberService{
     @Override
     @Transactional
     public MemberIdResponse updateMyProfile(Member loginMember, MultipartFile profileImage, MemberUpdateMyProfileRequest request) {
-
         Member member = loadEntity(loginMember.getId());
 
-        String profileUrl = null;
-
-        // 프로필 이미지 s3 저장
-        if (profileImage != null)
-            profileUrl = s3FileComponent.uploadFile("member", profileImage);
-
-        // 수정된 정보 저장
+        // 사진이 존재한다면 업로드 후 url 저장
+        String profileUrl = uploadProfileImage(profileImage);
         member.updateMemberInfo(request, profileUrl);
 
         return new MemberIdResponse(memberRepository.save(member).getId());
@@ -73,30 +67,11 @@ public class MemberServiceImpl implements MemberService{
         // 수정할 유저 탐색
         Member updateMember = loadEntity(memberId);
 
-        // 직책 수정
-        if (updateMember.getRole().getPriority() <= member.getRole().getPriority()) {
-            // 본인보다 높거나 같은 직책의 운영진의 정보를 수정하려 할 경우
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
-        }
+        // 수정 권한 검증
+        checkUpdateAuthority(member, updateMember, request.getCenterPositions());
 
-        if (member.getRole().getPriority() > 2 && !request.getCenterPositions().isEmpty()) {
-            // 학교, 지부 운영진이 중앙 직책을 수정하려는 경우
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
-        }
-        memberPositionService.saveMemberPositionInfos(updateMember, request.getCampusPositions(), request.getCenterPositions());
-
-        // 직책에 따른 Role 수정
-        Role newRole = findMemberRole(updateMember.getPositions());
-        updateMember.updateRole(newRole);
-
-        // 특정 기수의 파트 변경
-        semesterPartService.saveSemesterPartInfos(updateMember, request.getSemesterParts());
-
-        // 기수 변경에 의해 소속 지부 변경
-        Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
-                updateMember.getUniversity(), updateMember.getLatestSemesterPart().getSemester());
-
-        updateMember.updateBranch(newBranch);
+        // 직책 및 기수별 파트 정보 수정
+        updatePositionAndSemesterPart(updateMember, request);
 
         return new MemberIdResponse(memberRepository.save(updateMember).getId());
     }
@@ -152,9 +127,7 @@ public class MemberServiceImpl implements MemberService{
 
         member.authenticateGithub(gitNickname);
 
-        Member savedMember = memberRepository.save(member);
-
-        return new MemberAuthenticateGithubResponse(savedMember.getGitNickname());
+        return new MemberAuthenticateGithubResponse(member.getGitNickname());
     }
 
     // 깃허브 잔디 이미지 조회 함수
@@ -173,12 +146,7 @@ public class MemberServiceImpl implements MemberService{
     public MemberInquiryPointsResponse inquiryMemberPoints(Member loginMember) {
         Member member = loadEntity(loginMember.getId());
 
-        Page<MemberPoint> usedPointsPage = memberPointRepository.
-                findAllByMemberOrderByCreatedAtDesc(member, PageRequest.of(0, 2));
-        List<MemberInquiryPointsResponse.UsedHistory> usedHistories = usedPointsPage.stream()
-                .map(MemberPoint::getPointType)
-                .map(memberMapper::toUsedHistory)
-                .toList();
+        List<MemberInquiryPointsResponse.UsedHistory> usedHistories = getUsedHistories(member);
 
         return memberMapper.toInquiryPointsResponse(member.getRemainPoint(), usedHistories);
     }
@@ -192,16 +160,7 @@ public class MemberServiceImpl implements MemberService{
         String[] nicknameAndName = validateKeyword(keyword);
 
         // 해당 유저가 본인보다 상위 운영진인 경우 검색 대상에서 제외
-        List<Member> searchedMembers = memberRepository.findAllByNicknameAndName(nicknameAndName[0], nicknameAndName[1]).stream()
-                        .filter(searchedMember -> searchedMember.getRole().getPriority() > member.getRole().getPriority())
-                        .toList();
-
-        List<MemberSearchInfosResponse.MemberInfo> memberInfos = searchedMembers.stream()
-                .map(searchedMember -> memberMapper.toSearchMembersResponse(
-                        searchedMember,
-                        getPositionNamesByType(searchedMember, PositionType.CAMPUS),
-                        getPositionNamesByType(searchedMember, PositionType.CENTER)
-                )).toList();
+        List<MemberSearchInfosResponse.MemberInfo> memberInfos = getMemberInfos(nicknameAndName, member);
 
         return new MemberSearchInfosResponse(memberInfos);
     }
@@ -212,6 +171,42 @@ public class MemberServiceImpl implements MemberService{
         Member loginMember = loadEntity(memberId);
 
         loginMember.updateLastActiveTime(LocalDateTime.now());
+    }
+
+    private String uploadProfileImage(MultipartFile profileImage) {
+        if (profileImage != null) {
+            return s3FileComponent.uploadFile("member", profileImage);
+        }
+        return null;
+    }
+
+    private void checkUpdateAuthority(Member member, Member updateMember, List<String> centerPositions) {
+        if (updateMember.getRole().getPriority() <= member.getRole().getPriority()
+                && !member.getId().equals(updateMember.getId())) {
+            // 본인보다 높거나 같은 직책의 운영진의 정보를 수정하려 할 경우
+            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
+        }
+        if (member.getRole().getPriority() > 2 && !centerPositions.isEmpty()) {
+            // 학교, 지부 운영진이 중앙 직책을 수정하려는 경우
+            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
+        }
+    }
+
+    private void updatePositionAndSemesterPart(Member updateMember, MemberUpdateProfileRequest request) {
+        // 직책 수정
+        memberPositionService.saveMemberPositionInfos(updateMember, request.getCampusPositions(), request.getCenterPositions());
+
+        // 직책에 따른 Role 수정
+        Role newRole = findMemberRole(updateMember.getPositions());
+        updateMember.updateRole(newRole);
+
+        // 특정 기수의 파트 변경
+        semesterPartService.saveSemesterPartInfos(updateMember, request.getSemesterParts());
+
+        // 기수 변경에 의해 소속 지부 변경
+        Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
+                updateMember.getUniversity(), updateMember.getLatestSemesterPart().getSemester());
+        updateMember.updateBranch(newBranch);
     }
 
     // 멤버의 새로운 Role 찾기 함수
@@ -248,7 +243,30 @@ public class MemberServiceImpl implements MemberService{
                 .anyMatch(position -> position.getName().equals("회장") || position.getName().equals("부회장"));
     }
 
+    // 기여도 목록 조회 함수
+    private List<MemberInquiryPointsResponse.UsedHistory> getUsedHistories(Member member) {
+        Page<MemberPoint> usedPointsPage = memberPointRepository.
+                findAllByMemberOrderByCreatedAtDesc(member, PageRequest.of(0, 2));
 
+        return usedPointsPage.stream()
+                .map(MemberPoint::getPointType)
+                .map(memberMapper::toUsedHistory)
+                .toList();
+    }
+
+    // 검색어로 멤버 정보 조회 함수
+    private List<MemberSearchInfosResponse.MemberInfo> getMemberInfos(String[] nicknameAndName, Member member) {
+        List<Member> searchedMembers = memberRepository.findAllByNicknameAndName(nicknameAndName[0], nicknameAndName[1]).stream()
+                .filter(searchedMember -> searchedMember.getRole().getPriority() > member.getRole().getPriority())
+                .toList();
+
+        return searchedMembers.stream()
+                .map(searchedMember -> memberMapper.toSearchMembersResponse(
+                        searchedMember,
+                        getPositionNamesByType(searchedMember, PositionType.CAMPUS),
+                        getPositionNamesByType(searchedMember, PositionType.CENTER)
+                )).toList();
+    }
 
     // 교내 랭킹을 계산하는 함수
     private int calculateMyRank(Member member, University university) {
