@@ -129,6 +129,11 @@ public class Member extends BaseEntity {
         this.role = role;
     }
 
+    // 지부 업데이트 함수
+    public void updateBranch(Branch branch) {
+        this.branch = branch;
+    }
+
     // 최근 활동 시간 업데이트 함수
     public void updateLastActiveTime(LocalDateTime lastActiveTime) {
         this.lastActiveTime = lastActiveTime;

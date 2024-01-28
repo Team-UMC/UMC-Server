@@ -1,6 +1,8 @@
 package com.umc.networkingService.domain.member.service;
 
 
+import com.umc.networkingService.domain.branch.entity.Branch;
+import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
@@ -39,6 +41,7 @@ public class MemberServiceImpl implements MemberService{
     private final SemesterPartService semesterPartService;
     private final MemberPositionService memberPositionService;
     private final FriendService friendService;
+    private final BranchUniversityService branchUniversityService;
 
     private final S3FileComponent s3FileComponent;
     private final GithubMemberClient githubMemberClient;
@@ -88,6 +91,12 @@ public class MemberServiceImpl implements MemberService{
 
         // 특정 기수의 파트 변경
         semesterPartService.saveSemesterPartInfos(updateMember, request.getSemesterParts());
+
+        // 기수 변경에 의해 소속 지부 변경
+        Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
+                updateMember.getUniversity(), updateMember.getLatestSemesterPart().getSemester());
+
+        updateMember.updateBranch(newBranch);
 
         return new MemberIdResponse(memberRepository.save(updateMember).getId());
     }
