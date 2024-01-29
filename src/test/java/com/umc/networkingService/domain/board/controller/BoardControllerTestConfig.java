@@ -2,10 +2,7 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
-import com.umc.networkingService.domain.board.dto.response.BoardPageResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardSearchPageResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.*;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
@@ -207,6 +204,35 @@ public abstract class BoardControllerTestConfig {
                 .isLast(false)
                 .build();
     }
+
+
+    protected BoardNoticePagingResponse createMockMyBoardNoticePagingResponse() {
+        List<BoardNoticePageResponse> boardNoticePageResponses = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            BoardNoticePageResponse boardNoticePageResponse = BoardNoticePageResponse.builder()
+                    .hostType(HostType.CAMPUS)
+                    .boardId(UUID.randomUUID())
+                    .title("제목")
+                    .hitCount(1)
+                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .isFixed(false)
+                    .writer("루시/김수민")
+                    .build();
+            boardNoticePageResponses.add(boardNoticePageResponse);
+        }
+
+
+        // 가상의 페이징 정보 설정
+        return BoardNoticePagingResponse.builder()
+                .page(1)
+                .totalPages(3)
+                .totalElements(30)
+                .boardNoticePageResponses(boardNoticePageResponses)
+                .isFirst(true)
+                .isLast(false)
+                .build();
+    }
+
 
 
 

@@ -1,9 +1,9 @@
 package com.umc.networkingService.domain.board.controller;
 
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.response.*;
 import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentIdResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -311,8 +313,8 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     }
 
     @Test
-    @DisplayName("특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
-    public void showMemberBoardsTest() throws Exception {
+    @DisplayName("App용 특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
+    public void showMemberBoardsTestForApp() throws Exception {
         // given
         MyBoardPagingResponse response = createMockMyBoardPagingResponse();
 
@@ -322,7 +324,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
 
         // then
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/boards/member")
+                        .get("/boards/member/app")
                         .param("keyword", "데모데이")
                         .param("page", "0")
                         .header("Authorization", accessToken))
@@ -333,5 +335,57 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 .andExpect(jsonPath("$.result").exists());
     }
 
+
+    @Test
+    @DisplayName("WEB용 특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
+    public void showMemberBoardsTestForWeb() throws Exception {
+        // given
+        MyBoardPagingResponse response = createMockMyBoardPagingResponse();
+
+        // when
+        when(boardService.showBoardsByMemberForWeb(eq(member), any(HostType.class), any(BoardType.class), any(String.class), any(Pageable.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/boards/member/web")
+                        .param("host", "CENTER")
+                        .param("board", "FREE")
+                        .param("keyword", "")
+                        .param("page", "0")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
+
+
+    
+    //스프링 시큐리티 권한 테스트 안됨
+    @Test
+    @DisplayName("운영진용 교내 공지사항 조회 테스트")
+    public void showStaffNoticesTest() throws Exception {
+        //given
+        BoardNoticePagingResponse response = createMockMyBoardNoticePagingResponse();
+        //when
+        when(staffBoardService.showNotices(eq(member), any(HostType.class), any(String.class), any(Pageable.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+        // then
+        mockMvc.perform(get("/staff/boards/notices")
+                        .with(user("su").roles("STAFF"))
+                        .param("host", "CENTER")
+                        .param("keyword", "")
+                        .param("page", "0")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
 }
+
+
 

@@ -41,7 +41,7 @@ public class StaffBoardController {
     })
     @GetMapping("notices")
     public BaseResponse<BoardNoticePagingResponse> showNotices(@CurrentMember Member member,
-                                                               @RequestParam(name = "hostType") HostType hostType,
+                                                               @RequestParam(name = "host") HostType hostType,
                                                                @RequestParam(name = "keyword", required = false) String keyword,
                                                                @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                @Parameter(hidden = true) Pageable pageable) {
