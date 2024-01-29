@@ -85,38 +85,5 @@ public class UniversityController {
         return BaseResponse.onSuccess("먹이주기 성공");
     }
 
-    @Operation(summary = "학교 생성하기 API",description = "학교 생성하기 API")
-    @PostMapping("")
-    public BaseResponse<UUID>
-    createUniversity(
-            @CurrentMember Member member,
-            @RequestBody @Valid UniversityRequest.createUniversity request
-            )
-    {
-        return BaseResponse.onSuccess(universityService.createUniversity(request));
-    }
-
-    @Operation(summary = "학교 삭제하기 API",description = "학교 삭제하기 API")
-    @DeleteMapping("")
-    public BaseResponse<String>
-    deleteUniversity(
-            @CurrentMember Member member,
-            @RequestBody @Valid UUID universityId
-    ){
-        universityService.deleteUniversity(universityId);
-        return BaseResponse.onSuccess("학교 삭제 완료");
-    }
-
-    @Operation(summary = "학교 정보 수정하기 API",description = "학교 정보 수정하기 API")
-    @PatchMapping("")
-    public BaseResponse<String>
-    patchUniversity(
-            @CurrentMember Member member,
-            @RequestBody @Valid UniversityRequest.patchUniversity request
-    ){
-        universityService.patchUniversity(request);
-        return BaseResponse.onSuccess("학교 정보 수정 완료");
-    }
-
 }
 
