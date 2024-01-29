@@ -51,6 +51,7 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
 
         //then
         assertThat(universityList.size()).isEqualTo(universityRepository.findAll().size());
+        assertThat(universityList.get(0).getUniversityName()).isEqualTo(university.getName());
     }
 
     @Test
@@ -68,7 +69,7 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
 
     @Test
     @DisplayName("전체 학교 랭킹 조회 - 성공")
-    @Transactional (readOnly = true)
+    @Transactional
     public void joinUniversityRankingListTest_Success() {
         //given
         universityRepository.save(
@@ -89,7 +90,7 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
 
     @Test
     @DisplayName("우리 학교 전체 기여도 랭킹 조회 - 성공")
-    @Transactional (readOnly = true)
+    @Transactional
     public void joinContributionRankingListTest_Success() {
         //given
         memberRepository.save(
@@ -109,13 +110,13 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
 
         //then
         assertThat(contributionRankList.size()).isEqualTo(2);
-        assertEquals(contributionRankList.get(0).getName(),member.getName());
-        assertEquals(contributionRankList.get(1).getName(),"2위");
+        assertEquals(contributionRankList.get(0).getName(), member.getName());
+        assertEquals("2위", contributionRankList.get(1).getName());
     }
 
     @Test
     @DisplayName("우리 학교 마스코트 조회 - 성공")
-    @Transactional (readOnly = true)
+    @Transactional
     public void joinUniversityMascotTest_Success() {
         //given
         System.out.println(member.getUniversity().getMascot().getDialogue());
