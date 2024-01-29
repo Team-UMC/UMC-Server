@@ -4,7 +4,10 @@ import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
 import com.umc.networkingService.domain.album.dto.response.AlbumIdResponse;
 import com.umc.networkingService.domain.album.entity.Album;
+import com.umc.networkingService.domain.album.entity.AlbumHeart;
+import com.umc.networkingService.domain.album.mapper.AlbumHeartMapper;
 import com.umc.networkingService.domain.album.mapper.AlbumMapper;
+import com.umc.networkingService.domain.album.repository.AlbumHeartRepository;
 import com.umc.networkingService.domain.album.repository.AlbumRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
@@ -25,8 +28,11 @@ public class AlbumServiceImpl implements AlbumService{
     private final AlbumRepository albumRepository;
     private final AlbumMapper albumMapper;
     private final AlbumImageService albumImageService;
+    private final AlbumHeartRepository albumHeartRepository;
+    private final AlbumHeartMapper albumHeartMapper;
 
     @Override
+    @Transactional
     public AlbumIdResponse createAlbum(Member member, AlbumCreateRequest request, List<MultipartFile> albumImages) {
 
         Album album = albumRepository.save(albumMapper.createAlbum(member, request));
@@ -71,5 +77,32 @@ public class AlbumServiceImpl implements AlbumService{
         album.delete();
 
         return new AlbumIdResponse(album.getId());
+    }
+
+    /*
+    @Override
+    public AlbumPagingResponse showAlbums(Member member, Pageable pageable) {
+        return albumMapper.toAlbumPagingResponse(albumRepository.findAllAlbums)
+    }
+
+     */
+
+    @Override
+    @Transactional
+    public AlbumIdResponse toggleAlbumLike(Member member, UUID albumId) {
+        Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
+                ErrorCode.EMPTY_ALBUM));
+
+        AlbumHeart albumHeart = albumHeartRepository.findByMemberAndAlbum(member, album)
+                .orElseGet(() -> {
+                    AlbumHeart newHeart = albumHeartMapper.toAlbumHeartEntity(album, member);
+                    albumHeartRepository.save(newHeart);
+                    return newHeart;
+                });
+
+        albumHeart.toggleHeart();
+        album.setHeartCount(albumHeart.isChecked());
+
+        return new AlbumIdResponse(albumId);
     }
 }

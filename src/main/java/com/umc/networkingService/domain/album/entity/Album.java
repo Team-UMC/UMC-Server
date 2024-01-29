@@ -63,4 +63,11 @@ public class Album extends BaseEntity {
     public void decreaseCommentCount() {
         this.commentCount--;
     }
+
+    public void setHeartCount(boolean isChecked) {
+        if(isChecked)
+            this.heartCount++;
+        else
+            this.heartCount--;
+    }
 }
