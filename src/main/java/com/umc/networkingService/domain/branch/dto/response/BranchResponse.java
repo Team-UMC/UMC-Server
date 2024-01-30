@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.branch.dto.response;
 
+import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.global.common.enums.Semester;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,15 +16,15 @@ public class BranchResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class JoinBranchListDTO{
-        List<BranchDTO> branchList;
+    public static class JoinBranchs{
+        List<JoinBranch> branchs;
     }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class BranchDTO{
+    public static class JoinBranch{
         UUID branchId;
         String name;
         String description;
@@ -35,16 +36,16 @@ public class BranchResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class JoinBranchDetailDTO{
+    public static class JoinBranchDetails{
         //todo: 뷰애 맞춰 고치기
-        List<BranchUniversityDTO> universities;
+        List<JoinBranchDetail> universities;
     }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class BranchUniversityDTO{
+    public static class JoinBranchDetail{
         UUID universityId;
         String name;
     }

@@ -97,7 +97,7 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Transactional(readOnly = true)        //지부 리스트 조회
-    public BranchResponse.JoinBranchListDTO joinBranchList(Semester semester) {
+    public BranchResponse.JoinBranchs joinBranchList(Semester semester) {
         if(semester == null){
             throw new BranchHandler(ErrorCode.SEMESTER_NOT_VALID);
         }
@@ -107,7 +107,7 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Transactional(readOnly = true)        //지부 상세 조회
-    public BranchResponse.JoinBranchDetailDTO joinBranchDetail(UUID branchId) {
+    public BranchResponse.JoinBranchDetails joinBranchDetail(UUID branchId) {
         Optional<Branch> optionalBranch = branchRepository.findById(branchId);
         if(optionalBranch.isEmpty()){
             throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);

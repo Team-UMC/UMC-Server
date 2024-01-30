@@ -31,7 +31,7 @@ public class BranchController {
 
     @Operation(summary = "지부 리스트 정보 조회 API")
     @GetMapping("")
-    public BaseResponse<BranchResponse.JoinBranchListDTO> joinBranchList(
+    public BaseResponse<BranchResponse.JoinBranchs> joinBranchList(
             @CurrentMember Member member,
             @RequestParam("semester") Semester semester //기수별로 조회해서, 페이징 생략
     ){
@@ -40,7 +40,7 @@ public class BranchController {
 
     @Operation(summary = "지부 세부 정보 조회 API")
     @GetMapping("/detail")
-    public BaseResponse<BranchResponse.JoinBranchDetailDTO> joinBranchDetail(
+    public BaseResponse<BranchResponse.JoinBranchDetails> joinBranchDetail(
             @CurrentMember Member member,
             @RequestParam("branchId") @ExistBranch UUID branchId
     ){

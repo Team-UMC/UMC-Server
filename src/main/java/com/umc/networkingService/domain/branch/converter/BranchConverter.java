@@ -23,12 +23,12 @@ public class BranchConverter {
                 .build();
     }
 
-    public static BranchResponse.JoinBranchListDTO toJoinBranchListDTO(
+    public static BranchResponse.JoinBranchs toJoinBranchListDTO(
             List<Branch> branchList
     ){
-        return BranchResponse.JoinBranchListDTO.builder()
-                .branchList(branchList.stream()
-                        .map(branch -> BranchResponse.BranchDTO.builder()
+        return BranchResponse.JoinBranchs.builder()
+                .branchs(branchList.stream()
+                        .map(branch -> BranchResponse.JoinBranch.builder()
                                 .branchId(branch.getId())
                                 .name(branch.getName())
                                 .description(branch.getDescription())
@@ -39,12 +39,12 @@ public class BranchConverter {
                 .build();
     }
 
-    public static BranchResponse.JoinBranchDetailDTO toJoinBranchDetailDTO(
+    public static BranchResponse.JoinBranchDetails toJoinBranchDetailDTO(
             List<University> universityList
     ){
-        return BranchResponse.JoinBranchDetailDTO.builder()
+        return BranchResponse.JoinBranchDetails.builder()
                 .universities(universityList.stream()
-                        .map(university -> BranchResponse.BranchUniversityDTO.builder()
+                        .map(university -> BranchResponse.JoinBranchDetail.builder()
                                 .universityId(university.getId())
                                 .name(university.getName())
                                 .build())
