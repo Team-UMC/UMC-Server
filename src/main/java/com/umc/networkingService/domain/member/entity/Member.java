@@ -33,7 +33,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String clientId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "university_id")
     private University university;
 
