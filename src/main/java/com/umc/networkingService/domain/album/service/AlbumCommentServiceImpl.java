@@ -61,7 +61,7 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
 
         Album album = comment.getAlbum();
 
-        if(!comment.getWriter().equals(member))
+        if(!comment.getWriter().getId().equals(member.getId()))
             throw new RestApiException(ErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
 
         album.decreaseCommentCount();

@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.album.service;
 import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
 import com.umc.networkingService.domain.album.dto.response.AlbumIdResponse;
+import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.entity.Album;
 import com.umc.networkingService.domain.album.entity.AlbumHeart;
 import com.umc.networkingService.domain.album.mapper.AlbumHeartMapper;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -79,14 +81,11 @@ public class AlbumServiceImpl implements AlbumService{
         return new AlbumIdResponse(album.getId());
     }
 
-    /*
+
     @Override
     public AlbumPagingResponse showAlbums(Member member, Pageable pageable) {
         return albumMapper.toAlbumPagingResponse(albumRepository.findAllAlbums)
     }
-
-     */
-
     @Override
     @Transactional
     public AlbumIdResponse toggleAlbumLike(Member member, UUID albumId) {
