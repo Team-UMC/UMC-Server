@@ -37,9 +37,11 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional(readOnly = true)     //전체 대학교 조회
-    public List<UniversityResponse.joinUniversity> joinUniversityList(){
+    public UniversityResponse.JoinUniversities joinUniversityList(){
         List<University> universityList = universityRepository.findAll();
-        return UniversityConverter.toJoinUniversityList(universityList);
+        return UniversityResponse.JoinUniversities.builder()
+                .joinUniversities(UniversityConverter.toJoinUniversityList(universityList))
+                .build();
     }
 
     @Transactional(readOnly = true)     //대학교 별 세부 정보 조회
@@ -56,15 +58,20 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional(readOnly = true)     //전체 대학교 랭킹 조회
-    public List<UniversityResponse.joinUniversityRank> joinUniversityRankingList(Member member){
+    public UniversityResponse.JoinUniversityRanks joinUniversityRankingList(Member member){
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc();
-        return UniversityConverter.toJoinUniversityRankList(universityRankList);
+        return UniversityResponse.JoinUniversityRanks.builder()
+                .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
+                .build();
     }
 
     @Transactional(readOnly = true)     //우리 학교 기여도 랭킹 조회
-    public List<UniversityResponse.joinContributionRank> joinContributionRankingList(Member member){
+    public UniversityResponse.JoinContributionRanks joinContributionRankingList(Member member){
         List<Member> contributionRankList = memberRepository.findAllByUniversityOrderByContributionPointDesc(member.getUniversity());
-        return UniversityConverter.toJoinContributionRankList(contributionRankList);
+        return UniversityResponse.JoinContributionRanks.builder()
+                        .joinContributionRanks(
+                                UniversityConverter.toJoinContributionRankList(contributionRankList)
+                        ).build();
     }
 
     @Transactional(readOnly = true)    //우리 대학교 마스코트 조회

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 public class UniversityResponse {
@@ -14,7 +15,15 @@ public class UniversityResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor // 대학교
-    public static class joinUniversity {
+    public static class JoinUniversities {
+        List<JoinUniversity> joinUniversities;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor // 대학교
+    public static class JoinUniversity {
         UUID universityId;
         String universityName;
     }
@@ -39,8 +48,16 @@ public class UniversityResponse {
     @Builder
     @Getter
     @NoArgsConstructor
+    @AllArgsConstructor
+    public static class JoinUniversityRanks {
+        List<JoinUniversityRank> joinUniversityRanks;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
     @AllArgsConstructor // 학교 랭킹
-    public static class joinUniversityRank {
+    public static class JoinUniversityRank {
         String universityName;
         String universityLogo;
         Long universityPoint;
@@ -51,7 +68,15 @@ public class UniversityResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor // 학교 랭킹 기여도
-    public static class joinContributionRank {
+    public static class JoinContributionRanks {
+        List<JoinContributionRank> joinContributionRanks;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor // 학교 랭킹 기여도
+    public static class JoinContributionRank {
         String nickname;
         String name;
         String profileImage;

@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 public class UniversityConverter {
 
     // 대학교 리스트 조회
-    public static List<UniversityResponse.joinUniversity> toJoinUniversityList(
+    public static List<UniversityResponse.JoinUniversity> toJoinUniversityList(
             List<University> universityList
     ) {
         return universityList.stream()
-                .map(university -> UniversityResponse.joinUniversity.builder()
+                .map(university -> UniversityResponse.JoinUniversity.builder()
                         .universityId(university.getId())
                         .universityName(university.getName())
                         .build())
@@ -34,11 +34,11 @@ public class UniversityConverter {
     }
 
     // 학교 랭킹 조회
-    public static List<UniversityResponse.joinUniversityRank> toJoinUniversityRankList(
+    public static List<UniversityResponse.JoinUniversityRank> toJoinUniversityRankList(
             List<University> universityRankList
     ) {
         return universityRankList.stream()
-                .map(university -> UniversityResponse.joinUniversityRank.builder()
+                .map(university -> UniversityResponse.JoinUniversityRank.builder()
                         .universityName(university.getName())
                         .universityLogo(university.getUniversityLogo())
                         .universityPoint(university.getTotalPoint())
@@ -48,11 +48,11 @@ public class UniversityConverter {
     }
 
     // 학교 기여도 랭킹 조회
-    public static List<UniversityResponse.joinContributionRank> toJoinContributionRankList(
+    public static List<UniversityResponse.JoinContributionRank> toJoinContributionRankList(
             List<Member> contributionRankList
     ){
         return contributionRankList.stream()
-                .map(member -> UniversityResponse.joinContributionRank.builder()
+                .map(member -> UniversityResponse.JoinContributionRank.builder()
                         .nickname(member.getNickname())
                         .name(member.getName())
                         .profileImage(member.getProfileImage())
