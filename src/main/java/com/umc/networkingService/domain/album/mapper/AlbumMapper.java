@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.album.mapper;
 
 import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
+import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPageResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.entity.Album;
@@ -28,6 +29,7 @@ public class AlbumMapper {
                 .writer(album.getWriter().getNickname() + "/" + album.getWriter().getName())
                 .profileImage(album.getWriter().getProfileImage())
                 .title(album.getTitle())
+                .semester(album.getSemester())
                 .content(album.getContent())
                 .hitCount(album.getHitCount())
                 .heartCount(album.getHeartCount())
@@ -47,6 +49,22 @@ public class AlbumMapper {
                 .totalElements(albums.getTotalPages())
                 .isFirst(albums.isFirst())
                 .isLast(albums.isLast())
+                .build();
+    }
+
+    public AlbumDetailResponse toAlbumDetailResponse(Album album, List<String> albumImages, boolean isLiked) {
+        return AlbumDetailResponse.builder()
+                .writer(album.getWriter().getNickname() + "/" + album.getWriter().getName())
+                .profileImage(album.getWriter().getProfileImage())
+                .semester(album.getSemester())
+                .title(album.getTitle())
+                .content(album.getContent())
+                .hitCount(album.getHitCount())
+                .heartCount(album.getHeartCount())
+                .commentCount(album.getCommentCount())
+                .albumImages(albumImages)
+                .isLiked(isLiked)
+                .createdAt(album.getCreatedAt())
                 .build();
     }
 }

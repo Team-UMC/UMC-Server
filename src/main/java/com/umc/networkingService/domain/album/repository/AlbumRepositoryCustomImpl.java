@@ -1,3 +1,4 @@
+/*
 package com.umc.networkingService.domain.album.repository;
 
 import com.umc.networkingService.domain.album.entity.Album;
@@ -19,3 +20,5 @@ public class AlbumRepositoryCustomImpl implements AlbumRepositoryCustom {
         
     }
 }
+
+ */

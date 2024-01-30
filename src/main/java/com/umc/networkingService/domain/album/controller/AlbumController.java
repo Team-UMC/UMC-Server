@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.album.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
+import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumIdResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.service.AlbumService;
@@ -72,6 +73,7 @@ public class AlbumController {
         return BaseResponse.onSuccess(albumService.deleteAlbum(member, albumId));
     }
 
+    /*
     @Operation(summary = "사진첩 조회 API", description = "사진첩 조회하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
@@ -85,7 +87,18 @@ public class AlbumController {
                                                         @Parameter(hidden = true) Pageable pageable){
         return BaseResponse.onSuccess(albumService.showAlbums(member, pageable));
     }
+     */
 
+    @Operation(summary = "특정 사진첩 상세 조회 API", description = "특정 사진첩을 상세 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "ALBUM001", description = "존재하지 않는 사진첩입니다.")
+    })
+    @GetMapping("/{albumId}")
+    public BaseResponse<AlbumDetailResponse> showAlbumDetail(@CurrentMember Member member,
+                                                             @PathVariable(value = "albumId") UUID albumId) {
+        return BaseResponse.onSuccess(albumService.showAlbumDetail(member, albumId));
+    }
 
     @Operation(summary = "사진첩 좋아요/취소 API", description = "클릭 시 좋아요 or 취소 됩니다.")
     @ApiResponses(value = {

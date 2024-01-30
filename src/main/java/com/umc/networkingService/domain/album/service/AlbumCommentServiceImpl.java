@@ -27,6 +27,7 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
     private final AlbumCommentMapper albumCommentMapper;
 
     @Override
+    @Transactional
     public AlbumCommentIdResponse createAlbumComment(Member member, AlbumCommentCreateRequest request) {
         Album album = albumRepository.findById(request.getAlbumId()).orElseThrow(() -> new RestApiException(
                 ErrorCode.EMPTY_ALBUM));

@@ -60,6 +60,10 @@ public class Album extends BaseEntity {
         this.commentCount++;
     }
 
+    public void increaseHitCount() {
+        this.hitCount++;
+    }
+
     public void decreaseCommentCount() {
         this.commentCount--;
     }

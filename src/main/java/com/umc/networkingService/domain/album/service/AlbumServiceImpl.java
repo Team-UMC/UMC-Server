@@ -2,10 +2,12 @@ package com.umc.networkingService.domain.album.service;
 
 import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
+import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumIdResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.entity.Album;
 import com.umc.networkingService.domain.album.entity.AlbumHeart;
+import com.umc.networkingService.domain.album.entity.AlbumImage;
 import com.umc.networkingService.domain.album.mapper.AlbumHeartMapper;
 import com.umc.networkingService.domain.album.mapper.AlbumMapper;
 import com.umc.networkingService.domain.album.repository.AlbumHeartRepository;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -81,11 +84,32 @@ public class AlbumServiceImpl implements AlbumService{
         return new AlbumIdResponse(album.getId());
     }
 
+    @Override
+    @Transactional
+    public AlbumDetailResponse showAlbumDetail(Member member, UUID albumId) {
+         Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
+                 ErrorCode.EMPTY_ALBUM));
 
+         boolean isLike = false;
+         Optional<AlbumHeart> albumHeart = albumHeartRepository.findByMemberAndAlbum(member, album);
+         if(albumHeart.isPresent())
+             isLike = albumHeart.get().isChecked();
+
+         album.increaseHitCount();
+
+         List<String> albumImages = albumImageService.findAlbumImages(album).stream()
+                 .map(AlbumImage::getUrl).toList();
+
+         return albumMapper.toAlbumDetailResponse(album, albumImages, isLike);
+    }
+
+    /*
     @Override
     public AlbumPagingResponse showAlbums(Member member, Pageable pageable) {
         return albumMapper.toAlbumPagingResponse(albumRepository.findAllAlbums)
     }
+
+     */
     @Override
     @Transactional
     public AlbumIdResponse toggleAlbumLike(Member member, UUID albumId) {
