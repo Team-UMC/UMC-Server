@@ -55,4 +55,9 @@ public class Project extends BaseEntity {
 
     @ColumnDefault("0")
     private Long heartCount;
+
+    public void updateProject(String name, String slogan){
+        this.name = name;
+        this.slogan = slogan;
+    }
 }
