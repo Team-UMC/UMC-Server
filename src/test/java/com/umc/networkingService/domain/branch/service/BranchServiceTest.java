@@ -155,7 +155,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
 
 
     @Test
-    @DisplayName("지부 리스트 조회 - 성공 (사이즈) ")
+    @DisplayName("지부 리스트 조회 - 성공")
     @Transactional(readOnly = true)
     void joinBranchList_Success() {
 
@@ -165,10 +165,10 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
         Branch branch3 = createBranch("branch3");
 
         // when
-        BranchResponse.JoinBranchListDTO result = branchService.joinBranchList(semester);
+        BranchResponse.JoinBranchs result = branchService.joinBranchList(semester);
 
         // then
-        List<BranchResponse.BranchDTO> branchList = result.getBranchList();
+        List<BranchResponse.JoinBranch> branchList = result.getBranchs();
 
         System.out.println("Actual Branch List Size: " + branchList.size()); // 로그
         System.out.println("Expected Branch List Size: " + branchRepository.findAllBySemester(semester).size()); // 로그
@@ -189,10 +189,10 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
         System.out.println("Test Semester: " + semester); //로그
 
         // when
-        BranchResponse.JoinBranchListDTO result = branchService.joinBranchList(semester);
+        BranchResponse.JoinBranchs result = branchService.joinBranchList(semester);
 
         // then
-        List<BranchResponse.BranchDTO> branchList = result.getBranchList();
+        List<BranchResponse.JoinBranch> branchList = result.getBranchs();
 
         System.out.println("Actual Branch List Size: " + branchList.size()); // 로그
         System.out.println("Expected Branch List Size: " + branchRepository.findAllBySemester(semester).size()); // 로그
@@ -224,7 +224,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
         );
 
         // when
-        BranchResponse.JoinBranchDetailDTO result = branchService.joinBranchDetail(branch.getId());
+        BranchResponse.JoinBranchDetails result = branchService.joinBranchDetail(branch.getId());
 
         // then
         System.out.println("Expected Branch University List Size: " + result.getUniversities()); // 로그
