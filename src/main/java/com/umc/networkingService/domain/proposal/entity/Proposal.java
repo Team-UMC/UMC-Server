@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.proposal.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.proposal.dto.request.ProposalUpdateRequest;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,5 +33,10 @@ public class Proposal extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    public void updateㅑ(ProposalUpdateRequest request){
+        this.writer = request.getWriter();
+        this.title = request.getTitle();
+        this.content = request.getContent();
+    }
 
 }

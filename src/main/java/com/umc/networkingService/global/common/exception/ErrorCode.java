@@ -63,6 +63,10 @@ public enum ErrorCode {
 
     // Schedule
     EMPTY_SCHEDULE(HttpStatus.BAD_REQUEST, "SCHEDULE001", "존재하지 않는 스케줄입니다."),
+
+    // Proposal
+    EMPTY_PROPOSAL(HttpStatus.BAD_REQUEST, "PROPOSAL001", "존재하지 않는 건의글입니다."),
+    NO_AUTHORIZATION_PROPOSAL(HttpStatus.BAD_REQUEST, "PROPOSAL002", "해당 건의글에 대한 수정 권한이 없습니다.")
     ;
 
     private final HttpStatus httpStatus;
