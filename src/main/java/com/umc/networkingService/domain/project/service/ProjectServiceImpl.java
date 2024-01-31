@@ -1,9 +1,9 @@
-package com.umc.networkingService.domain.project.Service;
+package com.umc.networkingService.domain.project.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
-import com.umc.networkingService.domain.project.Mapper.ProjectMapper;
-import com.umc.networkingService.domain.project.Repository.ProjectRepository;
+import com.umc.networkingService.domain.project.mapper.ProjectMapper;
+import com.umc.networkingService.domain.project.repository.ProjectRepository;
 import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
 import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;

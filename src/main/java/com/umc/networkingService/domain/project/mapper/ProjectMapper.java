@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.project.Mapper;
+package com.umc.networkingService.domain.project.mapper;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
@@ -7,7 +7,6 @@ import com.umc.networkingService.domain.project.entity.Project;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @Component

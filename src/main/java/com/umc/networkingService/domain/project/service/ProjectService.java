@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.project.Service;
+package com.umc.networkingService.domain.project.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
