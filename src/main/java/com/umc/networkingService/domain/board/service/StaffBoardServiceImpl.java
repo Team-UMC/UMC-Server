@@ -1,14 +1,12 @@
 package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardNoticePagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;

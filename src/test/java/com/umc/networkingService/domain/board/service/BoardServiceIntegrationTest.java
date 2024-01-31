@@ -10,6 +10,7 @@ import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentI
 import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardCommentPagingWebResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
 import com.umc.networkingService.global.common.enums.Part;

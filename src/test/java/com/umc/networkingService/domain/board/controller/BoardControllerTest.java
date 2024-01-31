@@ -7,6 +7,7 @@ import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUp
 import com.umc.networkingService.domain.board.dto.response.*;
 import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentIdResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -17,8 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;

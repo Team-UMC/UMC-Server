@@ -5,6 +5,8 @@ import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.board.dto.response.*;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePageResponse;
+import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;

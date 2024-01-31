@@ -2,7 +2,7 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardNoticePagingResponse;
+import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.StaffBoardService;
 import com.umc.networkingService.domain.member.entity.Member;
