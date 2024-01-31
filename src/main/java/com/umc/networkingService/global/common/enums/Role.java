@@ -3,6 +3,8 @@ package com.umc.networkingService.global.common.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @RequiredArgsConstructor
 public enum Role {
@@ -17,4 +19,5 @@ public enum Role {
     private final String toKorean;
 
     private final int priority;
+
 }
