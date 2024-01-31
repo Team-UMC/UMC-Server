@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "Today I Learned API", description = "Today I Learned 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/todayILearned")
+@RequestMapping("/today-i-learned")
 public class TodayILearnedController {
 
     private final TodayILearnedService todayILearnedService;
@@ -64,9 +64,9 @@ public class TodayILearnedController {
 
     // DELETE
     @Operation(summary = "Today I Learned 삭제", description = "TIL을 삭제하는 API입니다.")
-    @DeleteMapping("/{todayILearned}")
+    @DeleteMapping("/{todayILearnedId}")
     public BaseResponse<TodayILearnedId> deleteTodayILearned(@CurrentMember Member member,
-                                                             @PathVariable("todayILearned") UUID todayILearnedId) {
+                                                             @PathVariable("todayILearnedId") UUID todayILearnedId) {
         return BaseResponse.onSuccess(todayILearnedService.deleteTodayILearned(member, todayILearnedId));
     }
 }

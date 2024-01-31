@@ -32,9 +32,12 @@ public enum ErrorCode {
     UNAUTHENTICATED_GITHUB(HttpStatus.BAD_REQUEST, "MEMBER005", "깃허브 연동이 완료되지 않은 사용자입니다."),
 <<<<<<< HEAD
     INVALID_MEMBER_KEYWORD(HttpStatus.BAD_REQUEST, "MEMBER006", "검색어 양식[닉네임/이름]에 맞추어 작성해주세요. ex) 벡스/김준석"),
+<<<<<<< HEAD
 =======
 >>>>>>> 66a1ef7 (feat: TodayILearned 수정 API 구현)
     NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER006", "권한이 없는 사용자입니다."),
+=======
+>>>>>>> 7a00f01 (fix: url 케밥케이스로 변경)
 
     // SemesterPart
     EMPTY_SEMESTER_PART(HttpStatus.BAD_REQUEST, "PART006", "존재하지 않는 기수의 파트입니다."),
