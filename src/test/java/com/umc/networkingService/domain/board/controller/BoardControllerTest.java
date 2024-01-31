@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -347,7 +348,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         // then
-        mockMvc.perform(MockMvcRequestBuilders
+        this.mockMvc.perform(MockMvcRequestBuilders
                         .get("/boards/member/web")
                         .param("host", "CENTER")
                         .param("board", "FREE")
@@ -362,8 +363,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     }
 
 
-    
-    //스프링 시큐리티 권한 테스트 안됨
+
     @Test
     @DisplayName("운영진용 교내 공지사항 조회 테스트")
     public void showStaffNoticesTest() throws Exception {
@@ -373,11 +373,31 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         when(staffBoardService.showNotices(eq(member), any(HostType.class), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
         // then
-        mockMvc.perform(get("/staff/boards/notices")
-                        .with(user("su").roles("STAFF"))
+
+        this.mockMvc.perform(get("/staff/boards/notices")
                         .param("host", "CENTER")
                         .param("keyword", "")
                         .param("page", "0")
+                        .header("Authorization", accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists());
+    }
+
+    @Test
+    @DisplayName("운영진용 핀설정 테스트")
+    public void setStaffNoticePinTest() throws Exception {
+        //given
+       BoardIdResponse response = new BoardIdResponse(board.getId());
+        //when
+        when(staffBoardService.toggleNoticePin(eq(member),eq(board.getId()), any(boolean.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+        // then
+
+        mockMvc.perform(patch("/staff/boards/notices/{boardId}/pin",board.getId())
+                        .param("isPinned", "true")
                         .header("Authorization", accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())

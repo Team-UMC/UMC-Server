@@ -78,7 +78,7 @@ public abstract class BoardControllerTestConfig {
                 .id(UUID.randomUUID())
                 .clientId("123456")
                 .socialType(SocialType.KAKAO)
-                .role(Role.MEMBER)
+                .role(Role.CENTER_STAFF)
                 .name("김준석")
                 .nickname("벡스")
                 .semesterParts(createSemesterPart(member))
