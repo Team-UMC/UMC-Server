@@ -19,6 +19,8 @@ public enum ErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
     _NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON404", "요청한 정보를 찾을 수 없습니다."),
 
+    _METHOD_ARGUMENT_ERROR(HttpStatus.BAD_REQUEST, "COMMON405", "Argument Type이 올바르지 않습니다."),
+
     // For test
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "예외처리 테스트입니다."),
 
@@ -65,8 +67,21 @@ public enum ErrorCode {
     // Image
     FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다."),
 
+    // File
+    FAILED_UPLOAD_S3_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "FILE001", "파일 저장에 실패하였습니다."),
+
     // Schedule
     EMPTY_SCHEDULE(HttpStatus.BAD_REQUEST, "SCHEDULE001", "존재하지 않는 스케줄입니다."),
+
+    //Board
+    BAD_REQUEST_BOARD(HttpStatus.BAD_REQUEST,"BOARD001", "금지된 요청입니다."),
+    EMPTY_BOARD(HttpStatus.NOT_FOUND, "BOARD002", "게시글을 찾을 수 없습니다."),
+    NO_AUTHORIZATION_BOARD(HttpStatus.BAD_REQUEST,"BOARD003", "해당 게시판 API에 대한 권한이 없습니다."),
+
+    //BoardComment
+    EMPTY_BOARD_COMMENT(HttpStatus.NOT_FOUND,"COMMENT001","댓글을 찾을 수 없습니다."),
+    NO_AUTHORIZATION_BOARD_COMMENT(HttpStatus.BAD_REQUEST,"COMMENT002", "댓글을 작성/수정/삭제 할 권한이 없습니다."),
+
     ;
 
     private final HttpStatus httpStatus;
