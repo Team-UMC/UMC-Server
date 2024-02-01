@@ -47,11 +47,11 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
         //given
 
         //when
-        List<UniversityResponse.joinUniversity> universityList = universityService.joinUniversityList();
+        UniversityResponse.JoinUniversities universityList = universityService.joinUniversityList();
 
         //then
-        assertThat(universityList.size()).isEqualTo(universityRepository.findAll().size());
-        assertThat(universityList.get(0).getUniversityName()).isEqualTo(university.getName());
+        assertThat(universityList.getJoinUniversities().size()).isEqualTo(universityRepository.findAll().size());
+        assertThat(universityList.getJoinUniversities().get(0).getUniversityName()).isEqualTo(university.getName());
     }
 
     @Test
@@ -80,12 +80,12 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
         );
 
         //when
-        List<UniversityResponse.joinUniversityRank> universityRankList = universityService.joinUniversityRankingList(member);
+        UniversityResponse.JoinUniversityRanks universityRankList = universityService.joinUniversityRankingList(member);
 
         //then
-        assertThat(universityRankList.size()).isEqualTo(2);
-        assertEquals(universityRankList.get(0).getUniversityName(), "1위");
-        assertEquals(universityRankList.get(1).getUniversityName(),university.getName());
+        assertThat(universityRankList.getJoinUniversityRanks().size()).isEqualTo(2);
+        assertEquals(universityRankList.getJoinUniversityRanks().get(0).getUniversityName(), "1위");
+        assertEquals(universityRankList.getJoinUniversityRanks().get(1).getUniversityName(),university.getName());
     }
 
     @Test
@@ -106,12 +106,12 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
         );
 
         //when
-        List<UniversityResponse.joinContributionRank> contributionRankList = universityService.joinContributionRankingList(member);
+        UniversityResponse.JoinContributionRanks contributionRankList = universityService.joinContributionRankingList(member);
 
         //then
-        assertThat(contributionRankList.size()).isEqualTo(2);
-        assertEquals(contributionRankList.get(0).getName(), member.getName());
-        assertEquals("2위", contributionRankList.get(1).getName());
+        assertThat(contributionRankList.getJoinContributionRanks().size()).isEqualTo(2);
+        assertEquals(contributionRankList.getJoinContributionRanks().get(0).getName(), member.getName());
+        assertEquals("2위", contributionRankList.getJoinContributionRanks().get(1).getName());
     }
 
     @Test
