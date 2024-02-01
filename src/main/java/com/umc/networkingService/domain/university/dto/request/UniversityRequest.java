@@ -15,7 +15,7 @@ public class UniversityRequest {
     @NoArgsConstructor
     @AllArgsConstructor // 대학교 생성
     public static class createUniversity {
-        //todo:마스코트 처리
+        //todo:마스코트 처리, 기수 처리
         String universityName;
         MultipartFile universityLogo;
         MultipartFile semesterLogo;
@@ -26,7 +26,7 @@ public class UniversityRequest {
     @NoArgsConstructor
     @AllArgsConstructor // 대학교 생성
     public static class patchUniversity {
-        //todo:마스코트 처리
+        //todo:마스코트 처리, 기수 처리
         UUID universityId;
         String universityName;
         MultipartFile universityLogo;

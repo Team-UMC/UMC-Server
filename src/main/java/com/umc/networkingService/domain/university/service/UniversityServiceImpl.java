@@ -93,7 +93,7 @@ public class UniversityServiceImpl implements UniversityService {
         );
     }
 
-    @Transactional    //우리 대학교 마스코트 먹이주기
+    @Transactional    //우리 대학교 마스코트 먹이주기  todo: 마스코드 레벨업 처리
     public void feedUniversityMascot(Member member, PointType pointType){
 
         if(member.getRemainPoint() < pointType.getPoint()){
