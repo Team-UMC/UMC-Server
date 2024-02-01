@@ -4,7 +4,9 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
+import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import jakarta.persistence.*;
@@ -14,6 +16,8 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -124,7 +128,39 @@ public class Member extends BaseEntity {
         else this.contributionPoint += usedPoint;
     }
 
-    // Role 업데이트 함수
+    //가장 최근 기수 찾기
+    public Semester getRecentSemester() {
+        List<SemesterPart> semesterParts = this.getSemesterParts();
+
+        return semesterParts.stream()
+                .map(SemesterPart::getSemester)
+                .max(Comparator.comparingInt(Enum::ordinal))
+                .orElseThrow(()-> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
+    }
+
+
+    //가장 최신 파트 찾기
+    public Part getRecentPart() {
+        // 최신 Semester에 해당하는 SemesterPart 찾기
+        Semester recentSemester = getRecentSemester();
+        List<SemesterPart> semesterParts = this.getSemesterParts();
+
+        Optional<SemesterPart> recentSemesterPart = semesterParts.stream()
+                .filter(part -> part.getSemester() == recentSemester)
+                .findFirst();
+
+        return recentSemesterPart.map(SemesterPart::getPart)
+                .orElseThrow(()-> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
+    }
+
+    //사용자가 활동한 기수를 몯 ㅜ찾기
+    public List<Semester> getSemesters() {
+        return this.getSemesterParts().stream()
+                .map(SemesterPart::getSemester)
+                .collect(Collectors.toList());
+    }
+
+    // 테스트 코드용
     public void updateRole(Role role) {
         this.role = role;
     }
