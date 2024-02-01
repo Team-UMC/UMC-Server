@@ -8,5 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProposalRepository extends JpaRepository<Proposal, UUID> {
-    Optional <Proposal> findByWriter(Member member);
+    Optional <Proposal> findById(Member member);
+    Optional <Proposal> findBytile(String title);
 }

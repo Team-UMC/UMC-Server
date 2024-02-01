@@ -33,7 +33,7 @@ public class Proposal extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    public void updateㅑ(ProposalUpdateRequest request){
+    public void update(ProposalUpdateRequest request){
         this.writer = request.getWriter();
         this.title = request.getTitle();
         this.content = request.getContent();
