@@ -3,7 +3,9 @@ package com.umc.networkingService.domain.university.service;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.MemberPoint;
 import com.umc.networkingService.domain.member.entity.PointType;
+import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.converter.UniversityConverter;
 import com.umc.networkingService.domain.university.dto.request.UniversityRequest;
@@ -28,6 +30,7 @@ public class UniversityServiceImpl implements UniversityService {
     private final UniversityRepository universityRepository;
     private final MemberRepository memberRepository;
     private final BranchUniversityRepository branchUniversityRepository;
+    private final MemberPointRepository memberPointRepository;
     private final S3FileComponent s3FileComponent;
 
     @Override
@@ -93,7 +96,7 @@ public class UniversityServiceImpl implements UniversityService {
         );
     }
 
-    @Transactional    //우리 대학교 마스코트 먹이주기  todo: 마스코드 레벨업 처리
+    @Transactional    //우리 대학교 마스코트 먹이주기  todo: 마스코드 레벨업, 마스코트 변경
     public void feedUniversityMascot(Member member, PointType pointType){
 
         if(member.getRemainPoint() < pointType.getPoint()){
@@ -104,6 +107,17 @@ public class UniversityServiceImpl implements UniversityService {
         member.usePoint(pointType.getPoint());
         //학교 포인트 증가
         member.getUniversity().increasePoint(pointType.getPoint());
+
+        //포인트 히스토리 추가
+        memberPointRepository.save(
+                MemberPoint.builder()
+                        .member(member)
+                        .pointType(pointType)
+                        .university(member.getUniversity())
+                        .build()
+        );
+
+
     }
 
     @Transactional    //학교 생성
