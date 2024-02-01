@@ -4,6 +4,7 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
@@ -29,6 +30,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
     private List<UniversityInfo> universities = Arrays.stream(UniversityInfo.values()).toList();
     private List<BranchInfo> branches = Arrays.stream(BranchInfo.values()).toList();
+    private List<ProjectInfo> projects = Arrays.stream(ProjectInfo.values()).toList();
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -44,6 +46,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         }
 
         // 새로운 프로젝트 생성
+        insertNewProjects();
     }
 
     // 새로운 대학교를 추가하는 함수
@@ -108,6 +111,22 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     private University findUniversityByName(String name) {
         return universityRepository.findByName(name)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
+    }
+
+    // 새로운 프로젝트를 추가하는 함수
+    private void insertNewProjects() {
+        projects.stream()
+                .filter(project -> !projectRepository.existsByName(project.getName()))
+                .map(project -> Project.builder()
+                        .name(project.getName())
+                        .logoImage(project.getImage())
+                        .slogan(project.getSlogan())
+                        .description(project.getDescription())
+                        .tags(project.getTags())
+                        .semester(project.getSemester())
+                        .type(project.getTypes())
+                        .build())
+                .forEach(projectRepository::save);
     }
 
     @Override
