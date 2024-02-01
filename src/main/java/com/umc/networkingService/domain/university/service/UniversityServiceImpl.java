@@ -133,7 +133,10 @@ public class UniversityServiceImpl implements UniversityService {
         university = universityRepository.findById(request.getUniversityId())
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
 
-        university.updateUniversity(request.getUniversityName(),uploadImage("university",request.getUniversityLogo()),uploadImage("semester",request.getSemesterLogo()));
+        university.updateUniversity(
+                request.getUniversityName()
+                ,uploadImage("university",request.getUniversityLogo())
+                ,uploadImage("semester",request.getSemesterLogo()));
         universityRepository.save(university);
     }
 
