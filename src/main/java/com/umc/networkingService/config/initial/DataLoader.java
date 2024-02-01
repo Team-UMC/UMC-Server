@@ -91,14 +91,14 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         return BranchUniversity.builder()
                 .branch(branch)
                 .university(university)
-                .isActive(branch.getSemester() == Semester.getLastSemester())
+                .isActive(branch.getSemester() == Semester.findActiveSemester())
                 .build();
     }
 
     // 새로운 기수가 생길 경우 이전 기수들의 isActive 정보 수정
     private void updateBranchUniversities(List<BranchUniversity> branchUniversities) {
         for (BranchUniversity branchUniversity : branchUniversities) {
-            if (branchUniversity.getBranch().getSemester() != Semester.getLastSemester()) {
+            if (branchUniversity.getBranch().getSemester() != Semester.findActiveSemester()) {
                 branchUniversity.updateIsActive(Boolean.FALSE);
                 branchUniversityRepository.save(branchUniversity);
             }
