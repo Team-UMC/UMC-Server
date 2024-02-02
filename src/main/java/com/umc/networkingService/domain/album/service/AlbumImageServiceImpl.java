@@ -54,4 +54,20 @@ public class AlbumImageServiceImpl implements AlbumImageService{
     public List<AlbumImage> findAlbumImages(Album album) {
         return albumImageRepository.findAllByAlbum(album);
     }
+
+    @Override
+    public String findThumbnailImage(Album album) {
+        return findAlbumImages(album).stream()
+                .filter(file -> isImageFile(file.getUrl()))
+                .findFirst()
+                .map(AlbumImage::getUrl)
+                .orElse(null);
+    }
+
+    public static boolean isImageFile(String url) {
+        String lowerCaseUrl = url.toLowerCase();
+
+        return lowerCaseUrl.endsWith(".jpg") || lowerCaseUrl.endsWith(".jpeg")
+                || lowerCaseUrl.endsWith(".png") || lowerCaseUrl.endsWith(".gif");
+    }
 }

@@ -16,6 +16,7 @@ public class AlbumPageResponse {
     private Semester semester;
     private String title;
     private String content;
+    private String thumbnail;
     private int hitCount;
     private int heartCount;
     private int commentCount;

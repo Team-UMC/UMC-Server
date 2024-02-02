@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class AlbumPagingResponse {
     private int page;
-    private List<AlbumPageResponse> albumCommentPageResponses = new ArrayList<>();
+    private List<AlbumPageResponse> albumPageResponses = new ArrayList<>();
     private int totalPages;
     private Boolean isFirst;
     private Boolean isLast;

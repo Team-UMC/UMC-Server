@@ -50,6 +50,8 @@ public class Album extends BaseEntity {
     @ColumnDefault("0")
     private int commentCount;
 
+    private boolean isFixed;
+
     public void updateAlbum(String title, String content, Semester semester) {
         this.title = title;
         this.content = content;
@@ -73,5 +75,9 @@ public class Album extends BaseEntity {
             this.heartCount++;
         else
             this.heartCount--;
+    }
+
+    public void setIsFixed(boolean isFixed) {
+        this.isFixed = isFixed;
     }
 }

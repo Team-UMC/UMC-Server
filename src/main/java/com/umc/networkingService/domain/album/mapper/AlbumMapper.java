@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPageResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.entity.Album;
+import com.umc.networkingService.domain.album.service.AlbumImageService;
 import com.umc.networkingService.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.util.List;
 @Component
 public class AlbumMapper {
 
+    private final AlbumImageService albumImageService;
     public Album createAlbum(Member member, AlbumCreateRequest request) {
         return Album.builder()
                 .writer(member)
@@ -31,6 +33,7 @@ public class AlbumMapper {
                 .title(album.getTitle())
                 .semester(album.getSemester())
                 .content(album.getContent())
+                .thumbnail(albumImageService.findThumbnailImage(album))
                 .hitCount(album.getHitCount())
                 .heartCount(album.getHeartCount())
                 .commentCount(album.getCommentCount())
@@ -43,10 +46,10 @@ public class AlbumMapper {
                 .stream().toList();
 
         return AlbumPagingResponse.builder()
-                .albumCommentPageResponses(AlbumPageResponses)
+                .albumPageResponses(AlbumPageResponses)
                 .page(albums.getNumber())
                 .totalPages(albums.getNumber())
-                .totalElements(albums.getTotalPages())
+                .totalElements((int)albums.getTotalPages())
                 .isFirst(albums.isFirst())
                 .isLast(albums.isLast())
                 .build();

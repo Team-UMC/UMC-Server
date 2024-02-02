@@ -103,13 +103,11 @@ public class AlbumServiceImpl implements AlbumService{
          return albumMapper.toAlbumDetailResponse(album, albumImages, isLike);
     }
 
-    /*
     @Override
     public AlbumPagingResponse showAlbums(Member member, Pageable pageable) {
-        return albumMapper.toAlbumPagingResponse(albumRepository.findAllAlbums)
+        return albumMapper.toAlbumPagingResponse(albumRepository.findAllAlbums(member, pageable));
     }
 
-     */
     @Override
     @Transactional
     public AlbumIdResponse toggleAlbumLike(Member member, UUID albumId) {

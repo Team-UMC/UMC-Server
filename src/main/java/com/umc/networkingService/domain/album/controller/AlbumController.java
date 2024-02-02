@@ -73,7 +73,7 @@ public class AlbumController {
         return BaseResponse.onSuccess(albumService.deleteAlbum(member, albumId));
     }
 
-    /*
+
     @Operation(summary = "사진첩 조회 API", description = "사진첩 조회하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
@@ -87,7 +87,6 @@ public class AlbumController {
                                                         @Parameter(hidden = true) Pageable pageable){
         return BaseResponse.onSuccess(albumService.showAlbums(member, pageable));
     }
-     */
 
     @Operation(summary = "특정 사진첩 상세 조회 API", description = "특정 사진첩을 상세 조회합니다.")
     @ApiResponses(value = {
