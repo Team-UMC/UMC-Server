@@ -130,6 +130,6 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> inviteService.authenticateInviteCode(member, code));
 
         // then
-        assertEquals(InviteErrorCode.EXPIRED_INVITE_CODE, exception.getErrorCode());
+        assertEquals(InviteErrorCode.EXPIRED_INVITE_CODE.getCode(), exception.getErrorCode().getCode());
     }
 }

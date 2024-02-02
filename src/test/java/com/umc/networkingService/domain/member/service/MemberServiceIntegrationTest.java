@@ -176,7 +176,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.updateProfile(staff, member.getId(), request));
 
         // then
-        assertEquals(MemberErrorCode.UNAUTHORIZED_UPDATE_MEMBER, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHORIZED_UPDATE_MEMBER.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());
@@ -205,7 +205,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.updateProfile(staff, member.getId(), request));
 
         // then
-        assertEquals(MemberErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());
@@ -341,7 +341,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.inquiryGithubImage(member));
 
         // then
-        assertEquals(MemberErrorCode.UNAUTHENTICATED_GITHUB, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHENTICATED_GITHUB.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());
