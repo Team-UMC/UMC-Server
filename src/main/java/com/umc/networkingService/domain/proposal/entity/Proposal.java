@@ -38,5 +38,4 @@ public class Proposal extends BaseEntity {
         this.title = request.getTitle();
         this.content = request.getContent();
     }
-
 }

@@ -1,11 +1,10 @@
 package com.umc.networkingService.domain.proposal.controller;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.proposal.dto.request.ProposalCreateRequest;
-import com.umc.networkingService.domain.proposal.dto.request.ProposalDeleteRequest;
-import com.umc.networkingService.domain.proposal.dto.request.ProposalSearchRequest;
-import com.umc.networkingService.domain.proposal.dto.request.ProposalUpdateRequest;
+import com.umc.networkingService.domain.proposal.dto.request.*;
+import com.umc.networkingService.domain.proposal.dto.response.ProposalDetailResponse;
 import com.umc.networkingService.domain.proposal.dto.response.ProposalIdResponse;
 import com.umc.networkingService.domain.proposal.service.ProposalService;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -44,5 +43,10 @@ public class ProposalController {
     @GetMapping
     BaseResponse <ProposalIdResponse> searchProposal(@Valid @RequestPart ProposalSearchRequest request){
         return BaseResponse.onSuccess(proposalService.searchProposal(request));
+    }
+
+    @GetMapping
+    BaseResponse <ProposalDetailResponse> detailProposal(@PathVariable("proposalId") UUID proposalId){
+        return BaseResponse.onSuccess(proposalService.detailProposal(proposalId));
     }
 }

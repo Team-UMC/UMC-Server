@@ -2,10 +2,8 @@ package com.umc.networkingService.domain.proposal.service;
 
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.proposal.dto.request.ProposalCreateRequest;
-import com.umc.networkingService.domain.proposal.dto.request.ProposalDeleteRequest;
-import com.umc.networkingService.domain.proposal.dto.request.ProposalSearchRequest;
-import com.umc.networkingService.domain.proposal.dto.request.ProposalUpdateRequest;
+import com.umc.networkingService.domain.proposal.dto.request.*;
+import com.umc.networkingService.domain.proposal.dto.response.ProposalDetailResponse;
 import com.umc.networkingService.domain.proposal.dto.response.ProposalIdResponse;
 import com.umc.networkingService.domain.proposal.entity.Proposal;
 import com.umc.networkingService.domain.proposal.mapper.ProposalMapper;
@@ -75,5 +73,13 @@ public class ProposalServiceImpl implements ProposalService {
 
     }
 
+    @Override
+    public ProposalDetailResponse detailProposal(UUID proposalId){
+        // 유효하지 않은 건의글인 경우, 예외처리 메세지 반환
+        Proposal proposal = proposalRepository.findById(proposalId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_PROPOSAL));
 
+        // 건의글의 세부 정보 조회
+        // Todo: proposalImage 처리..
+        return proposalMapper.detailProposal(proposal);
+    }
 }
