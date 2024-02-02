@@ -7,7 +7,8 @@ import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
+import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +60,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
         //HostType priority와 Member Role priority를 비교하여 권한 CHECK
         if (member.getRole().getPriority() >= hostType.getPriority())
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+            throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
 
     }
 }

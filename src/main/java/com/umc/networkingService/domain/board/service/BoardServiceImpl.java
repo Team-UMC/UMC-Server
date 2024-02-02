@@ -16,8 +16,8 @@ import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,9 +44,8 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardPagingResponse showBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable) {
 
-        //특정 게시판 조회에는 전체 HOST 조회 X
-        if (hostType.equals(HostType.ALL))
-            throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
+        //특정 게시글 조회에 HostType ALL 불가능
+        checkHostType(hostType);
 
         return boardMapper.toBoardPagingResponse(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
@@ -127,13 +126,11 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     public BoardIdResponse createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {
         //연합, 지부, 학교 타입
-        HostType hostType = request.getHostType();
-        BoardType boardType = request.getBoardType();
+        HostType hostType = HostType.valueOf(request.getHostType());
+        BoardType boardType = BoardType.valueOf(request.getBoardType());
 
         //게시글 작성에 HostType ALL 불가능
-        if (hostType.equals(HostType.ALL))
-            throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
-
+        checkHostType(hostType);
 
         //boardType과 HostType에 따라 권한 판단
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
@@ -153,20 +150,18 @@ public class BoardServiceImpl implements BoardService {
         Board board = loadEntity(boardId);
 
         //연합, 지부, 학교 타입
-        HostType hostType = request.getHostType();
-        BoardType boardType = request.getBoardType();
+        HostType hostType = HostType.valueOf(request.getHostType());
+        BoardType boardType = BoardType.valueOf(request.getBoardType());
 
         //게시글 수정에 HostType ALL 불가능
-        if (hostType.equals(HostType.ALL))
-            throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
-
+        checkHostType(hostType);
 
         //boardType과 HostType에 따라 권한 판단
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
         if (!board.getWriter().equals(member))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+            throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
 
         board.update(request, semesterPermission);
         boardFileService.updateBoardFiles(board, files);
@@ -182,7 +177,7 @@ public class BoardServiceImpl implements BoardService {
         //현재 로그인한 member와 writer가 같지 않고, 로그인한 멤버가 운영진이 아니라면 삭제 불가
         if (!board.getWriter().equals(member)) {
             if (member.getRole().getPriority() == Role.MEMBER.getPriority()) {
-                throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+                throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
             }
         }
         boardFileService.deleteBoardFiles(board);
@@ -219,7 +214,7 @@ public class BoardServiceImpl implements BoardService {
     public void checkPermissionForOBBoard(Member member, Semester nowSemester) {
         // OB -> Semester의 isActive가 활성화되지 않은 사용자만 가능
         if (member.getRecentSemester().equals(nowSemester))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+            throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
     }
 
     //공지사항 게시판 권한 확인 함수
@@ -227,7 +222,7 @@ public class BoardServiceImpl implements BoardService {
 
         //HostType priority와 Member Role priority를 비교하여 권한 CHECK
         if (member.getRole().getPriority() >= hostType.getPriority())
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+            throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
     }
 
     //workbook 게시판 권한 확인 함수
@@ -235,11 +230,11 @@ public class BoardServiceImpl implements BoardService {
 
         //hostType이 CAMPUS가 아닐 경우 금지된 요청
         if (hostType != HostType.CAMPUS)
-            throw new RestApiException(ErrorCode.BAD_REQUEST_BOARD);
+            throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
 
         //CAMPUS && WORKBOOK -> ROLE이 CAMPUS_STAFF인 사람만
         if (member.getRole().getPriority() != Role.CAMPUS_STAFF.getPriority())
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+            throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
     }
 
     //게시글 열람시 semester 권한 check
@@ -249,12 +244,20 @@ public class BoardServiceImpl implements BoardService {
 
         if (!memberSemesters.stream()
                 .anyMatch(boardSemesterPermissions::contains))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD);
+            throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
 
     }
 
+
+    //게시글 수정에 HostType ALL 불가능
+    public void checkHostType(HostType hostType) {
+        if (hostType.equals(HostType.ALL))
+            throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
+    }
+
+
     @Override
     public Board loadEntity(UUID id) {
-        return boardRepository.findById(id).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BOARD));
+        return boardRepository.findById(id).orElseThrow(() -> new RestApiException(BoardErrorCode.EMPTY_BOARD));
     }
 }

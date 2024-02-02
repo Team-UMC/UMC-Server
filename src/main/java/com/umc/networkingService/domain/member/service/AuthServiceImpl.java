@@ -18,7 +18,8 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -98,11 +99,11 @@ public class AuthServiceImpl implements AuthService {
         Member member = loadEntity(loginMember.getId());
 
         RefreshToken savedRefreshToken = refreshTokenService.findByMemberId(member.getId())
-                .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
+                .orElseThrow(() -> new RestApiException(AuthErrorCode.EXPIRED_MEMBER_JWT));
 
         // 디비에 저장된 refreshToken과 동일하지 않다면 유효하지 않음
         if (!refreshToken.equals(savedRefreshToken.getRefreshToken()))
-            throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_REFRESH_TOKEN);
 
         return new MemberGenerateTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
     }
@@ -221,6 +222,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
     }
 }

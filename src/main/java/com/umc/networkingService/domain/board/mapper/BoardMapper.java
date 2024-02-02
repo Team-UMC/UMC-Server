@@ -7,6 +7,8 @@ import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingR
 import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePageResponse;
 import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
 import com.umc.networkingService.domain.board.entity.Board;
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardFileService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -27,8 +29,8 @@ public class BoardMapper {
                 .writer(member)
                 .title(request.getTitle())
                 .content(request.getContent())
-                .hostType(request.getHostType())
-                .boardType(request.getBoardType())
+                .hostType(HostType.valueOf(request.getHostType()))
+                .boardType(BoardType.valueOf(request.getBoardType()))
                 .semesterPermission(semesterPermission)
                 .build();
     }

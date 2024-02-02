@@ -12,7 +12,8 @@ import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
@@ -73,12 +74,12 @@ public class MemberServiceImpl implements MemberService{
         // 직책 수정
         if (updateMember.getRole().getPriority() <= member.getRole().getPriority()) {
             // 본인보다 높거나 같은 직책의 운영진의 정보를 수정하려 할 경우
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
+            throw new RestApiException(MemberErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
         }
 
         if (member.getRole().getPriority() > 2 && !request.getCenterPositions().isEmpty()) {
             // 학교, 지부 운영진이 중앙 직책을 수정하려는 경우
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
+            throw new RestApiException(MemberErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
         }
         memberPositionService.saveMemberPositionInfos(updateMember, request.getCampusPositions(), request.getCenterPositions());
 
@@ -121,7 +122,7 @@ public class MemberServiceImpl implements MemberService{
 
         // 소속 대학교 찾기
         University university = Optional.ofNullable(member.getUniversity())
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER_UNIVERSITY));
 
         // 본인 랭킹 구하기
         int rank = calculateMyRank(member, university);
@@ -139,7 +140,7 @@ public class MemberServiceImpl implements MemberService{
         String gitNickname = githubMemberClient.getGithubNickname(code);
 
         if (gitNickname == null || gitNickname.isBlank())
-            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
+            throw new RestApiException(AuthErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
         member.authenticateGithub(gitNickname);
 
@@ -155,7 +156,7 @@ public class MemberServiceImpl implements MemberService{
 
         String gitNickName = member.getGitNickname();
         if (gitNickName == null)
-            throw new RestApiException(ErrorCode.UNAUTHENTICATED_GITHUB);
+            throw new RestApiException(MemberErrorCode.UNAUTHENTICATED_GITHUB);
         return new MemberInquiryGithubResponse("https://ghchart.rshah.org/2965FF/" + gitNickName);
     }
 
@@ -264,7 +265,7 @@ public class MemberServiceImpl implements MemberService{
         }
 
         // 학교 구성원 중 멤버를 찾지 못하였을 경우
-        throw new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY);
+        throw new RestApiException(MemberErrorCode.EMPTY_MEMBER_UNIVERSITY);
     }
 
     // 올바른 키워드인지 확인
@@ -272,7 +273,7 @@ public class MemberServiceImpl implements MemberService{
         // {닉네임/이름} 양식 검증
         String[] splits = keyword.split("/");
         if (splits.length != 2)
-            throw new RestApiException(ErrorCode.INVALID_MEMBER_KEYWORD);
+            throw new RestApiException(MemberErrorCode.INVALID_MEMBER_KEYWORD);
         return splits;
     }
 
@@ -292,7 +293,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
     }
 
 

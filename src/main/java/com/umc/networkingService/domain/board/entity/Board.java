@@ -62,8 +62,8 @@ public class Board extends BaseEntity {
     private boolean isFixed;
 
     public void update(BoardUpdateRequest request, List<Semester> semesters) {
-        this.hostType = request.getHostType();
-        this.boardType = request.getBoardType();
+        this.hostType = HostType.valueOf(request.getHostType());
+        this.boardType = BoardType.valueOf(request.getBoardType());
         this.title = request.getTitle();
         this.content = request.getContent();
         this.semesterPermission = semesters;
