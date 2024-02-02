@@ -42,7 +42,7 @@ public class ProposalServiceImpl implements ProposalService {
         // 건의글의 작성자가 아닌 멤버가 글을 수정하려는 경우, 예외처리 메세지 반환
         // Todo: 작성자 외에 수정 권한이 있는 멤버 확인하는 로직
         if(!proposal.getWriter().equals(member))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_PROPOSAL);
+            throw new RestApiException(ErrorCode.NO_UPDATE_AUTHORIZATION_PROPOSAL);
 
         proposal.update(request);
         return new ProposalIdResponse(proposal.getId());
@@ -56,7 +56,7 @@ public class ProposalServiceImpl implements ProposalService {
         // 건의글의 작성자가 아닌 멤버가 글을 수정하려는 경우, 예외처리 메세지 반환
         // Todo: 작성자 외에 삭제 권한이 있는 멤버 확인하는 로직
         if(!proposal.getWriter().equals(member))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_PROPOSAL);
+            throw new RestApiException(ErrorCode.NO_DELETE_AUTHORIZATION_PROPOSAL);
 
         proposal.delete();
         return new ProposalIdResponse(proposal.getId());

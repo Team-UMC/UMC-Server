@@ -8,8 +8,10 @@ import com.umc.networkingService.domain.proposal.dto.response.ProposalDetailResp
 import com.umc.networkingService.domain.proposal.dto.response.ProposalIdResponse;
 import com.umc.networkingService.domain.proposal.service.ProposalService;
 import com.umc.networkingService.global.common.base.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,18 +23,35 @@ import java.util.UUID;
 public class ProposalController {
     private final ProposalService proposalService;
 
+    @Operation(summary = "건의글 작성 API", description = "프로젝트를 작성하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
     @PostMapping
     BaseResponse <ProposalIdResponse> createProposal(@CurrentMember Member member,
                                                      @Valid @RequestPart ProposalCreateRequest request){
         return BaseResponse.onSuccess(proposalService.createProposal(member,request));
     }
 
+    @Operation(summary = "건의글 수정 API", description = "건의글을 수정하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "PROPOSAL001", description = "존재하지 않는 건의글 입니다."),
+            @ApiResponse(responseCode = "PROPOSAL002", description = "해당 건의글에 대해 수정 권한이 없습니다.")
+    })
     @PostMapping
     BaseResponse <ProposalIdResponse> updateProposal(@CurrentMember Member member,
                                                      @PathVariable("proposalId") UUID proposalId,
                                                      @Valid @RequestPart ProposalUpdateRequest request){
         return BaseResponse.onSuccess(proposalService.updateProposal(member, proposalId, request));
     }
+
+    @Operation(summary = "건의글 삭제 API", description = "건의글을 삭제하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "PROPOSAL001", description = "존재하지 않는 건의글 입니다."),
+            @ApiResponse(responseCode = "PROPOSAL003", description = "해당 건의글에 대한 삭제 권한이 없습니다.")
+    })
     @DeleteMapping("/{proposalId}")
     BaseResponse <ProposalIdResponse> deleteProposal(@CurrentMember Member member,
                                                      @PathVariable("proposalId") UUID proposalId,
@@ -40,11 +59,21 @@ public class ProposalController {
         return BaseResponse.onSuccess(proposalService.deleteProposal(member,proposalId,request));
     }
 
+    @Operation(summary = "건의글 조회 API", description = "건의글을 조회하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "PROPOSAL001", description = "존재하지 않는 건의글 입니다.")
+    })
     @GetMapping
     BaseResponse <ProposalIdResponse> searchProposal(@Valid @RequestPart ProposalSearchRequest request){
         return BaseResponse.onSuccess(proposalService.searchProposal(request));
     }
 
+    @Operation(summary = "건의글 상세 조회 API", description = "건의글을 상세 조회하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "PROPOSAL001", description = "존재하지 않는 건의글 입니다.")
+    })
     @GetMapping
     BaseResponse <ProposalDetailResponse> detailProposal(@PathVariable("proposalId") UUID proposalId){
         return BaseResponse.onSuccess(proposalService.detailProposal(proposalId));
