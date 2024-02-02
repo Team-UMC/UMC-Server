@@ -57,7 +57,9 @@ public enum ErrorCode {
 
     // Project
     EMPTY_PROJECT(HttpStatus.BAD_REQUEST, "PROJECT001", "존재하지 않는 프로젝트입니다."),
-    NO_AUTHORIZATION_PROJECT(HttpStatus.BAD_REQUEST, "PROJECT002", "해당 프로젝트에 대해 수정 권한이 없습니다."),
+    NO_UPDATE_AUTHORIZATION_PROJECT(HttpStatus.BAD_REQUEST, "PROJECT002", "해당 프로젝트에 대해 수정 권한이 없습니다."),
+    NO_DELETE_AUTHORIZATION_PROJECT(HttpStatus.BAD_REQUEST, "PROJECT003", "해당 프로젝트에 대해 삭제 권한이 없습니다."),
+
 
     // Image
     FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다.");

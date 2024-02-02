@@ -55,7 +55,7 @@ public class ProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다."),
-            @ApiResponse(responseCode = "PROJECT002", description = "해당 프로젝트에 대해 삭제 권한이 없습니다.")
+            @ApiResponse(responseCode = "PROJECT003", description = "해당 프로젝트에 대해 삭제 권한이 없습니다.")
     })
     @DeleteMapping("/{projectId}")
     public BaseResponse<ProjectIdResponse> deleteProject(@PathVariable("projectId") UUID projectId){
