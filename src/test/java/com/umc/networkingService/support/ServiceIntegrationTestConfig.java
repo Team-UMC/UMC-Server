@@ -40,18 +40,12 @@ public abstract class ServiceIntegrationTestConfig {
     @Autowired protected RefreshTokenService refreshTokenService;
 
     protected String refreshToken;
-    protected University university;
-    protected Branch branch;
-    protected BranchUniversity branchUniversity;
     protected Member member;
 
     @BeforeEach
     public void setUp() {
         member = createMember("111111", Role.MEMBER);
         setToken(member.getId());
-        university = createUniversity();
-        branch = createBranch();
-        branchUniversity = createBranchUniversity();
     }
 
     @AfterEach
@@ -95,33 +89,5 @@ public abstract class ServiceIntegrationTestConfig {
     protected void setToken(UUID memberId) {
         refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
         refreshTokenService.saveTokenInfo(refreshToken, memberId);
-    }
-
-    protected  University createUniversity() {
-        return universityRepository.save(
-                University.builder()
-                        .name("인하대학교")
-                        .build()
-        );
-    }
-
-    protected Branch createBranch() {
-        return branchRepository.save(
-                Branch.builder()
-                        .name("GACI")
-                        .description("가치 지부입니다.")
-                        .semester(Semester.FIFTH)
-                        .build()
-        );
-    }
-
-    protected BranchUniversity createBranchUniversity() {
-        return branchUniversityRepository.save(
-                BranchUniversity.builder()
-                        .branch(branch)
-                        .university(university)
-                        .isActive(Boolean.TRUE)
-                        .build()
-        );
     }
 }
