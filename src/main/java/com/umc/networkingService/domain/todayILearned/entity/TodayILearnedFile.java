@@ -25,9 +25,6 @@ public class TodayILearnedFile extends BaseEntity {
     @Column(name = "today_i_learned_file_id")
     private UUID id;
 
-//    @Column(nullable = false)
-//    private String name;
-
     @Column(nullable = false)
     private String url;
 
