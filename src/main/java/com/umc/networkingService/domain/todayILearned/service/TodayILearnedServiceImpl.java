@@ -79,6 +79,6 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
 
     private void validateMember(TodayILearned todayILearned, Member member) {
         if (!todayILearned.getWriter().getId().equals(member.getId()))
-            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
+            throw new RestApiException(ErrorCode.NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER);
     }
 }
