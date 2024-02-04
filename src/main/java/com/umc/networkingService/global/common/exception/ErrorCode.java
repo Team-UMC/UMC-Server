@@ -82,7 +82,9 @@ public enum ErrorCode {
     EMPTY_BOARD_COMMENT(HttpStatus.NOT_FOUND,"COMMENT001","댓글을 찾을 수 없습니다."),
     NO_AUTHORIZATION_BOARD_COMMENT(HttpStatus.BAD_REQUEST,"COMMENT002", "댓글을 작성/수정/삭제 할 권한이 없습니다."),
 
-    ;
+    // TodayILearned
+    EMPTY_TODAYILERARNED(HttpStatus.BAD_REQUEST, "TODAYILEANRED001", "존재하지 않는 TIL입니다."),
+    NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER(HttpStatus.BAD_REQUEST, "TODAYILEANRED002", "해당 TIL에 대해 권한이 없는 사용자입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
