@@ -25,7 +25,7 @@ public class TodayILearnedMapper {
                 .build();
     }
 
-    public TodayILearnedId UUIDtoTodayILearnedId(UUID todayILearnedId) {
+    public TodayILearnedId toTodayILearnedId(UUID todayILearnedId) {
         return TodayILearnedId.builder()
                 .todayILearnedId(todayILearnedId)
                 .build();

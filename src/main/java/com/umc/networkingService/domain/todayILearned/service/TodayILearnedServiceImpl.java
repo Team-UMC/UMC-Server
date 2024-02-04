@@ -37,7 +37,7 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
             todayILearnedFileService.uploadTodayILearnedFiles(todayILearned, files);
         }
 
-        return todayILearnedMapper.UUIDtoTodayILearnedId(todayILearned.getId());
+        return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
         todayILearned.updateTodayILearned(request);
 
 
-        return todayILearnedMapper.UUIDtoTodayILearnedId(todayILearned.getId());
+        return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
     }
 
     @Override
@@ -77,6 +77,6 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
         }
         todayILearned.delete();
 
-        return todayILearnedMapper.UUIDtoTodayILearnedId(todayILearned.getId());
+        return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
     }
 }
