@@ -94,16 +94,18 @@ public class MemberServiceImpl implements MemberService{
     // 깃허브 인증 함수
     @Override
     @Transactional
-    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String code) {
+    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String nickname) {
 
         Member loginMember = loadEntity(member.getId());
 
-        String gitNickname = githubMemberClient.getGithubNickname(code);
+////        String gitNickname = githubMemberClient.getGithubNickname(code);
+//
+//        if (gitNickname == null || gitNickname.isBlank())
+//            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
-        if (gitNickname == null || gitNickname.isBlank())
-            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
-
-        loginMember.authenticateGithub(gitNickname);
+        if (memberRepository.existsByGitNickname(nickname))
+            throw new RestApiException(ErrorCode.DUPLICATED_GIT_NICKNAME);
+        loginMember.authenticateGithub(nickname);
 
         return new MemberAuthenticateGithubResponse(loginMember.getGitNickname());
     }
