@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface TodayILearnedRepository extends JpaRepository<TodayILearned, UUID> {
 
-    @Query(value = "SELECT t FROM TodayILearned t WHERE (t.writer = :writer AND DATE(t.createdAt) = :date) AND t.deletedAt IS NULL")
+    @Query(value = "SELECT t FROM TodayILearned t WHERE (t.writer = :writer AND DATE(t.createdAt) = :date)")
     List<TodayILearned> findTodayILearnedByWriterAndCreateDate(@Param("writer") Member writer,
                                                               @Param("date") LocalDate date);
 }
