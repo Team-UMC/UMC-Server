@@ -34,6 +34,10 @@ public enum ErrorCode {
     NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER006", "권한이 없는 사용자입니다."),
     NO_SEMESTER_PARTS(HttpStatus.BAD_REQUEST, "MEMBER007", "참여한 기수와 파트가 존재하지 않는 사용자입니다."),
 
+    // Friend
+    ALREADY_FRIEND_RELATION(HttpStatus.BAD_REQUEST, "FRIEND001", "이미 친구 관계인 사용자입니다."),
+    NOT_FRIEND_RELATION(HttpStatus.CONFLICT, "FRIEND002", "친구 관계가 아닌 사용자입니다."),
+
     // SemesterPart
     EMPTY_SEMESTER_PART(HttpStatus.BAD_REQUEST, "PART006", "존재하지 않는 기수의 파트입니다."),
 
@@ -79,7 +83,9 @@ public enum ErrorCode {
     EMPTY_BOARD_COMMENT(HttpStatus.NOT_FOUND,"COMMENT001","댓글을 찾을 수 없습니다."),
     NO_AUTHORIZATION_BOARD_COMMENT(HttpStatus.BAD_REQUEST,"COMMENT002", "댓글을 작성/수정/삭제 할 권한이 없습니다."),
 
-    ;
+    // TodayILearned
+    EMPTY_TODAYILERARNED(HttpStatus.BAD_REQUEST, "TODAYILEANRED001", "존재하지 않는 TIL입니다."),
+    NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER(HttpStatus.BAD_REQUEST, "TODAYILEANRED002", "해당 TIL에 대해 권한이 없는 사용자입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

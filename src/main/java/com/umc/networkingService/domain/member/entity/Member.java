@@ -82,6 +82,7 @@ public class Member extends BaseEntity {
 
     private String notionLink;
 
+    // 가장 최근 호출 시간
     private LocalDateTime lastActiveTime;
 
     // 기본 정보 설정 함수
