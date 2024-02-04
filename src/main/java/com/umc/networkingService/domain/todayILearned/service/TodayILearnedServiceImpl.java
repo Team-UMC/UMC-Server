@@ -32,7 +32,6 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
 
         TodayILearned todayILearned = todayILearnedRepository.save(todayILearnedMapper.toTodayILearned(member, request));
 
-        System.out.println(todayILearned);
         // 파일이 있으면 파일 업로드
         if (files != null) {
             todayILearnedFileService.uploadTodayILearnedFiles(todayILearned, files);
