@@ -57,9 +57,8 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
         TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(
                 ErrorCode.EMPTY_TODAYILERARNED));
 
-        if (!todayILearned.getWriter().getId().equals(member.getId())) {
-            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
-        }
+        // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
+        validateMember(todayILearned, member);
         todayILearned.updateTodayILearned(request);
 
 
@@ -72,11 +71,14 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
         TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_TODAYILERARNED));
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
-        if (!todayILearned.getWriter().getId().equals(member.getId())) {
-            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
-        }
+        validateMember(todayILearned, member);
         todayILearned.delete();
 
         return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
+    }
+
+    private void validateMember(TodayILearned todayILearned, Member member) {
+        if (!todayILearned.getWriter().getId().equals(member.getId()))
+            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
     }
 }
