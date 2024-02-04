@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -51,6 +52,7 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     }
 
     @Override
+    @Transactional
     public TodayILearnedId updateTodayILearned(Member member, UUID todayILearnedId, List<MultipartFile> files,
                                                TodayILearnedUpdate request) {
         TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(
@@ -59,14 +61,14 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
         if (!todayILearned.getWriter().getId().equals(member.getId())) {
             throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
         }
-        todayILearned = todayILearnedMapper.updateTodayILearnedToTodayILearned(request, todayILearned);
+        todayILearned.updateTodayILearned(request);
 
-        todayILearnedRepository.save(todayILearned);
 
         return todayILearnedMapper.UUIDtoTodayILearnedId(todayILearned.getId());
     }
 
     @Override
+    @Transactional
     public TodayILearnedId deleteTodayILearned(Member member, UUID todayILearnedId) {
         TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_TODAYILERARNED));
 
@@ -75,7 +77,7 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
             throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
         }
         todayILearned.delete();
-        todayILearnedRepository.save(todayILearned);
+
         return todayILearnedMapper.UUIDtoTodayILearnedId(todayILearned.getId());
     }
 }

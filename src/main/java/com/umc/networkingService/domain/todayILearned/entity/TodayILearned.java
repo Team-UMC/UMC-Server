@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.todayILearned.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedUpdate;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Part;
 import jakarta.persistence.*;
@@ -9,14 +10,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
 @Getter
-@Setter
 @Builder
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
@@ -44,5 +43,13 @@ public class TodayILearned extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Part part;
+
+    public void updateTodayILearned(TodayILearnedUpdate request) {
+        this.title = request.getTitle();
+        this.subtitle = request.getSubTitle();
+        this.content = request.getContent();
+        this.part = request.getPart();
+
+    }
 
 }

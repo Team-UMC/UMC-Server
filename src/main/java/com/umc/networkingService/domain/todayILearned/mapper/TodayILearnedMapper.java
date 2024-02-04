@@ -46,13 +46,5 @@ public class TodayILearnedMapper {
                 .build();
     }
 
-    public TodayILearned updateTodayILearnedToTodayILearned(TodayILearnedUpdate request, TodayILearned todayILearned) {
-        todayILearned.setTitle(request.getTitle());
-        todayILearned.setSubtitle(request.getSubTitle());
-        todayILearned.setContent(request.getContent());
-        todayILearned.setPart(request.getPart());
-
-        return todayILearned;
-    }
 
 }

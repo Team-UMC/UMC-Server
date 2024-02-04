@@ -25,9 +25,9 @@ public class TodayILearnedRequest {
     @NoArgsConstructor
     @Builder
     public static class TodayILearnedUpdate {
-        private Part part;
         private String title;
         private String subTitle;
         private String content;
+        private Part part;
     }
 }
