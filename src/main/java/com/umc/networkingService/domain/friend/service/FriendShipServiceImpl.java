@@ -1,11 +1,9 @@
 package com.umc.networkingService.domain.friend.service;
 
-import com.umc.networkingService.domain.friend.repository.FriendRepository;
 import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
-import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

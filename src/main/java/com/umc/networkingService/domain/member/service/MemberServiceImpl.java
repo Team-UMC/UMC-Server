@@ -3,12 +3,14 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
-import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
-import com.umc.networkingService.domain.member.entity.*;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.MemberPoint;
+import com.umc.networkingService.domain.member.entity.MemberPosition;
+import com.umc.networkingService.domain.member.entity.PositionType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;

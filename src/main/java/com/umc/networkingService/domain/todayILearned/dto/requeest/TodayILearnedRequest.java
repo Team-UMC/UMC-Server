@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.todayILearned.dto.requeest;
 
 import com.umc.networkingService.global.common.enums.Part;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
