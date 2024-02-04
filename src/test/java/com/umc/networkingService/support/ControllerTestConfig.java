@@ -29,20 +29,20 @@ public abstract class ControllerTestConfig {
 
     @BeforeEach
     public void setUp() {
-        member = createMember();
+        member = createMember("111111", Role.MEMBER);
         setToken(member);
     }
 
-    private Member createMember() {
+    protected Member createMember(String clientId, Role role) {
         return Member.builder()
                 .id(UUID.randomUUID())
-                .clientId("123456")
+                .clientId(clientId)
                 .socialType(SocialType.KAKAO)
-                .role(Role.MEMBER)
+                .role(role)
                 .build();
     }
 
-    private void setToken(Member member) {
+    protected void setToken(Member member) {
         accessToken = jwtTokenProvider.generateAccessToken(member.getId());
         refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
     }
