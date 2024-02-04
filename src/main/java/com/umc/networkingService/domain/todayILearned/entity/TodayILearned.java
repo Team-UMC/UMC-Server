@@ -45,5 +45,4 @@ public class TodayILearned extends BaseEntity {
     @Column(nullable = false)
     private Part part;
 
-//    private Boolean linkedNotion;
 }
