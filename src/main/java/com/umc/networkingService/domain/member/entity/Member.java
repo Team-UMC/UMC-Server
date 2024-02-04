@@ -19,6 +19,10 @@ import org.hibernate.annotations.UuidGenerator;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -107,6 +111,13 @@ public class Member extends BaseEntity {
         this.semesterParts = semesterParts;
     }
 
+    // 가장 마지막 기수 파트를 반환하는 함수
+    public SemesterPart getLatestSemesterPart() {
+        return semesterParts.stream()
+                .max(Comparator.comparing(SemesterPart::getSemester))
+                .orElseThrow(() -> new RestApiException(ErrorCode.NO_SEMESTER_PARTS));
+    }
+
     // 깃허브 닉네임 업데이트 함수
     public void authenticateGithub(String gitNickname) {
         this.gitNickname = gitNickname;
@@ -153,6 +164,11 @@ public class Member extends BaseEntity {
     // 테스트 코드용
     public void updateRole(Role role) {
         this.role = role;
+    }
+
+    // 지부 업데이트 함수
+    public void updateBranch(Branch branch) {
+        this.branch = branch;
     }
 
     // 최근 활동 시간 업데이트 함수
