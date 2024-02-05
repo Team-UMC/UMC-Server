@@ -187,7 +187,7 @@ public class MemberServiceImpl implements MemberService{
 
         // 기수 변경에 의해 소속 지부 변경
         Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
-                updateMember.getUniversity(), updateMember.getLatestSemesterPart().getSemester());
+                updateMember.getUniversity(), updateMember.getRecentSemester());
         updateMember.updateBranch(newBranch);
     }
 

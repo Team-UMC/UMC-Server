@@ -107,13 +107,6 @@ public class Member extends BaseEntity {
         this.semesterParts = semesterParts;
     }
 
-    // 가장 마지막 기수 파트를 반환하는 함수
-    public SemesterPart getLatestSemesterPart() {
-        return semesterParts.stream()
-                .max(Comparator.comparing(SemesterPart::getSemester))
-                .orElseThrow(() -> new RestApiException(ErrorCode.NO_SEMESTER_PARTS));
-    }
-
     // 깃허브 닉네임 업데이트 함수
     public void authenticateGithub(String gitNickname) {
         this.gitNickname = gitNickname;
