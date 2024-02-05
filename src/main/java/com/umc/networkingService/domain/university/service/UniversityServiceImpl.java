@@ -2,11 +2,14 @@ package com.umc.networkingService.domain.university.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPoint;
 import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
+import com.umc.networkingService.domain.member.service.MemberPointService;
+import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.university.converter.UniversityConverter;
 import com.umc.networkingService.domain.university.dto.request.UniversityRequest;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
@@ -28,9 +31,12 @@ import java.util.UUID;
 public class UniversityServiceImpl implements UniversityService {
 
     private final UniversityRepository universityRepository;
-    private final MemberRepository memberRepository;
-    private final BranchUniversityRepository branchUniversityRepository;
-    private final MemberPointRepository memberPointRepository;
+
+    private final MemberService memberService;
+    private final BranchUniversityService branchUniversityService;
+    private final MemberPointService memberPointService;
+
+
     private final S3FileComponent s3FileComponent;
 
     @Override
@@ -71,7 +77,8 @@ public class UniversityServiceImpl implements UniversityService {
 
     @Transactional(readOnly = true)     //우리 학교 기여도 랭킹 조회
     public UniversityResponse.JoinContributionRanks joinContributionRankingList(Member member){
-        List<Member> contributionRankList = memberRepository.findAllByUniversityOrderByContributionPointDesc(member.getUniversity());
+
+        List<Member> contributionRankList = memberService.findContributionRankings(member);
         return UniversityResponse.JoinContributionRanks.builder()
                         .joinContributionRanks(
                                 UniversityConverter.toJoinContributionRankList(contributionRankList)
@@ -85,8 +92,7 @@ public class UniversityServiceImpl implements UniversityService {
                 = UniversityConverter.toJoinUniversityMascot(member.getUniversity());
 
         //지부 찾기
-        Branch branch = branchUniversityRepository.findByUniversityAndIsActive(member.getUniversity(),true)
-               .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH)).getBranch();
+        Branch branch = branchUniversityService.findBranchByUniversity(member.getUniversity());
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
@@ -110,7 +116,7 @@ public class UniversityServiceImpl implements UniversityService {
         member.getUniversity().increasePoint(pointType.getPoint());
 
         //포인트 히스토리 추가
-        memberPointRepository.save(
+        memberPointService.saveEntity(
                 MemberPoint.builder()
                         .member(member)
                         .pointType(pointType)

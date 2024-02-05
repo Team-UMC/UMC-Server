@@ -295,5 +295,10 @@ public class MemberServiceImpl implements MemberService{
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
     }
 
+    @Override
+    public List<Member> findContributionRankings(Member member) {
+        return memberRepository.findAllByUniversityOrderByContributionPointDesc(member.getUniversity());
+    }
+
 
 }
