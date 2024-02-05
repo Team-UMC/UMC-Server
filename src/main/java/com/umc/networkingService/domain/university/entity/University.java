@@ -39,6 +39,9 @@ public class University extends BaseEntity {
     @ColumnDefault("0")
     private Long totalPoint;
 
+    @ColumnDefault("1")
+    private Integer currentLevel;
+
     //포인트 증가
     public void increasePoint(Long point) {
         this.totalPoint += point;
@@ -49,6 +52,16 @@ public class University extends BaseEntity {
         this.name = name;
         this.universityLogo = universityLogo;
         this.semesterLogo = semesterLogo;
+    }
+
+    //레벨 증가
+    public void setLevel(Integer level) {
+        this.currentLevel=level;
+    }
+
+    //마스코트 변경
+    public void setMascot(Mascot mascot) {
+        this.mascot = mascot;
     }
 
 
