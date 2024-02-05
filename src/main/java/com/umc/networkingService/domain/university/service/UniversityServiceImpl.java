@@ -132,12 +132,11 @@ public class UniversityServiceImpl implements UniversityService {
         if(universityRepository.findByName(request.getUniversityName()).isPresent()){
             throw new RestApiException(ErrorCode.DUPLICATE_UNIVERSITY_NAME);
         }
-        universityRepository.save(University.builder()
+        return universityRepository.save(University.builder()
                 .name(request.getUniversityName())
                 .universityLogo(uploadImage("university",request.getUniversityLogo()))
                 .semesterLogo(uploadImage("semester",request.getSemesterLogo()))
-                .build());
-        return universityRepository.findByName(request.getUniversityName()).get().getId();
+                .build()).getId();
     }
 
     @Transactional   //학교 삭제
