@@ -36,15 +36,7 @@ public class BranchServiceImpl implements BranchService {
     @Transactional         //지부 생성
     public UUID postBranch(BranchRequest.PostBranchDTO request) {
 
-        //이름이 없는 경우
-        if(request.getName() == null || request.getName().isEmpty()){
-            throw new BranchHandler(ErrorCode.BRANCH_NAME_EMPTY);
-        }
-        //설명이 없는 경우
-        if(request.getDescription() == null || request.getDescription().isEmpty()){
-            throw new BranchHandler(ErrorCode.BRANCH_DESCRIPTION_EMPTY);
-        }
-
+        validateBranchNameAndDescription(request.getName(), request.getDescription());
         Branch newBranch = BranchConverter
                 .toBranch
                         (request
@@ -55,9 +47,7 @@ public class BranchServiceImpl implements BranchService {
         if (savedBranch.getId() == null) {
             throw new BranchHandler(ErrorCode.BRANCH_SAVE_FAIL);
         }
-
-
-        return branchRepository.save(newBranch).getId();
+        return savedBranch.getId();
     }
 
     @Transactional          //지부 수정
@@ -67,20 +57,12 @@ public class BranchServiceImpl implements BranchService {
         if(optionalBranch.isEmpty()){
             throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
         }
-        //이름이 없는 경우
-        if(request.getName() == null || request.getName().isEmpty()){
-            throw new BranchHandler(ErrorCode.BRANCH_NAME_EMPTY);
-        }
-        //설명이 없는 경우
-        if(request.getDescription() == null || request.getDescription().isEmpty()){
-            throw new BranchHandler(ErrorCode.BRANCH_DESCRIPTION_EMPTY);
-        }
 
-
+        validateBranchNameAndDescription(request.getName(), request.getDescription());
 
         Branch branch = optionalBranch.get();
         branch.updateBranch(request, uploadImageS3(BRANCH_CATEGORY, request.getImage()));
-        return branchRepository.save(branch).getId();
+        return branch.getId();
 
     }
 
@@ -137,6 +119,16 @@ public class BranchServiceImpl implements BranchService {
     //유효한 branchId인지 검증
     public boolean isBranchValid(UUID branchId){
         return branchRepository.existsById(branchId);
+    }
+
+    //이름, 설명 확인
+    public void validateBranchNameAndDescription(String name, String description){
+        if(name.isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_NAME_EMPTY);
+        }
+        if(description.isEmpty()){
+            throw new BranchHandler(ErrorCode.BRANCH_DESCRIPTION_EMPTY);
+        }
     }
 
     @Override
