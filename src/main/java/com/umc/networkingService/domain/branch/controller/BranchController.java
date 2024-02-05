@@ -27,13 +27,11 @@ import java.util.UUID;
 public class BranchController {
 
     private final BranchServiceImpl branchService;
-    private final BranchUniversityServiceImpl branchUniversityService;
 
     @Operation(summary = "지부 리스트 정보 조회 API")
     @GetMapping("")
     public BaseResponse<BranchResponse.JoinBranchs> joinBranchList(
-            @CurrentMember Member member,
-            @RequestParam("semester") Semester semester //기수별로 조회해서, 페이징 생략
+            @RequestParam("semester") Semester semester //기수별로 조회
     ){
         return BaseResponse.onSuccess(branchService.joinBranchList(semester));
     }
@@ -41,7 +39,6 @@ public class BranchController {
     @Operation(summary = "지부 세부 정보 조회 API")
     @GetMapping("/detail")
     public BaseResponse<BranchResponse.JoinBranchDetails> joinBranchDetail(
-            @CurrentMember Member member,
             @RequestParam("branchId") @ExistBranch UUID branchId
     ){
         return BaseResponse.onSuccess(branchService.joinBranchDetail(branchId));

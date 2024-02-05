@@ -28,7 +28,7 @@ public class StaffBranchController {
 
     private final BranchServiceImpl branchService;
     private final BranchUniversityServiceImpl branchUniversityService;
-    //todo : 관리자 분리 시키기
+
     @Operation(summary = "지부 생성 API")
     @PostMapping("")
     public BaseResponse<UUID> postBranch(
