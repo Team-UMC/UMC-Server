@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.member.controller;
 
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.friend.service.FriendShipService;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,13 +28,14 @@ import java.util.UUID;
 public class MemberController {
 
     private final MemberService memberService;
+    private final FriendShipService friendShipService;
 
     @Operation(summary = "나의 프로필 수정 API", description = "본인 프로필 사진, 닉네임, 이름, 상태 메시지를 수정하는 API입니다.")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "IMAGE001", description = "이미지 S3 업로드 실패할 경우 발생")
     })
-    @PostMapping("/update")
+    @PostMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<MemberIdResponse> updateMyProfile(@CurrentMember Member member,
                                                           @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
                                                           @RequestPart MemberUpdateMyProfileRequest request) {
@@ -48,7 +51,7 @@ public class MemberController {
     @GetMapping(value = {"", "/{memberId}"})
     public BaseResponse<MemberInquiryProfileResponse> inquiryProfile(@CurrentMember Member member,
                                                                      @PathVariable(required = false) UUID memberId) {
-        return BaseResponse.onSuccess(memberService.inquiryProfile(member, memberId));
+        return BaseResponse.onSuccess(friendShipService.inquiryProfile(member, memberId));
     }
 
     @Operation(summary = "포인트 관련 유저 정보 조회 API", description = "닉네임, 프로필 사진, 기여도, 랭킹을 조회하는 API입니다.")
@@ -75,7 +78,7 @@ public class MemberController {
     @Operation(summary = "깃허브 데이터 조회 API", description = "깃허브 잔디 이미지를 조회하는 API입니다.")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "AUTH008", description = "깃허브 인증이 안 된 사용자일 경우 발생")
+            @ApiResponse(responseCode = "MEMBER005", description = "깃허브 인증이 안 된 사용자일 경우 발생")
     })
     @GetMapping("/github")
     public BaseResponse<MemberInquiryGithubResponse> inquiryGithubImage(@CurrentMember Member member) {
