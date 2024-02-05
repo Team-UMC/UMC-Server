@@ -208,7 +208,7 @@ public class UniversityServiceImpl implements UniversityService {
                 UniversityResponse.JoinContributionRank.setRank(ranks.getJoinContributionRanks().get(indx), currentRank);
                 continue;
             }
-            currentRank= ranks.getJoinContributionRanks().get(indx).getRank()+1;
+            currentRank= ranks.getJoinContributionRanks().get(indx).getRank();
             currentScore = ranks.getJoinContributionRanks().get(indx).getUsedPoint();
         }
         return ranks;
@@ -224,7 +224,7 @@ public class UniversityServiceImpl implements UniversityService {
                 UniversityResponse.JoinUniversityRank.setRank(ranks.getJoinUniversityRanks().get(indx), currentRank);
                 continue;
             }
-            currentRank= ranks.getJoinUniversityRanks().get(indx).getUniversityRank()+1;
+            currentRank= ranks.getJoinUniversityRanks().get(indx).getUniversityRank();
             currentScore = ranks.getJoinUniversityRanks().get(indx).getUniversityPoint();
         }
         return ranks;
@@ -240,7 +240,7 @@ public class UniversityServiceImpl implements UniversityService {
                 UniversityResponse.JoinUniversityRank.setRank(ranks.getJoinUniversityRanks().get(indx), currentRank);
 
             }else{
-                currentRank= ranks.getJoinUniversityRanks().get(indx).getUniversityRank()+1;
+                currentRank= ranks.getJoinUniversityRanks().get(indx).getUniversityRank();
                 currentScore = ranks.getJoinUniversityRanks().get(indx).getUniversityPoint();
             }
             if (ranks.getJoinUniversityRanks().get(indx).getUniversityName().equals(university.getName())) {
