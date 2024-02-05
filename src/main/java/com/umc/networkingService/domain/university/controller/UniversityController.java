@@ -8,6 +8,8 @@ import com.umc.networkingService.domain.university.dto.response.UniversityRespon
 import com.umc.networkingService.domain.university.service.UniversityServiceImpl;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,9 @@ public class UniversityController {
 
     @Operation(summary = "전체 학교 조회 API",description = "전체 학교 조회 API")
     @GetMapping("")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
     public BaseResponse<UniversityResponse.JoinUniversities>
     joinUniversityList(
             @CurrentMember Member member //학교 많으면 추후에 페이징 처리하기
@@ -39,6 +44,9 @@ public class UniversityController {
 
     @Operation(summary = "우리 학교 세부 정보 조회 API",description = "우리 학교 정보 조회 API")
     @GetMapping("/details")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
     public BaseResponse<UniversityResponse.joinUniversityDetail>
     joinUniversityDetail(
             @CurrentMember Member member
@@ -48,6 +56,9 @@ public class UniversityController {
 
     @Operation(summary = "전체 학교 랭킹 조회 API",description = "전체 학교 랭킹 조회 API")
     @GetMapping("/ranks")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
     public BaseResponse<UniversityResponse.JoinUniversityRanks>
     joinUniversityRanking(
             @CurrentMember Member member
@@ -57,6 +68,9 @@ public class UniversityController {
 
     @Operation(summary = "우리 학교 전체 기여도 랭킹 조회 API",description = "학교 전체 기여도 조회 API")
     @GetMapping("/members")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
     public BaseResponse<UniversityResponse.JoinContributionRanks>
     joinUniversityContribution(
             @CurrentMember Member member
@@ -66,6 +80,10 @@ public class UniversityController {
 
     @Operation(summary = "우리 학교 마스코트 조회 API",description = "학교 마스코트 조회 API")
     @GetMapping("/mascot")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "BRANCH001", description = "지부가 존재하지 않음")
+    })
     public BaseResponse<UniversityResponse.joinUniversityMascot>
     joinUniversityMascot(
             @CurrentMember Member member
@@ -74,15 +92,17 @@ public class UniversityController {
     }
 
     @Operation(summary = "우리 학교 마스코트 먹이주기 API",description = "학교 마스코트 먹이주기 API")
-    @PostMapping("/mascot")    //현재 학교 포인트 반환
-    public BaseResponse<String>
+    @PostMapping("/mascot")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MEMBER008", description = "마스코트에 줄 포인트가 충분하지 않음")
+    })
+    public BaseResponse<Long>
     postMascotPoint(
             @CurrentMember Member member,
             @RequestBody @Valid PointType pointType
             ){
-
-        universityService.feedUniversityMascot(member, pointType);
-        return BaseResponse.onSuccess("먹이주기 성공");
+        return BaseResponse.onSuccess(universityService.feedUniversityMascot(member, pointType)); //현재 대학 포인트
     }
 
 }
