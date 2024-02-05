@@ -135,14 +135,15 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional   //학교 삭제
-    public void deleteUniversity(UUID universityId){
+    public UUID deleteUniversity(UUID universityId){
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
         university.delete();
+        return universityId;
     }
 
     @Transactional    //학교 정보 수정
-    public void patchUniversity(UniversityRequest.patchUniversity request){
+    public UUID patchUniversity(UniversityRequest.patchUniversity request){
 
         University university;
         university = universityRepository.findById(request.getUniversityId())
@@ -153,6 +154,7 @@ public class UniversityServiceImpl implements UniversityService {
                 ,uploadImage("university",request.getUniversityLogo())
                 ,uploadImage("semester",request.getSemesterLogo()));
         universityRepository.save(university);
+        return university.getId();
     }
 
     //s3에 이미지 업로드

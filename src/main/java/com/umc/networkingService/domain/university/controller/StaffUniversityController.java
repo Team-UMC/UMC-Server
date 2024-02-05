@@ -45,24 +45,22 @@ public class StaffUniversityController {
 
     @Operation(summary = "학교 삭제하기 API",description = "학교 삭제하기 API")
     @DeleteMapping("")
-    public BaseResponse<String>
+    public BaseResponse<UUID>
     deleteUniversity(
             @CurrentMember Member member,
             @RequestBody @Valid UUID universityId
     ){
-        universityService.deleteUniversity(universityId);
-        return BaseResponse.onSuccess("학교 삭제 완료");
+        return BaseResponse.onSuccess(universityService.deleteUniversity(universityId));
     }
 
     @Operation(summary = "학교 정보 수정하기 API",description = "학교 정보 수정하기 API")
     @PatchMapping("")
-    public BaseResponse<String>
+    public BaseResponse<UUID>
     patchUniversity(
             @CurrentMember Member member,
             @RequestBody @Valid UniversityRequest.patchUniversity request
     ){
-        universityService.patchUniversity(request);
-        return BaseResponse.onSuccess("학교 정보 수정 완료");
+        return BaseResponse.onSuccess(universityService.patchUniversity(request));
     }
 
 }
