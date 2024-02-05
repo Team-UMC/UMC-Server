@@ -49,12 +49,11 @@ public class StaffBranchController {
 
     @Operation(summary = "지부 삭제 API")
     @DeleteMapping("/{branchId}")
-    public BaseResponse<String> patchBranch(
+    public BaseResponse<UUID> patchBranch(
             @CurrentMember Member member,
             @Validated @ExistBranch @PathVariable("branchId") UUID branchId
     ){
-        branchService.deleteBranch(branchId);
-        return BaseResponse.onSuccess("지부 삭제 완료");
+        return BaseResponse.onSuccess(branchService.deleteBranch(branchId));
     }
 
     @Operation(summary = "지부 대학교 연결 API")
