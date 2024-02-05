@@ -48,7 +48,7 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional(readOnly = true)     //전체 대학교 조회
     public UniversityResponse.JoinUniversities joinUniversityList(){
 
-        List<University> universityList = universityRepository.findAllByOrderByNameDesc(); //이름 순 정렬
+        List<University> universityList = universityRepository.findAllByOrderByNameAsc(); //이름 순 정렬
         return UniversityResponse.JoinUniversities.builder()
                 .joinUniversities(UniversityConverter.toJoinUniversityList(universityList))
                 .build();
@@ -172,8 +172,4 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
 
-    //유효한 대학 확인
-    public boolean isUniversityValid(UUID universityId) {
-        return universityRepository.existsById(universityId);
-    }
 }
