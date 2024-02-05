@@ -78,6 +78,7 @@ public class Member extends BaseEntity {
     //포인트 차감
     public void usePoint(Long usedPoint) {
         this.remainPoint -= usedPoint;
+        this.contributionPoint += usedPoint;
     }
 
     private LocalDateTime lastActiveTime;

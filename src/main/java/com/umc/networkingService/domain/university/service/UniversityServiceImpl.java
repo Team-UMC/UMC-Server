@@ -41,7 +41,8 @@ public class UniversityServiceImpl implements UniversityService {
 
     @Transactional(readOnly = true)     //전체 대학교 조회
     public UniversityResponse.JoinUniversities joinUniversityList(){
-        List<University> universityList = universityRepository.findAll();
+
+        List<University> universityList = universityRepository.findAllByOrderByNameDesc(); //이름 순 정렬
         return UniversityResponse.JoinUniversities.builder()
                 .joinUniversities(UniversityConverter.toJoinUniversityList(universityList))
                 .build();
