@@ -7,12 +7,14 @@ import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.entity.Album;
 import com.umc.networkingService.domain.album.service.AlbumImageService;
 import com.umc.networkingService.domain.member.entity.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class AlbumMapper {
 
     private final AlbumImageService albumImageService;
@@ -49,7 +51,7 @@ public class AlbumMapper {
                 .albumPageResponses(AlbumPageResponses)
                 .page(albums.getNumber())
                 .totalPages(albums.getNumber())
-                .totalElements((int)albums.getTotalPages())
+                .totalElements((int)albums.getTotalElements())
                 .isFirst(albums.isFirst())
                 .isLast(albums.isLast())
                 .build();

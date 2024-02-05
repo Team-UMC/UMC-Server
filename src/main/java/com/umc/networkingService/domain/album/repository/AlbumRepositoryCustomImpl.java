@@ -30,6 +30,6 @@ public class AlbumRepositoryCustomImpl implements AlbumRepositoryCustom{
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(albums, pageable, query.selectFrom(album).fetch().size());
+        return new PageImpl<>(albums, pageable, query.selectFrom(album).where(predicate).fetch().size());
     }
 }
