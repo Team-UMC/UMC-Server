@@ -62,6 +62,9 @@ public class UniversityResponse {
         String universityLogo;
         Long universityPoint;
         Integer universityRank;
+        public static void setRank(JoinUniversityRank joinUniversityRank ,Integer newRank) {
+            joinUniversityRank.universityRank = newRank;
+        }
     }
 
     @Builder
@@ -81,7 +84,10 @@ public class UniversityResponse {
         String name;
         String profileImage;
         Long usedPoint;
-        Integer rank; //todo: 랭킹 얼마까지? , 랭킹 패이징 해?
+        Integer rank;
+        public static void setRank(JoinContributionRank joinContributionRank ,Integer newRank) {
+            joinContributionRank.rank = newRank;
+        }
     }
 
     @Builder

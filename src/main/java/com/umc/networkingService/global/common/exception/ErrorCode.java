@@ -29,7 +29,7 @@ public enum ErrorCode {
     EMPTY_MEMBER_UNIVERSITY(HttpStatus.CONFLICT, "MEMBER004", "소속 대학교가 존재하지 않는 사용자입니다."),
     UNAUTHENTICATED_GITHUB(HttpStatus.BAD_REQUEST, "MEMBER005", "깃허브 연동이 완료되지 않은 사용자입니다."),
 
-    NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "MEMBER006", "포인트가 부족합니다."),
+    NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "MEMBER008", "포인트가 부족합니다."),
     INVALID_MEMBER_KEYWORD(HttpStatus.BAD_REQUEST, "MEMBER006", "검색어 양식[닉네임/이름]에 맞추어 작성해주세요. ex) 벡스/김준석"),
     NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER006", "권한이 없는 사용자입니다."),
 

@@ -46,7 +46,7 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional(readOnly = true)     //전체 대학교 조회
-    public UniversityResponse.JoinUniversities joinUniversityList(){
+    public UniversityResponse.JoinUniversities joinUniversityList() {
 
         List<University> universityList = universityRepository.findAllByOrderByNameAsc(); //이름 순 정렬
         return UniversityResponse.JoinUniversities.builder()
@@ -54,39 +54,48 @@ public class UniversityServiceImpl implements UniversityService {
                 .build();
     }
 
-    @Transactional(readOnly = true)     //대학교 별 세부 정보 조회
-    public UniversityResponse.joinUniversityDetail joinUniversityDetail(Member member){
+    @Transactional(readOnly = true)     //우리 학교 정보 조회
+    public UniversityResponse.joinUniversityDetail joinUniversityDetail(Member member) {
         UniversityResponse.joinUniversityDetail universityDetail
                 = UniversityConverter.toJoinUniversityDetail(member.getUniversity());
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
         return UniversityResponse.joinUniversityDetail.setUniversityRank(
-                universityDetail,universityRankList.indexOf(member.getUniversity())+1
+                universityDetail
+                , handleTiedUniversityRanks( //우리 학교 순위
+                        UniversityResponse.JoinUniversityRanks.builder()
+                                .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
+                                .build()
+                        ,member.getUniversity()
+                )
         );
 
     }
 
     @Transactional(readOnly = true)     //전체 대학교 랭킹 조회
-    public UniversityResponse.JoinUniversityRanks joinUniversityRankingList(Member member){
+    public UniversityResponse.JoinUniversityRanks joinUniversityRankingList(Member member) {
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc();
-        return UniversityResponse.JoinUniversityRanks.builder()
+
+        return handleTiedUniversityRanks(UniversityResponse.JoinUniversityRanks.builder()
                 .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
-                .build();
+                .build());
     }
 
     @Transactional(readOnly = true)     //우리 학교 기여도 랭킹 조회
-    public UniversityResponse.JoinContributionRanks joinContributionRankingList(Member member){
+    public UniversityResponse.JoinContributionRanks joinContributionRankingList(Member member) {
 
         List<Member> contributionRankList = memberService.findContributionRankings(member);
-        return UniversityResponse.JoinContributionRanks.builder()
-                        .joinContributionRanks(
-                                UniversityConverter.toJoinContributionRankList(contributionRankList)
-                        ).build();
+        UniversityResponse.JoinContributionRanks joinContributionRanks = UniversityResponse.JoinContributionRanks.builder()
+                .joinContributionRanks(
+                        UniversityConverter.toJoinContributionRankList(contributionRankList)
+                ).build();
+
+        return handleTiedContributionRanks(joinContributionRanks);
     }
 
     @Transactional(readOnly = true)    //우리 대학교 마스코트 조회
-    public UniversityResponse.joinUniversityMascot joinUniversityMascot(Member member){
+    public UniversityResponse.joinUniversityMascot joinUniversityMascot(Member member) {
 
         UniversityResponse.joinUniversityMascot universityMascot
                 = UniversityConverter.toJoinUniversityMascot(member.getUniversity());
@@ -98,18 +107,22 @@ public class UniversityServiceImpl implements UniversityService {
 
         return UniversityResponse.joinUniversityMascot.setRankAndBranch(
                 universityMascot
-                ,universityRankList.indexOf(member.getUniversity())+1
-                ,branch
+                , handleTiedUniversityRanks( //우리 학교 순위
+                        UniversityResponse.JoinUniversityRanks.builder()
+                                .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
+                                .build()
+                        ,member.getUniversity())
+                , branch
         );
     }
 
     @Transactional    //우리 대학교 마스코트 먹이주기  todo: 마스코드 레벨업, 마스코트 변경
-    public void feedUniversityMascot(Member member, PointType pointType){
+    public void feedUniversityMascot(Member member, PointType pointType) {
 
-        if(member.getRemainPoint() < pointType.getPoint()){
+        if (member.getRemainPoint() < pointType.getPoint()) {
             throw new RestApiException(ErrorCode.NOT_ENOUGH_POINT);
         }
-        
+
         //포인트 차감
         member.usePoint(pointType.getPoint());
         //학교 포인트 증가
@@ -128,19 +141,19 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional    //학교 생성
-    public UUID createUniversity(UniversityRequest.createUniversity request){
-        if(universityRepository.findByName(request.getUniversityName()).isPresent()){
+    public UUID createUniversity(UniversityRequest.createUniversity request) {
+        if (universityRepository.findByName(request.getUniversityName()).isPresent()) {
             throw new RestApiException(ErrorCode.DUPLICATE_UNIVERSITY_NAME);
         }
         return universityRepository.save(University.builder()
                 .name(request.getUniversityName())
-                .universityLogo(uploadImage("university",request.getUniversityLogo()))
-                .semesterLogo(uploadImage("semester",request.getSemesterLogo()))
+                .universityLogo(uploadImage("university", request.getUniversityLogo()))
+                .semesterLogo(uploadImage("semester", request.getSemesterLogo()))
                 .build()).getId();
     }
 
     @Transactional   //학교 삭제
-    public UUID deleteUniversity(UUID universityId){
+    public UUID deleteUniversity(UUID universityId) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
         university.delete();
@@ -148,27 +161,76 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional    //학교 정보 수정
-    public UUID patchUniversity(UniversityRequest.patchUniversity request){
+    public UUID patchUniversity(UniversityRequest.patchUniversity request) {
 
-        University university;
-        university = universityRepository.findById(request.getUniversityId())
+        University university = universityRepository.findById(request.getUniversityId())
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
 
         university.updateUniversity(
                 request.getUniversityName()
-                ,uploadImage("university",request.getUniversityLogo())
-                ,uploadImage("semester",request.getSemesterLogo()));
-        universityRepository.save(university);
+                , uploadImage("university", request.getUniversityLogo())
+                , uploadImage("semester", request.getSemesterLogo()));
+
         return university.getId();
     }
 
     //s3에 이미지 업로드
-    public String uploadImage(String category,MultipartFile imageFile){
-        if(imageFile==null ||imageFile.isEmpty()){
+    public String uploadImage(String category, MultipartFile imageFile) {
+        if (imageFile == null || imageFile.isEmpty()) {
             return "";
         }
         return s3FileComponent.uploadFile(category, imageFile);
     }
 
+    //동점자 처리 (기여도) (동점차는 동일한 순위 부여 후 랭킹 건너뛰기)
+    private UniversityResponse.JoinContributionRanks handleTiedContributionRanks(UniversityResponse.JoinContributionRanks ranks) {
+        int currentRank = 1;
+        Long currentScore = ranks.getJoinContributionRanks().get(0).getUsedPoint();
 
+        for (int indx = 0; indx < ranks.getJoinContributionRanks().size(); indx++) {
+            if (ranks.getJoinContributionRanks().get(indx).getUsedPoint().equals(currentScore)) {
+                UniversityResponse.JoinContributionRank.setRank(ranks.getJoinContributionRanks().get(indx), currentRank);
+                continue;
+            }
+            currentRank= ranks.getJoinContributionRanks().get(indx).getRank()+1;
+            currentScore = ranks.getJoinContributionRanks().get(indx).getUsedPoint();
+        }
+        return ranks;
+    }
+
+    //동점학교 처리 (학교 랭킹) (동점차는 동일한 순위 부여 후 랭킹 건너뛰기)
+    private UniversityResponse.JoinUniversityRanks handleTiedUniversityRanks(UniversityResponse.JoinUniversityRanks ranks) {
+        int currentRank = 1;
+        Long currentScore = ranks.getJoinUniversityRanks().get(0).getUniversityPoint();
+
+        for (int indx = 0; indx < ranks.getJoinUniversityRanks().size(); indx++) {
+            if (ranks.getJoinUniversityRanks().get(indx).getUniversityPoint().equals(currentScore)) {
+                UniversityResponse.JoinUniversityRank.setRank(ranks.getJoinUniversityRanks().get(indx), currentRank);
+                continue;
+            }
+            currentRank= ranks.getJoinUniversityRanks().get(indx).getUniversityRank()+1;
+            currentScore = ranks.getJoinUniversityRanks().get(indx).getUniversityPoint();
+        }
+        return ranks;
+    }
+
+    //동점학교 처리, (해당 학교 랭킹 반환) (동점차는 동일한 순위 부여 후 랭킹 건너뛰기)
+    private  Integer handleTiedUniversityRanks(UniversityResponse.JoinUniversityRanks ranks, University university) {
+        int currentRank = 1;
+        Long currentScore = ranks.getJoinUniversityRanks().get(0).getUniversityPoint();
+
+        for (int indx = 0; indx < ranks.getJoinUniversityRanks().size(); indx++) {
+            if (ranks.getJoinUniversityRanks().get(indx).getUniversityPoint().equals(currentScore)) {
+                UniversityResponse.JoinUniversityRank.setRank(ranks.getJoinUniversityRanks().get(indx), currentRank);
+
+            }else{
+                currentRank= ranks.getJoinUniversityRanks().get(indx).getUniversityRank()+1;
+                currentScore = ranks.getJoinUniversityRanks().get(indx).getUniversityPoint();
+            }
+            if (ranks.getJoinUniversityRanks().get(indx).getUniversityName().equals(university.getName())) {
+                return ranks.getJoinUniversityRanks().get(indx).getUniversityRank();
+            }
+        }
+        return 0;
+    }
 }
