@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@Tag(name = "대학교 API", description = "일반 유저용 멤버 관련 API")
+@Tag(name = "대학교 API", description = "일반 유저용 대학교 관련 API")
 @RestController
 @Validated
 @RequestMapping("/universities")
