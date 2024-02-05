@@ -69,7 +69,7 @@ public class UniversityConverter {
         return UniversityResponse.joinUniversityMascot.builder()
                 .mascotDialog(university.getMascot().getDialogue())
                 .mascotImage(university.getMascot().getImage())
-                .level(university.getMascot().getEndLevel())
+                .level(university.getCurrentLevel())
                 .point(university.getTotalPoint())
                 .build();
     }

@@ -3,6 +3,9 @@ package com.umc.networkingService.domain.university.service;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
+import com.umc.networkingService.domain.mascot.entity.Mascot;
+import com.umc.networkingService.domain.mascot.repository.MascotRepository;
+import com.umc.networkingService.domain.mascot.service.MascotService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPoint;
 import com.umc.networkingService.domain.member.entity.PointType;
@@ -35,7 +38,7 @@ public class UniversityServiceImpl implements UniversityService {
     private final MemberService memberService;
     private final BranchUniversityService branchUniversityService;
     private final MemberPointService memberPointService;
-
+    private final MascotService mascotService;
 
     private final S3FileComponent s3FileComponent;
 
@@ -116,7 +119,7 @@ public class UniversityServiceImpl implements UniversityService {
         );
     }
 
-    @Transactional    //우리 대학교 마스코트 먹이주기  todo: 마스코드 레벨업, 마스코트 변경
+    @Transactional    //우리 대학교 마스코트 먹이주기
     public void feedUniversityMascot(Member member, PointType pointType) {
 
         if (member.getRemainPoint() < pointType.getPoint()) {
@@ -126,17 +129,29 @@ public class UniversityServiceImpl implements UniversityService {
         //포인트 차감
         member.usePoint(pointType.getPoint());
         //학교 포인트 증가
-        member.getUniversity().increasePoint(pointType.getPoint());
+        University university = member.getUniversity();
+        university.increasePoint(pointType.getPoint());
 
         //포인트 히스토리 추가
         memberPointService.saveEntity(
                 MemberPoint.builder()
                         .member(member)
                         .pointType(pointType)
-                        .university(member.getUniversity())
+                        .university(university)
                         .build()
         );
 
+        //마스코트 설정하기
+        Integer currentLevel = (int)(university.getTotalPoint()%200+1);
+        if(!currentLevel.equals(university.getCurrentLevel())){
+            university.setLevel((int) (currentLevel));
+            Mascot currentMascot = mascotService.getMascotByEndLevel(currentLevel*10);
+            university.setMascot(currentMascot);
+        }
+        /*
+        * 1. 현재 대학교 포인트%200+1해서 현재 마스코트 레벨 찾기, 현재 레벨과 다르면 마스코트 변경
+        * 2. 레벨*10하면 끝 레벨 나옴, 이걸 이용해서 레벨에 맞는 마스코트 재설정, 마스코트 레벨 재설정
+        * */
 
     }
 

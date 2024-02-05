@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface MascotRepository  extends JpaRepository<Mascot, UUID> {
+    Mascot findByEndLevel(int endLevel);
 
 }
