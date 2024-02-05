@@ -44,3 +44,6 @@ application.yml
 checksums.lock
 md-checksums.bin
 *.lock
+
+### Qclass ###
+**/generated

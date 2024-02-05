@@ -1,10 +1,13 @@
 package com.umc.networkingService.domain.todayILearned.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedUpdate;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Part;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
@@ -13,8 +16,10 @@ import org.hibernate.annotations.UuidGenerator;
 import java.util.UUID;
 
 @Getter
+@Builder
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
+@AllArgsConstructor
 @SQLRestriction("deleted_at is null")
 @Table(name = "today_i_learned")
 public class TodayILearned extends BaseEntity {
@@ -39,5 +44,12 @@ public class TodayILearned extends BaseEntity {
     @Column(nullable = false)
     private Part part;
 
-    private Boolean linkedNotion;
+    public void updateTodayILearned(TodayILearnedUpdate request) {
+        this.title = request.getTitle();
+        this.subtitle = request.getSubTitle();
+        this.content = request.getContent();
+        this.part = request.getPart();
+
+    }
+
 }

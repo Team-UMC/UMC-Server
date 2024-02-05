@@ -35,7 +35,12 @@ public class S3FileComponent {
             amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
-            throw new RestApiException(ErrorCode.FAILED_UPLOAD_S3_IMAGE);
+
+            if (multipartFile.getContentType().startsWith("image"))
+                throw new RestApiException(ErrorCode.FAILED_UPLOAD_S3_IMAGE);
+            else
+                throw new RestApiException(ErrorCode.FAILED_UPLOAD_S3_FILE);
+
         }
 
         return amazonS3Client.getUrl(bucket, fileName).toString();

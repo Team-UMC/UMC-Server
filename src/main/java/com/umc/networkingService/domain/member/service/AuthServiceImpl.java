@@ -70,67 +70,69 @@ public class AuthServiceImpl implements AuthService {
     // 회원가입을 수행하는 함수
     @Override
     @Transactional
-    public MemberIdResponse signUp(Member loginMember, MemberSignUpRequest request) {
+    public MemberIdResponse signUp(Member member, MemberSignUpRequest request) {
 
-        Member member = loadEntity(loginMember.getId());
+        Member loginMember = loadEntity(member.getId());
 
         // 소속 대학교 탐색
         University university = universityService.findUniversityByName(request.getUniversityName());
 
         // 멤버 직책 저장
-        memberPositionService.saveMemberPositionInfos(member, request.getCampusPositions(), request.getCenterPositions());
+        memberPositionService.saveMemberPositionInfos(loginMember, request.getCampusPositions(), request.getCenterPositions());
 
         // 기수별 파트 저장
-        semesterPartService.saveSemesterPartInfos(member, request.getSemesterParts());
+        semesterPartService.saveSemesterPartInfos(loginMember, request.getSemesterParts());
 
         // 이외의 기본 정보 저장
-        member.setMemberInfo(request.getName(), request.getNickname(),
-                university, branchUniversityService.findBranchByUniversity(university));
+        member.setMemberInfo(request.getName(), request.getNickname(), university,
+                // 대학교와 멤버의 마지막 기수를 통해 지부 정보 조회
+                branchUniversityService.findBranchByUniversityAndSemester(university, member.getLatestSemesterPart().getSemester())
+        );
 
-        return new MemberIdResponse(memberService.saveEntity(member).getId());
+        return new MemberIdResponse(memberService.saveEntity(loginMember).getId());
     }
 
     // 새로운 액세스 토큰 발급 함수
     @Override
     @Transactional
-    public MemberGenerateTokenResponse generateNewAccessToken(String refreshToken, Member loginMember) {
+    public MemberGenerateTokenResponse generateNewAccessToken(String refreshToken, Member member) {
 
-        Member member = loadEntity(loginMember.getId());
+        Member loginMember = loadEntity(member.getId());
 
-        RefreshToken savedRefreshToken = refreshTokenService.findByMemberId(member.getId())
+        RefreshToken savedRefreshToken = refreshTokenService.findByMemberId(loginMember.getId())
                 .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
 
         // 디비에 저장된 refreshToken과 동일하지 않다면 유효하지 않음
         if (!refreshToken.equals(savedRefreshToken.getRefreshToken()))
             throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
 
-        return new MemberGenerateTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
+        return new MemberGenerateTokenResponse(jwtTokenProvider.generateAccessToken(loginMember.getId()));
     }
 
     // 로그아웃 함수
     @Override
     @Transactional
-    public MemberIdResponse logout(Member loginMember) {
-        Member member = loadEntity(loginMember.getId());
+    public MemberIdResponse logout(Member member) {
+        Member loginMember = loadEntity(member.getId());
 
-        deleteRefreshToken(member);
-        return new MemberIdResponse(member.getId());
+        deleteRefreshToken(loginMember);
+        return new MemberIdResponse(loginMember.getId());
     }
 
     // 회원 탈퇴 함수
     @Override
     @Transactional
-    public MemberIdResponse withdrawal(Member loginMember) {
+    public MemberIdResponse withdrawal(Member member) {
         // 멤버 soft delete
-        Member member = loadEntity(loginMember.getId());
+        Member loginMember = loadEntity(member.getId());
 
         // refreshToken 삭제
-        deleteRefreshToken(member);
+        deleteRefreshToken(loginMember);
 
         // 멤버 soft delete
-        member.delete();
+        loginMember.delete();
 
-        return new MemberIdResponse(member.getId());
+        return new MemberIdResponse(loginMember.getId());
     }
 
     private MemberLoginResponse loginByApple(final String accessToken){
