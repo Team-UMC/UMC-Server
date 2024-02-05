@@ -68,7 +68,7 @@ public class BranchServiceImpl implements BranchService {
 
     @Transactional          //지부 삭제
     public UUID deleteBranch(UUID branchId) {
-        Optional<Branch> optionalBranch = branchRepository.findById(branchId); //이미 검증된 branchId가 들어옴
+        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
         if(optionalBranch.isEmpty()){
             throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
         }
