@@ -3,12 +3,14 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
-import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
-import com.umc.networkingService.domain.member.entity.*;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.MemberPoint;
+import com.umc.networkingService.domain.member.entity.MemberPosition;
+import com.umc.networkingService.domain.member.entity.PositionType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
@@ -94,16 +96,18 @@ public class MemberServiceImpl implements MemberService{
     // 깃허브 인증 함수
     @Override
     @Transactional
-    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String code) {
+    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String nickname) {
 
         Member loginMember = loadEntity(member.getId());
 
-        String gitNickname = githubMemberClient.getGithubNickname(code);
+////        String gitNickname = githubMemberClient.getGithubNickname(code);
+//
+//        if (gitNickname == null || gitNickname.isBlank())
+//            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
-        if (gitNickname == null || gitNickname.isBlank())
-            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
-
-        loginMember.authenticateGithub(gitNickname);
+        if (memberRepository.existsByGitNickname(nickname))
+            throw new RestApiException(ErrorCode.DUPLICATED_GIT_NICKNAME);
+        loginMember.authenticateGithub(nickname);
 
         return new MemberAuthenticateGithubResponse(loginMember.getGitNickname());
     }
@@ -183,7 +187,7 @@ public class MemberServiceImpl implements MemberService{
 
         // 기수 변경에 의해 소속 지부 변경
         Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
-                updateMember.getUniversity(), updateMember.getLatestSemesterPart().getSemester());
+                updateMember.getUniversity(), updateMember.getRecentSemester());
         updateMember.updateBranch(newBranch);
     }
 

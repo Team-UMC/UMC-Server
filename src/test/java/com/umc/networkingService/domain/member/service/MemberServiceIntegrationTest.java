@@ -27,7 +27,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Member 서비스의 ")
@@ -120,6 +119,8 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
         Member staff = createMember("222222", Role.TOTAL_STAFF);
 
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of(), List.of()));
+
         member.updatePositions(List.of(
                 memberPositionRepository.save(MemberPosition.builder()
                         .member(member)
@@ -127,7 +128,6 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                         .name("Android 파트장")
                         .build())
         ));
-
         MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
                 .campusPositions(List.of("회장"))
                 .centerPositions(List.of())
@@ -251,7 +251,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         given(githubMemberClient.getGithubNickname(any())).willReturn("junseokkim");
 
         // when
-        MemberAuthenticateGithubResponse response = memberService.authenticateGithub(member, "깃허브 인가 코드");
+        MemberAuthenticateGithubResponse response = memberService.authenticateGithub(member, "junseokkim");
 
         // then
         assertEquals("junseokkim", response.getGithubNickname());
