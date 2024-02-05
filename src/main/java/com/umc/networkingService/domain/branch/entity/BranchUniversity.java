@@ -32,4 +32,9 @@ public class BranchUniversity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private University university;
+
+    // 현재 기수 여부 수정 함수
+    public void updateIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 }

@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public interface UniversityRepository extends JpaRepository<University, UUID> {
     Optional<University> findByName(String name);
+
     List<University> findAllByOrderByNameAsc();
     List<University> findAllByOrderByTotalPointDesc();
+    boolean existsByName(String name);
 }

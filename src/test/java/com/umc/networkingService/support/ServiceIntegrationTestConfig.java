@@ -80,14 +80,14 @@ public abstract class ServiceIntegrationTestConfig {
         );
     }
 
-    protected MemberSignUpRequest getInfoRequest() {
+    protected MemberSignUpRequest getInfoRequest(String name, String nickname, List<String> campusPositions, List<String> centerPositions) {
         return MemberSignUpRequest.builder()
-                .name("김준석")
-                .nickname("벡스")
+                .name(name)
+                .nickname(nickname)
                 .universityName("인하대학교")
                 .semesterParts(memberMapper.toSemesterPartInfos(createSemesterPart(member)))
-                .campusPositions(List.of("Android 파트장"))
-                .centerPositions(List.of())
+                .campusPositions(campusPositions)
+                .centerPositions(centerPositions)
                 .build();
     }
 

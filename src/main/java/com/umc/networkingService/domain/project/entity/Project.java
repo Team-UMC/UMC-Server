@@ -1,11 +1,10 @@
 package com.umc.networkingService.domain.project.entity;
 
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
@@ -16,24 +15,27 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 public class Project extends BaseEntity {
 
     @Id
     @UuidGenerator
-    @Column(name = "project_id")
     private UUID id;
 
-    @Column(nullable = false)
     private String logoImage;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String slogan;
 
     private String description;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private List<ProjectMember> members = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
@@ -42,14 +44,13 @@ public class Project extends BaseEntity {
     @Column(nullable = false)
     private Semester semester;
 
-    @Column(nullable = false)
-    private Type type;
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<Type> type = new ArrayList<>();
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Long hitCount;
 
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Long heartCount;
 }

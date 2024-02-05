@@ -19,6 +19,8 @@ public enum ErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
     _NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON404", "요청한 정보를 찾을 수 없습니다."),
 
+    _METHOD_ARGUMENT_ERROR(HttpStatus.BAD_REQUEST, "COMMON405", "Argument Type이 올바르지 않습니다."),
+
     // For test
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "예외처리 테스트입니다."),
 
@@ -32,6 +34,11 @@ public enum ErrorCode {
     NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "MEMBER008", "포인트가 부족합니다."),
     INVALID_MEMBER_KEYWORD(HttpStatus.BAD_REQUEST, "MEMBER006", "검색어 양식[닉네임/이름]에 맞추어 작성해주세요. ex) 벡스/김준석"),
     NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER006", "권한이 없는 사용자입니다."),
+    NO_SEMESTER_PARTS(HttpStatus.BAD_REQUEST, "MEMBER007", "참여한 기수와 파트가 존재하지 않는 사용자입니다."),
+
+    // Friend
+    ALREADY_FRIEND_RELATION(HttpStatus.BAD_REQUEST, "FRIEND001", "이미 친구 관계인 사용자입니다."),
+    NOT_FRIEND_RELATION(HttpStatus.CONFLICT, "FRIEND002", "친구 관계가 아닌 사용자입니다."),
 
     // SemesterPart
     EMPTY_SEMESTER_PART(HttpStatus.BAD_REQUEST, "PART006", "존재하지 않는 기수의 파트입니다."),
@@ -64,9 +71,24 @@ public enum ErrorCode {
     // Image
     FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "이미지 저장에 실패하였습니다."),
 
+    // File
+    FAILED_UPLOAD_S3_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "FILE001", "파일 저장에 실패하였습니다."),
+
     // Schedule
     EMPTY_SCHEDULE(HttpStatus.BAD_REQUEST, "SCHEDULE001", "존재하지 않는 스케줄입니다."),
-    ;
+
+    //Board
+    BAD_REQUEST_BOARD(HttpStatus.BAD_REQUEST,"BOARD001", "금지된 요청입니다."),
+    EMPTY_BOARD(HttpStatus.NOT_FOUND, "BOARD002", "게시글을 찾을 수 없습니다."),
+    NO_AUTHORIZATION_BOARD(HttpStatus.BAD_REQUEST,"BOARD003", "해당 게시판 API에 대한 권한이 없습니다."),
+
+    //BoardComment
+    EMPTY_BOARD_COMMENT(HttpStatus.NOT_FOUND,"COMMENT001","댓글을 찾을 수 없습니다."),
+    NO_AUTHORIZATION_BOARD_COMMENT(HttpStatus.BAD_REQUEST,"COMMENT002", "댓글을 작성/수정/삭제 할 권한이 없습니다."),
+
+    // TodayILearned
+    EMPTY_TODAYILERARNED(HttpStatus.BAD_REQUEST, "TODAYILEANRED001", "존재하지 않는 TIL입니다."),
+    NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER(HttpStatus.BAD_REQUEST, "TODAYILEANRED002", "해당 TIL에 대해 권한이 없는 사용자입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
