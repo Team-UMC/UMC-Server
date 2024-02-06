@@ -26,7 +26,7 @@ public class BranchUniversityServiceImpl implements BranchUniversityService {
 
     @Override
     public Branch findBranchByUniversity(University university) {
-        return branchUniversityRepository.findByUniversity(university)
+        return branchUniversityRepository.findByUniversityAndIsActive(university, true)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH))
                 .getBranch();
     }

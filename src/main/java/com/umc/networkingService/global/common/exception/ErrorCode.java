@@ -88,7 +88,12 @@ public enum ErrorCode {
 
     // TodayILearned
     EMPTY_TODAYILERARNED(HttpStatus.BAD_REQUEST, "TODAYILEANRED001", "존재하지 않는 TIL입니다."),
-    NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER(HttpStatus.BAD_REQUEST, "TODAYILEANRED002", "해당 TIL에 대해 권한이 없는 사용자입니다.");
+    NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER(HttpStatus.BAD_REQUEST, "TODAYILEANRED002", "해당 TIL에 대해 권한이 없는 사용자입니다."),
+
+    //마스코트
+    EMPTY_MASCOT(HttpStatus.BAD_REQUEST, "MASCOT001", "존재하지 않는 마스코트입니다."),
+    EMPTY_MASCOT_LEVEL(HttpStatus.BAD_REQUEST, "MASCOT002", "해당 레벨의 마스코트가 존재하지 않습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

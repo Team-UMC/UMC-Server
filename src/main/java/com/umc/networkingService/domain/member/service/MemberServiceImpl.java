@@ -310,4 +310,14 @@ public class MemberServiceImpl implements MemberService{
     public University findUniversityByMember(Member member) {
         return member.getUniversity();
     }
+
+    @Override
+    @Transactional
+    public Member usePoint(Member member, PointType pointType) {
+        Member loginMember = loadEntity(member.getId());
+
+        loginMember.usePoint(pointType.getPoint());
+
+        return memberRepository.save(loginMember);
+    }
 }

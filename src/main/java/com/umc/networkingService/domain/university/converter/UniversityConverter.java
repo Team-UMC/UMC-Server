@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.university.converter;
 
+import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.entity.University;
@@ -64,11 +65,11 @@ public class UniversityConverter {
 
     // 학교 마스코트 조회
     public static UniversityResponse.joinUniversityMascot toJoinUniversityMascot(
-            University university
+            University university, Mascot mascot
     ){
         return UniversityResponse.joinUniversityMascot.builder()
-                .mascotDialog(university.getMascot().getDialogue())
-                .mascotImage(university.getMascot().getImage())
+                .mascotDialog(mascot.getDialogue())
+                .mascotImage(mascot.getImage())
                 .level(university.getCurrentLevel())
                 .point(university.getTotalPoint())
                 .build();

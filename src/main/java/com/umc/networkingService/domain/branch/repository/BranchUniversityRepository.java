@@ -11,5 +11,5 @@ import java.util.UUID;
 
 public interface BranchUniversityRepository extends JpaRepository<BranchUniversity, UUID> {
     Optional<BranchUniversity> findByUniversityAndBranch_Semester(University university, Semester branch_semester);
-    Optional<BranchUniversity> findByUniversity(University university);
+    Optional<BranchUniversity> findByUniversityAndIsActive(University university, boolean isActive);
 }

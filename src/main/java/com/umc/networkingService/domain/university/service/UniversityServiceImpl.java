@@ -98,22 +98,27 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional(readOnly = true)    //우리 대학교 마스코트 조회
     public UniversityResponse.joinUniversityMascot joinUniversityMascot(Member member) {
 
+        University university= memberService.findUniversityByMember(member);
+
         UniversityResponse.joinUniversityMascot universityMascot
-                = UniversityConverter.toJoinUniversityMascot(member.getUniversity());
+                = UniversityConverter.toJoinUniversityMascot(
+                university
+                ,university.getMascot()
+        );
 
         //지부 찾기
-        Branch branch = branchUniversityService.findBranchByUniversity(memberService.findUniversityByMember(member));
+        Branch branch = branchUniversityService.findBranchByUniversity(university);
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
+        UniversityResponse.JoinUniversityRanks joinUniversityRanks = UniversityResponse.JoinUniversityRanks.builder()
+                .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
+                .build();
+
         return UniversityResponse.joinUniversityMascot.setRankAndBranch(
-                universityMascot
-                , handleTiedUniversityRanks( //우리 학교 순위
-                        UniversityResponse.JoinUniversityRanks.builder()
-                                .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
-                                .build()
-                        ,member.getUniversity())
-                , branch
+                universityMascot,
+                handleTiedUniversityRanks(joinUniversityRanks, university),
+                branch
         );
     }
 
@@ -125,7 +130,7 @@ public class UniversityServiceImpl implements UniversityService {
         }
 
         //포인트 차감
-        member.usePoint(pointType.getPoint());
+        memberService.usePoint(member, pointType);
 
         //학교 포인트 증가
         University university = memberService.findUniversityByMember(member);
@@ -141,17 +146,17 @@ public class UniversityServiceImpl implements UniversityService {
         );
 
         //마스코트 설정하기
-        Integer currentLevel = (int)(university.getTotalPoint()%200+1);
+        Integer currentLevel = (int)(university.getTotalPoint() / 200 + 1);
         if(!currentLevel.equals(university.getCurrentLevel())){
             university.setLevel((int) (currentLevel));
             Mascot currentMascot = mascotService.getMascotByEndLevel(currentLevel*10);
             university.setMascot(currentMascot);
         }
         /*
-        * 1. 현재 대학교 포인트%200+1해서 현재 마스코트 레벨 찾기, 현재 레벨과 다르면 마스코트 변경
+        * 1. 현재 대학교 포인트 200 단위로 마스코트 변경됨,해서 현재 마스코트 레벨 찾기, 현재 레벨과 다르면 마스코트 변경
         * 2. 레벨*10하면 끝 레벨 나옴, 이걸 이용해서 레벨에 맞는 마스코트 재설정, 마스코트 레벨 재설정
         * */
-
+        universityRepository.save(university);
         return university.getTotalPoint();
     }
 
