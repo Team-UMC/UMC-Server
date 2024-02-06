@@ -178,10 +178,6 @@ public class MemberServiceImpl implements MemberService{
         // 직책 수정
         memberPositionService.saveMemberPositionInfos(updateMember, request.getCampusPositions(), request.getCenterPositions());
 
-        // 직책에 따른 Role 수정
-        Role newRole = findMemberRole(updateMember.getPositions());
-        updateMember.updateRole(newRole);
-
         // 특정 기수의 파트 변경
         semesterPartService.saveSemesterPartInfos(updateMember, request.getSemesterParts());
 
@@ -189,40 +185,6 @@ public class MemberServiceImpl implements MemberService{
         Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
                 updateMember.getUniversity(), updateMember.getRecentSemester());
         updateMember.updateBranch(newBranch);
-    }
-
-    // 멤버의 새로운 Role 찾기 함수
-    private Role findMemberRole(List<MemberPosition> memberPositions) {
-        if (memberPositions.isEmpty()) {
-            return Role.MEMBER;
-        }
-
-        List<MemberPosition> centerPositions = findPositionsByType(memberPositions, PositionType.CENTER);
-
-        if (!centerPositions.isEmpty()) {
-            if (isExecutive(centerPositions))
-                return Role.TOTAL_STAFF;
-            return Role.CENTER_STAFF;
-        }
-
-        List<MemberPosition> campusPositions = findPositionsByType(memberPositions, PositionType.CAMPUS);
-
-        if (isExecutive(campusPositions))
-            return Role.BRANCH_STAFF;
-        return Role.CAMPUS_STAFF;
-    }
-
-    // 특정 타입의 직책을 반환하는 함수
-    private List<MemberPosition> findPositionsByType(List<MemberPosition> memberPositions, PositionType type) {
-        return memberPositions.stream()
-                .filter(memberPosition -> memberPosition.getType() == type)
-                .toList();
-    }
-
-    // 회장, 부회장 판별 함수
-    private boolean isExecutive(List<MemberPosition> positions) {
-        return positions.stream()
-                .anyMatch(position -> position.getName().equals("회장") || position.getName().equals("부회장"));
     }
 
     // 기여도 목록 조회 함수
