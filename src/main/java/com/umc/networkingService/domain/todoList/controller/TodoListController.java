@@ -58,7 +58,8 @@ public class TodoListController {
             @ApiResponse(responseCode = "TODOLIST002", description = "해당 투두리스트에 대한 수정 권한이 없습니다.")
     })
     @PostMapping("/{todoListId}")
-    public BaseResponse<TodoListIdResponse> completeTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId) {
+    public BaseResponse<TodoListIdResponse> completeTodoList(@CurrentMember Member member,
+                                                             @PathVariable("todoListId") UUID todoListId) {
 
         return BaseResponse.onSuccess(todoListService.completeTodoList(member, todoListId));
     }
@@ -70,7 +71,8 @@ public class TodoListController {
             @ApiResponse(responseCode = "TODOLIST002", description = "해당 투두리스트에 대한 수정 권한이 없습니다.")
     })
     @DeleteMapping("/{todoListId}")
-    public BaseResponse<TodoListIdResponse> deleteTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId) {
+    public BaseResponse<TodoListIdResponse> deleteTodoList(@CurrentMember Member member,
+                                                           @PathVariable("todoListId") UUID todoListId) {
 
         return BaseResponse.onSuccess(todoListService.deleteTodoList(member, todoListId));
     }
@@ -80,7 +82,8 @@ public class TodoListController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @GetMapping
-    public BaseResponse<TodoListGetResponses> showTodoList(@CurrentMember Member member, @RequestParam LocalDate date){
+    public BaseResponse<TodoListGetResponses> showTodoList(@CurrentMember Member member,
+                                                           @RequestParam LocalDate date) {
         return BaseResponse.onSuccess(todoListService.showTodoList(member, date));
     }
 }

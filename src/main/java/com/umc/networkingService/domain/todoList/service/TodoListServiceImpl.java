@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.todoList.service;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListCreateRequest;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListUpdateRequest;
+import com.umc.networkingService.domain.todoList.dto.response.TodoListGetResponse;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListGetResponses;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListIdResponse;
 import com.umc.networkingService.domain.todoList.entity.ToDoList;
@@ -15,8 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -78,7 +78,10 @@ public class TodoListServiceImpl implements TodoListService{
 
     @Override
     public TodoListGetResponses showTodoList(Member member, LocalDate date){
-        List<ToDoList> todoLists = todoListRepository.findAllByWriterAndDeadline(member, date);
+        List<ToDoList> todoLists = new ArrayList<>();
+        todoLists = todoListRepository.findAllByWriterAndDeadline(member, date);
+
+        Collections.sort(todoLists, (p1,p2) -> p1.getDeadline().compareTo(p2.getDeadline()));
 
         return new TodoListGetResponses(
                 todoLists.stream()
