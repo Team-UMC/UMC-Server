@@ -308,8 +308,9 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public University findUniversityByMember(Member member) {
-        return member.getUniversity();
+    public Member findByMemberId (UUID memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
     }
 
     @Override

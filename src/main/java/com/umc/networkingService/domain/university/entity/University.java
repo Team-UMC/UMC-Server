@@ -25,7 +25,7 @@ public class University extends BaseEntity {
     @Column(name="university_id")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Mascot mascot;
 

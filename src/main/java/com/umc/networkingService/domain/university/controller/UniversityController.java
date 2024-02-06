@@ -61,9 +61,8 @@ public class UniversityController {
     })
     public BaseResponse<UniversityResponse.JoinUniversityRanks>
     joinUniversityRanking(
-            @CurrentMember Member member
     ){
-        return BaseResponse.onSuccess(universityService.joinUniversityRankingList(member));
+        return BaseResponse.onSuccess(universityService.joinUniversityRankingList());
     }
 
     @Operation(summary = "우리 학교 전체 기여도 랭킹 조회 API",description = "학교 전체 기여도 조회 API")

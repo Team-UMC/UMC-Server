@@ -36,7 +36,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String clientId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id")
     private University university;
 

@@ -55,9 +55,11 @@ public class UniversityServiceImpl implements UniversityService {
 
     @Transactional(readOnly = true)     //우리 학교 정보 조회
     public UniversityResponse.joinUniversityDetail joinUniversityDetail(Member member) {
+        Member memberEntity = memberService.findByMemberId(member.getId());
+
         UniversityResponse.joinUniversityDetail universityDetail
                 = UniversityConverter.toJoinUniversityDetail(
-                        memberService.findUniversityByMember(member)
+                memberEntity.getUniversity()
         );
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
@@ -68,14 +70,14 @@ public class UniversityServiceImpl implements UniversityService {
                         UniversityResponse.JoinUniversityRanks.builder()
                                 .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
                                 .build()
-                        ,member.getUniversity()
+                        ,memberEntity.getUniversity()
                 )
         );
 
     }
 
     @Transactional(readOnly = true)     //전체 대학교 랭킹 조회
-    public UniversityResponse.JoinUniversityRanks joinUniversityRankingList(Member member) {
+    public UniversityResponse.JoinUniversityRanks joinUniversityRankingList() {
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc();
 
         return handleTiedUniversityRanks(UniversityResponse.JoinUniversityRanks.builder()
@@ -85,8 +87,8 @@ public class UniversityServiceImpl implements UniversityService {
 
     @Transactional(readOnly = true)     //우리 학교 기여도 랭킹 조회
     public UniversityResponse.JoinContributionRanks joinContributionRankingList(Member member) {
-
-        List<Member> contributionRankList = memberService.findContributionRankings(member);
+        Member memberEntity = memberService.findByMemberId(member.getId());
+        List<Member> contributionRankList = memberService.findContributionRankings(memberEntity);
         UniversityResponse.JoinContributionRanks joinContributionRanks = UniversityResponse.JoinContributionRanks.builder()
                 .joinContributionRanks(
                         UniversityConverter.toJoinContributionRankList(contributionRankList)
@@ -97,17 +99,16 @@ public class UniversityServiceImpl implements UniversityService {
 
     @Transactional(readOnly = true)    //우리 대학교 마스코트 조회
     public UniversityResponse.joinUniversityMascot joinUniversityMascot(Member member) {
-
-        University university= memberService.findUniversityByMember(member);
+        Member memberEntity = memberService.findByMemberId(member.getId());
 
         UniversityResponse.joinUniversityMascot universityMascot
                 = UniversityConverter.toJoinUniversityMascot(
-                university
-                ,university.getMascot()
+                memberEntity.getUniversity()
+                ,memberEntity.getUniversity().getMascot()
         );
 
         //지부 찾기
-        Branch branch = branchUniversityService.findBranchByUniversity(university);
+        Branch branch = branchUniversityService.findBranchByUniversity(memberEntity.getUniversity());
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
@@ -117,29 +118,30 @@ public class UniversityServiceImpl implements UniversityService {
 
         return UniversityResponse.joinUniversityMascot.setRankAndBranch(
                 universityMascot,
-                handleTiedUniversityRanks(joinUniversityRanks, university),
+                handleTiedUniversityRanks(joinUniversityRanks, memberEntity.getUniversity()),
                 branch
         );
     }
 
     @Transactional    //우리 대학교 마스코트 먹이주기
     public Long feedUniversityMascot(Member member, PointType pointType) {
+        Member memberEntity = memberService.findByMemberId(member.getId());
 
-        if (member.getRemainPoint() < pointType.getPoint()) {
+        if (memberEntity.getRemainPoint() < pointType.getPoint()) {
             throw new RestApiException(ErrorCode.NOT_ENOUGH_POINT);
         }
 
         //포인트 차감
-        memberService.usePoint(member, pointType);
+        memberService.usePoint(memberEntity, pointType);
 
         //학교 포인트 증가
-        University university = memberService.findUniversityByMember(member);
+        University university = memberEntity.getUniversity();
         university.increasePoint(pointType.getPoint());
 
         //포인트 히스토리 추가
         memberPointService.saveEntity(
                 MemberPoint.builder()
-                        .member(member)
+                        .member(memberEntity)
                         .pointType(pointType)
                         .university(university)
                         .build()
