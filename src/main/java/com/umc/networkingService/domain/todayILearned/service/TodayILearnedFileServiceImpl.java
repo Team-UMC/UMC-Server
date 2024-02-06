@@ -3,13 +3,13 @@ package com.umc.networkingService.domain.todayILearned.service;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedFileMapper;
 import com.umc.networkingService.domain.todayILearned.repository.TodayILearnedFileRepository;
-import com.umc.networkingService.domain.todayILearned.repository.TodayILearnedRepository;
 import com.umc.networkingService.global.utils.S3FileComponent;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

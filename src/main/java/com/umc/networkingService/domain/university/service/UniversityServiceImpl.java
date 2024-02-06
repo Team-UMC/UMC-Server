@@ -153,8 +153,8 @@ public class UniversityServiceImpl implements UniversityService {
             university.setMascot(currentMascot);
         }
         /*
-        * 1. 현재 대학교 포인트 200 단위로 마스코트 변경됨,해서 현재 마스코트 레벨 찾기, 현재 레벨과 다르면 마스코트 변경
-        * 2. 레벨*10하면 끝 레벨 나옴, 이걸 이용해서 레벨에 맞는 마스코트 재설정, 마스코트 레벨 재설정
+        * 1. 현재 대학교 포인트 200 단위로 마스코트 변경됨,현재 마스코트 레벨 찾기, 현재 레벨과 다르면 마스코트 변경
+        * 2. 레벨*10하면 마스코트의 끝 레벨 나옴, 이걸 이용해서 레벨에 맞는 마스코트 재설정, 마스코트 레벨 재설정
         * */
         universityRepository.save(university);
         return university.getTotalPoint();

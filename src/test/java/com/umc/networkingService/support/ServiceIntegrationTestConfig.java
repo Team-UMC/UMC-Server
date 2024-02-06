@@ -48,6 +48,7 @@ public abstract class ServiceIntegrationTestConfig {
 
     protected Mascot mascot;
     protected BranchUniversity branchUniversity;
+
     protected Member member;
 
     @BeforeEach

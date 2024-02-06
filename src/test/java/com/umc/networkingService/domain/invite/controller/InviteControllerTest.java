@@ -88,8 +88,7 @@ public class InviteControllerTest extends ControllerTestConfig {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                .andExpect(jsonPath("$.result.invites").value(hasSize(response.getInvites().size())))
-                .andExpect(jsonPath("$.result").exists());
+                .andExpect(jsonPath("$.result.invites").value(hasSize(response.getInvites().size())));
     }
 
     @DisplayName("초대 코드 인증 API 테스트")

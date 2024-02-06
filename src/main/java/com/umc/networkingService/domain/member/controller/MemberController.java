@@ -71,8 +71,8 @@ public class MemberController {
     })
     @PostMapping("/github")
     public BaseResponse<MemberAuthenticateGithubResponse> authenticationGithub(@CurrentMember Member member,
-                                                                               @RequestParam String code) {
-        return BaseResponse.onSuccess(memberService.authenticateGithub(member, code));
+                                                                               @RequestParam String nickname) {
+        return BaseResponse.onSuccess(memberService.authenticateGithub(member, nickname));
     }
 
     @Operation(summary = "깃허브 데이터 조회 API", description = "깃허브 잔디 이미지를 조회하는 API입니다.")

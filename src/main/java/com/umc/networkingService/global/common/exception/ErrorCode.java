@@ -33,8 +33,9 @@ public enum ErrorCode {
 
     NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "MEMBER008", "포인트가 부족합니다."),
     INVALID_MEMBER_KEYWORD(HttpStatus.BAD_REQUEST, "MEMBER006", "검색어 양식[닉네임/이름]에 맞추어 작성해주세요. ex) 벡스/김준석"),
-    NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER006", "권한이 없는 사용자입니다."),
     NO_SEMESTER_PARTS(HttpStatus.BAD_REQUEST, "MEMBER007", "참여한 기수와 파트가 존재하지 않는 사용자입니다."),
+    DUPLICATED_GIT_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER008", "중복된 깃허브 닉네임입니다."),
+    NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER009", "권한이 없는 사용자입니다."),
 
     // Friend
     ALREADY_FRIEND_RELATION(HttpStatus.BAD_REQUEST, "FRIEND001", "이미 친구 관계인 사용자입니다."),

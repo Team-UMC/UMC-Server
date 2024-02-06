@@ -2,7 +2,10 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
-import com.umc.networkingService.domain.board.dto.response.*;
+import com.umc.networkingService.domain.board.dto.response.BoardPageResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardSearchPageResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePageResponse;

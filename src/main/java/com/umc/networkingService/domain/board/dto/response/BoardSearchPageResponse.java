@@ -2,9 +2,7 @@ package com.umc.networkingService.domain.board.dto.response;
 
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Getter

@@ -1,17 +1,11 @@
 package com.umc.networkingService.domain.friend.service;
 
-import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.friend.dto.response.FriendIdResponse;
 import com.umc.networkingService.domain.friend.dto.response.FriendInquiryByStatusResponse;
 import com.umc.networkingService.domain.friend.entity.Friend;
 import com.umc.networkingService.domain.friend.repository.FriendRepository;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.MemberPosition;
-import com.umc.networkingService.domain.member.entity.SemesterPart;
-import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.service.AuthService;
-import com.umc.networkingService.domain.member.service.MemberService;
-import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;

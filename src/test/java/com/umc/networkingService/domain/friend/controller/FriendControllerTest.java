@@ -4,7 +4,6 @@ import com.umc.networkingService.domain.friend.dto.response.FriendIdResponse;
 import com.umc.networkingService.domain.friend.dto.response.FriendInquiryByStatusResponse;
 import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.dto.SemesterPartInfo;
-import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
