@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRe
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.PositionType;
+import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.EntityLoader;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,4 +25,6 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     Member saveEntity(Member member);
 
     List<Member> findContributionRankings(Member member);
+
+    University findUniversityByMember(Member member);
 }

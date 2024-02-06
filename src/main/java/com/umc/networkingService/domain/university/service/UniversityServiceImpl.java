@@ -1,16 +1,12 @@
 package com.umc.networkingService.domain.university.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.mascot.entity.Mascot;
-import com.umc.networkingService.domain.mascot.repository.MascotRepository;
 import com.umc.networkingService.domain.mascot.service.MascotService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPoint;
 import com.umc.networkingService.domain.member.entity.PointType;
-import com.umc.networkingService.domain.member.repository.MemberPointRepository;
-import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.service.MemberPointService;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.university.converter.UniversityConverter;
@@ -60,7 +56,9 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional(readOnly = true)     //우리 학교 정보 조회
     public UniversityResponse.joinUniversityDetail joinUniversityDetail(Member member) {
         UniversityResponse.joinUniversityDetail universityDetail
-                = UniversityConverter.toJoinUniversityDetail(member.getUniversity());
+                = UniversityConverter.toJoinUniversityDetail(
+                        memberService.findUniversityByMember(member)
+        );
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
@@ -104,7 +102,7 @@ public class UniversityServiceImpl implements UniversityService {
                 = UniversityConverter.toJoinUniversityMascot(member.getUniversity());
 
         //지부 찾기
-        Branch branch = branchUniversityService.findBranchByUniversity(member.getUniversity());
+        Branch branch = branchUniversityService.findBranchByUniversity(memberService.findUniversityByMember(member));
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
@@ -128,8 +126,9 @@ public class UniversityServiceImpl implements UniversityService {
 
         //포인트 차감
         member.usePoint(pointType.getPoint());
+
         //학교 포인트 증가
-        University university = member.getUniversity();
+        University university = memberService.findUniversityByMember(member);
         university.increasePoint(pointType.getPoint());
 
         //포인트 히스토리 추가

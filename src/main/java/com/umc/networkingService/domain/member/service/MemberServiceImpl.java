@@ -306,4 +306,8 @@ public class MemberServiceImpl implements MemberService{
         return memberRepository.findAllByUniversityOrderByContributionPointDesc(member.getUniversity());
     }
 
+    @Override
+    public University findUniversityByMember(Member member) {
+        return member.getUniversity();
+    }
 }
