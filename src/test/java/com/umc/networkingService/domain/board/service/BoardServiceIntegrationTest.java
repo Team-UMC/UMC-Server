@@ -1,6 +1,8 @@
 package com.umc.networkingService.domain.board.service;
 
 
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
+import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
@@ -23,6 +25,7 @@ import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Board 서비스의 ")
 @SpringBootTest
 public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
-    @Autowired
-    private BoardService boardService;
-    @Autowired
-    private BoardCommentService boardCommentService;
-    @Autowired
-    private StaffBoardService staffBoardService;
-    @Autowired
-    private BoardCommentRepository boardCommentRepository;
+
 
     @Test
     @DisplayName("게시글 작성 성공 테스트")
@@ -61,8 +57,8 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         BoardCreateRequest request = BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
-                .boardType(BoardType.FREE)
-                .hostType(HostType.CAMPUS)
+                .boardType("FREE")
+                .hostType("CAMPUS")
                 .build();
 
 
@@ -94,8 +90,8 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         BoardCreateRequest request = BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
-                .boardType(BoardType.NOTICE)
-                .hostType(HostType.CAMPUS)
+                .boardType("NOTICE")
+                .hostType("CAMPUS")
                 .build();
 
         List<MultipartFile> files = new ArrayList<>();
@@ -109,7 +105,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         });
 
         //then
-        assertEquals(ErrorCode.NO_AUTHORIZATION_BOARD, exception.getErrorCode());
+        assertEquals(BoardErrorCode.NO_AUTHORIZATION_BOARD.getCode(), exception.getErrorCode().getCode());
     }
 
     @Test
@@ -120,8 +116,8 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         BoardCreateRequest request = BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
-                .boardType(BoardType.OB)
-                .hostType(HostType.CAMPUS)
+                .boardType("OB")
+                .hostType("CAMPUS")
                 .build();
 
         List<MultipartFile> files = new ArrayList<>();
@@ -135,7 +131,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         });
 
         //then
-        assertEquals(ErrorCode.NO_AUTHORIZATION_BOARD, exception.getErrorCode());
+        assertEquals(BoardErrorCode.NO_AUTHORIZATION_BOARD.getCode(), exception.getErrorCode().getCode());
     }
 
     @Test
@@ -146,8 +142,8 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         BoardCreateRequest request = BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
-                .boardType(BoardType.WORKBOOK)
-                .hostType(HostType.CAMPUS)
+                .boardType("WORKBOOK")
+                .hostType("CAMPUS")
                 .build();
 
         List<MultipartFile> files = new ArrayList<>();
@@ -160,7 +156,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
             boardService.createBoard(inhaMember, request, files);
         });
         //then
-        assertEquals(ErrorCode.NO_AUTHORIZATION_BOARD, exception.getErrorCode());
+        assertEquals(BoardErrorCode.NO_AUTHORIZATION_BOARD.getCode(), exception.getErrorCode().getCode());
     }
 
     @Test
@@ -174,7 +170,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         });
 
         //then
-        assertEquals(ErrorCode.NO_AUTHORIZATION_BOARD, exception.getErrorCode());
+        assertEquals(BoardErrorCode.NO_AUTHORIZATION_BOARD.getCode(), exception.getErrorCode().getCode());
     }
 
 
@@ -186,8 +182,8 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         BoardUpdateRequest request = BoardUpdateRequest.builder()
                 .title("수정제목")
                 .content("수정내용")
-                .boardType(BoardType.QUESTION)
-                .hostType(HostType.CAMPUS)
+                .boardType("QUESTION")
+                .hostType("CAMPUS")
                 .build();
 
         UUID boardId = board.getId();

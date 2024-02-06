@@ -4,27 +4,28 @@ import com.umc.networkingService.global.common.validation.annotation.ValidEnum;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class EnumValidator implements ConstraintValidator<ValidEnum, Enum<?>> {
+public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
 
-    private Class<? extends Enum<?>> enumClass;
-
+    private ValidEnum annotation;
 
     @Override
-    public void initialize(ValidEnum constraint) {
-        this.enumClass = constraint.enumClass();
+    public void initialize(ValidEnum constraintAnnotation) {
+        this.annotation = constraintAnnotation;
     }
 
     @Override
-    public boolean isValid(Enum value, ConstraintValidatorContext context) {
-        Object[] enumValues = this.enumClass.getEnumConstants();
-
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        boolean result = false;
+        Object[] enumValues = this.annotation.enumClass().getEnumConstants();
         if (enumValues != null) {
-            for(Object enumValue: enumValues) {
-                if(value.equals(enumValue))
-                    return true;
+            for (Object enumValue : enumValues) {
+                if (value.equals(enumValue.toString())) {
+                    result = true;
+                    break;
+                }
             }
         }
-        return false;
+        return result;
     }
 }
 

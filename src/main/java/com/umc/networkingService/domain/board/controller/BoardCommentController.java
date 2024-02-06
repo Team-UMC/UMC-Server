@@ -38,6 +38,7 @@ public class BoardCommentController {
     @Operation(summary = "댓글 작성 API", description = "댓글을 작성하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
     })
     @PostMapping
     public BaseResponse<BoardCommentIdResponse> addBoardComment(@CurrentMember Member member,
@@ -109,6 +110,7 @@ public class BoardCommentController {
             "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "COMMON405", description = "host, board type이 적절하지 않은 값일 경우 발생")
     })
     @Parameters(value = {
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 내가 댓글 쓴 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),

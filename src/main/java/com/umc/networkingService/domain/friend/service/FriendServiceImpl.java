@@ -11,6 +11,7 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.FriendErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,7 @@ public class FriendServiceImpl implements FriendService {
         Member friendMember = memberService.loadEntity(memberId);
 
         if (friendRepository.existsBySenderAndReceiver(loginMember, friendMember))
-            throw new RestApiException(ErrorCode.ALREADY_FRIEND_RELATION);
+            throw new RestApiException(FriendErrorCode.ALREADY_FRIEND_RELATION);
 
         return createAndSaveNewFriend(loginMember, friendMember);
     }
@@ -52,7 +53,7 @@ public class FriendServiceImpl implements FriendService {
 
         // 존재하지 않을 경우 예외 처리
         Friend friend = friendRepository.findBySenderAndReceiver(loginMember, friendMember)
-                .orElseThrow(() -> new RestApiException(ErrorCode.NOT_FRIEND_RELATION));
+                .orElseThrow(() -> new RestApiException(FriendErrorCode.NOT_FRIEND_RELATION));
 
         friend.delete();
 

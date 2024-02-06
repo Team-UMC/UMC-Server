@@ -49,8 +49,8 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardCreateRequest boardCreateRequest = BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
-                .boardType(BoardType.FREE)
-                .hostType(HostType.CAMPUS)
+                .boardType(BoardType.FREE.toString())
+                .hostType(HostType.CAMPUS.toString())
                 .build();
 
         BoardIdResponse response = new BoardIdResponse(board.getId());
@@ -58,7 +58,6 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         MockMultipartFile file1 = new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes());
         MockMultipartFile request = new MockMultipartFile("request", "request", "application/json", objectMapper.writeValueAsString(boardCreateRequest).getBytes(StandardCharsets.UTF_8));
-
         //when
         when(boardService.createBoard(eq(member), any(BoardCreateRequest.class), anyList())).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
@@ -85,8 +84,8 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardUpdateRequest boardUpdateRequest = BoardUpdateRequest.builder()
                 .title("제목")
                 .content("내용")
-                .boardType(BoardType.FREE)
-                .hostType(HostType.CAMPUS)
+                .boardType(BoardType.FREE.toString())
+                .hostType(HostType.CAMPUS.toString())
                 .build();
 
         BoardIdResponse response = new BoardIdResponse(board.getId());

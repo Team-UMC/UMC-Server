@@ -51,7 +51,10 @@ public abstract class BoardServiceTestConfig {
     protected BranchRepository branchRepository;
     @Autowired
     protected SemesterPartRepository semesterPartRepository;
-
+    @Autowired
+    protected BoardCommentService boardCommentService;
+    @Autowired
+    protected StaffBoardService staffBoardService;
 
     protected Member inhaMember;
     protected Member gachonMember;

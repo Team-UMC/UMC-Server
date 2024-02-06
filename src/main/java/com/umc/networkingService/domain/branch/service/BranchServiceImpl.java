@@ -2,7 +2,8 @@ package com.umc.networkingService.domain.branch.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.BranchErrorCode;
+import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,6 @@ public class BranchServiceImpl implements BranchService{
     @Override
     public Branch loadEntity(UUID id) {
         return branchRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH));
+                .orElseThrow(() -> new RestApiException(BranchErrorCode.EMPTY_BRANCH));
     }
 }

@@ -9,6 +9,7 @@ import com.umc.networkingService.domain.member.service.AuthService;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.FriendErrorCode;
 import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,7 +86,7 @@ public class FriendServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> friendService.createNewFriend(member, friend.getId()));
 
         // then
-        assertEquals(ErrorCode.ALREADY_FRIEND_RELATION, exception.getErrorCode());
+        assertEquals(FriendErrorCode.ALREADY_FRIEND_RELATION, exception.getErrorCode());
         assertTrue(friendRepository.existsBySenderAndReceiver(member, friend));
     }
 
@@ -117,7 +118,7 @@ public class FriendServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> friendService.deleteFriend(member, friend.getId()));
 
         // then
-        assertEquals(ErrorCode.NOT_FRIEND_RELATION, exception.getErrorCode());
+        assertEquals(FriendErrorCode.NOT_FRIEND_RELATION.getCode(), exception.getErrorCode().getCode());
         assertFalse(friendRepository.existsBySenderAndReceiver(member, friend));
     }
 
