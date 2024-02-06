@@ -24,10 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,8 +69,8 @@ public abstract class BoardServiceTestConfig {
 
     @BeforeEach
     public void setUp() {
-        inha = createUniversityInha();
-        gachon = createUniversityGachon();
+        inha = findUniversityInha();
+        gachon = findUniversityGachon();
         branch = createBranch();
         inhaStaff = createCampusStaff();
         centerStaff = createCenterStaff();
@@ -156,30 +153,16 @@ public abstract class BoardServiceTestConfig {
     }
 
 
-    protected University createUniversityInha() {
-        return universityRepository.save(
-                University.builder()
-                        .name("인하대학교")
-                        .build()
-        );
+    protected University findUniversityInha() {
+        return universityRepository.findByName("인하대학교").get();
     }
 
-    protected University createUniversityGachon() {
-        return universityRepository.save(
-                University.builder()
-                        .name("가천대학교")
-                        .build()
-        );
+    protected University findUniversityGachon() {
+        return universityRepository.findByName("가천대학교").get();
     }
 
     protected Branch createBranch() {
-        return branchRepository.save(
-                Branch.builder()
-                        .name("GACI")
-                        .description("가치 지부입니다.")
-                        .semester(Semester.FIFTH)
-                        .build()
-        );
+        return branchRepository.findByName("GACI(가치)").get();
     }
 
     protected Board createBoard() {

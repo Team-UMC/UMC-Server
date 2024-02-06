@@ -13,7 +13,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
 
     @Query(value = "SELECT s FROM Schedule s WHERE DATE_FORMAT(s.startDateTime, '%Y-%m') <= DATE_FORMAT(:date, '%Y-%m') AND DATE_FORMAT(:date, '%Y-%m') <= DATE_FORMAT(s.endDateTime, '%Y-%m')")
     List<Schedule> findSchedulesByYearAndMonth (
-            @Param("yearMonth") LocalDate date
+            @Param("date") LocalDate date
     );
 
 }

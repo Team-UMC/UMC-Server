@@ -15,7 +15,6 @@ public enum Semester {
     FIFTH("5기", "BLUE",true);
 
     private final String name;
-
     private final String color;
 
     private final boolean isActive;

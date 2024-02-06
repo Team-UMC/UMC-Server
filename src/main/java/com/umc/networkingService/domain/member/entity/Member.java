@@ -16,9 +16,9 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -78,6 +78,7 @@ public class Member extends BaseEntity {
 
     private String notionLink;
 
+    // 가장 최근 호출 시간
     private LocalDateTime lastActiveTime;
 
     // 기본 정보 설정 함수
@@ -152,6 +153,11 @@ public class Member extends BaseEntity {
     // 테스트 코드용
     public void updateRole(Role role) {
         this.role = role;
+    }
+
+    // 지부 업데이트 함수
+    public void updateBranch(Branch branch) {
+        this.branch = branch;
     }
 
     // 최근 활동 시간 업데이트 함수

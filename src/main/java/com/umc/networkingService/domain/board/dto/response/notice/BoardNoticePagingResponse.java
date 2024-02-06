@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.board.dto.response.notice;
 
-import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePageResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

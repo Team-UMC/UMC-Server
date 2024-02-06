@@ -16,7 +16,10 @@ public enum MemberErrorCode implements ErrorCodeInterface {
     EMPTY_MEMBER_UNIVERSITY(HttpStatus.CONFLICT, "MEMBER004", "소속 대학교가 존재하지 않는 사용자입니다."),
     UNAUTHENTICATED_GITHUB(HttpStatus.BAD_REQUEST, "MEMBER005", "깃허브 연동이 완료되지 않은 사용자입니다."),
     INVALID_MEMBER_KEYWORD(HttpStatus.BAD_REQUEST, "MEMBER006", "검색어 양식[닉네임/이름]에 맞추어 작성해주세요. ex) 벡스/김준석"),
-    NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER007", "권한이 없는 사용자입니다."),
+    NO_SEMESTER_PARTS(HttpStatus.BAD_REQUEST, "MEMBER007", "참여한 기수와 파트가 존재하지 않는 사용자입니다."),
+    DUPLICATED_GIT_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER008", "중복된 깃허브 닉네임입니다."),
+    NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER009", "권한이 없는 사용자입니다."),
+
     ;
 
     private final HttpStatus httpStatus;

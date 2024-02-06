@@ -144,7 +144,7 @@ public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
         assertEquals("김준석", savedMember.getName());
         assertEquals("벡스", savedMember.getNickname());
-        assertEquals("GACI", savedMember.getBranch().getName());
+        assertEquals("BLUE(블루)", savedMember.getBranch().getName());
         assertEquals("인하대학교", savedMember.getUniversity().getName());
         assertEquals(2, savedMember.getSemesterParts().size());
         assertEquals(1, savedMember.getPositions().size());
@@ -179,7 +179,8 @@ public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
         authService.withdrawal(member);
 
         // then
-        assertFalse(memberRepository.findById(member.getId()).isPresent());
+        Optional<Member> optionalMember = memberRepository.findById(member.getId());
+        assertNotNull(optionalMember.get().getDeletedAt());
         assertFalse(refreshTokenService.findByMemberId(member.getId()).isPresent());
     }
 }

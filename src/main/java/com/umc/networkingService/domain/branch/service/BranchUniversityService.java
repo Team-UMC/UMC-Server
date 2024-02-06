@@ -2,7 +2,8 @@ package com.umc.networkingService.domain.branch.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.university.entity.University;
+import com.umc.networkingService.global.common.enums.Semester;
 
 public interface BranchUniversityService {
-    Branch findBranchByUniversity(University university);
+    Branch findBranchByUniversityAndSemester(University university, Semester LastSemester);
 }
