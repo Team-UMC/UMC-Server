@@ -14,6 +14,7 @@ import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardHeartRepository;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
@@ -39,11 +40,13 @@ public class BoardServiceImpl implements BoardService {
     private final BoardMapper boardMapper;
     private final BoardHeartRepository boardHeartRepository;
     private final BoardHeartMapper boardHeartMapper;
+    private final MemberService memberService;
 
 
     @Override
-    public BoardPagingResponse showBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable) {
+    public BoardPagingResponse showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
 
+        Member member = memberService.loadEntity(loginMember.getId());
         //특정 게시글 조회에 HostType ALL 불가능
         checkHostType(hostType);
 
@@ -51,15 +54,17 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardSearchPagingResponse searchBoard(Member member, String keyword, Pageable pageable) {
+    public BoardSearchPagingResponse searchBoard(Member loginMember, String keyword, Pageable pageable) {
 
+        Member member = memberService.loadEntity(loginMember.getId());
         return boardMapper.toBoardSearchPagingResponse(boardRepository.findKeywordBoards(member, keyword, pageable));
 
     }
 
     @Override
-    public BoardDetailResponse showBoardDetail(Member member, UUID boardId) {
+    public BoardDetailResponse showBoardDetail(Member loginMember, UUID boardId) {
 
+        Member member = memberService.loadEntity(loginMember.getId());
         Board board = loadEntity(boardId);
 
         //게시글을 열람할 권한이 있는지 check
@@ -146,7 +151,6 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public BoardIdResponse updateBoard(Member member, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files) {
-
         Board board = loadEntity(boardId);
 
         //연합, 지부, 학교 타입
@@ -160,7 +164,7 @@ public class BoardServiceImpl implements BoardService {
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
-        if (!board.getWriter().equals(member))
+        if (!board.getWriter().getId().equals(member.getId()))
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
 
         board.update(request, semesterPermission);
@@ -175,8 +179,8 @@ public class BoardServiceImpl implements BoardService {
         Board board = loadEntity(boardId);
 
         //현재 로그인한 member와 writer가 같지 않고, 로그인한 멤버가 운영진이 아니라면 삭제 불가
-        if (!board.getWriter().equals(member)) {
-            if (member.getRole().getPriority() == Role.MEMBER.getPriority()) {
+        if (!board.getWriter().getId().equals(member.getId())) {
+            if (member.getRole().getPriority() >= Role.MEMBER.getPriority()) {
                 throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
             }
         }
@@ -232,8 +236,8 @@ public class BoardServiceImpl implements BoardService {
         if (hostType != HostType.CAMPUS)
             throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
 
-        //CAMPUS && WORKBOOK -> ROLE이 CAMPUS_STAFF인 사람만
-        if (member.getRole().getPriority() != Role.CAMPUS_STAFF.getPriority())
+        //CAMPUS && WORKBOOK -> 일반 MEMBER는 작성 불가
+        if (member.getRole().getPriority() >= Role.MEMBER.getPriority())
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
     }
 
@@ -249,7 +253,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-    //게시글 수정에 HostType ALL 불가능
+    //게시글 작성, 수정에 HostType ALL 불가능
     public void checkHostType(HostType hostType) {
         if (hostType.equals(HostType.ALL))
             throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
