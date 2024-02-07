@@ -34,7 +34,7 @@ public class BranchServiceImpl implements BranchService {
     private static final Integer PAGE_SIZE = 10;
 
     @Transactional         //지부 생성
-    public UUID postBranch(BranchRequest.PostBranchDTO request) {
+    public BranchResponse.BranchId postBranch(BranchRequest.PostBranchDTO request) {
 
         validateBranchNameAndDescription(request.getName(), request.getDescription());
         Branch newBranch = BranchConverter
@@ -47,11 +47,12 @@ public class BranchServiceImpl implements BranchService {
         if (savedBranch.getId() == null) {
             throw new BranchHandler(ErrorCode.BRANCH_SAVE_FAIL);
         }
-        return savedBranch.getId();
+        return BranchResponse.BranchId.builder()
+                .branchId(savedBranch.getId()).build();
     }
 
     @Transactional          //지부 수정
-    public UUID patchBranch(BranchRequest.PatchBranchDTO request) {
+    public BranchResponse.BranchId patchBranch(BranchRequest.PatchBranchDTO request) {
 
         Optional<Branch> optionalBranch = branchRepository.findById(request.getBranchId());
         if(optionalBranch.isEmpty()){
@@ -62,12 +63,13 @@ public class BranchServiceImpl implements BranchService {
 
         Branch branch = optionalBranch.get();
         branch.updateBranch(request, uploadImageS3(BRANCH_CATEGORY, request.getImage()));
-        return branch.getId();
+        return BranchResponse.BranchId.builder()
+                        .branchId(branch.getId()).build();
 
     }
 
     @Transactional          //지부 삭제
-    public UUID deleteBranch(UUID branchId) {
+    public BranchResponse.BranchId deleteBranch(UUID branchId) {
         Optional<Branch> optionalBranch = branchRepository.findById(branchId);
         if(optionalBranch.isEmpty()){
             throw new BranchHandler(ErrorCode.BRANCH_NOT_FOUND);
@@ -75,7 +77,7 @@ public class BranchServiceImpl implements BranchService {
         Branch branch = optionalBranch.get();
         branchUniversityRepository.deleteByBranch(branch);
         branchRepository.delete(branch);
-        return branchId;
+        return BranchResponse.BranchId.builder().branchId(branchId).build();
     }
 
     @Transactional(readOnly = true)        //지부 리스트 조회

@@ -50,4 +50,21 @@ public class BranchResponse {
         String name;
     }
 
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class BranchId{
+        UUID branchId;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ConnectBranch{
+        UUID branchId;
+        List<UUID> universityIds;
+    }
+
 }

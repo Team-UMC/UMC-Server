@@ -31,6 +31,8 @@ public class StaffBranchController {
     private final BranchServiceImpl branchService;
     private final BranchUniversityServiceImpl branchUniversityService;
 
+    //todo: 다음 기수 생성하기?, 현재 진행중인 기수 바꾸기? api 추가하기 (현재 기수 isActive false로 만들기)
+
     @Operation(summary = "지부 생성 API")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
@@ -39,7 +41,7 @@ public class StaffBranchController {
             @ApiResponse(responseCode = "BRANCH003", description = "지부 설명이 비어있는 경우")
     })
     @PostMapping("")
-    public BaseResponse<UUID> postBranch(
+    public BaseResponse<BranchResponse.BranchId> postBranch(
             @CurrentMember Member member,
             @RequestBody BranchRequest.PostBranchDTO request
     ){
@@ -54,7 +56,7 @@ public class StaffBranchController {
             @ApiResponse(responseCode = "BRANCH003", description = "지부 설명이 비어있는 경우")
     })
     @PatchMapping("")
-    public BaseResponse<UUID> patchBranch(
+    public BaseResponse<BranchResponse.BranchId> patchBranch(
             @CurrentMember Member member,
             @RequestBody BranchRequest.PatchBranchDTO request
     ){
@@ -66,7 +68,7 @@ public class StaffBranchController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @DeleteMapping("/{branchId}")
-    public BaseResponse<UUID> patchBranch(
+    public BaseResponse<BranchResponse.BranchId> patchBranch(
             @CurrentMember Member member,
             @Validated @ExistBranch @PathVariable("branchId") UUID branchId
     ){
@@ -81,13 +83,12 @@ public class StaffBranchController {
             @ApiResponse(responseCode = "BRANCH_UNIVERSITY002", description = "이미 연결된 지부와 대학교가 있는 경우")
     })
     @PostMapping("/connection")
-    public BaseResponse<String> connectBranch(
+    public BaseResponse<BranchResponse.ConnectBranch> connectBranch(
             @CurrentMember Member member,
             @RequestParam("branchId") @ExistBranch UUID branchId,
             @RequestBody BranchRequest.ConnectBranchDTO request
     ){
-        branchUniversityService.connectBranchUniversity(branchId,request.getUniversityIds());
-        return BaseResponse.onSuccess("지부 대학교 연결 완료");
+        return BaseResponse.onSuccess(branchUniversityService.connectBranchUniversity(branchId,request.getUniversityIds()));
     }
 
     @Operation(summary = "지부 대학교 연결 해제 API")
@@ -98,13 +99,12 @@ public class StaffBranchController {
             @ApiResponse(responseCode = "BRANCH_UNIVERSITY001", description = "연결되지 않은 지부와 대학교가 있는 경우")
     })
     @DeleteMapping("/connection")
-    public BaseResponse<String> disconnectBranch(
+    public BaseResponse<BranchResponse.ConnectBranch> disconnectBranch(
             @CurrentMember Member member,
             @RequestParam("branchId") @ExistBranch UUID branchId,
             @RequestBody BranchRequest.ConnectBranchDTO request
     ){
-        branchUniversityService.disconnectBranchUniversity(branchId, request.getUniversityIds());
-        return BaseResponse.onSuccess("지부 대학교 연결 해제 완료");
+        return BaseResponse.onSuccess(branchUniversityService.disconnectBranchUniversity(branchId, request.getUniversityIds()));
     }
 
 }

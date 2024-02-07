@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.branch.service;
 
+import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.execption.BranchUniversityHandler;
@@ -21,8 +22,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BranchUniversityServiceImpl implements BranchUniversityService {
 
-    //todo : 관리자 권한 확인 추가하기
-
     private final BranchRepository branchRepository;
     private final UniversityRepository universityRepository;
     private final BranchUniversityRepository branchUniversityRepository;
@@ -36,9 +35,9 @@ public class BranchUniversityServiceImpl implements BranchUniversityService {
 
     }
 
-    //지부, 대학 연결하기  todo : 현재 기수 여부(isActive) 처리 로직 없음
+    //지부, 대학 연결하기
     @Transactional
-    public void connectBranchUniversity(UUID branchId, List<UUID> universityIds) {
+    public BranchResponse.ConnectBranch connectBranchUniversity(UUID branchId, List<UUID> universityIds) {
         //유효한 지부가 값으로 들어옴
         universityIds.forEach(universityId -> {
             if(!universityRepository.existsById(universityId)){ //유효한 대학인지 확인
@@ -56,11 +55,14 @@ public class BranchUniversityServiceImpl implements BranchUniversityService {
                             .build()
             );
         });
+        return BranchResponse.ConnectBranch.builder()
+                .branchId(branchId)
+                .universityIds(universityIds).build();
     }
 
     //지부, 대학 연결 끊기
     @Transactional
-    public void disconnectBranchUniversity(UUID branchId, List<UUID> universityIds) {
+    public BranchResponse.ConnectBranch disconnectBranchUniversity(UUID branchId, List<UUID> universityIds) {
         //지부가 값으로 들어옴
         universityIds.forEach(universityId -> {
             if(!universityRepository.existsById(universityId)){ //유효한 대학인지 확인
@@ -71,6 +73,8 @@ public class BranchUniversityServiceImpl implements BranchUniversityService {
             }
             branchUniversityRepository.deleteByBranchIdAndUniversityId(branchId, universityId);
         });
+        return BranchResponse.ConnectBranch.builder()
+                .branchId(branchId)
+                .universityIds(universityIds).build();
     }
-
 }
