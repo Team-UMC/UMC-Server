@@ -124,7 +124,7 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional    //우리 대학교 마스코트 먹이주기
-    public Long feedUniversityMascot(Member member, PointType pointType) {
+    public UniversityResponse.JoinUniversityMascotFeed feedUniversityMascot(Member member, PointType pointType) {
         Member memberEntity = memberService.findByMemberId(member.getId());
 
         if (memberEntity.getRemainPoint() < pointType.getPoint()) {
@@ -159,31 +159,40 @@ public class UniversityServiceImpl implements UniversityService {
         * 2. 레벨*10하면 마스코트의 끝 레벨 나옴, 이걸 이용해서 레벨에 맞는 마스코트 재설정, 마스코트 레벨 재설정
         * */
         universityRepository.save(university);
-        return university.getTotalPoint();
+        return UniversityResponse.JoinUniversityMascotFeed.builder()
+                .universityTotalpoint(university.getTotalPoint())
+                .memberRemainPoint(memberEntity.getRemainPoint())
+                .build();
     }
 
     @Transactional    //학교 생성
-    public UUID createUniversity(UniversityRequest.createUniversity request) {
+    public UniversityResponse.UniversityId createUniversity(UniversityRequest.createUniversity request) {
         if (universityRepository.findByName(request.getUniversityName()).isPresent()) {
             throw new RestApiException(ErrorCode.DUPLICATE_UNIVERSITY_NAME);
         }
-        return universityRepository.save(University.builder()
-                .name(request.getUniversityName())
-                .universityLogo(uploadImage("university", request.getUniversityLogo()))
-                .semesterLogo(uploadImage("semester", request.getSemesterLogo()))
-                .build()).getId();
+        return UniversityResponse.UniversityId.builder()
+                        .universityId(
+                                universityRepository.save(University.builder()
+                                        .name(request.getUniversityName())
+                                        .universityLogo(uploadImage("university", request.getUniversityLogo()))
+                                        .semesterLogo(uploadImage("semester", request.getSemesterLogo()))
+                                        .build()).getId()
+                        ).build();
+
     }
 
     @Transactional   //학교 삭제
-    public UUID deleteUniversity(UUID universityId) {
+    public UniversityResponse.UniversityId deleteUniversity(UUID universityId) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
         university.delete();
-        return universityId;
+        return UniversityResponse.UniversityId.builder()
+                .universityId(universityId)
+                .build();
     }
 
     @Transactional    //학교 정보 수정
-    public UUID patchUniversity(UniversityRequest.patchUniversity request) {
+    public UniversityResponse.UniversityId patchUniversity(UniversityRequest.patchUniversity request) {
 
         University university = universityRepository.findById(request.getUniversityId())
                 .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
@@ -193,7 +202,9 @@ public class UniversityServiceImpl implements UniversityService {
                 , uploadImage("university", request.getUniversityLogo())
                 , uploadImage("semester", request.getSemesterLogo()));
 
-        return university.getId();
+        return UniversityResponse.UniversityId.builder()
+                        .universityId(university.getId())
+                        .build();
     }
 
     //s3에 이미지 업로드

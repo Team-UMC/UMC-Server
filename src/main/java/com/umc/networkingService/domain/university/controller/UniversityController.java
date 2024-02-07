@@ -96,7 +96,7 @@ public class UniversityController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "MEMBER008", description = "마스코트에 줄 포인트가 충분하지 않음")
     })
-    public BaseResponse<Long>
+    public BaseResponse<UniversityResponse.JoinUniversityMascotFeed>
     postMascotPoint(
             @CurrentMember Member member,
             @RequestBody @Valid PointType pointType

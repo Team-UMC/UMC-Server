@@ -109,4 +109,21 @@ public class UniversityResponse {
         }
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class JoinUniversityMascotFeed {
+        Long universityTotalpoint;
+        Long memberRemainPoint;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UniversityId {
+        UUID universityId;
+    }
+
 }

@@ -34,7 +34,7 @@ public class StaffUniversityController {
 
     @Operation(summary = "학교 생성하기 API",description = "학교 생성하기 API")
     @PostMapping("")
-    public BaseResponse<UUID>
+    public BaseResponse<UniversityResponse.UniversityId>
     createUniversity(
             @CurrentMember Member member,
             @RequestBody @Valid UniversityRequest.createUniversity request
@@ -45,7 +45,7 @@ public class StaffUniversityController {
 
     @Operation(summary = "학교 삭제하기 API",description = "학교 삭제하기 API")
     @DeleteMapping("")
-    public BaseResponse<UUID>
+    public BaseResponse<UniversityResponse.UniversityId>
     deleteUniversity(
             @CurrentMember Member member,
             @RequestBody @Valid UUID universityId
@@ -55,7 +55,7 @@ public class StaffUniversityController {
 
     @Operation(summary = "학교 정보 수정하기 API",description = "학교 정보 수정하기 API")
     @PatchMapping("")
-    public BaseResponse<UUID>
+    public BaseResponse<UniversityResponse.UniversityId>
     patchUniversity(
             @CurrentMember Member member,
             @RequestBody @Valid UniversityRequest.patchUniversity request
