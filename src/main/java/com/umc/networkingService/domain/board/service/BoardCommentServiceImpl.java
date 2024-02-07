@@ -52,8 +52,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         BoardComment comment = loadEntity(commentId);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
-        if(!comment.getWriter().equals(member))
-            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
+        validateMember(comment, member);
 
         comment.update(request);
 
@@ -68,8 +67,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         Board board = comment.getBoard();
 
         //현재 로그인한 member와 writer가 같지 않으면 삭제 권한 없음
-        if(!comment.getWriter().equals(member))
-            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
+        validateMember(comment, member);
 
         board.decreaseCommentCount();
         comment.delete();
@@ -94,6 +92,12 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     @Override
     public MyBoardCommentPagingWebResponse showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
         return boardCommentMapper.toMyBoardCommentPagingWebResponse(boardCommentRepository.findBoardsByMemberCommentForWeb(member, hostType, boardType, keyword, pageable));
+    }
+
+    private void validateMember(BoardComment comment, Member member) {
+        if(!comment.getWriter().getId().equals(member.getId()))
+            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
+
     }
 
     @Override
