@@ -19,6 +19,7 @@ public enum AuthErrorCode implements ErrorCodeInterface {
     FAILED_SOCIAL_LOGIN(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH007", "소셜 로그인에 실패하였습니다."),
     FAILED_GITHUB_AUTHENTICATION(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH008", "깃허브 서버와 통신이 실패하였습니다."),
     FAILED_GET_APPLE_KEY(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH009", "애플 서버와 통신이 실패하였습니다."),
+    INVALID_APPLE_ID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH010","유효하지 않은 애플 ID TOKEN입니다."),
     ;
 
     private final HttpStatus httpStatus;

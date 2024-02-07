@@ -32,12 +32,9 @@ public class AppleMemberClient {
 
     public String getappleClientID(final String accessToken) throws UnsupportedEncodingException, InvalidKeySpecException, NoSuchAlgorithmException, JsonProcessingException {
         Claims claims = getClaimsBy(accessToken);
-        if (claims != null) {
-            // "sub" 클레임에서 Apple의 고유 계정 ID를 추출
-            return claims.getSubject();
-        }else{
-            throw new RestApiException(AuthErrorCode.FAILED_SOCIAL_LOGIN);
-        }
+        validateClaims(claims);
+        // "sub" 클레임에서 Apple의 고유 계정 ID를 추출
+        return claims.getSubject();
     }
 
     /*
@@ -79,6 +76,25 @@ public class AppleMemberClient {
                 .retrieve()
                 .bodyToMono(ApplePublicKeyResponse.class)
                 .block();
+    }
+
+    //2. 인증에 대한 nonce를 검증
+    //3. iss 필드가 https://appleid.apple.com을 포함하는지 확인
+    //4. aud 필드가 개발자의 클라이언트 ID를 포함하는지 확인
+    //5. 현재 시간을 기준으로 exp 필드가 유효한지 확인
+    public void validateClaims(Claims claims) {
+        if (claims == null){
+            throw new RestApiException(AuthErrorCode.FAILED_SOCIAL_LOGIN);
+        }
+
+        if (!claims.getIssuer().equals("https://appleid.apple.com"))
+            throw new RestApiException(AuthErrorCode.INVALID_APPLE_ID_TOKEN);
+
+        if (!claims.getAudience().equals("com.networkingService.umc"))
+            throw new RestApiException(AuthErrorCode.INVALID_APPLE_ID_TOKEN);
+
+        if (claims.getExpiration().before(new java.util.Date()))
+            throw new RestApiException(AuthErrorCode.INVALID_APPLE_ID_TOKEN);
     }
 }
 
