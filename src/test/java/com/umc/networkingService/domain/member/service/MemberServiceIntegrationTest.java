@@ -9,7 +9,7 @@ import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import com.umc.networkingService.support.ServiceIntegrationTestConfig;
@@ -172,7 +172,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.updateProfile(staff, member.getId(), request));
 
         // then
-        assertEquals(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHORIZED_UPDATE_MEMBER.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());
@@ -201,7 +201,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.updateProfile(staff, member.getId(), request));
 
         // then
-        assertEquals(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());
@@ -280,7 +280,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.inquiryGithubImage(member));
 
         // then
-        assertEquals(ErrorCode.UNAUTHENTICATED_GITHUB, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHENTICATED_GITHUB.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());

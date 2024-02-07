@@ -8,8 +8,9 @@ import com.umc.networkingService.domain.todoList.dto.response.TodoListIdResponse
 import com.umc.networkingService.domain.todoList.entity.ToDoList;
 import com.umc.networkingService.domain.todoList.mapper.TodoListMapper;
 import com.umc.networkingService.domain.todoList.repository.TodoListRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.ToDoListErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +38,10 @@ public class TodoListServiceImpl implements TodoListService{
     @Override
     @Transactional
     public TodoListIdResponse updateTodoList(Member member, UUID todoListId, TodoListUpdateRequest request){
-        ToDoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_TODOLIST));
+        ToDoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new RestApiException(ToDoListErrorCode.EMPTY_TODOLIST));
 
         if (!todoList.getWriter().getId().equals(member.getId())) {
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_TODOLIST);
+            throw new RestApiException(ToDoListErrorCode.NO_AUTHORIZATION_TODOLIST);
         }
 
         todoList.updateTodoList(request.getTitle(), request.getDeadline());
@@ -51,10 +52,10 @@ public class TodoListServiceImpl implements TodoListService{
     @Override
     @Transactional
     public TodoListIdResponse completeTodoList(Member member, UUID todoListId){
-        ToDoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_TODOLIST));
+        ToDoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new RestApiException(ToDoListErrorCode.EMPTY_TODOLIST));
 
         if (!todoList.getWriter().getId().equals(member.getId())) {
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_TODOLIST);
+            throw new RestApiException(ToDoListErrorCode.NO_AUTHORIZATION_TODOLIST);
         }
 
         todoList.completeTodoList();
@@ -65,10 +66,10 @@ public class TodoListServiceImpl implements TodoListService{
     @Override
     @Transactional
     public TodoListIdResponse deleteTodoList(Member member, UUID todoListId){
-        ToDoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_TODOLIST));
+        ToDoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new RestApiException(ToDoListErrorCode.EMPTY_TODOLIST));
 
         if (!todoList.getWriter().getId().equals(member.getId())) {
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_TODOLIST);
+            throw new RestApiException(ToDoListErrorCode.NO_AUTHORIZATION_TODOLIST);
         }
 
         todoList.delete();

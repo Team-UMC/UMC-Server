@@ -4,8 +4,8 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Semester;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.BranchErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class BranchUniversityServiceImpl implements BranchUniversityService {
     public Branch findBranchByUniversityAndSemester(University university, Semester lastSemester) {
 
         return branchUniversityRepository.findByUniversityAndBranch_Semester(university, lastSemester)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_BRANCH))
+                .orElseThrow(() -> new RestApiException(BranchErrorCode.EMPTY_BRANCH))
                 .getBranch();
 
     }

@@ -14,9 +14,10 @@ import com.umc.networkingService.domain.university.dto.request.UniversityRequest
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;
+import com.umc.networkingService.global.common.exception.code.UniversityErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,7 @@ public class UniversityServiceImpl implements UniversityService {
     @Override
     public University findUniversityByName(String universityName) {
         return universityRepository.findByName(universityName)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
     }
 
     @Transactional(readOnly = true)     //전체 대학교 조회
@@ -128,7 +129,7 @@ public class UniversityServiceImpl implements UniversityService {
         Member memberEntity = memberService.findByMemberId(member.getId());
 
         if (memberEntity.getRemainPoint() < pointType.getPoint()) {
-            throw new RestApiException(ErrorCode.NOT_ENOUGH_POINT);
+            throw new RestApiException(MemberErrorCode.NOT_ENOUGH_POINT);
         }
 
         //포인트 차감
@@ -168,7 +169,7 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional    //학교 생성
     public UniversityResponse.UniversityId createUniversity(UniversityRequest.createUniversity request) {
         if (universityRepository.findByName(request.getUniversityName()).isPresent()) {
-            throw new RestApiException(ErrorCode.DUPLICATE_UNIVERSITY_NAME);
+            throw new RestApiException(UniversityErrorCode.DUPLICATE_UNIVERSITY_NAME);
         }
         return UniversityResponse.UniversityId.builder()
                         .universityId(
@@ -184,7 +185,7 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional   //학교 삭제
     public UniversityResponse.UniversityId deleteUniversity(UUID universityId) {
         University university = universityRepository.findById(universityId)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
         university.delete();
         return UniversityResponse.UniversityId.builder()
                 .universityId(universityId)
@@ -195,7 +196,7 @@ public class UniversityServiceImpl implements UniversityService {
     public UniversityResponse.UniversityId patchUniversity(UniversityRequest.patchUniversity request) {
 
         University university = universityRepository.findById(request.getUniversityId())
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
 
         university.updateUniversity(
                 request.getUniversityName()

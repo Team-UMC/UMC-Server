@@ -4,6 +4,7 @@ import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.domain.mascot.repository.MascotRepository;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MascotErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class MascotServiceImpl implements MascotService{
     @Override
     public Mascot getMascotByEndLevel(int endLevel){
         Optional<Mascot> optionalMascot = mascotRepository.findByEndLevel(endLevel);
-        return optionalMascot.orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MASCOT_LEVEL));
+        return optionalMascot.orElseThrow(() -> new RestApiException(MascotErrorCode.EMPTY_MASCOT_LEVEL));
     }
 }
 

@@ -7,8 +7,8 @@ import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.SemesterPartErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -132,7 +132,7 @@ public class Member extends BaseEntity {
         return semesterParts.stream()
                 .map(SemesterPart::getSemester)
                 .max(Comparator.comparingInt(Enum::ordinal))
-                .orElseThrow(()-> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
+                .orElseThrow(()-> new RestApiException(SemesterPartErrorCode.EMPTY_SEMESTER_PART));
     }
 
 
@@ -147,10 +147,10 @@ public class Member extends BaseEntity {
                 .findFirst();
 
         return recentSemesterPart.map(SemesterPart::getPart)
-                .orElseThrow(()-> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
+                .orElseThrow(()-> new RestApiException(SemesterPartErrorCode.EMPTY_SEMESTER_PART));
     }
 
-    //사용자가 활동한 기수를 몯 ㅜ찾기
+    //사용자가 활동한 기수를 모두 찾기
     public List<Semester> getSemesters() {
         return this.getSemesterParts().stream()
                 .map(SemesterPart::getSemester)

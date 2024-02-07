@@ -1,6 +1,7 @@
 package com.umc.networkingService.global.common.exception;
 
 import com.umc.networkingService.global.common.base.BaseResponse;
+import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -37,7 +38,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<BaseResponse<String>> handleException(Exception e) {
         e.printStackTrace(); //예외 정보 출력
 
-        return handleExceptionInternalFalse(ErrorCode._INTERNAL_SERVER_ERROR, e.getMessage());
+        return handleExceptionInternalFalse(GlobalErrorCode._INTERNAL_SERVER_ERROR.getErrorCode(), e.getMessage());
     }
 
     /*
@@ -46,7 +47,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleConstraintViolationException(ConstraintViolationException e) {
-        return handleExceptionInternal(ErrorCode._VALIDATION_ERROR);
+        return handleExceptionInternal(GlobalErrorCode._VALIDATION_ERROR.getErrorCode());
     }
 
     /*
@@ -56,7 +57,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<BaseResponse<String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
         // 예외 처리 로직
-        return handleExceptionInternal(ErrorCode._METHOD_ARGUMENT_ERROR);
+        return handleExceptionInternal(GlobalErrorCode._METHOD_ARGUMENT_ERROR.getErrorCode());
     }
 
     /*
@@ -75,7 +76,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                     errors.merge(fieldName, errorMessage, (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
                 });
 
-        return handleExceptionInternalArgs(ErrorCode._VALIDATION_ERROR, errors);
+        return handleExceptionInternalArgs(GlobalErrorCode._VALIDATION_ERROR.getErrorCode(), errors);
 
     }
 

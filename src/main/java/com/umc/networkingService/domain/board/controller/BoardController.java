@@ -45,6 +45,7 @@ public class BoardController {
             " NOTICE는 해당 hostType 이하 운영진만 작성 가능합니다. WORKBOOK 게시판은 host : CAMPUS에서 교내 운영진만 작성 가능합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "COMMON402", description = "request 요소들의 validation 검증에 실패할 경우 발생"),
             @ApiResponse(responseCode = "BOARD001", description = "WORKBOOK 게시판과 CENTER, BRANCH를 선택했을 경우 금지된 요청"),
             @ApiResponse(responseCode = "BOARD003", description = "게시글을 작성할 권한이 없을 경우 발생"),
             @ApiResponse(responseCode = "FILE001", description = "파일 S3 업로드 실패할 경우 발생")
@@ -63,6 +64,7 @@ public class BoardController {
             "NOTICE는 해당 hostType 이하 운영진만 수정 가능합니다. WORKBOOK 게시판은 host : CAMPUS에서 교내 운영진만 수정 가능합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "COMMON402", description = "request 요소들의 validation 검증에 실패할 경우 발생"),
             @ApiResponse(responseCode = "BOARD001", description = "WORKBOOK 게시판과 CENTER, BRANCH를 선택했을 경우 금지된 요청"),
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
             @ApiResponse(responseCode = "BOARD003", description = "게시글을 수정할 권한이 없을 경우 발생"),
@@ -95,7 +97,7 @@ public class BoardController {
             "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "COMMON403", description = "hostType, boardType이 적절하지 않은 값일 경우 발생")
+            @ApiResponse(responseCode = "COMMON405", description = "host, board type이 적절하지 않은 값일 경우 발생")
     })
     @Parameters(value = {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
@@ -161,7 +163,8 @@ public class BoardController {
             "host: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
             "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "COMMON405", description = "host, board type이 적절하지 않은 값일 경우 발생")
     })
     @Parameters(value = {
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 내가 쓴 게시글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
@@ -199,7 +202,8 @@ public class BoardController {
             "host: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
             "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "COMMON405", description = "host, board type이 적절하지 않은 값일 경우 발생")
     })
     @Parameters(value = {
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 내가 좋아요한 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
