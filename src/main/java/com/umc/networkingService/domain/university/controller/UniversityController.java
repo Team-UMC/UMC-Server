@@ -99,7 +99,7 @@ public class UniversityController {
     public BaseResponse<UniversityResponse.JoinUniversityMascotFeed>
     postMascotPoint(
             @CurrentMember Member member,
-            @RequestBody @Valid PointType pointType
+            @RequestParam @Valid PointType pointType
             ){
         return BaseResponse.onSuccess(universityService.feedUniversityMascot(member, pointType)); //현재 대학 포인트
     }
