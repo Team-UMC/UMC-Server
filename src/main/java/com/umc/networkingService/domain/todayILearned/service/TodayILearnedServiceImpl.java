@@ -10,14 +10,15 @@ import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedMapper
 import com.umc.networkingService.domain.todayILearned.repository.TodayILearnedRepository;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import com.umc.networkingService.global.common.exception.code.TodayILearnedErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +56,7 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     public TodayILearnedId updateTodayILearned(Member member, UUID todayILearnedId, List<MultipartFile> files,
                                                TodayILearnedUpdate request) {
         TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_TODAYILERARNED));
+                TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
         validateMember(todayILearned, member);
@@ -68,7 +69,7 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     @Override
     @Transactional
     public TodayILearnedId deleteTodayILearned(Member member, UUID todayILearnedId) {
-        TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_TODAYILERARNED));
+        TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
         validateMember(todayILearned, member);
@@ -79,6 +80,6 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
 
     private void validateMember(TodayILearned todayILearned, Member member) {
         if (!todayILearned.getWriter().getId().equals(member.getId()))
-            throw new RestApiException(ErrorCode.NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER);
+            throw new RestApiException(TodayILearnedErrorCode.NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER);
     }
 }

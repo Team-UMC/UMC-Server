@@ -1,12 +1,13 @@
 package com.umc.networkingService.domain.todayILearned.dto.response;
 
 import com.umc.networkingService.global.common.enums.Part;
-import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.UUID;
 
 public class TodayILearnedResponse {
 

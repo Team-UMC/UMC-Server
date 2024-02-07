@@ -4,7 +4,10 @@ import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
 import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
 import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
-import com.umc.networkingService.domain.board.dto.response.*;
+import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentIdResponse;
 import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
 import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
@@ -28,7 +31,6 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.PATCH;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -47,8 +49,8 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardCreateRequest boardCreateRequest = BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
-                .boardType(BoardType.FREE)
-                .hostType(HostType.CAMPUS)
+                .boardType(BoardType.FREE.toString())
+                .hostType(HostType.CAMPUS.toString())
                 .build();
 
         BoardIdResponse response = new BoardIdResponse(board.getId());
@@ -56,7 +58,6 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         MockMultipartFile file1 = new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes());
         MockMultipartFile request = new MockMultipartFile("request", "request", "application/json", objectMapper.writeValueAsString(boardCreateRequest).getBytes(StandardCharsets.UTF_8));
-
         //when
         when(boardService.createBoard(eq(member), any(BoardCreateRequest.class), anyList())).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
@@ -83,8 +84,8 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardUpdateRequest boardUpdateRequest = BoardUpdateRequest.builder()
                 .title("제목")
                 .content("내용")
-                .boardType(BoardType.FREE)
-                .hostType(HostType.CAMPUS)
+                .boardType(BoardType.FREE.toString())
+                .hostType(HostType.CAMPUS.toString())
                 .build();
 
         BoardIdResponse response = new BoardIdResponse(board.getId());

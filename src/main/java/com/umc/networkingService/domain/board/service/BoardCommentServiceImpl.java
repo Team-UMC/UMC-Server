@@ -14,8 +14,8 @@ import com.umc.networkingService.domain.board.mapper.BoardCommentMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.BoardCommentErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
         if(!comment.getWriter().equals(member))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
+            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
 
         comment.update(request);
 
@@ -69,7 +69,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         //현재 로그인한 member와 writer가 같지 않으면 삭제 권한 없음
         if(!comment.getWriter().equals(member))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
+            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
 
         board.decreaseCommentCount();
         comment.delete();
@@ -99,6 +99,6 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     @Override
     public BoardComment loadEntity(UUID commentId) {
         return boardCommentRepository.findById(commentId).orElseThrow(
-                () -> new RestApiException(ErrorCode.EMPTY_BOARD_COMMENT));
+                () -> new RestApiException(BoardCommentErrorCode.EMPTY_BOARD_COMMENT));
     }
 }

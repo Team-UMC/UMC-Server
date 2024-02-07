@@ -1,7 +1,7 @@
 package com.umc.networkingService.domain.member.client;
 
 import com.umc.networkingService.domain.member.dto.client.NaverResponse;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,7 +25,7 @@ public class NaverMemberClient {
                 .block();
 
         if(response == null)
-            throw new RestApiException(ErrorCode.FAILED_SOCIAL_LOGIN);
+            throw new RestApiException(AuthErrorCode.FAILED_SOCIAL_LOGIN);
 
         return response.getResponse().getId();
     }

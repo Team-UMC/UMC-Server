@@ -2,8 +2,8 @@ package com.umc.networkingService.domain.university.service;
 
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.UniversityErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ public class UniversityServiceImpl implements UniversityService {
     @Override
     public University findUniversityByName(String universityName) {
         return universityRepository.findByName(universityName)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
     }
 }

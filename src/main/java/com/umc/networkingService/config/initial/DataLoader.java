@@ -11,6 +11,7 @@ import com.umc.networkingService.domain.university.repository.UniversityReposito
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.UniversityErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -110,7 +111,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
     private University findUniversityByName(String name) {
         return universityRepository.findByName(name)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
     }
 
     // 새로운 프로젝트를 추가하는 함수

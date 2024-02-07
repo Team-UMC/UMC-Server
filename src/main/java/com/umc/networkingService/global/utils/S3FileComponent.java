@@ -5,8 +5,9 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.S3ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,9 +38,9 @@ public class S3FileComponent {
         } catch (IOException e) {
 
             if (multipartFile.getContentType().startsWith("image"))
-                throw new RestApiException(ErrorCode.FAILED_UPLOAD_S3_IMAGE);
+                throw new RestApiException(S3ErrorCode.FAILED_UPLOAD_S3_IMAGE);
             else
-                throw new RestApiException(ErrorCode.FAILED_UPLOAD_S3_FILE);
+                throw new RestApiException(S3ErrorCode.FAILED_UPLOAD_S3_FILE);
 
         }
 

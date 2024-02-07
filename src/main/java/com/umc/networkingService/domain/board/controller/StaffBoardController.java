@@ -31,10 +31,11 @@ public class StaffBoardController {
     @Operation(summary = "공지사항 목록 조회/검색 API", description = "공지사항 목록을 조회합니다. keyword를 주면 검색됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "BOARD003", description = "해당 hostType의 공지사항을 볼 권한이 없을 경우 발생"),
+            @ApiResponse(responseCode = "COMMON405", description = "host, board type이 적절하지 않은 값일 경우 발생"),
+            @ApiResponse(responseCode = "BOARD003", description = "해당 host type의 공지사항을 볼 권한이 없을 경우 발생"),
     })
     @Parameters(value = {
-            @Parameter(name = "hostType", description = "ALL, CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요."),
+            @Parameter(name = "host", description = "ALL, CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요."),
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 교내 공지사항 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
 

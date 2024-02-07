@@ -15,4 +15,5 @@ public interface BranchRepository extends JpaRepository<Branch, UUID>{
     List<Branch> findAllBySemester(Semester semester);
 
     boolean existsByName(String name);
+    Optional<Branch> findByName(String name);
 }

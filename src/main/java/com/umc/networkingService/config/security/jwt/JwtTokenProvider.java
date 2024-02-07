@@ -2,7 +2,7 @@ package com.umc.networkingService.config.security.jwt;
 
 import com.umc.networkingService.config.security.auth.PrincipalDetails;
 import com.umc.networkingService.config.security.auth.PrincipalDetailsService;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
@@ -86,7 +86,7 @@ public class JwtTokenProvider {
             return new UsernamePasswordAuthenticationToken(principalDetails,
                     "", principalDetails.getAuthorities());
         } catch (UsernameNotFoundException exception) {
-            throw new RestApiException(ErrorCode.UNSUPPORTED_JWT);
+            throw new RestApiException(AuthErrorCode.UNSUPPORTED_JWT);
         }
     }
 
@@ -97,7 +97,7 @@ public class JwtTokenProvider {
             return new UsernamePasswordAuthenticationToken(principalDetails,
                     "", principalDetails.getAuthorities());
         } catch (UsernameNotFoundException exception) {
-            throw new RestApiException(ErrorCode.UNSUPPORTED_JWT);
+            throw new RestApiException(AuthErrorCode.UNSUPPORTED_JWT);
         }
     }
 
@@ -122,13 +122,13 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            throw new RestApiException(ErrorCode.INVALID_ACCESS_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT);
+            throw new RestApiException(AuthErrorCode.EXPIRED_MEMBER_JWT);
         } catch (UnsupportedJwtException | SignatureException e) {
-            throw new RestApiException(ErrorCode.UNSUPPORTED_JWT);
+            throw new RestApiException(AuthErrorCode.UNSUPPORTED_JWT);
         } catch (IllegalArgumentException e) {
-            throw new RestApiException(ErrorCode.EMPTY_JWT);
+            throw new RestApiException(AuthErrorCode.EMPTY_JWT);
         }
     }
     public boolean validateRefreshToken(String token) {
@@ -136,13 +136,13 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT);
+            throw new RestApiException(AuthErrorCode.EXPIRED_MEMBER_JWT);
         } catch (UnsupportedJwtException | SignatureException e) {
-            throw new RestApiException(ErrorCode.UNSUPPORTED_JWT);
+            throw new RestApiException(AuthErrorCode.UNSUPPORTED_JWT);
         } catch (IllegalArgumentException e) {
-            throw new RestApiException(ErrorCode.EMPTY_JWT);
+            throw new RestApiException(AuthErrorCode.EMPTY_JWT);
         }
     }
 }

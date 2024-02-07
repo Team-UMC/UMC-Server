@@ -44,6 +44,7 @@ public abstract class ServiceIntegrationTestConfig {
     protected Branch branch;
 
     protected BranchUniversity branchUniversity;
+
     protected Member member;
 
     @BeforeEach
@@ -99,6 +100,7 @@ public abstract class ServiceIntegrationTestConfig {
         refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
         refreshTokenService.saveTokenInfo(refreshToken, memberId);
     }
+
 
     protected  University createUniversity() {
         return universityRepository.save(

@@ -3,19 +3,21 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
-import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
-import com.umc.networkingService.domain.member.entity.*;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.MemberPoint;
+import com.umc.networkingService.domain.member.entity.MemberPosition;
+import com.umc.networkingService.domain.member.entity.PositionType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -83,7 +85,7 @@ public class MemberServiceImpl implements MemberService{
 
         // 소속 대학교 찾기
         University university = Optional.ofNullable(loginMember.getUniversity())
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER_UNIVERSITY));
 
         // 본인 랭킹 구하기
         int rank = calculateMyRank(loginMember, university);
@@ -94,16 +96,18 @@ public class MemberServiceImpl implements MemberService{
     // 깃허브 인증 함수
     @Override
     @Transactional
-    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String code) {
+    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String nickname) {
 
         Member loginMember = loadEntity(member.getId());
 
-        String gitNickname = githubMemberClient.getGithubNickname(code);
+////        String gitNickname = githubMemberClient.getGithubNickname(code);
+//
+//        if (gitNickname == null || gitNickname.isBlank())
+//            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
-        if (gitNickname == null || gitNickname.isBlank())
-            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
-
-        loginMember.authenticateGithub(gitNickname);
+        if (memberRepository.existsByGitNickname(nickname))
+            throw new RestApiException(MemberErrorCode.DUPLICATED_GIT_NICKNAME);
+        loginMember.authenticateGithub(nickname);
 
         return new MemberAuthenticateGithubResponse(loginMember.getGitNickname());
     }
@@ -115,7 +119,7 @@ public class MemberServiceImpl implements MemberService{
 
         String gitNickName = loginMember.getGitNickname();
         if (gitNickName == null)
-            throw new RestApiException(ErrorCode.UNAUTHENTICATED_GITHUB);
+            throw new RestApiException(MemberErrorCode.UNAUTHENTICATED_GITHUB);
         return new MemberInquiryGithubResponse("https://ghchart.rshah.org/2965FF/" + gitNickName);
     }
 
@@ -162,11 +166,11 @@ public class MemberServiceImpl implements MemberService{
         if (updateMember.getRole().getPriority() <= member.getRole().getPriority()
                 && !member.getId().equals(updateMember.getId())) {
             // 본인보다 높거나 같은 직책의 운영진의 정보를 수정하려 할 경우
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
+            throw new RestApiException(MemberErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
         }
         if (member.getRole().getPriority() > 2 && !centerPositions.isEmpty()) {
             // 학교, 지부 운영진이 중앙 직책을 수정하려는 경우
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
+            throw new RestApiException(MemberErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
         }
     }
 
@@ -183,7 +187,7 @@ public class MemberServiceImpl implements MemberService{
 
         // 기수 변경에 의해 소속 지부 변경
         Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
-                updateMember.getUniversity(), updateMember.getLatestSemesterPart().getSemester());
+                updateMember.getUniversity(), updateMember.getRecentSemester());
         updateMember.updateBranch(newBranch);
     }
 
@@ -269,7 +273,7 @@ public class MemberServiceImpl implements MemberService{
         }
 
         // 학교 구성원 중 멤버를 찾지 못하였을 경우
-        throw new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY);
+        throw new RestApiException(MemberErrorCode.EMPTY_MEMBER_UNIVERSITY);
     }
 
     // 올바른 키워드인지 확인
@@ -277,7 +281,7 @@ public class MemberServiceImpl implements MemberService{
         // {닉네임/이름} 양식 검증
         String[] splits = keyword.split("/");
         if (splits.length != 2)
-            throw new RestApiException(ErrorCode.INVALID_MEMBER_KEYWORD);
+            throw new RestApiException(MemberErrorCode.INVALID_MEMBER_KEYWORD);
         return splits;
     }
 
@@ -298,6 +302,8 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
     }
+
+
 }
