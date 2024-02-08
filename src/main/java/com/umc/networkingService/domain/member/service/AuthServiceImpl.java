@@ -139,6 +139,7 @@ public class AuthServiceImpl implements AuthService {
     private MemberLoginResponse loginByApple(final String accessToken){
         // apple 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = appleMemberClient.getappleClientID(accessToken);
+
         //존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.APPLE);
 

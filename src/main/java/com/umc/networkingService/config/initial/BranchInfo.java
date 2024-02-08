@@ -42,6 +42,6 @@ public enum BranchInfo {
         return Arrays.stream(BranchInfo.values())
                 .filter(branchInfo -> branchInfo.getName().equals(name))
                 .findFirst()
-                .orElseThrow(() -> new RestApiException(BranchErrorCode.EMPTY_BRANCH));
+                .orElseThrow(() -> new RestApiException(BranchErrorCode.BRANCH_NOT_FOUND));
     }
 }
