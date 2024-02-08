@@ -17,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,12 +45,14 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     }
 
     @Override
-    public TodayILearnedInfos getTodayILearnedInfos(Member member) {
+    public TodayILearnedInfos getTodayILearnedInfos(Member member, String stringDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(stringDate,formatter);
 
         return todayILearnedMapper.toTodayILearnedInfos(
-                todayILearnedRepository.findTodayILearnedByWriterAndCreateDate(member,
-                        LocalDate.now()).stream()
-                        .map(todayILearned -> todayILearnedMapper.toTodayILearnedInfo(todayILearned))
+                todayILearnedRepository.findTodayILearnedByWriterAndCreateDate(member, date)
+                        .stream()
+                        .map(todayILearnedMapper::toTodayILearnedInfo)
                         .toList());
     }
 

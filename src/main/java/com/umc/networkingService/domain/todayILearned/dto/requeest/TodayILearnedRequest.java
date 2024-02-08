@@ -29,4 +29,5 @@ public class TodayILearnedRequest {
         private String content;
         private Part part;
     }
+
 }

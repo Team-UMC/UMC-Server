@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface TodayILearnedService {
     TodayILearnedId createTodayILearned(Member member, List<MultipartFile> files, TodayILearnedCreate request);
-    TodayILearnedInfos getTodayILearnedInfos(Member member);
+    TodayILearnedInfos getTodayILearnedInfos(Member member,String date);
 
     TodayILearnedId updateTodayILearned(Member member, UUID todayILearnedId, List<MultipartFile> files, TodayILearnedUpdate request);
 
