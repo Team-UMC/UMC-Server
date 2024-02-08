@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -145,6 +146,21 @@ public class MemberServiceImpl implements MemberService{
         List<MemberSearchInfosResponse.MemberInfo> memberInfos = getMemberInfos(nicknameAndName, member);
 
         return new MemberSearchInfosResponse(memberInfos);
+    }
+
+    // 출석 체크 함수
+    @Override
+    @Transactional
+    public MemberAttendResponse attendMember(Member loingMember) {
+
+        Member member = loadEntity(loingMember.getId());
+        LocalDate lastActiveDate = member.getLastActiveTime().toLocalDate();
+
+        if (!lastActiveDate.equals(LocalDate.now())) {
+            member.addRemainPoint(1L);
+            return new MemberAttendResponse(true);
+        }
+        return new MemberAttendResponse(false);
     }
 
     @Override
