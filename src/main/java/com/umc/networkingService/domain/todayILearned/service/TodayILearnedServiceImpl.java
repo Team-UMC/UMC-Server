@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.rmi.server.UID;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -60,8 +61,7 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     @Transactional
     public TodayILearnedId updateTodayILearned(Member member, UUID todayILearnedId, List<MultipartFile> files,
                                                TodayILearnedUpdate request) {
-        TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(
-                TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
+        TodayILearned todayILearned = loadEntity(todayILearnedId);
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
         validateMember(todayILearned, member);
@@ -74,7 +74,7 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     @Override
     @Transactional
     public TodayILearnedId deleteTodayILearned(Member member, UUID todayILearnedId) {
-        TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
+        TodayILearned todayILearned = loadEntity(todayILearnedId);
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
         validateMember(todayILearned, member);
@@ -86,5 +86,11 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     private void validateMember(TodayILearned todayILearned, Member member) {
         if (!todayILearned.getWriter().getId().equals(member.getId()))
             throw new RestApiException(TodayILearnedErrorCode.NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER);
+    }
+
+    @Override
+    public TodayILearned loadEntity(UUID todayILearnedId) {
+        return todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(
+                TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
     }
 }

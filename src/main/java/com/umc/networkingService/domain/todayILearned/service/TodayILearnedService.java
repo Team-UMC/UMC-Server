@@ -5,12 +5,14 @@ import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearned
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedUpdate;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
+import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
+import com.umc.networkingService.global.common.base.EntityLoader;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface TodayILearnedService {
+public interface TodayILearnedService extends EntityLoader<TodayILearned,UUID> {
     TodayILearnedId createTodayILearned(Member member, List<MultipartFile> files, TodayILearnedCreate request);
     TodayILearnedInfos getTodayILearnedInfos(Member member,String date);
 
