@@ -1,7 +1,5 @@
 package com.umc.networkingService.domain.university.service;
 
-import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.mascot.service.MascotService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPoint;
@@ -32,7 +30,6 @@ public class UniversityServiceImpl implements UniversityService {
     private final UniversityRepository universityRepository;
 
     private final MemberService memberService;
-    private final BranchUniversityService branchUniversityService;
     private final MemberPointService memberPointService;
     private final MascotService mascotService;
 
