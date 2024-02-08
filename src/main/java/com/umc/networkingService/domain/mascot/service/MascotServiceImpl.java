@@ -19,7 +19,7 @@ public class MascotServiceImpl implements MascotService{
 
     @Override
     public Mascot getMascotByStartLevel(int level, MascotType type) {
-        Optional<Mascot> optionalMascot = mascotRepository.findByStartLevelAndAndType(level, type);
+        Optional<Mascot> optionalMascot = mascotRepository.findByStartLevelAndType(level, type);
         return optionalMascot.orElseThrow(() -> new RestApiException(MascotErrorCode.EMPTY_MASCOT_LEVEL));
     }
 }
