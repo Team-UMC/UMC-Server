@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.branch.service;
 
 
-import com.umc.networkingService.domain.branch.converter.BranchConverter;
 import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.entity.Branch;
@@ -14,8 +13,6 @@ import com.umc.networkingService.global.utils.S3FileComponent;
 import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,7 +28,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @DisplayName("Branch 서비스의 ")

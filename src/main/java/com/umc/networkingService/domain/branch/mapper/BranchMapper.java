@@ -1,17 +1,16 @@
-package com.umc.networkingService.domain.branch.converter;
+package com.umc.networkingService.domain.branch.mapper;
 
 import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.utils.S3FileComponent;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class BranchConverter {
+public class BranchMapper {
 
     public static Branch toBranch(
             BranchRequest.PostBranchDTO request

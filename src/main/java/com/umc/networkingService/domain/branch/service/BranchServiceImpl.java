@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.branch.service;
 
-import com.umc.networkingService.domain.branch.converter.BranchConverter;
+import com.umc.networkingService.domain.branch.mapper.BranchMapper;
 import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.entity.Branch;
@@ -36,7 +36,7 @@ public class BranchServiceImpl implements BranchService {
     public BranchResponse.BranchId postBranch(BranchRequest.PostBranchDTO request) {
 
         validateBranchNameAndDescription(request.getName(), request.getDescription());
-        Branch newBranch = BranchConverter
+        Branch newBranch = BranchMapper
                 .toBranch
                         (request
                         ,uploadImageS3(BRANCH_CATEGORY,request.getImage())
@@ -86,7 +86,7 @@ public class BranchServiceImpl implements BranchService {
         }
 
         List<Branch> branchs = branchRepository.findAllBySemester(semester);
-        return BranchConverter.toJoinBranchListDTO(branchs);
+        return BranchMapper.toJoinBranchListDTO(branchs);
     }
 
     @Transactional(readOnly = true)        //지부 상세 조회
@@ -105,7 +105,7 @@ public class BranchServiceImpl implements BranchService {
                 .toList();
 
 
-        return BranchConverter.toJoinBranchDetailDTO(universityList);
+        return BranchMapper.toJoinBranchDetailDTO(universityList);
 
     }
 
