@@ -4,6 +4,7 @@ import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedUpdate;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
 import com.umc.networkingService.domain.todayILearned.service.TodayILearnedService;
@@ -34,9 +35,9 @@ public class TodayILearnedController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공")
     })
-    public BaseResponse<TodayILearnedId> createTodayILearned(@CurrentMember Member member,
-                                                             @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                                                             @RequestPart("request") TodayILearnedCreate request) {
+    public BaseResponse<TodayILearnedResponse.TodayILearnedCreate> createTodayILearned(@CurrentMember Member member,
+                                                                                       @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                                                                       @RequestPart("request") TodayILearnedCreate request) {
 
         return BaseResponse.onSuccess(todayILearnedService.createTodayILearned(member, files, request));
     }

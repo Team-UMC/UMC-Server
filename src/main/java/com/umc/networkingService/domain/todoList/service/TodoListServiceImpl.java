@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.todoList.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListCreateRequest;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListUpdateRequest;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListCompleteResponse;
@@ -29,6 +30,8 @@ public class TodoListServiceImpl implements TodoListService{
 
     private final TodoListRepository todoListRepository;
     private final TodoListMapper todoListMapper;
+
+    private final MemberService memberService;
 
     @Override
     public TodoListIdResponse createTodoList(Member member, TodoListCreateRequest todoListRequest){
@@ -60,7 +63,10 @@ public class TodoListServiceImpl implements TodoListService{
 
     @Override
     @Transactional
-    public TodoListCompleteResponse completeTodoList(Member member, UUID todoListId){
+    public TodoListCompleteResponse completeTodoList(Member loginMember, UUID todoListId){
+
+        Member member = memberService.loadEntity(loginMember.getId());
+
         ToDoList todoList = todoListRepository.findById(todoListId)
                 .orElseThrow(() -> new RestApiException(ToDoListErrorCode.EMPTY_TODOLIST));
 
@@ -121,6 +127,10 @@ public class TodoListServiceImpl implements TodoListService{
         // 투두리스트를 찾지 못한 경우
         if (index == -1) throw new RestApiException(ToDoListErrorCode.EMPTY_TODOLIST);
 
-        return index < 3;
+        if (index < 3) {
+            member.addRemainPoint(1L);
+            return true;
+        }
+        return false;
     }
 }
