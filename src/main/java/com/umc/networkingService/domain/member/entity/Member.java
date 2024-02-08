@@ -70,7 +70,6 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<MemberPosition> positions = new ArrayList<>();
 
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -157,7 +156,6 @@ public class Member extends BaseEntity {
                 .collect(Collectors.toList());
     }
 
-    // 테스트 코드용
     public void updateRole(Role role) {
         this.role = role;
     }
@@ -170,6 +168,11 @@ public class Member extends BaseEntity {
     // 최근 활동 시간 업데이트 함수
     public void updateLastActiveTime(LocalDateTime lastActiveTime) {
         this.lastActiveTime = lastActiveTime;
+    }
+
+    // 포인트 획득 함수
+    public void addRemainPoint(Long point) {
+        this.remainPoint += point;
     }
 
 }

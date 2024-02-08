@@ -12,7 +12,6 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -51,10 +51,10 @@ public class MemberServiceImpl implements MemberService{
         Member member = loadEntity(loginMember.getId());
 
         // 사진이 존재한다면 업로드 후 url 저장
-        String profileUrl = uploadProfileImage(profileImage);
+        String profileUrl = uploadProfileImage(member, profileImage);
         member.updateMemberInfo(request, profileUrl);
 
-        return new MemberIdResponse(memberRepository.save(loginMember).getId());
+        return new MemberIdResponse(member.getId());
     }
 
     // 프로필 수정 함수(운영진용)
@@ -71,7 +71,7 @@ public class MemberServiceImpl implements MemberService{
         // 직책 및 기수별 파트 정보 수정
         updatePositionAndSemesterPart(updateMember, request);
 
-        return new MemberIdResponse(memberRepository.save(updateMember).getId());
+        return new MemberIdResponse(updateMember.getId());
     }
 
     // 포인트 관련 정보 조회
@@ -144,6 +144,21 @@ public class MemberServiceImpl implements MemberService{
         return new MemberSearchInfosResponse(memberInfos);
     }
 
+    // 출석 체크 함수
+    @Override
+    @Transactional
+    public MemberAttendResponse attendMember(Member loingMember) {
+
+        Member member = loadEntity(loingMember.getId());
+        LocalDate lastActiveDate = member.getLastActiveTime().toLocalDate();
+
+        if (!lastActiveDate.equals(LocalDate.now())) {
+            member.addRemainPoint(1L);
+            return new MemberAttendResponse(true);
+        }
+        return new MemberAttendResponse(false);
+    }
+
     @Override
     @Transactional
     public void updateMemberActiveTime(UUID memberId) {
@@ -152,11 +167,14 @@ public class MemberServiceImpl implements MemberService{
         loginMember.updateLastActiveTime(LocalDateTime.now());
     }
 
-    private String uploadProfileImage(MultipartFile profileImage) {
+    private String uploadProfileImage(Member member, MultipartFile profileImage) {
         if (profileImage != null) {
+            // 기존 프로필 이미지 삭제
+            if (member.getProfileImage() != null)
+                s3FileComponent.deleteFile(member.getProfileImage());
             return s3FileComponent.uploadFile("member", profileImage);
         }
-        return null;
+        return member.getProfileImage();
     }
 
     private void checkUpdateAuthority(Member member, Member updateMember, List<String> centerPositions) {
@@ -175,10 +193,6 @@ public class MemberServiceImpl implements MemberService{
         // 직책 수정
         memberPositionService.saveMemberPositionInfos(updateMember, request.getCampusPositions(), request.getCenterPositions());
 
-        // 직책에 따른 Role 수정
-        Role newRole = findMemberRole(updateMember.getPositions());
-        updateMember.updateRole(newRole);
-
         // 특정 기수의 파트 변경
         semesterPartService.saveSemesterPartInfos(updateMember, request.getSemesterParts());
 
@@ -186,40 +200,6 @@ public class MemberServiceImpl implements MemberService{
         Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
                 updateMember.getUniversity(), updateMember.getRecentSemester());
         updateMember.updateBranch(newBranch);
-    }
-
-    // 멤버의 새로운 Role 찾기 함수
-    private Role findMemberRole(List<MemberPosition> memberPositions) {
-        if (memberPositions.isEmpty()) {
-            return Role.MEMBER;
-        }
-
-        List<MemberPosition> centerPositions = findPositionsByType(memberPositions, PositionType.CENTER);
-
-        if (!centerPositions.isEmpty()) {
-            if (isExecutive(centerPositions))
-                return Role.TOTAL_STAFF;
-            return Role.CENTER_STAFF;
-        }
-
-        List<MemberPosition> campusPositions = findPositionsByType(memberPositions, PositionType.CAMPUS);
-
-        if (isExecutive(campusPositions))
-            return Role.BRANCH_STAFF;
-        return Role.CAMPUS_STAFF;
-    }
-
-    // 특정 타입의 직책을 반환하는 함수
-    private List<MemberPosition> findPositionsByType(List<MemberPosition> memberPositions, PositionType type) {
-        return memberPositions.stream()
-                .filter(memberPosition -> memberPosition.getType() == type)
-                .toList();
-    }
-
-    // 회장, 부회장 판별 함수
-    private boolean isExecutive(List<MemberPosition> positions) {
-        return positions.stream()
-                .anyMatch(position -> position.getName().equals("회장") || position.getName().equals("부회장"));
     }
 
     // 기여도 목록 조회 함수

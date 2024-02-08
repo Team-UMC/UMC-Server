@@ -45,7 +45,6 @@ public abstract class ServiceIntegrationTestConfig {
     protected String refreshToken;
     protected University university;
     protected Branch branch;
-
     protected Mascot mascot;
     protected BranchUniversity branchUniversity;
 
@@ -105,6 +104,7 @@ public abstract class ServiceIntegrationTestConfig {
         refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
         refreshTokenService.saveTokenInfo(refreshToken, memberId);
     }
+
 
     protected Mascot createMascot() {
         return mascotRepository.save(

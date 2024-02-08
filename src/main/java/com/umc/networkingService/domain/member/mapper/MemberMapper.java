@@ -6,8 +6,8 @@ import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

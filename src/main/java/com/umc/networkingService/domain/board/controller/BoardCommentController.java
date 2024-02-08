@@ -1,12 +1,9 @@
 package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
-import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentIdResponse;
-import com.umc.networkingService.domain.board.dto.response.comment.BoardCommentPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.member.MyBoardCommentPagingWebResponse;
-import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
+import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardCommentService;
@@ -41,8 +38,8 @@ public class BoardCommentController {
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
     })
     @PostMapping
-    public BaseResponse<BoardCommentIdResponse> addBoardComment(@CurrentMember Member member,
-                                                                @Valid @RequestBody BoardCommentAddRequest request) {
+    public BaseResponse<BoardCommentResponse.BoardCommentId> addBoardComment(@CurrentMember Member member,
+                                                                             @Valid @RequestBody BoardCommentRequest.BoardCommentAddRequest request) {
         return BaseResponse.onSuccess(boardCommentService.addBoardComment(member, request));
     }
 
@@ -54,9 +51,9 @@ public class BoardCommentController {
             
     })
     @PatchMapping("/{commentId}")
-    public BaseResponse<BoardCommentIdResponse> updateBoardComment(@CurrentMember Member member,
-                                                                   @PathVariable(value = "commentId") UUID commentId,
-                                                                   @Valid @RequestBody BoardCommentUpdateRequest request) {
+    public BaseResponse<BoardCommentResponse.BoardCommentId> updateBoardComment(@CurrentMember Member member,
+                                                                                @PathVariable(value = "commentId") UUID commentId,
+                                                                                @Valid @RequestBody BoardCommentRequest.BoardCommentUpdateRequest request) {
         return BaseResponse.onSuccess(boardCommentService.updateBoardComment(member, commentId, request));
     }
 
@@ -68,8 +65,8 @@ public class BoardCommentController {
             @ApiResponse(responseCode = "COMMENT002", description = "댓글 삭제 권한이 없을 경우 발생")
     })
     @DeleteMapping("/{commentId}")
-    public BaseResponse<BoardCommentIdResponse> deleteBoardComment(@CurrentMember Member member,
-                                                                   @PathVariable(value = "commentId") UUID commentId) {
+    public BaseResponse<BoardCommentResponse.BoardCommentId> deleteBoardComment(@CurrentMember Member member,
+                                                                                @PathVariable(value = "commentId") UUID commentId) {
         return BaseResponse.onSuccess(boardCommentService.deleteBoardComment(member, commentId));
     }
 
@@ -82,9 +79,9 @@ public class BoardCommentController {
             @Parameter(name = "page", description = " page 시작은 0번부터, 오름차순으로 조회됩니다.")
     })
     @GetMapping(value = "/{boardId}")
-    public BaseResponse<BoardCommentPagingResponse> showBoardComments(@CurrentMember Member member,
-                                                                      @PathVariable(value = "boardId") UUID boardId,
-                                                                      @PageableDefault(sort = "created_at", direction = Sort.Direction.ASC)
+    public BaseResponse<BoardCommentResponse.BoardCommentPageInfos> showBoardComments(@CurrentMember Member member,
+                                                                                      @PathVariable(value = "boardId") UUID boardId,
+                                                                                      @PageableDefault(sort = "created_at", direction = Sort.Direction.ASC)
                                                                       @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(boardCommentService.showBoardComments(member, boardId, pageable));
     }
@@ -98,9 +95,9 @@ public class BoardCommentController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다.")
     })
     @GetMapping(value = "/member/comments/app")
-    public BaseResponse<MyBoardPagingResponse> showBoardsByMemberCommentsForApp(@CurrentMember Member member,
-                                                                                @RequestParam(name = "keyword", required = false) String keyword,
-                                                                                @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showBoardsByMemberCommentsForApp(@CurrentMember Member member,
+                                                                                           @RequestParam(name = "keyword", required = false) String keyword,
+                                                                                           @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                                 @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(boardCommentService.showBoardsByMemberCommentForApp(member, keyword, pageable));
     }
@@ -116,7 +113,7 @@ public class BoardCommentController {
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 내가 댓글 쓴 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다.")})
     @GetMapping(value = "/member/comments/web")
-    public BaseResponse<MyBoardCommentPagingWebResponse> showBoardsByMemberCommentForWeb(@CurrentMember Member member,
+    public BaseResponse<MyBoardResponse.MyBoardCommentPageInfos> showBoardsByMemberCommentForWeb(@CurrentMember Member member,
                                                                                           @RequestParam(name = "host") HostType hostType,
                                                                                           @RequestParam(name = "board") BoardType boardType,
                                                                                           @RequestParam(name = "keyword", required = false) String keyword,

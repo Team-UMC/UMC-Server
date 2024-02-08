@@ -20,6 +20,15 @@ public class TodayILearnedResponse {
     }
 
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class TodayILearnedCreate {
+        private UUID todayILearnedId;
+        private boolean isPointAcquired;
+    }
+
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
