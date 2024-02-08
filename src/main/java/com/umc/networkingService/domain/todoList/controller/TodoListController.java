@@ -4,6 +4,7 @@ import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListCreateRequest;
 import com.umc.networkingService.domain.todoList.dto.request.TodoListUpdateRequest;
+import com.umc.networkingService.domain.todoList.dto.response.TodoListCompleteResponse;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListGetResponses;
 import com.umc.networkingService.domain.todoList.dto.response.TodoListIdResponse;
 import com.umc.networkingService.domain.todoList.service.TodoListService;
@@ -41,7 +42,8 @@ public class TodoListController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "TODOLIST001", description = "존재하지 않는 투두리스트입니다."),
-            @ApiResponse(responseCode = "TODOLIST002", description = "해당 투두리스트에 대한 수정 권한이 없습니다.")
+            @ApiResponse(responseCode = "TODOLIST002", description = "해당 투두리스트에 대한 수정 권한이 없습니다."),
+            @ApiResponse(responseCode = "TODOLIST003", description = "이미 완료한 투두리스트입니다.")
     })
     @PostMapping("/update/{todoListId}")
     public BaseResponse<TodoListIdResponse> updateTodoList(@CurrentMember Member member,
@@ -55,10 +57,11 @@ public class TodoListController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "TODOLIST001", description = "존재하지 않는 투두리스트입니다."),
-            @ApiResponse(responseCode = "TODOLIST002", description = "해당 투두리스트에 대한 수정 권한이 없습니다.")
+            @ApiResponse(responseCode = "TODOLIST002", description = "해당 투두리스트에 대한 수정 권한이 없습니다."),
+            @ApiResponse(responseCode = "TODOLIST003", description = "이미 완료한 투두리스트입니다.")
     })
     @PostMapping("/{todoListId}")
-    public BaseResponse<TodoListIdResponse> completeTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId) {
+    public BaseResponse<TodoListCompleteResponse> completeTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId) {
 
         return BaseResponse.onSuccess(todoListService.completeTodoList(member, todoListId));
     }
@@ -67,7 +70,7 @@ public class TodoListController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "TODOLIST001", description = "존재하지 않는 투두리스트입니다."),
-            @ApiResponse(responseCode = "TODOLIST002", description = "해당 투두리스트에 대한 수정 권한이 없습니다.")
+            @ApiResponse(responseCode = "TODOLIST002", description = "해당 투두리스트에 대한 수정 권한이 없습니다."),
     })
     @DeleteMapping("/{todoListId}")
     public BaseResponse<TodoListIdResponse> deleteTodoList(@CurrentMember Member member, @PathVariable("todoListId") UUID todoListId) {

@@ -2,8 +2,8 @@ package com.umc.networkingService.config.security.auth;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
-import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -8,9 +8,8 @@ import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.*
 import com.umc.networkingService.domain.schedule.entity.Schedule;
 import com.umc.networkingService.domain.schedule.mapper.ScheduleMapper;
 import com.umc.networkingService.domain.schedule.repository.ScheduleRepository;
-import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
-import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.common.exception.code.ScheduleErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

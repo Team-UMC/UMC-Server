@@ -1,8 +1,8 @@
 package com.umc.networkingService.domain.member.client;
 
 import com.umc.networkingService.domain.member.dto.client.NaverResponse;
-import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 

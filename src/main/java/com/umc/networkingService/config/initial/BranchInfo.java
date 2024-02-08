@@ -1,7 +1,6 @@
 package com.umc.networkingService.config.initial;
 
 import com.umc.networkingService.global.common.enums.Semester;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.BranchErrorCode;
 import lombok.Getter;
