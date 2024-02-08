@@ -29,6 +29,9 @@ public class Mascot extends BaseEntity {
     @Column(nullable = false)
     private int endLevel;
 
+    @Column(nullable = false)
+    private MascotType type;
+
     private String dialogue;
 
     private String image;

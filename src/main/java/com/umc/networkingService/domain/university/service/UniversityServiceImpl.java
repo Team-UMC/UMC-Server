@@ -152,8 +152,9 @@ public class UniversityServiceImpl implements UniversityService {
         Integer currentLevel = (int)(university.getTotalPoint() / 200 + 1);
         if(!currentLevel.equals(university.getCurrentLevel())){
             university.setLevel((int) (currentLevel));
-            Mascot currentMascot = mascotService.getMascotByEndLevel(currentLevel*10);
-            university.setMascot(currentMascot);
+            if(university.getMascot().getEndLevel()<currentLevel){
+                university.setMascot(mascotService.getMascotByStartLevel(currentLevel, university.getMascot().getType()));
+            }
         }
         /*
         * 1. 현재 대학교 포인트 200 단위로 마스코트 변경됨,현재 마스코트 레벨 찾기, 현재 레벨과 다르면 마스코트 변경
