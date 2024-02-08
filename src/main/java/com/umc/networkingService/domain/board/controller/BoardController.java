@@ -3,11 +3,8 @@ package com.umc.networkingService.domain.board.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardDetailResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardSearchPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
+import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
@@ -51,9 +48,9 @@ public class BoardController {
             @ApiResponse(responseCode = "FILE001", description = "파일 S3 업로드 실패할 경우 발생")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<BoardIdResponse> createBoard(@CurrentMember Member member,
-                                                     @Valid @RequestPart("request") BoardCreateRequest request,
-                                                     @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+    public BaseResponse<BoardResponse.BoardId> createBoard(@CurrentMember Member member,
+                                                           @Valid @RequestPart("request") BoardCreateRequest request,
+                                                           @RequestPart(name = "file", required = false) List<MultipartFile> files) {
         return BaseResponse.onSuccess(boardService.createBoard(member, request, files));
     }
 
@@ -71,10 +68,10 @@ public class BoardController {
             @ApiResponse(responseCode = "FILE001", description = "파일 S3 업로드 실패할 경우 발생")
     })
     @PatchMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<BoardIdResponse> updateBoard(@CurrentMember Member member,
-                                                     @PathVariable(value = "boardId") UUID boardId,
-                                                     @Valid @RequestPart("request") BoardUpdateRequest request,
-                                                     @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+    public BaseResponse<BoardResponse.BoardId> updateBoard(@CurrentMember Member member,
+                                                           @PathVariable(value = "boardId") UUID boardId,
+                                                           @Valid @RequestPart("request") BoardUpdateRequest request,
+                                                           @RequestPart(name = "file", required = false) List<MultipartFile> files) {
 
         return BaseResponse.onSuccess(boardService.updateBoard(member, boardId, request, files));
     }
@@ -86,8 +83,8 @@ public class BoardController {
             @ApiResponse(responseCode = "BOARD003", description = "게시글을 삭제할 권한이 없을 경우 발생"),
     })
     @DeleteMapping("/{boardId}")
-    public BaseResponse<BoardIdResponse> deleteBoard(@CurrentMember Member member,
-                                                     @PathVariable(value = "boardId") UUID boardId) {
+    public BaseResponse<BoardResponse.BoardId> deleteBoard(@CurrentMember Member member,
+                                                           @PathVariable(value = "boardId") UUID boardId) {
         return BaseResponse.onSuccess(boardService.deleteBoard(member, boardId));
     }
 
@@ -103,10 +100,10 @@ public class BoardController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
     @GetMapping
-    public BaseResponse<BoardPagingResponse> showBoards(@CurrentMember Member member,
-                                                        @RequestParam(name = "host") HostType hostType,
-                                                        @RequestParam(name = "board") BoardType boardType,
-                                                        @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<BoardResponse.BoardPageInfos> showBoards(@CurrentMember Member member,
+                                                                 @RequestParam(name = "host") HostType hostType,
+                                                                 @RequestParam(name = "board") BoardType boardType,
+                                                                 @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                         @Parameter(hidden = true) Pageable pageable) {
 
         return BaseResponse.onSuccess(boardService.showBoards(member, hostType, boardType, pageable));
@@ -119,8 +116,8 @@ public class BoardController {
             @ApiResponse(responseCode = "BOARD003", description = "게시글을 조회할 권한이 없을 경우 발생"),
     })
     @GetMapping("/{boardId}")
-    public BaseResponse<BoardDetailResponse> showBoardDetail(@CurrentMember Member member,
-                                                             @PathVariable(value = "boardId") UUID boardId) {
+    public BaseResponse<BoardResponse.BoardDetail> showBoardDetail(@CurrentMember Member member,
+                                                                   @PathVariable(value = "boardId") UUID boardId) {
         return BaseResponse.onSuccess(boardService.showBoardDetail(member, boardId));
     }
 
@@ -134,9 +131,9 @@ public class BoardController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
     @GetMapping(value = "/search")
-    public BaseResponse<BoardSearchPagingResponse> searchBoard(@CurrentMember Member member,
-                                                               @RequestParam(name = "keyword") String keyword,
-                                                               @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<BoardResponse.BoardSearchPageInfos> searchBoard(@CurrentMember Member member,
+                                                                        @RequestParam(name = "keyword") String keyword,
+                                                                        @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                @Parameter(hidden = true) Pageable pageable) {
 
         return BaseResponse.onSuccess(boardService.searchBoard(member, keyword, pageable));
@@ -151,7 +148,7 @@ public class BoardController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
     @GetMapping(value = "/member/app")
-    public BaseResponse<MyBoardPagingResponse> showBoardsByMemberForApp(@CurrentMember Member member,
+    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showBoardsByMemberForApp(@CurrentMember Member member,
                                                                   @RequestParam(name = "keyword", required = false) String keyword,
                                                                   @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                   @Parameter(hidden = true) Pageable pageable) {
@@ -171,7 +168,7 @@ public class BoardController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
     @GetMapping(value = "/member/web")
-    public BaseResponse<MyBoardPagingResponse> showBoardsByMemberForWeb(@CurrentMember Member member,
+    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showBoardsByMemberForWeb(@CurrentMember Member member,
                                                                         @RequestParam(name = "host") HostType hostType,
                                                                         @RequestParam(name = "board") BoardType boardType,
                                                                         @RequestParam(name = "keyword", required = false) String keyword,
@@ -191,7 +188,7 @@ public class BoardController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
     @GetMapping(value = "/member/hearts/app")
-    public BaseResponse<MyBoardPagingResponse> showMemberBoardHeartForApp(@CurrentMember Member member,
+    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showMemberBoardHeartForApp(@CurrentMember Member member,
                                                                      @RequestParam(name = "keyword", required = false) String keyword,
                                                                      @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                      @Parameter(hidden = true) Pageable pageable) {
@@ -210,11 +207,11 @@ public class BoardController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
     @GetMapping(value = "/member/hearts/web")
-    public BaseResponse<MyBoardPagingResponse> showMemberBoardHeartForWeb(@CurrentMember Member member,
-                                                                          @RequestParam(name = "host") HostType hostType,
-                                                                          @RequestParam(name = "board") BoardType boardType,
-                                                                          @RequestParam(name = "keyword", required = false) String keyword,
-                                                                          @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showMemberBoardHeartForWeb(@CurrentMember Member member,
+                                                                    @RequestParam(name = "host") HostType hostType,
+                                                                    @RequestParam(name = "board") BoardType boardType,
+                                                                    @RequestParam(name = "keyword", required = false) String keyword,
+                                                                    @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                           @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(boardService.showBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable));
     }
@@ -226,8 +223,8 @@ public class BoardController {
             @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
     })
     @PostMapping("/{boardId}/heart")
-    public BaseResponse<BoardIdResponse> toggleBoardLike(@CurrentMember Member member,
-                                                         @PathVariable(value = "boardId") UUID boardId) {
+    public BaseResponse<BoardResponse.BoardId> toggleBoardLike(@CurrentMember Member member,
+                                                               @PathVariable(value = "boardId") UUID boardId) {
         return BaseResponse.onSuccess(boardService.toggleBoardLike(member, boardId));
     }
 

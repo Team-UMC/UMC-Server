@@ -1,0 +1,120 @@
+package com.umc.networkingService.domain.board.dto.response;
+
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
+import com.umc.networkingService.global.common.enums.Part;
+import com.umc.networkingService.global.common.enums.Semester;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class BoardResponse {
+    @Getter
+    @Builder
+    public static class BoardDetail {
+        private HostType hostType;
+        private BoardType boardType;
+        private String writer;
+        private String profileImage;
+        private Part part;
+        private Semester semester;
+        private String title;
+        private String content;
+        private List<String> boardFiles;
+        private int hitCount;
+        private int heartCount;
+        private int commentCount;
+        private boolean isLiked;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class BoardId {
+        private UUID boardId;
+    }
+
+    @Getter
+    @SuperBuilder
+    public static class BoardPageElement {
+        private UUID boardId;
+        private String writer;
+        private String profileImage;
+        private String title;
+        private String content;
+        private String thumbnail;
+        private int hitCount;
+        private int heartCount;
+        private int commentCount;
+        private LocalDateTime createdAt;
+        private boolean isFixed;
+    }
+
+    @Getter
+    @SuperBuilder
+    public static class BoardSearchPageElement extends BoardPageElement {
+        private HostType hostType;
+        private BoardType boardType;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class BoardPageInfos {
+        private List<BoardPageElement> boardPageElements = new ArrayList<>();
+        private int page;
+        private int totalPages;
+        private int totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class BoardSearchPageInfos {
+        private List<BoardSearchPageElement> boardSearchPageElements = new ArrayList<>();
+        private int page;
+        private int totalPages;
+        private int totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class NoticePageInfos {
+        private List<NoticePageElement> noticePageElements = new ArrayList<>();
+        private int page;
+        private int totalPages;
+        private int totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
+
+    @Getter
+    @Builder
+    public static class NoticePageElement {
+        private UUID boardId;
+        private HostType hostType;
+        private String writer;
+        private String title;
+        private int hitCount;
+        private boolean isFixed;
+        private LocalDateTime createdAt;
+    }
+
+
+
+}

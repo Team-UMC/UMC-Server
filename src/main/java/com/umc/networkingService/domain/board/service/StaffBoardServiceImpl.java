@@ -1,15 +1,13 @@
 package com.umc.networkingService.domain.board.service;
 
-import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardRepository;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
-import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,7 +24,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
     private final BoardMapper boardMapper;
 
     @Override
-    public BoardNoticePagingResponse showNotices(Member member, HostType hostType, String keyword, Pageable pageable) {
+    public BoardResponse.NoticePageInfos showNotices(Member member, HostType hostType, String keyword, Pageable pageable) {
 
         checkPermissionForNoticeBoard(member,hostType);
 
@@ -44,7 +42,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
     @Override
     @Transactional
-    public BoardIdResponse toggleNoticePin(Member member, UUID boardId, boolean isPinned) {
+    public BoardResponse.BoardId toggleNoticePin(Member member, UUID boardId, boolean isPinned) {
 
         Board board = boardService.loadEntity(boardId);
         HostType hostType = board.getHostType();
@@ -53,7 +51,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
         board.setIsFixed(isPinned);
 
-        return new BoardIdResponse(board.getId());
+        return new BoardResponse.BoardId(board.getId());
     }
 
     public void checkPermissionForNoticeBoard(Member member, HostType hostType) {

@@ -38,7 +38,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         switch (hostType) {
             case CAMPUS -> predicate.and(CampusPermission(member))
-                    .and(board.semesterPermission.any().in(memberSemesters));
+                    .and(board.semesterPermission.any().in(memberSemesters)); //semester 권한 check
             case BRANCH -> predicate.and(BranchPermission(member));
             case CENTER -> predicate.and(CenterPermission());
         }
@@ -82,14 +82,14 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     public Page<BoardComment> findAllBoardComments(Member member, Board board, Pageable pageable) {
 
         List<BoardComment> boardComments = query.selectFrom(boardComment)
-                .where(boardComment.board.eq(board))
+                .where(boardComment.board.id.eq(board.getId()))
                 .orderBy(boardComment.createdAt.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         return new PageImpl<>(boardComments, pageable, query.selectFrom(boardComment)
-                .where(boardComment.board.eq(board))
+                .where(boardComment.board.id.eq(board.getId()))
                 .fetch().size());
     }
 
@@ -100,7 +100,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     @Override
     public Page<Board> findBoardsByWriterForApp(Member member, String keyword, Pageable pageable) {
         BooleanBuilder predicate = new BooleanBuilder()
-                .and(board.writer.eq(member));
+                .and(board.writer.id.eq(member.getId()));
 
         addKeywordSearchCondition(predicate, keyword);
 
@@ -125,7 +125,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     public Page<Board> findBoardsByWriterForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
 
         BooleanBuilder predicate = addHostTypeAndBoardTypeCondition(member, hostType, boardType)
-                .and(board.writer.eq(member));
+                .and(board.writer.id.eq(member.getId()));
 
         addKeywordSearchCondition(predicate, keyword);
 
@@ -150,7 +150,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     public Page<Board> findBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
 
         BooleanBuilder predicate = new BooleanBuilder()
-                .and(boardComment.writer.eq(member));
+                .and(boardComment.writer.id.eq(member.getId()));
 
         addKeywordSearchCondition(predicate, keyword);
 
@@ -178,7 +178,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                                                               String keyword, Pageable pageable) {
 
         BooleanBuilder predicate = addHostTypeAndBoardTypeCondition(member, hostType, boardType)
-                .and(boardComment.writer.eq(member));
+                .and(boardComment.writer.id.eq(member.getId()));
 
         addKeywordSearchCondition(predicate, keyword);
 
@@ -203,7 +203,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     public Page<Board> findBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
 
         BooleanBuilder predicate = new BooleanBuilder()
-                .and(boardHeart.member.eq(member))
+                .and(boardHeart.member.id.eq(member.getId()))
                 .and(boardHeart.isChecked.isTrue());
 
         addKeywordSearchCondition(predicate, keyword);
