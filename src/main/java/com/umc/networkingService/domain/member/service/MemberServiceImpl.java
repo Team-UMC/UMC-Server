@@ -54,10 +54,10 @@ public class MemberServiceImpl implements MemberService{
         Member member = loadEntity(loginMember.getId());
 
         // 사진이 존재한다면 업로드 후 url 저장
-        String profileUrl = uploadProfileImage(profileImage);
+        String profileUrl = uploadProfileImage(member, profileImage);
         member.updateMemberInfo(request, profileUrl);
 
-        return new MemberIdResponse(memberRepository.save(loginMember).getId());
+        return new MemberIdResponse(member.getId());
     }
 
     // 프로필 수정 함수(운영진용)
@@ -74,7 +74,7 @@ public class MemberServiceImpl implements MemberService{
         // 직책 및 기수별 파트 정보 수정
         updatePositionAndSemesterPart(updateMember, request);
 
-        return new MemberIdResponse(memberRepository.save(updateMember).getId());
+        return new MemberIdResponse(updateMember.getId());
     }
 
     // 포인트 관련 정보 조회
@@ -155,11 +155,13 @@ public class MemberServiceImpl implements MemberService{
         loginMember.updateLastActiveTime(LocalDateTime.now());
     }
 
-    private String uploadProfileImage(MultipartFile profileImage) {
+    private String uploadProfileImage(Member member, MultipartFile profileImage) {
         if (profileImage != null) {
+            // 기존 프로필 이미지 삭제
+            s3FileComponent.deleteFile(member.getProfileImage());
             return s3FileComponent.uploadFile("member", profileImage);
         }
-        return null;
+        return member.getProfileImage();
     }
 
     private void checkUpdateAuthority(Member member, Member updateMember, List<String> centerPositions) {
