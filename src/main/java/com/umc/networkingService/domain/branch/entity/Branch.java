@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.branch.entity;
 
+import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
@@ -35,4 +36,10 @@ public class Branch extends BaseEntity {
     @Column(nullable = false)
     private Semester semester;
 
+    public void updateBranch(BranchRequest.BranchInfoDTO dto, String image) {
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.semester = dto.getSemester();
+        this.image = image;
+    }
 }

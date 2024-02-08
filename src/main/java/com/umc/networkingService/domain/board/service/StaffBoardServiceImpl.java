@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.board.service;
 
-import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
@@ -25,7 +24,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
     private final BoardMapper boardMapper;
 
     @Override
-    public BoardNoticePagingResponse showNotices(Member member, HostType hostType, String keyword, Pageable pageable) {
+    public BoardResponse.NoticePageInfos showNotices(Member member, HostType hostType, String keyword, Pageable pageable) {
 
         checkPermissionForNoticeBoard(member,hostType);
 
@@ -43,7 +42,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
     @Override
     @Transactional
-    public BoardIdResponse toggleNoticePin(Member member, UUID boardId, boolean isPinned) {
+    public BoardResponse.BoardId toggleNoticePin(Member member, UUID boardId, boolean isPinned) {
 
         Board board = boardService.loadEntity(boardId);
         HostType hostType = board.getHostType();
@@ -52,7 +51,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
         board.setIsFixed(isPinned);
 
-        return new BoardIdResponse(board.getId());
+        return new BoardResponse.BoardId(board.getId());
     }
 
     public void checkPermissionForNoticeBoard(Member member, HostType hostType) {
