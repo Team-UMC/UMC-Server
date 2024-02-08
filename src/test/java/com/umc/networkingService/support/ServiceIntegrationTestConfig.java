@@ -145,4 +145,25 @@ public abstract class ServiceIntegrationTestConfig {
                         .build()
         );
     }
+
+    //새로운 브랜치 생성용
+    protected Branch createBranch( String name ) {
+        return branchRepository.save(
+                Branch.builder()
+                        .name(name)
+                        .semester(Semester.FIFTH)
+                        .build()
+        );
+    }
+
+    //새로운 대학 생성용
+    protected University createUniversity( String name ) {
+        return universityRepository.save(
+                University.builder()
+                        .name(name)
+                        .totalPoint(0L)
+                        .mascot(mascot)
+                        .build()
+        );
+    }
 }
