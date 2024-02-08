@@ -30,11 +30,17 @@ public class AppleMemberClient {
                 .build();
     }
 
-    public String getappleClientID(final String accessToken) throws UnsupportedEncodingException, InvalidKeySpecException, NoSuchAlgorithmException, JsonProcessingException {
+    public String getappleClientID(final String accessToken) {
         Claims claims = getClaimsBy(accessToken);
         validateClaims(claims);
         // "sub" 클레임에서 Apple의 고유 계정 ID를 추출
-        return claims.getSubject();
+        System.out.println("애플 아이디 : "+claims.getSubject());
+
+        //claims.getSubject() "."을 단위로 나누기
+        String[] subject = claims.getSubject().split("\\.");
+        System.out.println("애플 아이디 : "+subject[0]);
+
+        return subject[0];
     }
 
     /*
@@ -47,27 +53,33 @@ public class AppleMemberClient {
     * */
 
     //1. Apple의 공개키를 사용하여 identityToken을 검증
-    public Claims getClaimsBy(String identityToken) throws InvalidKeySpecException, NoSuchAlgorithmException, UnsupportedEncodingException, JsonProcessingException {
 
-        ApplePublicKeyResponse response = getAppleAuthPublicKey(); //공개키 가져오기
+    //InvalidKeySpecException, NoSuchAlgorithmException, UnsupportedEncodingException, JsonProcessingException
+    public Claims getClaimsBy(String identityToken) {
 
-        //공개 키를 사용하여 identityToken을 검증
-        String headerOfIdentityToken = identityToken.substring(0, identityToken.indexOf("."));
-        Map<String, String> header = new ObjectMapper().readValue(new String(Base64.getDecoder().decode(headerOfIdentityToken), "UTF-8"), Map.class);
-        ApplePublicKeyResponse.Key key = response.getMatchedKeyBy(header.get("kid"), header.get("alg"))
-                .orElseThrow(() -> new RestApiException(AuthErrorCode.FAILED_GET_APPLE_KEY)); //공개키를 가져오는데 실패
+        try {
+            ApplePublicKeyResponse response = getAppleAuthPublicKey(); //공개키 가져오기
 
-        byte[] nBytes = Base64.getUrlDecoder().decode(key.getN());
-        byte[] eBytes = Base64.getUrlDecoder().decode(key.getE());
+            //공개 키를 사용하여 identityToken을 검증
+            String headerOfIdentityToken = identityToken.substring(0, identityToken.indexOf("."));
+            Map<String, String> header = new ObjectMapper().readValue(new String(Base64.getDecoder().decode(headerOfIdentityToken), "UTF-8"), Map.class);
+            ApplePublicKeyResponse.Key key = response.getMatchedKeyBy(header.get("kid"), header.get("alg"))
+                    .orElseThrow(() -> new RestApiException(AuthErrorCode.FAILED_GET_APPLE_KEY)); //공개키를 가져오는데 실패
 
-        BigInteger n = new BigInteger(1, nBytes);
-        BigInteger e = new BigInteger(1, eBytes);
+            byte[] nBytes = Base64.getUrlDecoder().decode(key.getN());
+            byte[] eBytes = Base64.getUrlDecoder().decode(key.getE());
 
-        RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(n, e);
-        KeyFactory keyFactory = KeyFactory.getInstance(key.getKty());
-        PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+            BigInteger n = new BigInteger(1, nBytes);
+            BigInteger e = new BigInteger(1, eBytes);
 
-        return Jwts.parser().setSigningKey(publicKey).parseClaimsJws(identityToken).getBody();
+            RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(n, e);
+            KeyFactory keyFactory = KeyFactory.getInstance(key.getKty());
+            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+
+            return Jwts.parser().setSigningKey(publicKey).parseClaimsJws(identityToken).getBody();
+        }catch (InvalidKeySpecException | NoSuchAlgorithmException | UnsupportedEncodingException | JsonProcessingException e) {
+            throw new RestApiException(AuthErrorCode.FAILED_GET_APPLE_KEY);
+        }
     }
 
     public ApplePublicKeyResponse getAppleAuthPublicKey() { //Apple의 공개키를 가져오기
@@ -87,11 +99,11 @@ public class AppleMemberClient {
             throw new RestApiException(AuthErrorCode.FAILED_SOCIAL_LOGIN);
         }
 
-        if (!claims.getIssuer().equals("https://appleid.apple.com"))
+        if (!claims.getIssuer().contains("https://appleid.apple.com"))
             throw new RestApiException(AuthErrorCode.INVALID_APPLE_ID_TOKEN);
 
-        if (!claims.getAudience().equals("com.networkingService.umc"))
-            throw new RestApiException(AuthErrorCode.INVALID_APPLE_ID_TOKEN);
+        //if (!claims.getAudience().contains("com.networkingService.umc"))
+        //    throw new RestApiException(AuthErrorCode.INVALID_APPLE_ID_TOKEN);
 
         if (claims.getExpiration().before(new java.util.Date()))
             throw new RestApiException(AuthErrorCode.INVALID_APPLE_ID_TOKEN);
