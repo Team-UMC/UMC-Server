@@ -1,14 +1,15 @@
 package com.umc.networkingService.domain.todayILearned.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedUpdate;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedMapper;
 import com.umc.networkingService.domain.todayILearned.repository.TodayILearnedRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.TodayILearnedErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.rmi.server.UID;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +33,13 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     private final TodayILearnedRepository todayILearnedRepository;
     private final TodayILearnedMapper todayILearnedMapper;
 
+    private final MemberService memberService;
+
     @Override
-    public TodayILearnedId createTodayILearned(Member member, List<MultipartFile> files, TodayILearnedCreate request) {
+    @Transactional
+    public TodayILearnedResponse.TodayILearnedCreate createTodayILearned(Member loginMember, List<MultipartFile> files, TodayILearnedCreate request) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
 
         TodayILearned todayILearned = todayILearnedRepository.save(todayILearnedMapper.toTodayILearned(member, request));
 
@@ -42,7 +48,10 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
             todayILearnedFileService.uploadTodayILearnedFiles(todayILearned, files);
         }
 
-        return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
+        return new TodayILearnedResponse.TodayILearnedCreate(
+                todayILearned.getId(),
+                validatePointAcquired(todayILearned, member)
+        );
     }
 
     @Override
@@ -88,9 +97,30 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
             throw new RestApiException(TodayILearnedErrorCode.NO_PERMISSION_EMPTY_TODAYILERARNED_MEMBER);
     }
 
+    // 포인트 획득 가능 여부 확인 함수
+    private boolean validatePointAcquired(TodayILearned todayILearned, Member member) {
+        List<TodayILearned> todayILearneds = todayILearnedRepository.findAllByWriterAndCreatedAtBetween(member,
+                LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN),
+                LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MAX)
+        );
+
+        todayILearneds.sort(Comparator.comparing(TodayILearned::getCreatedAt));
+
+        int index = todayILearneds.indexOf(todayILearned);
+
+        if (index == -1) throw new RestApiException(TodayILearnedErrorCode.EMPTY_TODAYILERARNED);
+
+        if (index < 2) {
+            member.addRemainPoint(1L);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public TodayILearned loadEntity(UUID todayILearnedId) {
         return todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(
                 TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
     }
+
 }

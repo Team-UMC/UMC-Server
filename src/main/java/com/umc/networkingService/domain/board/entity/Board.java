@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.board.entity;
 
-import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -61,7 +61,7 @@ public class Board extends BaseEntity {
 
     private boolean isFixed;
 
-    public void update(BoardUpdateRequest request, List<Semester> semesters) {
+    public void update(BoardRequest.BoardUpdateRequest request, List<Semester> semesters) {
         this.hostType = HostType.valueOf(request.getHostType());
         this.boardType = BoardType.valueOf(request.getBoardType());
         this.title = request.getTitle();

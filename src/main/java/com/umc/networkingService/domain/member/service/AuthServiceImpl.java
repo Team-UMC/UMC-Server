@@ -18,9 +18,9 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
 import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
-import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,6 +139,7 @@ public class AuthServiceImpl implements AuthService {
     private MemberLoginResponse loginByApple(final String accessToken){
         // apple 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = appleMemberClient.getappleClientID(accessToken);
+
         //존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.APPLE);
 

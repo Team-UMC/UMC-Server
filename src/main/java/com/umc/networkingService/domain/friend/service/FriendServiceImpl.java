@@ -9,13 +9,13 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.PositionType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.service.MemberService;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.FriendErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,6 +46,7 @@ public class FriendServiceImpl implements FriendService {
 
     // 친구 삭제 함수
     @Override
+    @Transactional
     public FriendIdResponse deleteFriend(Member member, UUID memberId) {
         Member loginMember = memberService.loadEntity(member.getId());
 

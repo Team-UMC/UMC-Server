@@ -4,6 +4,7 @@ import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedUpdate;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
 import com.umc.networkingService.domain.todayILearned.service.TodayILearnedService;
@@ -19,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,15 +31,15 @@ public class TodayILearnedController {
 
     private final TodayILearnedService todayILearnedService;
 
-    // POST
+
     @Operation(summary = "Today I Learned 추가", description = "TIL을 추가하는 API입니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공")
     })
-    public BaseResponse<TodayILearnedId> createTodayILearned(@CurrentMember Member member,
-                                                             @RequestPart(value = "file", required = false) List<MultipartFile> files,
-                                                             @RequestPart("request") TodayILearnedCreate request) {
+    public BaseResponse<TodayILearnedResponse.TodayILearnedCreate> createTodayILearned(@CurrentMember Member member,
+                                                                                       @RequestPart(value = "file", required = false) List<MultipartFile> files,
+                                                                                       @RequestPart("request") TodayILearnedCreate request) {
 
         return BaseResponse.onSuccess(todayILearnedService.createTodayILearned(member, files, request));
     }
@@ -72,7 +72,7 @@ public class TodayILearnedController {
         return BaseResponse.onSuccess(todayILearnedService.getTodayILearnedInfos(member, date));
     }
 
-    // DELETE
+
     @Operation(summary = "Today I Learned 삭제", description = "TIL을 삭제하는 API입니다.")
     @DeleteMapping("/{todayILearnedId}")
     @ApiResponses(value = {
