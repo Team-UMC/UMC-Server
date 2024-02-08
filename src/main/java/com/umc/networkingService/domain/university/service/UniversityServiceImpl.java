@@ -2,14 +2,13 @@ package com.umc.networkingService.domain.university.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
-import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.domain.mascot.service.MascotService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPoint;
 import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.member.service.MemberPointService;
 import com.umc.networkingService.domain.member.service.MemberService;
-import com.umc.networkingService.domain.university.converter.UniversityConverter;
+import com.umc.networkingService.domain.university.mapper.UniversityMapper;
 import com.umc.networkingService.domain.university.dto.request.UniversityRequest;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.entity.University;
@@ -50,7 +49,7 @@ public class UniversityServiceImpl implements UniversityService {
 
         List<University> universityList = universityRepository.findAllByOrderByNameAsc(); //이름 순 정렬
         return UniversityResponse.JoinUniversities.builder()
-                .joinUniversities(UniversityConverter.toJoinUniversityList(universityList))
+                .joinUniversities(UniversityMapper.toJoinUniversityList(universityList))
                 .build();
     }
 
@@ -59,7 +58,7 @@ public class UniversityServiceImpl implements UniversityService {
         Member memberEntity = memberService.findByMemberId(member.getId());
 
         UniversityResponse.joinUniversityDetail universityDetail
-                = UniversityConverter.toJoinUniversityDetail(
+                = UniversityMapper.toJoinUniversityDetail(
                 memberEntity.getUniversity()
         );
 
@@ -69,7 +68,7 @@ public class UniversityServiceImpl implements UniversityService {
                 universityDetail
                 , handleTiedUniversityRanks( //우리 학교 순위
                         UniversityResponse.JoinUniversityRanks.builder()
-                                .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
+                                .joinUniversityRanks(UniversityMapper.toJoinUniversityRankList(universityRankList))
                                 .build()
                         ,memberEntity.getUniversity()
                 )
@@ -82,7 +81,7 @@ public class UniversityServiceImpl implements UniversityService {
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc();
 
         return handleTiedUniversityRanks(UniversityResponse.JoinUniversityRanks.builder()
-                .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
+                .joinUniversityRanks(UniversityMapper.toJoinUniversityRankList(universityRankList))
                 .build());
     }
 
@@ -92,7 +91,7 @@ public class UniversityServiceImpl implements UniversityService {
         List<Member> contributionRankList = memberService.findContributionRankings(memberEntity);
         UniversityResponse.JoinContributionRanks joinContributionRanks = UniversityResponse.JoinContributionRanks.builder()
                 .joinContributionRanks(
-                        UniversityConverter.toJoinContributionRankList(contributionRankList)
+                        UniversityMapper.toJoinContributionRankList(contributionRankList)
                 ).build();
 
         return handleTiedContributionRanks(joinContributionRanks);
@@ -103,7 +102,7 @@ public class UniversityServiceImpl implements UniversityService {
         Member memberEntity = memberService.findByMemberId(member.getId());
 
         UniversityResponse.joinUniversityMascot universityMascot
-                = UniversityConverter.toJoinUniversityMascot(
+                = UniversityMapper.toJoinUniversityMascot(
                 memberEntity.getUniversity()
                 ,memberEntity.getUniversity().getMascot()
         );
@@ -114,7 +113,7 @@ public class UniversityServiceImpl implements UniversityService {
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
         UniversityResponse.JoinUniversityRanks joinUniversityRanks = UniversityResponse.JoinUniversityRanks.builder()
-                .joinUniversityRanks(UniversityConverter.toJoinUniversityRankList(universityRankList))
+                .joinUniversityRanks(UniversityMapper.toJoinUniversityRankList(universityRankList))
                 .build();
 
         return UniversityResponse.joinUniversityMascot.setRankAndBranch(

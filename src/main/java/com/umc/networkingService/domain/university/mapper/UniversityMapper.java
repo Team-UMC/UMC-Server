@@ -1,4 +1,4 @@
-package com.umc.networkingService.domain.university.converter;
+package com.umc.networkingService.domain.university.mapper;
 
 import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -8,7 +8,7 @@ import com.umc.networkingService.domain.university.entity.University;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UniversityConverter {
+public class UniversityMapper {
 
     // 대학교 리스트 조회
     public static List<UniversityResponse.JoinUniversity> toJoinUniversityList(
