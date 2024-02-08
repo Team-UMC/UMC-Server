@@ -44,11 +44,11 @@ public class StaffUniversityController {
     }
 
     @Operation(summary = "학교 삭제하기 API",description = "학교 삭제하기 API")
-    @DeleteMapping("")
+    @DeleteMapping("/{universityId}")
     public BaseResponse<UniversityResponse.UniversityId>
     deleteUniversity(
             @CurrentMember Member member,
-            @RequestBody @Valid UUID universityId
+            @PathVariable @Valid UUID universityId
     ){
         return BaseResponse.onSuccess(universityService.deleteUniversity(universityId));
     }
