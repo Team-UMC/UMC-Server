@@ -158,7 +158,8 @@ public class MemberServiceImpl implements MemberService{
     private String uploadProfileImage(Member member, MultipartFile profileImage) {
         if (profileImage != null) {
             // 기존 프로필 이미지 삭제
-            s3FileComponent.deleteFile(member.getProfileImage());
+            if (member.getProfileImage() != null)
+                s3FileComponent.deleteFile(member.getProfileImage());
             return s3FileComponent.uploadFile("member", profileImage);
         }
         return member.getProfileImage();
