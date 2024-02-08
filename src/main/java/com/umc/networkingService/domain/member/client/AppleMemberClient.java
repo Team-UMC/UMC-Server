@@ -33,14 +33,8 @@ public class AppleMemberClient {
     public String getappleClientID(final String accessToken) {
         Claims claims = getClaimsBy(accessToken);
         validateClaims(claims);
-        // "sub" 클레임에서 Apple의 고유 계정 ID를 추출
-        System.out.println("애플 아이디 : "+claims.getSubject());
 
-        //claims.getSubject() "."을 단위로 나누기
-        String[] subject = claims.getSubject().split("\\.");
-        System.out.println("애플 아이디 : "+subject[0]+subject[2]);
-
-        return subject[0]+subject[2];
+        return claims.getSubject();
     }
 
     /*
