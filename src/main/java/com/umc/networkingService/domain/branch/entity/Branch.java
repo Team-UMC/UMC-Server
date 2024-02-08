@@ -36,7 +36,7 @@ public class Branch extends BaseEntity {
     @Column(nullable = false)
     private Semester semester;
 
-    public void updateBranch(BranchRequest.PatchBranchDTO dto, String image) {
+    public void updateBranch(BranchRequest.BranchInfoDTO dto, String image) {
         this.name = dto.getName();
         this.description = dto.getDescription();
         this.semester = dto.getSemester();

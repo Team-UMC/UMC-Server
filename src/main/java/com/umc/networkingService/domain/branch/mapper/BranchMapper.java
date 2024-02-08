@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class BranchMapper {
 
     public static Branch toBranch(
-            BranchRequest.PostBranchDTO request
+            BranchRequest.BranchInfoDTO request
             ,String imagePath)
     {
         return Branch.builder()

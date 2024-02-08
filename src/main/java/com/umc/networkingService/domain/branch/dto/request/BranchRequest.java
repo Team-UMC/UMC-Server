@@ -15,23 +15,7 @@ public class BranchRequest {
     @Getter
     @AllArgsConstructor
     @Builder
-    public static class PostBranchDTO{
-        @NotNull
-        private String name; //todo: 글자수 제한 .. 중복 검증도?
-        @NotNull
-        private String description; //todo: 글자수 제한
-        private MultipartFile image;
-        @NotNull
-        private Semester semester;
-
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @Builder
-    public static class PatchBranchDTO{
-        @ExistBranch
-        private UUID branchId;
+    public static class BranchInfoDTO{
         @NotNull
         private String name; //todo: 글자수 제한 .. 중복 검증도?
         @NotNull

@@ -30,19 +30,16 @@ public class BranchServiceImpl implements BranchService {
     private final S3FileComponent s3FileComponent;
 
     private static final String BRANCH_CATEGORY = "branch";
-    private static final Integer PAGE_SIZE = 10;
 
     @Transactional         //지부 생성
-    public BranchResponse.BranchId postBranch(BranchRequest.PostBranchDTO request) {
+    public BranchResponse.BranchId postBranch(BranchRequest.BranchInfoDTO request) {
 
         validateBranchNameAndDescription(request.getName(), request.getDescription());
-        Branch newBranch = BranchMapper
-                .toBranch
-                        (request
-                        ,uploadImageS3(BRANCH_CATEGORY,request.getImage())
-                        );
 
-        Branch savedBranch = branchRepository.save(newBranch);
+        Branch savedBranch = branchRepository.save(
+                BranchMapper.toBranch(request,uploadImageS3(BRANCH_CATEGORY,request.getImage()))
+        );
+
         if (savedBranch.getId() == null) {
             throw new RestApiException(BranchErrorCode.BRANCH_SAVE_FAIL);
         }
@@ -51,9 +48,9 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Transactional          //지부 수정
-    public BranchResponse.BranchId patchBranch(BranchRequest.PatchBranchDTO request) {
+    public BranchResponse.BranchId patchBranch(BranchRequest.BranchInfoDTO request, UUID branchId) {
 
-        Optional<Branch> optionalBranch = branchRepository.findById(request.getBranchId());
+        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
         if(optionalBranch.isEmpty()){
             throw new RestApiException(BranchErrorCode.BRANCH_NOT_FOUND);
         }
@@ -110,7 +107,7 @@ public class BranchServiceImpl implements BranchService {
     }
 
     //s3에 이미지 업로드
-    private String uploadImageS3(String category,MultipartFile image){
+    private String uploadImageS3(String category, MultipartFile image){
         if(image == null || image.isEmpty()){
             return null;
         }

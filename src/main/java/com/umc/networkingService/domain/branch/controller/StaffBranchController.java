@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +44,7 @@ public class StaffBranchController {
     @PostMapping("")
     public BaseResponse<BranchResponse.BranchId> postBranch(
             @CurrentMember Member member,
-            @RequestBody BranchRequest.PostBranchDTO request
+            @RequestBody BranchRequest.BranchInfoDTO request
     ){
         return BaseResponse.onSuccess(branchService.postBranch(request));
     }
@@ -55,12 +56,13 @@ public class StaffBranchController {
             @ApiResponse(responseCode = "BRANCH002", description = "지부 이름이 비어있는 경우"),
             @ApiResponse(responseCode = "BRANCH003", description = "지부 설명이 비어있는 경우")
     })
-    @PatchMapping("")
+    @PatchMapping("/{branchId}")
     public BaseResponse<BranchResponse.BranchId> patchBranch(
             @CurrentMember Member member,
-            @RequestBody BranchRequest.PatchBranchDTO request
+            @PathVariable("branchId") @ExistBranch UUID branchId,
+            @RequestBody BranchRequest.BranchInfoDTO request
     ){
-        return BaseResponse.onSuccess(branchService.patchBranch(request));
+        return BaseResponse.onSuccess(branchService.patchBranch(request, branchId));
     }
 
     @Operation(summary = "지부 삭제 API")
