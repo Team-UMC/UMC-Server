@@ -139,14 +139,18 @@ public class AuthServiceImpl implements AuthService {
     private MemberLoginResponse loginByApple(final String accessToken){
         // apple 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = appleMemberClient.getappleClientID(accessToken);
+        System.out.println("애플 아이디 : "+ clientId);
+
         //존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.APPLE);
 
         //1. 없으면 : Member 객체 생성하고 DB 저장
         if(getMember.isEmpty()){
+            System.out.println("멤버 없음");
             return saveNewMember(clientId, SocialType.APPLE);
         }
         // 2. 있으면 : 새로운 토큰 반환
+        System.out.println("멤버 있음");
         boolean isServiceMember = getMember.get().getName() != null;
         return getNewToken(getMember.get(), isServiceMember);
     }
@@ -199,6 +203,7 @@ public class AuthServiceImpl implements AuthService {
 
     private MemberLoginResponse saveNewMember(String clientId, SocialType socialType) {
         Member member = memberMapper.toMember(clientId, socialType);
+        System.out.println("저장할 멤버: "+member.getSocialType()+member.getClientId());
         Member newMember =  memberRepository.save(member);
 
         return getNewToken(newMember, false);

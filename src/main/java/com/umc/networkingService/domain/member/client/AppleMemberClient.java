@@ -38,9 +38,9 @@ public class AppleMemberClient {
 
         //claims.getSubject() "."을 단위로 나누기
         String[] subject = claims.getSubject().split("\\.");
-        System.out.println("애플 아이디 : "+subject[0]);
+        System.out.println("애플 아이디 : "+subject[0]+subject[2]);
 
-        return subject[0];
+        return subject[0]+subject[2];
     }
 
     /*
