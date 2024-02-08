@@ -1,8 +1,7 @@
 package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
@@ -40,7 +39,7 @@ public class BoardCommentController {
     })
     @PostMapping
     public BaseResponse<BoardCommentResponse.BoardCommentId> addBoardComment(@CurrentMember Member member,
-                                                                             @Valid @RequestBody BoardCommentAddRequest request) {
+                                                                             @Valid @RequestBody BoardCommentRequest.BoardCommentAddRequest request) {
         return BaseResponse.onSuccess(boardCommentService.addBoardComment(member, request));
     }
 
@@ -54,7 +53,7 @@ public class BoardCommentController {
     @PatchMapping("/{commentId}")
     public BaseResponse<BoardCommentResponse.BoardCommentId> updateBoardComment(@CurrentMember Member member,
                                                                                 @PathVariable(value = "commentId") UUID commentId,
-                                                                                @Valid @RequestBody BoardCommentUpdateRequest request) {
+                                                                                @Valid @RequestBody BoardCommentRequest.BoardCommentUpdateRequest request) {
         return BaseResponse.onSuccess(boardCommentService.updateBoardComment(member, commentId, request));
     }
 

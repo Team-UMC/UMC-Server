@@ -1,8 +1,7 @@
 package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
-import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
@@ -49,7 +48,7 @@ public class BoardController {
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<BoardResponse.BoardId> createBoard(@CurrentMember Member member,
-                                                           @Valid @RequestPart("request") BoardCreateRequest request,
+                                                           @Valid @RequestPart("request") BoardRequest.BoardCreateRequest request,
                                                            @RequestPart(name = "file", required = false) List<MultipartFile> files) {
         return BaseResponse.onSuccess(boardService.createBoard(member, request, files));
     }
@@ -70,7 +69,7 @@ public class BoardController {
     @PatchMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<BoardResponse.BoardId> updateBoard(@CurrentMember Member member,
                                                            @PathVariable(value = "boardId") UUID boardId,
-                                                           @Valid @RequestPart("request") BoardUpdateRequest request,
+                                                           @Valid @RequestPart("request") BoardRequest.BoardUpdateRequest request,
                                                            @RequestPart(name = "file", required = false) List<MultipartFile> files) {
 
         return BaseResponse.onSuccess(boardService.updateBoard(member, boardId, request, files));

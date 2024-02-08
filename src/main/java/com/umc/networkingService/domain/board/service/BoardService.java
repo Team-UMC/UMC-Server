@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.board.service;
 
-import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
@@ -16,9 +15,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BoardService extends EntityLoader<Board, UUID> {
-    BoardResponse.BoardId createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files);
+    BoardResponse.BoardId createBoard(Member member, BoardRequest.BoardCreateRequest request, List<MultipartFile> files);
 
-    BoardResponse.BoardId updateBoard(Member member, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files);
+    BoardResponse.BoardId updateBoard(Member member, UUID boardId, BoardRequest.BoardUpdateRequest request, List<MultipartFile> files);
 
     BoardResponse.BoardId deleteBoard(Member member, UUID boardId);
 

@@ -1,11 +1,10 @@
 package com.umc.networkingService.domain.board.controller;
 
-import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
+import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -41,7 +40,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("게시글 생성 API 테스트")
     public void createBoardTest() throws Exception {
         //given
-        BoardCreateRequest boardCreateRequest = BoardCreateRequest.builder()
+        BoardRequest.BoardCreateRequest boardCreateRequest = BoardRequest.BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
                 .boardType(BoardType.FREE.toString())
@@ -54,7 +53,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         MockMultipartFile file2 = new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes());
         MockMultipartFile request = new MockMultipartFile("request", "request", "application/json", objectMapper.writeValueAsString(boardCreateRequest).getBytes(StandardCharsets.UTF_8));
         //when
-        when(boardService.createBoard(eq(member), any(BoardCreateRequest.class), anyList())).thenReturn(response);
+        when(boardService.createBoard(eq(member), any(BoardRequest.BoardCreateRequest.class), anyList())).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         //then
@@ -76,7 +75,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("게시글 수정 API 테스트")
     public void updateBoardTest() throws Exception {
         //given
-        BoardUpdateRequest boardUpdateRequest = BoardUpdateRequest.builder()
+        BoardRequest.BoardUpdateRequest boardUpdateRequest = BoardRequest.BoardUpdateRequest.builder()
                 .title("제목")
                 .content("내용")
                 .boardType(BoardType.FREE.toString())
@@ -90,7 +89,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 objectMapper.writeValueAsString(boardUpdateRequest).getBytes(StandardCharsets.UTF_8));
 
         //when
-        when(boardService.updateBoard(eq(member), eq(board.getId()), any(BoardUpdateRequest.class), anyList())).thenReturn(response);
+        when(boardService.updateBoard(eq(member), eq(board.getId()), any(BoardRequest.BoardUpdateRequest.class), anyList())).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         //then
@@ -232,7 +231,8 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("댓글 작성 성공 테스트")
     public void addBoardCommentTest() throws Exception {
         //given
-        BoardCommentAddRequest boardCommentAddRequest = BoardCommentAddRequest.builder()
+        BoardCommentRequest.BoardCommentAddRequest boardCommentAddRequest =
+                BoardCommentRequest.BoardCommentAddRequest.builder()
                 .content("내용")
                 .boardId(board.getId())
                 .build();
@@ -241,7 +241,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardCommentResponse.BoardCommentId response = new BoardCommentResponse.BoardCommentId(board.getId());
 
         //when
-        when(boardCommentService.addBoardComment(eq(member), any(BoardCommentAddRequest.class))).thenReturn(response);
+        when(boardCommentService.addBoardComment(eq(member), any(BoardCommentRequest.BoardCommentAddRequest.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         //then
@@ -262,7 +262,8 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("댓글 수정 성공 테스트")
     public void updateBoardCommentTest() throws Exception {
         //given
-        BoardCommentUpdateRequest boardCommentUpdateRequest = BoardCommentUpdateRequest.builder()
+        BoardCommentRequest.BoardCommentUpdateRequest boardCommentUpdateRequest =
+                BoardCommentRequest.BoardCommentUpdateRequest .builder()
                 .content("수정")
                 .build();
 
@@ -270,7 +271,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardCommentResponse.BoardCommentId response = new BoardCommentResponse.BoardCommentId(comment.getId());
 
         //when
-        when(boardCommentService.updateBoardComment(eq(member), eq(comment.getId()), any(BoardCommentUpdateRequest.class))).thenReturn(response);
+        when(boardCommentService.updateBoardComment(eq(member), eq(comment.getId()), any(BoardCommentRequest.BoardCommentUpdateRequest.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         //then
@@ -308,12 +309,11 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 .andExpect(jsonPath("$.result").exists());
     }
 
-/*
     @Test
     @DisplayName("App용 특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
     public void showMemberBoardsTestForApp() throws Exception {
         // given
-        MyBoardResponse.BoardPageInfos response = createMockMyBoardResponse.BoardPageInfos();
+        MyBoardResponse.MyBoardPageInfos response = createMockMyBoardResponse();
 
         // when
         when(boardService.showBoardsByMemberForApp(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
@@ -337,7 +337,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("WEB용 특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
     public void showMemberBoardsTestForWeb() throws Exception {
         // given
-        MyBoardResponse.BoardPageInfos response = createMockMyBoardResponse.BoardPageInfos();
+        MyBoardResponse.MyBoardPageInfos response = createMockMyBoardResponse();
 
         // when
         when(boardService.showBoardsByMemberForWeb(eq(member), any(HostType.class), any(BoardType.class), any(String.class), any(Pageable.class))).thenReturn(response);
@@ -357,7 +357,6 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result").exists());
     }
-*/
 
 
 

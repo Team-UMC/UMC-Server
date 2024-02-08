@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.board.mapper;
 
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class BoardCommentMapper {
-    public BoardComment toEntity(Member member, Board board, BoardCommentAddRequest request) {
+    public BoardComment toEntity(Member member, Board board, BoardCommentRequest.BoardCommentAddRequest request) {
         return BoardComment.builder()
                 .writer(member)
                 .content(request.getContent())

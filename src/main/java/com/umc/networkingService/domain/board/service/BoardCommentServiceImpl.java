@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.board.service;
 
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
@@ -33,7 +32,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId addBoardComment(Member member, BoardCommentAddRequest request) {
+    public BoardCommentResponse.BoardCommentId addBoardComment(Member member, BoardCommentRequest.BoardCommentAddRequest request) {
         Board board = boardService.loadEntity(request.getBoardId());
 
         BoardComment comment = boardCommentRepository.save(
@@ -46,7 +45,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     @Override
     @Transactional
     public BoardCommentResponse.BoardCommentId updateBoardComment(Member member, UUID commentId,
-                                                     BoardCommentUpdateRequest request) {
+                                                     BoardCommentRequest.BoardCommentUpdateRequest request) {
         BoardComment comment = loadEntity(commentId);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음

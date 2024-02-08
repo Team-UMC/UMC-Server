@@ -1,8 +1,7 @@
 package com.umc.networkingService.domain.board.service;
 
 
-import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.*;
@@ -126,7 +125,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardResponse.BoardId createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {
+    public BoardResponse.BoardId createBoard(Member member, BoardRequest.BoardCreateRequest request, List<MultipartFile> files) {
         //연합, 지부, 학교 타입
         HostType hostType = HostType.valueOf(request.getHostType());
         BoardType boardType = BoardType.valueOf(request.getBoardType());
@@ -147,7 +146,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardResponse.BoardId updateBoard(Member member, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files) {
+    public BoardResponse.BoardId updateBoard(Member member, UUID boardId, BoardRequest.BoardUpdateRequest request, List<MultipartFile> files) {
         Board board = loadEntity(boardId);
 
         //연합, 지부, 학교 타입

@@ -1,10 +1,8 @@
 package com.umc.networkingService.domain.board.service;
 
 
-import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.request.BoardUpdateRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
@@ -43,7 +41,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void createBoardTest() {
         //given
-        BoardCreateRequest request = BoardCreateRequest.builder()
+        BoardRequest.BoardCreateRequest request = BoardRequest.BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
                 .boardType("FREE")
@@ -76,7 +74,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void createBoardNotice() {
         //given
-        BoardCreateRequest request = BoardCreateRequest.builder()
+        BoardRequest.BoardCreateRequest request = BoardRequest.BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
                 .boardType("NOTICE")
@@ -102,7 +100,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void createBoardOB() {
         //given
-        BoardCreateRequest request = BoardCreateRequest.builder()
+        BoardRequest.BoardCreateRequest request = BoardRequest.BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
                 .boardType("OB")
@@ -128,7 +126,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void createBoardWorkbook() {
         //given
-        BoardCreateRequest request = BoardCreateRequest.builder()
+        BoardRequest.BoardCreateRequest request = BoardRequest.BoardCreateRequest.builder()
                 .title("제목")
                 .content("내용")
                 .boardType("WORKBOOK")
@@ -168,7 +166,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void updateBoardTest() {
         //given
-        BoardUpdateRequest request = BoardUpdateRequest.builder()
+        BoardRequest.BoardUpdateRequest request = BoardRequest.BoardUpdateRequest.builder()
                 .title("수정제목")
                 .content("수정내용")
                 .boardType("QUESTION")
@@ -336,7 +334,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void addBoardCommentTest() {
         //given
-        BoardCommentAddRequest request = BoardCommentAddRequest.builder()
+        BoardCommentRequest.BoardCommentAddRequest request = BoardCommentRequest.BoardCommentAddRequest.builder()
                 .content("내용")
                 .boardId(board.getId())
                 .build();
@@ -358,7 +356,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void updateBoardCommentTest() {
         //given
-        BoardCommentUpdateRequest request = BoardCommentUpdateRequest.builder()
+        BoardCommentRequest.BoardCommentUpdateRequest request = BoardCommentRequest.BoardCommentUpdateRequest.builder()
                 .content("수정")
                 .build();
 

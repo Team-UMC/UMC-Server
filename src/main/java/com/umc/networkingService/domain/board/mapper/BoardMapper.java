@@ -1,6 +1,6 @@
 package com.umc.networkingService.domain.board.mapper;
 
-import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
@@ -20,7 +20,7 @@ import java.util.List;
 public class BoardMapper {
     private final BoardFileService boardFileService;
 
-    public Board toEntity(Member member, BoardCreateRequest request,
+    public Board toEntity(Member member, BoardRequest.BoardCreateRequest request,
                           List<Semester> semesterPermission) {
         return Board.builder()
                 .writer(member)

@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.board.service;
 
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentAddRequest;
-import com.umc.networkingService.domain.board.dto.request.comment.BoardCommentUpdateRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.BoardComment;
@@ -14,9 +13,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface BoardCommentService extends EntityLoader<BoardComment, UUID> {
-    BoardCommentResponse.BoardCommentId addBoardComment(Member member, BoardCommentAddRequest request);
+    BoardCommentResponse.BoardCommentId addBoardComment(Member member, BoardCommentRequest.BoardCommentAddRequest request);
 
-    BoardCommentResponse.BoardCommentId updateBoardComment(Member member, UUID commentId, BoardCommentUpdateRequest request);
+    BoardCommentResponse.BoardCommentId updateBoardComment(Member member, UUID commentId, BoardCommentRequest.BoardCommentUpdateRequest request);
 
     BoardCommentResponse.BoardCommentId deleteBoardComment(Member member, UUID commentId);
 
