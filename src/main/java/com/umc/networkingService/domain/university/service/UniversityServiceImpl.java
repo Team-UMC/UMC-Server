@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.university.service;
 
+import com.umc.networkingService.domain.mascot.entity.MascotType;
 import com.umc.networkingService.domain.mascot.service.MascotService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.MemberPoint;
@@ -164,10 +165,16 @@ public class UniversityServiceImpl implements UniversityService {
         if (universityRepository.findByName(request.getUniversityName()).isPresent()) {
             throw new RestApiException(UniversityErrorCode.DUPLICATE_UNIVERSITY_NAME);
         }
+
+        //마스코트
+        //MascotType 중 랜덤 선택
+        MascotType mascotType = MascotType.values()[(int) (Math.random() * MascotType.values().length)];
+
         return UniversityResponse.UniversityId.builder()
                         .universityId(
                                 universityRepository.save(University.builder()
                                         .name(request.getUniversityName())
+                                        .mascot(mascotService.getMascotByStartLevel(1, mascotType))
                                         .universityLogo(uploadImage("university", request.getUniversityLogo()))
                                         .semesterLogo(uploadImage("semester", request.getSemesterLogo()))
                                         .build()).getId()
