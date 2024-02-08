@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface MascotRepository  extends JpaRepository<Mascot, UUID> {
-    Optional<Mascot> findByStartLevelAAndAndType(int startLevel, MascotType type);
+    Optional<Mascot> findByStartLevelAndAndType(int startLevel, MascotType type);
 
 }
