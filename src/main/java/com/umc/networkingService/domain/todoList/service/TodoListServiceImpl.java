@@ -10,7 +10,6 @@ import com.umc.networkingService.domain.todoList.dto.response.TodoListIdResponse
 import com.umc.networkingService.domain.todoList.entity.ToDoList;
 import com.umc.networkingService.domain.todoList.mapper.TodoListMapper;
 import com.umc.networkingService.domain.todoList.repository.TodoListRepository;
-import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.ToDoListErrorCode;
 import lombok.RequiredArgsConstructor;

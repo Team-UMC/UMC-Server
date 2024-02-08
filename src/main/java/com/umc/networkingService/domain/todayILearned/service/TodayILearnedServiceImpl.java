@@ -10,7 +10,6 @@ import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearned
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedMapper;
 import com.umc.networkingService.domain.todayILearned.repository.TodayILearnedRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.TodayILearnedErrorCode;
 import lombok.RequiredArgsConstructor;

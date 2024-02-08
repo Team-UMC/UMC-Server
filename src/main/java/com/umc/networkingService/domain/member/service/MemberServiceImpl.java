@@ -15,7 +15,6 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;

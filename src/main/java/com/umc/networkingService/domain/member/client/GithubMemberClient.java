@@ -2,8 +2,8 @@ package com.umc.networkingService.domain.member.client;
 
 import com.umc.networkingService.domain.member.dto.client.github.GithubAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.client.github.GithubInfoResponse;
-import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
