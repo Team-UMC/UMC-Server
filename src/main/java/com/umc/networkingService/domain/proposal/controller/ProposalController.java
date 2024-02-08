@@ -14,7 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -23,14 +25,15 @@ import java.util.UUID;
 public class ProposalController {
     private final ProposalService proposalService;
 
-    @Operation(summary = "건의글 작성 API", description = "프로젝트를 작성하는 API입니다.")
+    @Operation(summary = "건의글 작성 API", description = "건의글을 작성하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @PostMapping
     BaseResponse <ProposalIdResponse> createProposal(@CurrentMember Member member,
-                                                     @Valid @RequestPart ProposalCreateRequest request){
-        return BaseResponse.onSuccess(proposalService.createProposal(member,request));
+                                                     @Valid @RequestPart ProposalCreateRequest request,
+                                                     @RequestPart(name = "proposalImage",required = false) List<MultipartFile> proposalImages){
+        return BaseResponse.onSuccess(proposalService.createProposal(member,request,proposalImages));
     }
 
     @Operation(summary = "건의글 수정 API", description = "건의글을 수정하는 API입니다.")
@@ -42,8 +45,9 @@ public class ProposalController {
     @PostMapping
     BaseResponse <ProposalIdResponse> updateProposal(@CurrentMember Member member,
                                                      @PathVariable("proposalId") UUID proposalId,
-                                                     @Valid @RequestPart ProposalUpdateRequest request){
-        return BaseResponse.onSuccess(proposalService.updateProposal(member, proposalId, request));
+                                                     @Valid @RequestPart ProposalUpdateRequest request,
+                                                     @RequestPart(name = "proposalImage",required = false) List<MultipartFile> proposalImages){
+        return BaseResponse.onSuccess(proposalService.updateProposal(member, proposalId, request,proposalImages));
     }
 
     @Operation(summary = "건의글 삭제 API", description = "건의글을 삭제하는 API입니다.")
