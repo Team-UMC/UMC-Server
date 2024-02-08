@@ -1,8 +1,7 @@
 package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
-import com.umc.networkingService.domain.board.dto.response.BoardIdResponse;
-import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.StaffBoardService;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -41,10 +40,10 @@ public class StaffBoardController {
 
     })
     @GetMapping("notices")
-    public BaseResponse<BoardNoticePagingResponse> showNotices(@CurrentMember Member member,
-                                                               @RequestParam(name = "host") HostType hostType,
-                                                               @RequestParam(name = "keyword", required = false) String keyword,
-                                                               @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<BoardResponse.NoticePageInfos> showNotices(@CurrentMember Member member,
+                                                                   @RequestParam(name = "host") HostType hostType,
+                                                                   @RequestParam(name = "keyword", required = false) String keyword,
+                                                                   @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(staffBoardService.showNotices(member, hostType, keyword, pageable));
     }
@@ -60,9 +59,9 @@ public class StaffBoardController {
             @Parameter(name = "isPinned", description = "isPinned = true이면 핀으로 설정됩니다. false이면 핀 설정 해제됩니다.")
     })
     @PatchMapping("notices/{boardId}/pin")
-    public BaseResponse<BoardIdResponse> toggleNoticePin(@CurrentMember Member member,
-                                                         @PathVariable(value = "boardId") UUID boardId,
-                                                         @RequestParam boolean isPinned) {
+    public BaseResponse<BoardResponse.BoardId> toggleNoticePin(@CurrentMember Member member,
+                                                               @PathVariable(value = "boardId") UUID boardId,
+                                                               @RequestParam boolean isPinned) {
         return BaseResponse.onSuccess(staffBoardService.toggleNoticePin(member, boardId, isPinned));
     }
 }
