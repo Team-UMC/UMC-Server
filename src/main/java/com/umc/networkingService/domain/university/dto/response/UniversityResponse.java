@@ -100,11 +100,10 @@ public class UniversityResponse {
         Integer rank;
         String mascotImage;
         String mascotDialog;
-        String branchImage;
+        String universityImage;
 
-        public static joinUniversityMascot setRankAndBranch(joinUniversityMascot universityMascot, Integer rank, Branch branch) {
+        public static joinUniversityMascot setRank(joinUniversityMascot universityMascot, Integer rank) {
             universityMascot.rank = rank;
-            universityMascot.branchImage = branch.getImage();
             return universityMascot;
         }
     }

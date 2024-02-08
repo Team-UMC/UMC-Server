@@ -72,6 +72,7 @@ public class UniversityMapper {
                 .mascotImage(mascot.getImage())
                 .level(university.getCurrentLevel())
                 .point(university.getTotalPoint())
+                .universityImage(university.getUniversityLogo())
                 .build();
     }
 

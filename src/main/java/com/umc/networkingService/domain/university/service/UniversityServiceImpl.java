@@ -107,19 +107,15 @@ public class UniversityServiceImpl implements UniversityService {
                 ,memberEntity.getUniversity().getMascot()
         );
 
-        //지부 찾기
-        Branch branch = branchUniversityService.findBranchByUniversity(memberEntity.getUniversity());
-
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
 
         UniversityResponse.JoinUniversityRanks joinUniversityRanks = UniversityResponse.JoinUniversityRanks.builder()
                 .joinUniversityRanks(UniversityMapper.toJoinUniversityRankList(universityRankList))
                 .build();
 
-        return UniversityResponse.joinUniversityMascot.setRankAndBranch(
+        return UniversityResponse.joinUniversityMascot.setRank(
                 universityMascot,
-                handleTiedUniversityRanks(joinUniversityRanks, memberEntity.getUniversity()),
-                branch
+                handleTiedUniversityRanks(joinUniversityRanks, memberEntity.getUniversity())
         );
     }
 
