@@ -160,7 +160,7 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional    //학교 생성
-    public UniversityResponse.UniversityId createUniversity(UniversityRequest.createUniversity request) {
+    public UniversityResponse.UniversityId createUniversity(UniversityRequest.universityInfo request) {
         if (universityRepository.findByName(request.getUniversityName()).isPresent()) {
             throw new RestApiException(UniversityErrorCode.DUPLICATE_UNIVERSITY_NAME);
         }
@@ -186,9 +186,9 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional    //학교 정보 수정
-    public UniversityResponse.UniversityId patchUniversity(UniversityRequest.patchUniversity request) {
+    public UniversityResponse.UniversityId patchUniversity(UniversityRequest.universityInfo request, UUID universityId) {
 
-        University university = universityRepository.findById(request.getUniversityId())
+        University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
 
         university.updateUniversity(

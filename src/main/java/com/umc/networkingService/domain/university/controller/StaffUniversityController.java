@@ -37,7 +37,7 @@ public class StaffUniversityController {
     public BaseResponse<UniversityResponse.UniversityId>
     createUniversity(
             @CurrentMember Member member,
-            @RequestBody @Valid UniversityRequest.createUniversity request
+            @RequestBody @Valid UniversityRequest.universityInfo request
     )
     {
         return BaseResponse.onSuccess(universityService.createUniversity(request));
@@ -54,13 +54,14 @@ public class StaffUniversityController {
     }
 
     @Operation(summary = "학교 정보 수정하기 API",description = "학교 정보 수정하기 API")
-    @PatchMapping("")
+    @PatchMapping("/{universityId}")
     public BaseResponse<UniversityResponse.UniversityId>
     patchUniversity(
             @CurrentMember Member member,
-            @RequestBody @Valid UniversityRequest.patchUniversity request
+            @PathVariable @Valid UUID universityId,
+            @RequestBody @Valid UniversityRequest.universityInfo request
     ){
-        return BaseResponse.onSuccess(universityService.patchUniversity(request));
+        return BaseResponse.onSuccess(universityService.patchUniversity(request, universityId));
     }
 
 }
