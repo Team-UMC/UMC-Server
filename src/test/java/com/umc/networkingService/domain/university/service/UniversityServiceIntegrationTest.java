@@ -80,7 +80,7 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
         );
 
         //when
-        UniversityResponse.JoinUniversityRanks universityRankList = universityService.joinUniversityRankingList(member);
+        UniversityResponse.JoinUniversityRanks universityRankList = universityService.joinUniversityRankingList();
 
         //then
         assertThat(universityRankList.getJoinUniversityRanks().size()).isEqualTo(2);
@@ -161,17 +161,17 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
     @Transactional
     public void createUniversityTest_Success() {
         //given
-        UniversityRequest.createUniversity request = UniversityRequest.createUniversity.builder()
+        UniversityRequest.universityInfo request = UniversityRequest.universityInfo.builder()
                 .universityName("테스트대학교")
                 .universityLogo(null)
                 .semesterLogo(null)
                 .build();
 
         //when
-        UUID universityId = universityService.createUniversity(request);
+        UniversityResponse.UniversityId universityId = universityService.createUniversity(request);
 
         //then
-        assertThat(universityRepository.findById(universityId).get().getName())
+        assertThat(universityRepository.findById(universityId.getUniversityId()).get().getName())
                 .isEqualTo(request.getUniversityName());
     }
 
@@ -193,13 +193,12 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
     @Transactional
     public void patchUniversityTest_Success() {
         //given
-        UniversityRequest.patchUniversity request = UniversityRequest.patchUniversity.builder()
-                .universityId(university.getId())
+        UniversityRequest.universityInfo request = UniversityRequest.universityInfo.builder()
                 .universityName("테스트대학교")
                 .build();
 
         //when
-        universityService.patchUniversity(request);
+        universityService.patchUniversity(request, university.getId());
 
         //then
         assertEquals(universityRepository.findById(university.getId()).get().getName(),request.getUniversityName());
