@@ -6,4 +6,6 @@ import com.umc.networkingService.global.common.enums.Semester;
 
 public interface BranchUniversityService {
     Branch findBranchByUniversityAndSemester(University university, Semester LastSemester);
+
+    Branch findBranchByUniversity(University university);
 }

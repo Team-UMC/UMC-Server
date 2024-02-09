@@ -26,4 +26,5 @@ public interface BranchUniversityRepository extends JpaRepository<BranchUniversi
 
     void deleteByBranch(Branch branch);
     Optional<BranchUniversity> findByUniversityAndBranch_Semester(University university, Semester branch_semester);
+    Optional<BranchUniversity> findByUniversityAndIsActive(University university, boolean isActive);
 }

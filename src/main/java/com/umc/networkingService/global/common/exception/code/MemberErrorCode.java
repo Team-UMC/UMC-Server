@@ -19,6 +19,7 @@ public enum MemberErrorCode implements ErrorCodeInterface {
     NO_SEMESTER_PARTS(HttpStatus.BAD_REQUEST, "MEMBER007", "참여한 기수와 파트가 존재하지 않는 사용자입니다."),
     DUPLICATED_GIT_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER008", "중복된 깃허브 닉네임입니다."),
     NO_PERMISSION_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER009", "권한이 없는 사용자입니다."),
+    NOT_ENOUGH_POINT(HttpStatus.BAD_REQUEST, "MEMBER0010", "포인트가 부족합니다.")
 
     ;
 

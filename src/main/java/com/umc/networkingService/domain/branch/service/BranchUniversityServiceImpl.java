@@ -35,6 +35,14 @@ public class BranchUniversityServiceImpl implements BranchUniversityService {
 
     }
 
+
+    @Override
+    public Branch findBranchByUniversity(University university) {
+        return branchUniversityRepository.findByUniversityAndIsActive(university, true)
+                .orElseThrow(() -> new RestApiException(BranchErrorCode.BRANCH_NOT_FOUND))
+                .getBranch();
+    }
+
     //지부, 대학 연결하기
     @Transactional
     public BranchResponse.ConnectBranch connectBranchUniversity(UUID branchId, List<UUID> universityIds) {
@@ -78,3 +86,4 @@ public class BranchUniversityServiceImpl implements BranchUniversityService {
                 .universityIds(universityIds).build();
     }
 }
+

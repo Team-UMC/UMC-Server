@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum UniversityErrorCode implements ErrorCodeInterface {
+public enum MascotErrorCode implements ErrorCodeInterface {
 
-    EMPTY_UNIVERSITY(HttpStatus.BAD_REQUEST, "UNIVERSITY001", "존재하지 않는 대학교입니다."),
-    DUPLICATE_UNIVERSITY_NAME(HttpStatus.BAD_REQUEST, "UNIVERSITY002", "이미 존재하는 대학교 이름입니다.")
+    EMPTY_MASCOT(HttpStatus.BAD_REQUEST, "MASCOT001", "존재하지 않는 마스코트입니다."),
+    EMPTY_MASCOT_LEVEL(HttpStatus.BAD_REQUEST, "MASCOT002", "해당 레벨의 마스코트가 존재하지 않습니다.")
     ;
 
     private final HttpStatus httpStatus;

@@ -7,10 +7,7 @@ import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
-import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.entity.MemberPoint;
-import com.umc.networkingService.domain.member.entity.MemberPosition;
-import com.umc.networkingService.domain.member.entity.PositionType;
+import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
@@ -285,5 +282,25 @@ public class MemberServiceImpl implements MemberService{
                 .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
     }
 
+    @Override
+    public List<Member> findContributionRankings(Member member) {
+        return memberRepository.findAllByUniversityOrderByContributionPointDesc(member.getUniversity());
+    }
+
+    @Override
+    public Member findByMemberId (UUID memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
+    }
+
+    @Override
+    @Transactional
+    public Member usePoint(Member member, PointType pointType) {
+        Member loginMember = loadEntity(member.getId());
+
+        loginMember.usePoint(pointType.getPoint());
+
+        return memberRepository.save(loginMember);
+    }
 
 }

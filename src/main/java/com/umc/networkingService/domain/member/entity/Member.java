@@ -80,6 +80,13 @@ public class Member extends BaseEntity {
     // 가장 최근 호출 시간
     private LocalDateTime lastActiveTime;
 
+
+    //포인트 차감
+    public void usePoint(Long usedPoint) {
+        this.remainPoint -= usedPoint;
+        this.contributionPoint += usedPoint;
+    }
+
     // 기본 정보 설정 함수
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
         this.name = name;
