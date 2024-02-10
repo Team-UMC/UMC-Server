@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.todayILearned.service;
 
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
+import com.umc.networkingService.domain.todayILearned.entity.TodayILearnedFile;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedFileMapper;
 import com.umc.networkingService.domain.todayILearned.repository.TodayILearnedFileRepository;
 import com.umc.networkingService.global.utils.S3FileComponent;
@@ -28,6 +29,27 @@ public class TodayILearnedFileServiceImpl implements TodayILearnedFileService {
             todayILearnedFileRepository.save(todayILearnedFileMapper.toTodayILearnedFile(todayILearned,
                     s3FileComponent.uploadFile("TodayILearned", file)));
         });
-
     }
+
+    @Override
+    @Transactional
+    public void updateTodayILearnedFiles(TodayILearned todayILearned, List<MultipartFile> files) {
+
+        List<TodayILearnedFile> todayILearnedFiles = findTodayILearnedFiles(todayILearned);
+
+        todayILearnedFiles.forEach(file -> {
+            s3FileComponent.deleteFile(file.getUrl());
+            todayILearnedFileRepository.deleteById(file.getId());
+        });
+
+        if (files != null)
+            uploadTodayILearnedFiles(todayILearned, files);
+    }
+
+    @Override
+    public List<TodayILearnedFile> findTodayILearnedFiles(TodayILearned todayILearned) {
+        return todayILearnedFileRepository.findAllByTodayILearned(todayILearned);
+    }
+
+
 }
