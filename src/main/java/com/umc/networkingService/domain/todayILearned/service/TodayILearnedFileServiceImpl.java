@@ -1,5 +1,7 @@
 package com.umc.networkingService.domain.todayILearned.service;
 
+import com.umc.networkingService.domain.board.entity.Board;
+import com.umc.networkingService.domain.board.entity.BoardFile;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearnedFile;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedFileMapper;
@@ -45,6 +47,15 @@ public class TodayILearnedFileServiceImpl implements TodayILearnedFileService {
         if (files != null)
             uploadTodayILearnedFiles(todayILearned, files);
     }
+
+    @Override
+    @Transactional
+    public void deleteTodayILearnedFiles(TodayILearned todayILearned) {
+        List<TodayILearnedFile> todayILearnedFiles = findTodayILearnedFiles(todayILearned);
+
+        todayILearnedFiles.forEach(TodayILearnedFile::delete);
+    }
+
 
     @Override
     public List<TodayILearnedFile> findTodayILearnedFiles(TodayILearned todayILearned) {

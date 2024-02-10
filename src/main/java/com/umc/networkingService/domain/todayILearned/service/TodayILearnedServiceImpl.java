@@ -74,8 +74,9 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
         validateMember(todayILearned, member);
-        todayILearned.updateTodayILearned(request);
 
+        todayILearned.updateTodayILearned(request);
+        todayILearnedFileService.updateTodayILearnedFiles(todayILearned, files);
 
         return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
     }
@@ -87,7 +88,9 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
         validateMember(todayILearned, member);
+
         todayILearned.delete();
+        todayILearnedFileService.deleteTodayILearnedFiles(todayILearned);
 
         return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
     }

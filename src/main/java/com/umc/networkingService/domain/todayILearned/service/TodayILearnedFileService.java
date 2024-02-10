@@ -11,5 +11,6 @@ public interface TodayILearnedFileService {
     void uploadTodayILearnedFiles(TodayILearned todayILearned, List<MultipartFile> files);
     List<TodayILearnedFile> findTodayILearnedFiles(TodayILearned todayILearned);
     void updateTodayILearnedFiles(TodayILearned todayILearned, List<MultipartFile> files);
+    void deleteTodayILearnedFiles(TodayILearned todayILearned);
 
 }
