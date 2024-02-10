@@ -78,7 +78,7 @@ public class TodoListServiceImpl implements TodoListService{
             throw new RestApiException(ToDoListErrorCode.NO_AUTHORIZATION_TODOLIST);
 
         // deadline이 지난 투두리스트인 경우 예외처리
-        if (!todoList.getDeadline().isBefore(LocalDateTime.now()))
+        if (todoList.getDeadline().isBefore(LocalDateTime.now()))
             throw new RestApiException(ToDoListErrorCode.EXPIRED_TODOLIST);
 
         todoList.completeTodoList();
