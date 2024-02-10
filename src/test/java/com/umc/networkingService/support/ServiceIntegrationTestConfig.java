@@ -5,6 +5,8 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.mascot.entity.Mascot;
+import com.umc.networkingService.domain.mascot.repository.MascotRepository;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
@@ -35,6 +37,7 @@ public abstract class ServiceIntegrationTestConfig {
     @Autowired protected UniversityRepository universityRepository;
     @Autowired protected BranchRepository branchRepository;
     @Autowired protected BranchUniversityRepository branchUniversityRepository;
+    @Autowired protected MascotRepository mascotRepository;
 
     @Autowired protected JwtTokenProvider jwtTokenProvider;
     @Autowired protected RefreshTokenService refreshTokenService;
@@ -42,13 +45,14 @@ public abstract class ServiceIntegrationTestConfig {
     protected String refreshToken;
     protected University university;
     protected Branch branch;
-
+    protected Mascot mascot;
     protected BranchUniversity branchUniversity;
 
     protected Member member;
 
     @BeforeEach
     public void setUp() {
+        mascot = createMascot();
         university = createUniversity();
         branch = createBranch();
         branchUniversity = createBranchUniversity();
@@ -102,11 +106,22 @@ public abstract class ServiceIntegrationTestConfig {
     }
 
 
+    protected Mascot createMascot() {
+        return mascotRepository.save(
+                Mascot.builder()
+                        .dialogue("테스트")
+                        .startLevel(1)
+                        .endLevel(10)
+                        .build()
+        );
+    }
+
     protected  University createUniversity() {
         return universityRepository.save(
                 University.builder()
                         .name("인하대학교")
                         .totalPoint(0L)
+                        .mascot(mascot)
                         .build()
         );
     }
@@ -131,21 +146,23 @@ public abstract class ServiceIntegrationTestConfig {
         );
     }
 
-    protected  University createUniversity(String name) {
-        return universityRepository.save(
-                University.builder()
+    //새로운 브랜치 생성용
+    protected Branch createBranch( String name ) {
+        return branchRepository.save(
+                Branch.builder()
                         .name(name)
-                        .totalPoint(0L)
+                        .semester(Semester.FIFTH)
                         .build()
         );
     }
 
-    protected Branch createBranch(String name) {
-        return branchRepository.save(
-                Branch.builder()
+    //새로운 대학 생성용
+    protected University createUniversity( String name ) {
+        return universityRepository.save(
+                University.builder()
                         .name(name)
-                        .description("가치 지부입니다.")
-                        .semester(Semester.FIFTH)
+                        .totalPoint(0L)
+                        .mascot(mascot)
                         .build()
         );
     }

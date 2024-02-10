@@ -5,10 +5,10 @@ import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
-import com.umc.networkingService.domain.branch.execption.BranchHandler;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @DisplayName("Branch 서비스의 ")
 @SpringBootTest
@@ -50,7 +49,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
     @Transactional
     void postBranch_Success() {
         // given
-        BranchRequest.PostBranchDTO request = BranchRequest.PostBranchDTO.builder()
+        BranchRequest.BranchInfoDTO request = BranchRequest.BranchInfoDTO.builder()
                 .name("branchTestPost")
                 .semester(Semester.FIRST)
                 .image(null)
@@ -58,17 +57,17 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
                 .build();
 
         // when
-        UUID id = branchService.postBranch(request);
+        BranchResponse.BranchId id = branchService.postBranch(request);
 
         // then
-        Optional<Branch> optionalBranch = branchRepository.findById(id);
+        Optional<Branch> optionalBranch = branchRepository.findById(id.getBranchId());
         assertTrue(optionalBranch.isPresent());
         Branch newBranch=optionalBranch.get();
 
         assertEquals(request.getName(), newBranch.getName());
         assertEquals(request.getDescription(), newBranch.getDescription());
 
-        branchRepository.deleteById(id);
+        branchRepository.deleteById(id.getBranchId());
     }
 
     @Test
@@ -83,8 +82,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
                 "이미지 데이터".getBytes()
         );
 
-        BranchRequest.PatchBranchDTO request =BranchRequest.PatchBranchDTO.builder()
-                .branchId(branch.getId())
+        BranchRequest.BranchInfoDTO request =BranchRequest.BranchInfoDTO.builder()
                 .name("Updated Branch")
                 .description("Updated Description")
                 .image(image)
@@ -95,7 +93,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
         given(s3FileComponent.uploadFile(any(), any())).willReturn("s3 url", "s3 url");
 
         // when
-        branchService.patchBranch(request);
+        branchService.patchBranch(request, branch.getId());
 
         // then
         Optional<Branch> optionalBranch = branchRepository.findById(branch.getId());
@@ -113,8 +111,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
     @Transactional
     void patchBranch_Success() {
         // given
-        BranchRequest.PatchBranchDTO request =BranchRequest.PatchBranchDTO.builder()
-                .branchId(branch.getId())
+        BranchRequest.BranchInfoDTO request =BranchRequest.BranchInfoDTO.builder()
                 .name("Updated Branch")
                 .description("Updated Description")
                 .image(null)
@@ -122,7 +119,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
                 .build();
 
         // when
-        branchService.patchBranch(request);
+        branchService.patchBranch(request, branch.getId());
 
         // then
         Optional<Branch> optionalBranch = branchRepository.findById(branch.getId());
@@ -139,14 +136,13 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
     @Transactional
     void patchBranch_NonExisting_Failure() {
         // given
-        BranchRequest.PatchBranchDTO request = BranchRequest.PatchBranchDTO.builder()
-                .branchId(UUID.randomUUID())
+        BranchRequest.BranchInfoDTO request = BranchRequest.BranchInfoDTO.builder()
                 .name("Updated Branch")
                 .image(null)
                 .build();
 
         // when & then
-        assertThrows(BranchHandler.class, () -> branchService.patchBranch(request));
+        assertThrows(RestApiException.class, () -> branchService.patchBranch(request, UUID.randomUUID()));
     }
 
 
@@ -236,7 +232,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
         UUID nonExistingBranchId = UUID.randomUUID();
 
         // when & then
-        assertThrows(BranchHandler.class, () -> branchService.joinBranchDetail(nonExistingBranchId));
+        assertThrows(RestApiException.class, () -> branchService.joinBranchDetail(nonExistingBranchId));
     }
 
     @Test
@@ -261,7 +257,7 @@ class BranchServiceTest extends ServiceIntegrationTestConfig {
 
 
         // when & then
-        assertThrows(BranchHandler.class, () -> branchService.deleteBranch(nonExistingBranchId));
+        assertThrows(RestApiException.class, () -> branchService.deleteBranch(nonExistingBranchId));
     }
 
 }
