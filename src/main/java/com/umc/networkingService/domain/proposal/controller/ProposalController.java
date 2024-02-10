@@ -6,13 +6,18 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.proposal.dto.request.*;
 import com.umc.networkingService.domain.proposal.dto.response.ProposalDetailResponse;
 import com.umc.networkingService.domain.proposal.dto.response.ProposalIdResponse;
+import com.umc.networkingService.domain.proposal.dto.response.ProposalPagingResponse;
 import com.umc.networkingService.domain.proposal.service.ProposalService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -69,8 +74,10 @@ public class ProposalController {
             @ApiResponse(responseCode = "PROPOSAL001", description = "존재하지 않는 건의글 입니다.")
     })
     @GetMapping
-    BaseResponse <ProposalIdResponse> searchProposal(@Valid @RequestPart ProposalSearchRequest request){
-        return BaseResponse.onSuccess(proposalService.searchProposal(request));
+    BaseResponse <ProposalPagingResponse> showProposals(@CurrentMember Member member,
+                                                        @PageableDefault (sort = "created_at", direction = Sort.Direction.DESC)
+                                                        @Parameter(hidden = true) Pageable pageable){
+        return BaseResponse.onSuccess(proposalService.showProposals(member, pageable));
     }
 
     @Operation(summary = "건의글 상세 조회 API", description = "건의글을 상세 조회하는 API입니다.")

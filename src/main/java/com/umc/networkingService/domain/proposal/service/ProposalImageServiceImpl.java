@@ -46,4 +46,11 @@ public class ProposalImageServiceImpl implements  ProposalImageService{
         return proposalImageRepository.findAllByProposal(proposal);
     }
 
+    @Override
+    public void deleteProposalImage(Proposal proposal){
+        List<ProposalImage> proposalImages = findProposalImage(proposal);
+
+        proposalImages.forEach(ProposalImage::delete);
+    }
+
 }

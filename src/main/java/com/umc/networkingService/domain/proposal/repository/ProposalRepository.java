@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ProposalRepository extends JpaRepository<Proposal, UUID> {
+public interface ProposalRepository extends JpaRepository<Proposal, UUID>, ProposalRepositoryCustom {
     Optional <Proposal> findById(Member member);
-    Optional <Proposal> findBytile(String title);
 }

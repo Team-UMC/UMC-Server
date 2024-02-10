@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.proposal.dto.request.ProposalUpdateReque
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -33,9 +34,16 @@ public class Proposal extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @ColumnDefault("0")
+    private int commentCount;
+
     public void update(ProposalUpdateRequest request){
         this.writer = request.getWriter();
         this.title = request.getTitle();
         this.content = request.getContent();
+    }
+
+    public void increaseCommentCount() {
+        this.commentCount++;
     }
 }
