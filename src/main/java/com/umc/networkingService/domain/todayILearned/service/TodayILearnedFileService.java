@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.todayILearned.service;
 
-import com.umc.networkingService.domain.board.entity.BoardFile;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearnedFile;
 import org.springframework.web.multipart.MultipartFile;
