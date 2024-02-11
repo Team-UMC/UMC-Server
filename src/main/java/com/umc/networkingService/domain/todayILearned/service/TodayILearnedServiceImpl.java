@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -54,11 +55,13 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     }
 
     @Override
-    public TodayILearnedInfos getTodayILearnedInfos(Member member) {
+    public TodayILearnedInfos getTodayILearnedInfos(Member member, String stringDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(stringDate,formatter);
 
         return todayILearnedMapper.toTodayILearnedInfos(
-                todayILearnedRepository.findTodayILearnedByWriterAndCreateDate(member,
-                        LocalDate.now()).stream()
+                todayILearnedRepository.findTodayILearnedByWriterAndCreateDate(member, date)
+                        .stream()
                         .map(todayILearnedMapper::toTodayILearnedInfo)
                         .toList());
     }
@@ -67,12 +70,13 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     @Transactional
     public TodayILearnedId updateTodayILearned(Member member, UUID todayILearnedId, List<MultipartFile> files,
                                                TodayILearnedUpdate request) {
-        TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(
-                TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
+        TodayILearned todayILearned = loadEntity(todayILearnedId);
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
         validateMember(todayILearned, member);
+
         todayILearned.updateTodayILearned(request);
+        todayILearnedFileService.updateTodayILearnedFiles(todayILearned, files);
 
         return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
     }
@@ -80,11 +84,12 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     @Override
     @Transactional
     public TodayILearnedId deleteTodayILearned(Member member, UUID todayILearnedId) {
-        TodayILearned todayILearned = todayILearnedRepository.findById(todayILearnedId)
-                .orElseThrow(() -> new RestApiException(TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
+        TodayILearned todayILearned = loadEntity(todayILearnedId);
 
         // 만약 삭제하려는 멤버와 TIL 작성자가 일치하지 않을 경우 에러 반환
         validateMember(todayILearned, member);
+
+        todayILearnedFileService.deleteTodayILearnedFiles(todayILearned);
         todayILearned.delete();
 
         return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
@@ -114,4 +119,11 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
         }
         return false;
     }
+
+    @Override
+    public TodayILearned loadEntity(UUID todayILearnedId) {
+        return todayILearnedRepository.findById(todayILearnedId).orElseThrow(() -> new RestApiException(
+                TodayILearnedErrorCode.EMPTY_TODAYILERARNED));
+    }
+
 }
