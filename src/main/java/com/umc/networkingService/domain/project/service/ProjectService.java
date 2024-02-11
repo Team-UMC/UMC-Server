@@ -20,6 +20,6 @@ public interface ProjectService extends EntityLoader<Project, UUID> {
    ProjectIdResponse updateProject(Member member,UUID projectId, MultipartFile projectImage, ProjectUpdateRequest request);
    ProjectIdResponse deleteProject(UUID projectId);
    ProjectAllResponse inquiryProjects(Semester semester, ProjectType type, Pageable pageable);
-   ProjectIdResponse searchProject(String projectName);
+   ProjectAllResponse searchProject(String keyword, Pageable pageable);
    ProjectDetailResponse inquiryProjectDetail(UUID projectId);
 }

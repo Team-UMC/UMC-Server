@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -45,14 +46,19 @@ public class ProjectController {
         return BaseResponse.onSuccess(projectService.inquiryProjects(semester, type, pageable));
     }
 
-    @GetMapping
-    @Operation(summary = "프로젝트 검색 API", description = "프로젝트를 검색하는 API입니다.")
+    @Operation(summary = "프로젝트 검색 API", description = "키워드가 프로젝트명 또는 태그에 포함된 프로젝트 목록을 검색하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다.")
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    public BaseResponse<ProjectIdResponse> searchProject(@PathVariable("projectName") String projectName){
-        return BaseResponse.onSuccess(projectService.searchProject(projectName));
+    @Parameters(value = {
+            @Parameter(name = "keyword", description = "최소 한 글자의 키워드를 입력해야합니다."),
+            @Parameter(name = "page", description = "page를 입력하는 파라미터입니다.(0부터 시작)"),
+    })
+    @GetMapping("/search")
+    public BaseResponse<ProjectAllResponse> searchProject(@RequestParam String keyword,
+                                                          @PageableDefault(sort = "name", direction = Sort.Direction.DESC)
+                                                          @Parameter(hidden = true) Pageable pageable) {
+        return BaseResponse.onSuccess(projectService.searchProject(keyword, pageable));
     }
 
     @Operation(summary = "프로젝트 상세 조회 API", description = "프로젝트를 상세 조회하는 API입니다.")

@@ -61,4 +61,8 @@ public class Project extends BaseEntity {
     public void deleteProjectImage() {
         this.logoImage = null;
     }
+
+    public void addHitCount() {
+        this.hitCount += 1L;
+    }
 }

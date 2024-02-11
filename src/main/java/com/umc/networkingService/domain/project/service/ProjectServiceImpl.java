@@ -92,6 +92,7 @@ public class ProjectServiceImpl implements ProjectService{
     public ProjectAllResponse inquiryProjects(Semester semester, ProjectType type, Pageable pageable) {
         Page<Project> projects;
 
+        // 기수 조건과 타입 조건의 유무에 따라서 조회
         if (semester == null) {
             projects = Optional.ofNullable(type)
                     .map(t -> projectRepository.findAllByProjectTypeContains(t, pageable))
@@ -109,18 +110,21 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    @Transactional
-    public ProjectIdResponse searchProject(String projectName){
-        // 등록되지 않은 프로젝트를 검색하는 경우, 예외처리 메시지 반환
-        Project project = projectRepository.findByName(projectName).orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
+    public ProjectAllResponse searchProject(String keyword, Pageable pageable){
+        Page<Project> projects = projectRepository.findByNameContainsOrTagContains(keyword, pageable);
 
-        // 검색한 프로젝트의 id 반환
-        return new ProjectIdResponse(project.getId());
+        return new ProjectAllResponse(
+                projects.stream().map(projectMapper::toProjectInfo).toList(),
+                projects.hasNext()
+        );
     }
 
     @Override
+    @Transactional
     public ProjectDetailResponse inquiryProjectDetail(UUID projectId){
         Project project = loadEntity(projectId);
+        // 조회수 증가
+        project.addHitCount();
 
         List<ProjectMember> projectMembers = projectMemberRepository.findAllByProject(project);
 
