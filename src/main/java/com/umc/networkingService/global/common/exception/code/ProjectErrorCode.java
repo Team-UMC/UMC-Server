@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ProjectErrorCode implements ErrorCodeInterface {
     EMPTY_PROJECT(HttpStatus.BAD_REQUEST, "PROJECT001", "존재하지 않는 프로젝트입니다."),
+    EMPTY_PROJECT_IMAGE(HttpStatus.BAD_REQUEST, "PROJECT002", "프로젝트 이미지는 필수입니다."),
     ;
 
     private final HttpStatus httpStatus;

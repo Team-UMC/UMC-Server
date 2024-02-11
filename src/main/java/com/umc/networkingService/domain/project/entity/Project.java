@@ -34,9 +34,6 @@ public class Project extends BaseEntity {
 
     private String description;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private List<ProjectMember> members = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default

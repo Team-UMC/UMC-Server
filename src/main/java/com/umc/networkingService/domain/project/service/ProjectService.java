@@ -11,12 +11,8 @@ import java.util.UUID;
 
 public interface ProjectService{
    ProjectIdResponse createProject(Member member, MultipartFile projectImage, ProjectCreateRequest request);
-
    ProjectIdResponse updateProject(Member member,UUID projectId, MultipartFile projectImage, ProjectUpdateRequest request);
-
    ProjectIdResponse deleteProject(UUID projectId);
-
    ProjectIdResponse searchProject(String projectName);
-
    ProjectDetailResponse detailProject(UUID projectId);
 }

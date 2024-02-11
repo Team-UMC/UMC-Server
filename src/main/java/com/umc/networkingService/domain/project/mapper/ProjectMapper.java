@@ -4,6 +4,7 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.entity.Project;
+import com.umc.networkingService.domain.project.entity.ProjectMember;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,14 +12,12 @@ import java.util.List;
 
 @Component
 public class ProjectMapper {
-    public Project createToProject(String imageUrl, List<Member> members,
-                                              ProjectCreateRequest request) {
+    public Project toProject(String imageUrl, ProjectCreateRequest request) {
         return Project.builder()
                 .logoImage(imageUrl)
                 .name(request.getName())
                 .slogan(request.getSlogan())
                 .description(request.getDescription())
-                .members(members)
                 .tags(request.getTags())
                 .semester(request.getSemester())
                 .type(request.getTypes())
@@ -29,9 +28,16 @@ public class ProjectMapper {
                 .name(project.getName())
                 .slogan(project.getSlogan())
                 .description(project.getDescription())
-                .members(project.getMembers())
                 .type(project.getType())
                 .build();
     }
 
+    public ProjectMember toProjectMember(ProjectCreateRequest.ProjectMemberInfo memberInfo, Project project) {
+        return ProjectMember.builder()
+                .project(project)
+                .nickname(memberInfo.getNickname())
+                .name(memberInfo.getName())
+                .part(memberInfo.getPart())
+                .build();
+    }
 }

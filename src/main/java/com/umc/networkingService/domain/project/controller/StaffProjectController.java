@@ -25,10 +25,11 @@ import java.util.UUID;
 public class StaffProjectController {
 
     private final ProjectService projectService;
-    
+
     @Operation(summary = "프로젝트 등록 API", description = "프로젝트를 등록하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "IMAGE001", description = "이미지 저장에 실패하였습니다.")
     })
     @PostMapping
     public BaseResponse<ProjectIdResponse> createProject(@CurrentMember Member member,

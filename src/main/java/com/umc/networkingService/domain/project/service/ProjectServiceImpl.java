@@ -1,15 +1,14 @@
 package com.umc.networkingService.domain.project.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.project.mapper.ProjectMapper;
+import com.umc.networkingService.domain.project.repository.ProjectMemberRepository;
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
 import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
 import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
 import com.umc.networkingService.domain.project.entity.Project;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.ProjectErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;
@@ -26,26 +25,32 @@ import java.util.UUID;
 public class ProjectServiceImpl implements ProjectService{
 
     private final S3FileComponent s3FileComponent;
-    private final MemberService memberService;
 
     private final ProjectMapper projectMapper;
     private final ProjectRepository projectRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
     @Override
     public ProjectIdResponse createProject(Member member, MultipartFile projectImage, ProjectCreateRequest request) {
 
         // 프로젝트 이미지 S3 저장
+        if (projectImage == null)
+            throw new RestApiException(ProjectErrorCode.EMPTY_PROJECT_IMAGE);
         String imageUrl = s3FileComponent.uploadFile("project", projectImage);
 
-        List<Member> projectMembers = request.getMembers().stream()
-                .map(memberService::loadEntity)
-                .toList();
+        // 새로운 프로젝트 저장
+        Project newProject = projectRepository.save(
+                projectMapper.toProject(imageUrl, request)
+        );
 
-        Project newProject = projectMapper.createToProject(imageUrl, projectMembers, request);
+        // 프로젝트 멤버 저장
+        List<ProjectCreateRequest.ProjectMemberInfo> projectMembers = request.getProjectMembers();
 
-        Project savedProject = projectRepository.save(newProject);
+        projectMembers.stream()
+                .map(projectMember -> projectMapper.toProjectMember(projectMember, newProject))
+                .forEach(projectMemberRepository::save);
 
-        return new ProjectIdResponse(savedProject.getId());
+        return new ProjectIdResponse(newProject.getId());
     }
 
     @Override
