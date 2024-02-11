@@ -68,7 +68,7 @@ public class UniversityMapper {
             University university, Mascot mascot
     ){
         return UniversityResponse.joinUniversityMascot.builder()
-                .mascotDialog(mascot.getDialogue())
+                .mascotDialog(mascot.getRandomDialogues())
                 .mascotImage(mascot.getImage())
                 .level(university.getCurrentLevel())
                 .point(university.getTotalPoint())
