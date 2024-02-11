@@ -9,6 +9,9 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Getter
@@ -34,7 +37,17 @@ public class Mascot extends BaseEntity {
     @Column(nullable = false)
     private MascotType type;
 
-    private String dialogue;
+    @ElementCollection
+    private List<String> dialogues;
 
     private String image;
+
+    // 대사 2개 랜덤 추출 함수
+    public List<String> getRandomDialogues() {
+        List<String> dialogues = this.getDialogues();
+
+        // 순서 섞어서 랜덤 2개 추출
+        Collections.shuffle(dialogues, new Random());
+        return dialogues.stream().limit(2).toList();
+    }
 }

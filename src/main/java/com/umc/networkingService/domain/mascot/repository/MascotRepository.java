@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public interface MascotRepository  extends JpaRepository<Mascot, UUID> {
     Optional<Mascot> findByStartLevelAndType(int startLevel, MascotType type);
-
+    boolean existsByStartLevelAndType(int startLevel, MascotType type);
 }

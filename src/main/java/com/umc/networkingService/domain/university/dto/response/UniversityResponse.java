@@ -99,7 +99,7 @@ public class UniversityResponse {
         Long point;
         Integer rank;
         String mascotImage;
-        String mascotDialog;
+        List<String> mascotDialog;
         String universityImage;
 
         public static joinUniversityMascot setRank(joinUniversityMascot universityMascot, Integer rank) {
