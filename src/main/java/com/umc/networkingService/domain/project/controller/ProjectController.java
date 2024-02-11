@@ -1,17 +1,12 @@
 package com.umc.networkingService.domain.project.controller;
 
-import com.umc.networkingService.config.security.auth.CurrentMember;
-import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.domain.project.service.ProjectService;
-import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
-import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import com.umc.networkingService.global.common.enums.Semester;
-import io.lettuce.core.dynamic.annotation.Param;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -23,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -67,9 +60,9 @@ public class ProjectController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다.")
     })
-    @GetMapping
-    public BaseResponse<ProjectDetailResponse> detailProject(@PathVariable ("projectId") UUID projectId){
-        return BaseResponse.onSuccess(projectService.detailProject(projectId));
+    @GetMapping("/{projectId}")
+    public BaseResponse<ProjectDetailResponse> inquiryProjectDetail(@PathVariable ("projectId") UUID projectId){
+        return BaseResponse.onSuccess(projectService.inquiryProjectDetail(projectId));
     }
 
 

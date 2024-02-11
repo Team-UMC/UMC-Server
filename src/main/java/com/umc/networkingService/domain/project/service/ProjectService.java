@@ -21,5 +21,5 @@ public interface ProjectService extends EntityLoader<Project, UUID> {
    ProjectIdResponse deleteProject(UUID projectId);
    ProjectAllResponse inquiryProjects(Semester semester, ProjectType type, Pageable pageable);
    ProjectIdResponse searchProject(String projectName);
-   ProjectDetailResponse detailProject(UUID projectId);
+   ProjectDetailResponse inquiryProjectDetail(UUID projectId);
 }

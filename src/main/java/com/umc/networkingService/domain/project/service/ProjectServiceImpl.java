@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.project.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
+import com.umc.networkingService.domain.project.entity.ProjectMember;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.domain.project.mapper.ProjectMapper;
 import com.umc.networkingService.domain.project.repository.ProjectMemberRepository;
@@ -118,13 +119,12 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public ProjectDetailResponse detailProject(UUID projectId){
-        // 유효하지 않은 프로젝트 id를 받은 경우, 예외처리 메시지 반환
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
+    public ProjectDetailResponse inquiryProjectDetail(UUID projectId){
+        Project project = loadEntity(projectId);
 
-        // 프로젝트 id를 통해 해당 프로젝트의 디테일 데이터 반환
-        // Todo: 로고 이미지 반환
-        // return projectMapper.detailProject(project);
+        List<ProjectMember> projectMembers = projectMemberRepository.findAllByProject(project);
+
+        return projectMapper.toProjectDetailResponse(project, projectMembers);
     }
 
     @Override
