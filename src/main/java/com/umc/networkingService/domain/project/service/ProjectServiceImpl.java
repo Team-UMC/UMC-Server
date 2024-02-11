@@ -11,6 +11,7 @@ import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
 import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.ProjectErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class ProjectServiceImpl implements ProjectService{
     @Transactional
     public ProjectIdResponse updateProject(Member member, UUID projectId, MultipartFile projectImage, ProjectUpdateRequest request){
         // 등록되지 않은 프로젝트를 수정하려고 하는 경우에, 예외처리 메세지 반환
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_PROJECT));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
 
         // Todo: 해당 프로젝트의 수정 권한이 없을 경우, 에러처리 메세지 반환
 
@@ -65,7 +66,7 @@ public class ProjectServiceImpl implements ProjectService{
     @Transactional
     public ProjectIdResponse deleteProject(UUID projectId){
         // 등록되지 않은 프로젝트를 삭제하려고 하는 경우, 예외처리 메세지 반환
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_PROJECT));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
 
         // Todo: 해당 프로젝트의 수정 권한이 없을 경우, 에러처리 메세지 반환
 
@@ -78,7 +79,7 @@ public class ProjectServiceImpl implements ProjectService{
     @Transactional
     public ProjectIdResponse searchProject(String projectName){
         // 등록되지 않은 프로젝트를 검색하는 경우, 예외처리 메시지 반환
-        Project project = projectRepository.findByName(projectName).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_PROJECT));
+        Project project = projectRepository.findByName(projectName).orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
 
         // 검색한 프로젝트의 id 반환
         return new ProjectIdResponse(project.getId());
@@ -87,7 +88,7 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     public ProjectDetailResponse detailProject(UUID projectId){
         // 유효하지 않은 프로젝트 id를 받은 경우, 예외처리 메시지 반환
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_PROJECT));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
 
         // 프로젝트 id를 통해 해당 프로젝트의 디테일 데이터 반환
         // Todo: 로고 이미지 반환
