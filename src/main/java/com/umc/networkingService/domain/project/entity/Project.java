@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.project.entity;
 
-import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -31,8 +30,6 @@ public class Project extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    private String slogan;
-
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -46,7 +43,7 @@ public class Project extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
-    private List<Type> type = new ArrayList<>();
+    private List<ProjectType> projectType = new ArrayList<>();
 
     @ColumnDefault("0")
     private Long hitCount;
@@ -56,7 +53,6 @@ public class Project extends BaseEntity {
 
     public void updateProject(ProjectUpdateRequest request){
         this.name = request.getName();
-        this.slogan = request.getSlogan();
         this.description = request.getDescription();
         // 이전께 삭제 되는지 확인
         this.tags = request.getTags();

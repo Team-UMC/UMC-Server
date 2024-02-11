@@ -1,6 +1,8 @@
 package com.umc.networkingService.domain.project.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
+import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.domain.project.mapper.ProjectMapper;
 import com.umc.networkingService.domain.project.repository.ProjectMemberRepository;
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
@@ -9,15 +11,19 @@ import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
 import com.umc.networkingService.domain.project.entity.Project;
+import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.ProjectErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -82,6 +88,26 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
+    public ProjectAllResponse inquiryProjects(Semester semester, ProjectType type, Pageable pageable) {
+        Page<Project> projects;
+
+        if (semester == null) {
+            projects = Optional.ofNullable(type)
+                    .map(t -> projectRepository.findAllByProjectTypeContains(t, pageable))
+                    .orElseGet(() -> projectRepository.findAll(pageable));
+        } else {
+            projects = Optional.ofNullable(type)
+                    .map(t -> projectRepository.findAllBySemesterAndProjectTypeContains(semester, t, pageable))
+                    .orElseGet(() -> projectRepository.findAllBySemester(semester, pageable));
+        }
+
+        return new ProjectAllResponse(
+                projects.stream().map(projectMapper::toProjectInfo).toList(),
+                projects.hasNext()
+        );
+    }
+
+    @Override
     @Transactional
     public ProjectIdResponse searchProject(String projectName){
         // 등록되지 않은 프로젝트를 검색하는 경우, 예외처리 메시지 반환
@@ -98,7 +124,7 @@ public class ProjectServiceImpl implements ProjectService{
 
         // 프로젝트 id를 통해 해당 프로젝트의 디테일 데이터 반환
         // Todo: 로고 이미지 반환
-        return projectMapper.detailProject(project);
+        // return projectMapper.detailProject(project);
     }
 
     @Override

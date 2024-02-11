@@ -1,13 +1,10 @@
 package com.umc.networkingService.domain.project.mapper;
 
-import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
-import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
 import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.domain.project.entity.ProjectMember;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 
 @Component
@@ -16,19 +13,10 @@ public class ProjectMapper {
         return Project.builder()
                 .logoImage(imageUrl)
                 .name(request.getName())
-                .slogan(request.getSlogan())
                 .description(request.getDescription())
                 .tags(request.getTags())
                 .semester(request.getSemester())
-                .type(request.getTypes())
-                .build();
-    }
-    public ProjectDetailResponse detailProject(Project project){
-        return ProjectDetailResponse.builder()
-                .name(project.getName())
-                .slogan(project.getSlogan())
-                .description(project.getDescription())
-                .type(project.getType())
+                .projectType(request.getProjectTypes())
                 .build();
     }
 
@@ -38,6 +26,18 @@ public class ProjectMapper {
                 .nickname(memberInfo.getNickname())
                 .name(memberInfo.getName())
                 .part(memberInfo.getPart())
+                .build();
+    }
+
+    public ProjectAllResponse.ProjectInfo toProjectInfo(Project project) {
+        return ProjectAllResponse.ProjectInfo.builder()
+                .projectId(project.getId())
+                .name(project.getName())
+                .description(project.getDescription())
+                .logoImage(project.getLogoImage())
+                .semester(project.getSemester())
+                .types(project.getProjectType())
+                .tags(project.getTags())
                 .build();
     }
 }

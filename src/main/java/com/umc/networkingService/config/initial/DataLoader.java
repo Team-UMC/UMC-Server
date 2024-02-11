@@ -12,7 +12,6 @@ import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
-import com.umc.networkingService.global.common.exception.code.MascotErrorCode;
 import com.umc.networkingService.global.common.exception.code.UniversityErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
@@ -142,11 +141,10 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
                 .map(project -> Project.builder()
                         .name(project.getName())
                         .logoImage(project.getImage())
-                        .slogan(project.getSlogan())
                         .description(project.getDescription())
                         .tags(project.getTags())
                         .semester(project.getSemester())
-                        .type(project.getTypes())
+                        .projectType(project.getProjectTypes())
                         .build())
                 .forEach(projectRepository::save);
     }
