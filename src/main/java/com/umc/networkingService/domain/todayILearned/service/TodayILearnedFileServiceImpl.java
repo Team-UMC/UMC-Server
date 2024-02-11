@@ -1,7 +1,5 @@
 package com.umc.networkingService.domain.todayILearned.service;
 
-import com.umc.networkingService.domain.board.entity.Board;
-import com.umc.networkingService.domain.board.entity.BoardFile;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearnedFile;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedFileMapper;
