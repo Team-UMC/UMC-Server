@@ -1,17 +1,17 @@
 package com.umc.networkingService.domain.project.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
+import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest;
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
+import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.domain.project.entity.ProjectMember;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.domain.project.mapper.ProjectMapper;
 import com.umc.networkingService.domain.project.repository.ProjectMemberRepository;
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
-import com.umc.networkingService.domain.project.dto.request.ProjectCreateRequest;
-import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest;
-import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
-import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
-import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.ProjectErrorCode;
@@ -99,7 +99,7 @@ public class ProjectServiceImpl implements ProjectService{
                     .orElseGet(() -> projectRepository.findAll(pageable));
         } else {
             projects = Optional.ofNullable(type)
-                    .map(t -> projectRepository.findAllBySemesterAndProjectTypeContains(semester, t, pageable))
+                    .map(t -> projectRepository.findAllBySemesterAndTypesContains(semester, t, pageable))
                     .orElseGet(() -> projectRepository.findAllBySemester(semester, pageable));
         }
 

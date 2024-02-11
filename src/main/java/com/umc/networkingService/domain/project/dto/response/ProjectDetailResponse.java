@@ -7,10 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import com.umc.networkingService.domain.member.entity.Member;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @AllArgsConstructor

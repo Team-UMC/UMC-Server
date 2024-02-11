@@ -1,17 +1,17 @@
 package com.umc.networkingService.domain.branch.service;
 
-import com.umc.networkingService.domain.branch.mapper.BranchMapper;
 import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
+import com.umc.networkingService.domain.branch.mapper.BranchMapper;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Semester;
-import com.umc.networkingService.global.utils.S3FileComponent;
-import com.umc.networkingService.global.common.exception.code.BranchErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.BranchErrorCode;
+import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

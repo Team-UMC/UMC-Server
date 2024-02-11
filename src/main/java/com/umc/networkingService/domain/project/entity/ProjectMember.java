@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.project.entity;
 
-import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Part;
 import jakarta.persistence.*;

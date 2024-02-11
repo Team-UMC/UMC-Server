@@ -3,7 +3,6 @@ package com.umc.networkingService.domain.university.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.PointType;
-import com.umc.networkingService.domain.university.dto.request.UniversityRequest;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.service.UniversityServiceImpl;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -16,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Tag(name = "대학교 API", description = "일반 유저용 대학교 관련 API")

@@ -1,10 +1,9 @@
 package com.umc.networkingService.domain.project.controller;
 
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.domain.project.service.ProjectService;
-import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
-import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import com.umc.networkingService.global.common.enums.Semester;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;

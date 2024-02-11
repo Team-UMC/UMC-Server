@@ -6,6 +6,7 @@ import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -19,6 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
+@DynamicInsert
 public class Project extends BaseEntity {
 
     @Id
@@ -37,13 +39,14 @@ public class Project extends BaseEntity {
     @Builder.Default
     private List<String> tags = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Semester semester;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
-    private List<ProjectType> projectType = new ArrayList<>();
+    private List<ProjectType> types = new ArrayList<>();
 
     @ColumnDefault("0")
     private Long hitCount;

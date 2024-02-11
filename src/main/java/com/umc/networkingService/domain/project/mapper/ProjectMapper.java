@@ -19,7 +19,7 @@ public class ProjectMapper {
                 .description(request.getDescription())
                 .tags(request.getTags())
                 .semester(request.getSemester())
-                .projectType(request.getProjectTypes())
+                .types(request.getProjectTypes())
                 .build();
     }
 
@@ -39,7 +39,7 @@ public class ProjectMapper {
                 .description(project.getDescription())
                 .logoImage(project.getLogoImage())
                 .semester(project.getSemester())
-                .types(project.getProjectType())
+                .types(project.getTypes())
                 .tags(project.getTags())
                 .build();
     }
@@ -50,7 +50,7 @@ public class ProjectMapper {
                 .description(project.getDescription())
                 .logoImage(project.getLogoImage())
                 .semester(project.getSemester())
-                .types(project.getProjectType())
+                .types(project.getTypes())
                 .tags(project.getTags())
                 .projectMembers(toProjectMemberInfos(projectMembers))
                 .build();

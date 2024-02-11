@@ -15,8 +15,8 @@ import java.util.UUID;
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
     Optional<Project> findByName(String projectName);
     Page<Project> findAllBySemester(Semester semester, Pageable pageable);
-    Page<Project> findAllByProjectTypeContains(ProjectType projectType, Pageable pageable);
-    Page<Project> findAllBySemesterAndProjectTypeContains(Semester semester, ProjectType projectType, Pageable pageable);
+    Page<Project> findAllByTypesContains(ProjectType type, Pageable pageable);
+    Page<Project> findAllBySemesterAndTypesContains(Semester semester, ProjectType type, Pageable pageable);
     @Query("SELECT DISTINCT p FROM Project p JOIN p.tags t WHERE p.name LIKE %:keyword% OR t LIKE %:keyword%")
     Page<Project> findByNameContainsOrTagContains(@Param("keyword") String keyword, Pageable pageable);
     boolean existsByName(String name);

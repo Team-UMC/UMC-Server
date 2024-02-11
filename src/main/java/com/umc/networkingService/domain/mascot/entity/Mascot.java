@@ -2,9 +2,6 @@ package com.umc.networkingService.domain.mascot.entity;
 
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;

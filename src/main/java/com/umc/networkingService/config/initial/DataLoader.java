@@ -144,7 +144,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
                         .description(project.getDescription())
                         .tags(project.getTags())
                         .semester(project.getSemester())
-                        .projectType(project.getProjectTypes())
+                        .types(project.getProjectTypes())
                         .build())
                 .forEach(projectRepository::save);
     }

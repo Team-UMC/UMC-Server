@@ -2,7 +2,6 @@ package com.umc.networkingService.domain.branch.validation.validater;
 
 import com.umc.networkingService.domain.branch.service.BranchServiceImpl;
 import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.code.BranchErrorCode;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
