@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface TodayILearnedFileRepository extends JpaRepository<TodayILearnedFile, UUID> {
     List<TodayILearnedFile> findAllByTodayILearned(TodayILearned todayILearned);
+    void deleteAllByTodayILearned(TodayILearned todayILearned);
 }

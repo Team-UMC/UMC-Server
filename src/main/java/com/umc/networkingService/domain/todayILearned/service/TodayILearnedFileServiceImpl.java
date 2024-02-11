@@ -37,12 +37,7 @@ public class TodayILearnedFileServiceImpl implements TodayILearnedFileService {
     @Transactional
     public void updateTodayILearnedFiles(TodayILearned todayILearned, List<MultipartFile> files) {
 
-        List<TodayILearnedFile> todayILearnedFiles = findTodayILearnedFiles(todayILearned);
-
-        todayILearnedFiles.forEach(file -> {
-            s3FileComponent.deleteFile(file.getUrl());
-            todayILearnedFileRepository.deleteById(file.getId());
-        });
+        deleteTodayILearnedFiles(todayILearned);
 
         if (files != null)
             uploadTodayILearnedFiles(todayILearned, files);
@@ -53,7 +48,10 @@ public class TodayILearnedFileServiceImpl implements TodayILearnedFileService {
     public void deleteTodayILearnedFiles(TodayILearned todayILearned) {
         List<TodayILearnedFile> todayILearnedFiles = findTodayILearnedFiles(todayILearned);
 
-        todayILearnedFiles.forEach(TodayILearnedFile::delete);
+        todayILearnedFiles.forEach(file -> {
+            s3FileComponent.deleteFile(file.getUrl());
+            todayILearnedFileRepository.deleteById(file.getId());
+        });
     }
 
 
