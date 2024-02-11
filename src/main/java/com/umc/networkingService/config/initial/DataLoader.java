@@ -4,12 +4,15 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.entity.BranchUniversity;
 import com.umc.networkingService.domain.branch.repository.BranchRepository;
 import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
+import com.umc.networkingService.domain.mascot.entity.Mascot;
+import com.umc.networkingService.domain.mascot.repository.MascotRepository;
 import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MascotErrorCode;
 import com.umc.networkingService.global.common.exception.code.UniversityErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
@@ -23,17 +26,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
+    private final MascotRepository mascotRepository;
     private final UniversityRepository universityRepository;
     private final BranchRepository branchRepository;
     private final BranchUniversityRepository branchUniversityRepository;
     private final ProjectRepository projectRepository;
 
+    private List<MascotInfo> mascots = Arrays.stream(MascotInfo.values()).toList();
     private List<UniversityInfo> universities = Arrays.stream(UniversityInfo.values()).toList();
     private List<BranchInfo> branches = Arrays.stream(BranchInfo.values()).toList();
     private List<ProjectInfo> projects = Arrays.stream(ProjectInfo.values()).toList();
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        // 새로운 마스코트 생성
+        insertNewMascots();
         // 새로운 대학교 생성
         insertNewUniversities();
         // 새로운 지부 생성
@@ -49,6 +56,20 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         insertNewProjects();
     }
 
+    // 새로운 마스코트를 추가하는 함수
+    private void insertNewMascots() {
+        mascots.stream()
+                .filter(mascot -> !mascotRepository.existsByStartLevelAndType(mascot.getStartLevel(), mascot.getMascotType()))
+                .map(mascot -> Mascot.builder()
+                        .startLevel(mascot.getStartLevel())
+                        .endLevel(mascot.getEndLevel())
+                        .type(mascot.getMascotType())
+                        .dialogue(mascot.getDialogue())
+                        .image(mascot.getImageUrl())
+                        .build())
+                .forEach(mascotRepository::save);
+    }
+
     // 새로운 대학교를 추가하는 함수
     private List<University> insertNewUniversities() {
         return universities.stream()
@@ -57,6 +78,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
                         .name(university.getName())
                         .semesterLogo(university.getSemesterLogo())
                         .universityLogo(university.getUniversityLogo())
+                        .mascot(mascotRepository.findByStartLevelAndType(1, university.getMascotType()).get())
                         .build())
                 .map(universityRepository::save)
                 .toList();
