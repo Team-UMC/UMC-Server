@@ -46,6 +46,20 @@ public class ProjectController {
         return BaseResponse.onSuccess(projectService.inquiryProjects(semester, type, pageable));
     }
 
+    @Operation(summary = "HOT 프로젝트 조회 API", description = "조회수 기준으로 HOT 프로젝트를 조회하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @Parameters(value = {
+            @Parameter(name = "page", description = "page를 입력하는 파라미터입니다.(0부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 20개)"),
+    })
+    @GetMapping("/hot")
+    public BaseResponse<ProjectAllResponse> inquiryHotProjects(@PageableDefault(sort = "hitCount", direction = Sort.Direction.DESC)
+                                                               @Parameter(hidden = true) Pageable pageable) {
+        return BaseResponse.onSuccess(projectService.inquiryHotProjects(pageable));
+    }
+
     @Operation(summary = "프로젝트 검색 API", description = "키워드가 프로젝트명 또는 태그에 포함된 프로젝트 목록을 검색하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")

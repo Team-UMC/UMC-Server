@@ -110,6 +110,16 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
+    public ProjectAllResponse inquiryHotProjects(Pageable pageable) {
+        Page<Project> projects = projectRepository.findAll(pageable);
+
+        return new ProjectAllResponse(
+                projects.stream().map(projectMapper::toProjectInfo).toList(),
+                projects.hasNext()
+        );
+    }
+
+    @Override
     public ProjectAllResponse searchProject(String keyword, Pageable pageable){
         Page<Project> projects = projectRepository.findByNameContainsOrTagContains(keyword, pageable);
 
