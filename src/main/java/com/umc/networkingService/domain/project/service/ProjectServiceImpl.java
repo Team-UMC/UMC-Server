@@ -68,14 +68,17 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     @Transactional
     public ProjectIdResponse deleteProject(UUID projectId){
-        // 등록되지 않은 프로젝트를 삭제하려고 하는 경우, 예외처리 메세지 반환
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
 
-        // Todo: 해당 프로젝트의 수정 권한이 없을 경우, 에러처리 메세지 반환
+        Project project = loadEntity(projectId);
 
+        // 프로젝트 이미지 삭제
+        s3FileComponent.deleteFile(project.getLogoImage());
+        project.deleteProjectImage();
+
+        // 프로젝트 soft delete
         project.delete();
 
-        return new ProjectIdResponse();
+        return new ProjectIdResponse(project.getId());
     }
 
     @Override

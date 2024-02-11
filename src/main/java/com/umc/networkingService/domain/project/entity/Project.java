@@ -61,4 +61,8 @@ public class Project extends BaseEntity {
         // 이전께 삭제 되는지 확인
         this.tags = request.getTags();
     }
+
+    public void deleteProjectImage() {
+        this.logoImage = null;
+    }
 }

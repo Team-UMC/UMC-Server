@@ -41,8 +41,7 @@ public class StaffProjectController {
     @Operation(summary = "프로젝트 수정 API", description = "프로젝트를 수정하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다."),
-            @ApiResponse(responseCode = "PROJECT002", description = "해당 프로젝트에 대해 수정 권한이 없습니다.")
+            @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다.")
     })
     @PatchMapping("/update/{projectId}")
     public BaseResponse<ProjectIdResponse> updateProject(@CurrentMember Member member,
@@ -55,8 +54,7 @@ public class StaffProjectController {
     @Operation(summary = "프로젝트 삭제 API", description = "프로젝트를 삭제하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다."),
-            @ApiResponse(responseCode = "PROJECT003", description = "해당 프로젝트에 대해 삭제 권한이 없습니다.")
+            @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다.")
     })
     @DeleteMapping("/{projectId}")
     public BaseResponse<ProjectIdResponse> deleteProject(@PathVariable("projectId") UUID projectId){
