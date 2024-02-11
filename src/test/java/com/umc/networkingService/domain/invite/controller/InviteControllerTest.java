@@ -34,7 +34,6 @@ public class InviteControllerTest extends ControllerTestConfig {
         // given
         member.updateRole(Role.CAMPUS_STAFF);
 
-
         InviteCreateResponse response = new InviteCreateResponse("초대 코드", Role.MEMBER);
 
         given(inviteService.createInviteCode(any(), any())).willReturn(response);
@@ -72,10 +71,12 @@ public class InviteControllerTest extends ControllerTestConfig {
         // given
         member.updateRole(Role.BRANCH_STAFF);
 
-        List<InviteInquiryMineResponse> response = List.of(
-                new InviteInquiryMineResponse("초대 코드1", Role.MEMBER, LocalDateTime.now()),
-                new InviteInquiryMineResponse("초대 코드2", Role.CAMPUS_STAFF, LocalDateTime.now())
+        InviteInquiryMineResponse response = new InviteInquiryMineResponse(
+                List.of(
+                        new InviteInquiryMineResponse.InviteInfo("초대 코드1", Role.MEMBER, LocalDateTime.now()),
+                        new InviteInquiryMineResponse.InviteInfo("초대 코드2", Role.CAMPUS_STAFF, LocalDateTime.now()))
         );
+
 
         given(inviteService.inquiryMyInviteCode(any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
@@ -87,7 +88,7 @@ public class InviteControllerTest extends ControllerTestConfig {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("COMMON200"))
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
-                .andExpect(jsonPath("$.result").value(hasSize(response.size())));
+                .andExpect(jsonPath("$.result.invites").value(hasSize(response.getInvites().size())));
     }
 
     @DisplayName("초대 코드 인증 API 테스트")

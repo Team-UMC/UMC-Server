@@ -23,13 +23,11 @@ public class Project extends BaseEntity {
 
     @Id
     @UuidGenerator
-    @Column(name = "project_id")
     private UUID id;
 
-    @Column(nullable = false)
     private String logoImage;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String slogan;
@@ -37,10 +35,11 @@ public class Project extends BaseEntity {
     private String description;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private List<Member> members;
+    private List<ProjectMember> members = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
+    @Builder.Default
     private List<String> tags = new ArrayList<>();
 
     @Column(nullable = false)
@@ -48,7 +47,8 @@ public class Project extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<Type> type;
+    @Builder.Default
+    private List<Type> type = new ArrayList<>();
 
     @ColumnDefault("0")
     private Long hitCount;

@@ -1,16 +1,13 @@
 package com.umc.networkingService.domain.member.mapper;
 
 import com.umc.networkingService.config.security.jwt.TokenInfo;
-import com.umc.networkingService.domain.member.dto.request.SemesterPartInfo;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryInfoWithPointResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryPointsResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberInquiryProfileResponse;
-import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
+import com.umc.networkingService.domain.member.dto.SemesterPartInfo;
+import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -48,7 +45,7 @@ public class MemberMapper {
 
         String universityName = Optional.ofNullable(member.getUniversity())
                 .map(University::getName)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER_UNIVERSITY));
 
         return MemberInquiryProfileResponse.builder()
                 .memberId(member.getId())
@@ -85,6 +82,19 @@ public class MemberMapper {
                 .remainPoint(point)
                 .usedHistories(usedHistories)
                 .build();
+    }
+
+    public MemberSearchInfosResponse.MemberInfo toSearchMembersResponse(
+            Member member, List<String> campusPositions, List<String> centerPositions) {
+
+        return  MemberSearchInfosResponse.MemberInfo.builder()
+                .memberId(member.getId())
+                .universityName(member.getUniversity().getName())
+                .campusPositions(campusPositions)
+                .centerPositions(centerPositions)
+                .semesterParts(toSemesterPartInfos(member.getSemesterParts()))
+                .build();
+
     }
 
     public SemesterPart toSemesterPart(Member member, SemesterPartInfo semesterPartInfo) {

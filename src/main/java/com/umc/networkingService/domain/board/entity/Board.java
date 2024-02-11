@@ -1,12 +1,11 @@
 package com.umc.networkingService.domain.board.entity;
 
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
@@ -18,7 +17,9 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 @DynamicInsert
 public class Board extends BaseEntity {
@@ -37,11 +38,11 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "board_semester_permission", joinColumns = @JoinColumn(name = "board_id"))
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Semester> semesterPermission = new ArrayList<>();
-
 
     @Column(nullable = false)
     private HostType hostType;
@@ -58,6 +59,38 @@ public class Board extends BaseEntity {
     @ColumnDefault("0")
     private int commentCount;
 
-    private boolean isFixed; //notice가 아니면 null
+    private boolean isFixed;
 
+    public void update(BoardRequest.BoardUpdateRequest request, List<Semester> semesters) {
+        this.hostType = HostType.valueOf(request.getHostType());
+        this.boardType = BoardType.valueOf(request.getBoardType());
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.semesterPermission = semesters;
+    }
+
+    public void increaseHitCount() {
+        this.hitCount++;
+    }
+
+
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decreaseCommentCount() {
+        this.commentCount--;
+    }
+
+    public void setHeartCount(boolean isChecked) {
+        if (isChecked) {
+            this.heartCount++;
+        } else {
+            this.heartCount--;
+        }
+    }
+
+    public void setIsFixed(boolean isFixed) {
+        this.isFixed = isFixed;
+    }
 }

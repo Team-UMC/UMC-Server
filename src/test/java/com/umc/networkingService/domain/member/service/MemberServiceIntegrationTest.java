@@ -1,8 +1,6 @@
 package com.umc.networkingService.domain.member.service;
 
 
-import com.umc.networkingService.domain.friend.entity.Friend;
-import com.umc.networkingService.domain.friend.repository.FriendRepository;
 import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
@@ -11,7 +9,7 @@ import com.umc.networkingService.domain.member.entity.*;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import com.umc.networkingService.support.ServiceIntegrationTestConfig;
@@ -44,13 +42,10 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     private MemberPositionRepository memberPositionRepository;
     @Autowired
     private MemberPointRepository memberPointRepository;
-    @Autowired
-    private FriendRepository friendRepository;
+
 
     @MockBean private S3FileComponent s3FileComponent;
     @MockBean private GithubMemberClient githubMemberClient;
-
-
 
     private MemberPoint createMemberPoint(PointType pointType) {
         return MemberPoint.builder()
@@ -124,6 +119,8 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
 
         Member staff = createMember("222222", Role.TOTAL_STAFF);
 
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of(), List.of()));
+
         member.updatePositions(List.of(
                 memberPositionRepository.save(MemberPosition.builder()
                         .member(member)
@@ -131,7 +128,6 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                         .name("Android 파트장")
                         .build())
         ));
-
         MemberUpdateProfileRequest request = MemberUpdateProfileRequest.builder()
                 .campusPositions(List.of("회장"))
                 .centerPositions(List.of())
@@ -176,7 +172,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.updateProfile(staff, member.getId(), request));
 
         // then
-        assertEquals(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHORIZED_UPDATE_MEMBER.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());
@@ -205,7 +201,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.updateProfile(staff, member.getId(), request));
 
         // then
-        assertEquals(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());
@@ -216,81 +212,24 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
     }
 
     @Test
-    @DisplayName("유저 프로필 조회 테스트 - 본인")
-    @Transactional
-    public void inquiryMyProfile() {
-        // given
-        authService.signUp(member, getInfoRequest(member));
-
-        // when
-        MemberInquiryProfileResponse response = memberService.inquiryProfile(member, null);
-
-        // then
-        assertEquals("김준석", response.getName());
-        assertEquals("인하대학교", response.getUniversityName());
-        assertEquals(MemberRelation.MINE, response.getOwner());
-    }
-
-    @Test
-    @DisplayName("유저 프로필 조회 테스트 - 친구")
-    @Transactional
-    public void inquiryFriendProfile() {
-        // given
-        Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
-
-        authService.signUp(member, getInfoRequest(member));
-
-        friendRepository.save(Friend.builder()
-                .sender(loginMember)
-                .receiver(member)
-                .build());
-
-        // when
-        MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
-
-        // then
-        assertEquals("김준석", response.getName());
-        assertEquals("인하대학교", response.getUniversityName());
-        assertEquals(MemberRelation.FRIEND, response.getOwner());
-    }
-
-    @Test
-    @DisplayName("유저 프로필 조회 테스트 - 그 외")
-    @Transactional
-    public void inquiryOthersProfile() {
-        // given
-        Member loginMember = createMember("222222", Role.CAMPUS_STAFF);
-
-        authService.signUp(member, getInfoRequest(member));
-
-        // when
-        MemberInquiryProfileResponse response = memberService.inquiryProfile(loginMember, member.getId());
-
-        // then
-        assertEquals("김준석", response.getName());
-        assertEquals("인하대학교", response.getUniversityName());
-        assertEquals(MemberRelation.OTHERS, response.getOwner());
-    }
-
-    @Test
     @DisplayName("포인트 관련 유저 정보 조회 테스트")
     @Transactional
     public void inquiryHomeInfo() {
         // given
-        authService.signUp(member, getInfoRequest(member));
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
         member.updateContributionPoint(1000L);
 
-        Member universityMember1 = createMember("222222", Role.MEMBER);
-        authService.signUp(universityMember1, getInfoRequest(universityMember1));
+        Member universityMember1 = createMember("222222", Role.CAMPUS_STAFF);
+        authService.signUp(universityMember1, getInfoRequest("이경수", "리버", List.of("iOS 파트장"), List.of()));
         universityMember1.updateContributionPoint(2000L);
         Member universityMember2 = createMember("333333", Role.MEMBER);
-        authService.signUp(universityMember2, getInfoRequest(universityMember2));
+        authService.signUp(universityMember2, getInfoRequest("김보민", "밈보", List.of(), List.of()));
         universityMember2.updateContributionPoint(2000L);
         Member universityMember3 = createMember("444444", Role.MEMBER);
-        authService.signUp(universityMember3, getInfoRequest(universityMember3));
+        authService.signUp(universityMember3, getInfoRequest("김수민", "루시", List.of(), List.of()));
         universityMember3.updateContributionPoint(3000L);
         Member universityMember4 = createMember("555555", Role.MEMBER);
-        authService.signUp(universityMember4, getInfoRequest(universityMember4));
+        authService.signUp(universityMember4, getInfoRequest("박재우", "다재", List.of(), List.of()));
         universityMember4.updateContributionPoint(1000L);
 
         // when
@@ -312,7 +251,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
         given(githubMemberClient.getGithubNickname(any())).willReturn("junseokkim");
 
         // when
-        MemberAuthenticateGithubResponse response = memberService.authenticateGithub(member, "깃허브 인가 코드");
+        MemberAuthenticateGithubResponse response = memberService.authenticateGithub(member, "junseokkim");
 
         // then
         assertEquals("junseokkim", response.getGithubNickname());
@@ -341,7 +280,7 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> memberService.inquiryGithubImage(member));
 
         // then
-        assertEquals(ErrorCode.UNAUTHENTICATED_GITHUB, exception.getErrorCode());
+        assertEquals(MemberErrorCode.UNAUTHENTICATED_GITHUB.getCode(), exception.getErrorCode().getCode());
 
         Optional<Member> optionalMember = memberRepository.findById(member.getId());
         assertTrue(optionalMember.isPresent());
@@ -391,4 +330,66 @@ public class MemberServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 .toList();
         assertEquals(List.of(10L, 5L), points);
     }
+
+    @Test
+    @DisplayName("운영진용 유저 검색 테스트")
+    @Transactional
+    public void searchMemberInfo() {
+        // given
+        String keyword = "벡스/김준석";
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
+
+        Member staff = createMember("222222", Role.CENTER_STAFF);
+
+        // when
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
+
+        // then
+        assertEquals(1, responses.getMembers().size());
+        assertEquals(member.getId(), responses.getMembers().get(0).getMemberId());
+    }
+
+    @Test
+    @DisplayName("운영진용 유저 검색 테스트 - 여러명인 경우")
+    @Transactional
+    public void searchMembersInfo() {
+        // given
+        String keyword = "벡스/김준석";
+
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
+
+        Member anotherMember = createMember("222222", Role.CAMPUS_STAFF);
+        authService.signUp(anotherMember, getInfoRequest("김준석", "벡스", List.of(), List.of()));
+
+        Member staff = createMember("333333", Role.CENTER_STAFF);
+
+        // when
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
+
+        // then
+        assertEquals(2, responses.getMembers().size());
+    }
+
+    @Test
+    @DisplayName("운영진용 유저 검색 테스트 - 상위 운영진 미조회")
+    @Transactional
+    public void searchMembersInfoByLowRole() {
+        // given
+        String keyword = "벡스/김준석";
+
+        authService.signUp(member, getInfoRequest("김준석", "벡스", List.of("회장"), List.of()));
+
+        Member anotherMember = createMember("222222", Role.TOTAL_STAFF);
+        authService.signUp(anotherMember, getInfoRequest("김준석", "벡스", List.of(), List.of("회장")));
+
+        Member staff = createMember("333333", Role.CENTER_STAFF);
+
+        // when
+        MemberSearchInfosResponse responses = memberService.searchMemberInfo(staff, keyword);
+
+        // then
+        assertEquals(1, responses.getMembers().size());
+    }
+
+
 }

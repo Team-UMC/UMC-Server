@@ -1,17 +1,9 @@
 package com.umc.networkingService.domain.test.controller;
 
-import com.umc.networkingService.domain.branch.entity.Branch;
-import com.umc.networkingService.domain.branch.entity.BranchUniversity;
-import com.umc.networkingService.domain.branch.repository.BranchRepository;
-import com.umc.networkingService.domain.branch.repository.BranchUniversityRepository;
 import com.umc.networkingService.domain.test.dto.TestRequest;
 import com.umc.networkingService.domain.test.dto.TestResponse;
 import com.umc.networkingService.domain.test.service.TestService;
-import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.base.BaseResponse;
-import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.enums.Semester;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,9 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/test")
 public class TestController {
     private final TestService testService;
-    private final UniversityRepository universityRepository;
-    private final BranchRepository branchRepository;
-    private final BranchUniversityRepository branchUniversityRepository;
 
     @Operation(summary = "성공적인 응답 반환 API", description = "테스트 문자열을 반환하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "테스트 문자열을 성공적으로 반환")
@@ -65,28 +54,5 @@ public class TestController {
         return BaseResponse.onSuccess(TestResponse.TempTestDTO.builder()
                 .testString(request.getTestString())
                 .build());
-    }
-
-    @Operation(summary = "테스트 데이터 생성 API")
-    @PostMapping("/etc")
-    public void createMember(@RequestParam Role role) {
-        Branch branch = branchRepository.save(
-                Branch.builder()
-                        .name("가지")
-                        .description("가치 지부입니다.")
-                        .semester(Semester.FIFTH)
-                        .build());
-
-        University university = universityRepository.save(
-                University.builder()
-                        .name("인하대학교")
-                        .build());
-
-        BranchUniversity branchUniversity = branchUniversityRepository.save(
-                BranchUniversity.builder()
-                        .branch(branch)
-                        .university(university)
-                        .isActive(Boolean.TRUE)
-                        .build());
     }
 }

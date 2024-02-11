@@ -7,7 +7,7 @@ import com.umc.networkingService.domain.invite.entity.Invite;
 import com.umc.networkingService.domain.invite.repository.InviteRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
+import com.umc.networkingService.global.common.exception.code.InviteErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.support.ServiceIntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,7 +66,7 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> inviteService.createInviteCode(member, Role.CENTER_STAFF));
 
         // then
-        assertEquals(ErrorCode.UNAUTHORIZED_CREATE_INVITE, exception.getErrorCode());
+        assertEquals(InviteErrorCode.UNAUTHORIZED_CREATE_INVITE, exception.getErrorCode());
 
         Optional<Invite> optionalInvite = inviteRepository.findByMemberAndRole(member, Role.CENTER_STAFF);
         assertFalse(optionalInvite.isPresent());
@@ -82,10 +81,10 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
         createInvite("secondInviteCode", Role.CAMPUS_STAFF);
 
         // when
-        List<InviteInquiryMineResponse> response = inviteService.inquiryMyInviteCode(member);
+        InviteInquiryMineResponse response = inviteService.inquiryMyInviteCode(member);
 
         // then
-        assertEquals(2, response.size());
+        assertEquals(2, response.getInvites().size());
     }
 
     @Test
@@ -94,10 +93,10 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
     public void inquiryMyInviteCodeWithNone() {
 
         // when
-        List<InviteInquiryMineResponse> response = inviteService.inquiryMyInviteCode(member);
+        InviteInquiryMineResponse response = inviteService.inquiryMyInviteCode(member);
 
         // then
-        assertEquals(0, response.size());
+        assertEquals(0, response.getInvites().size());
     }
 
     @Test
@@ -131,6 +130,6 @@ public class InviteServiceIntegrationTest extends ServiceIntegrationTestConfig {
                 () -> inviteService.authenticateInviteCode(member, code));
 
         // then
-        assertEquals(ErrorCode.EXPIRED_INVITE_CODE, exception.getErrorCode());
+        assertEquals(InviteErrorCode.EXPIRED_INVITE_CODE.getCode(), exception.getErrorCode().getCode());
     }
 }

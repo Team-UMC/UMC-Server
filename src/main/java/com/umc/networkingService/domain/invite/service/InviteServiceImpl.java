@@ -10,8 +10,8 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.InviteErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,12 +45,12 @@ public class InviteServiceImpl implements InviteService {
     public InviteAuthenticateResponse authenticateInviteCode(Member member, String inviteCode) {
         // 존재하지 않는 초대 코드인 경우 예외 처리
         Invite savedInvite = inviteRepository.findByCode(inviteCode)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_INVITE_CODE));
+                .orElseThrow(() -> new RestApiException(InviteErrorCode.EXPIRED_INVITE_CODE));
 
         // 만료된 초대 코드인 경우 삭제 후 예외 처리
         if (savedInvite.isExpired()) {
             savedInvite.delete();
-            throw new RestApiException(ErrorCode.EXPIRED_INVITE_CODE);
+            throw new RestApiException(InviteErrorCode.EXPIRED_INVITE_CODE);
         }
 
         // 초대 코드에 부여된 역할 부여
@@ -62,19 +62,21 @@ public class InviteServiceImpl implements InviteService {
 
     // 나의 초대 코드 조회 함수
     @Override
-    public List<InviteInquiryMineResponse> inquiryMyInviteCode(Member member) {
+    public InviteInquiryMineResponse inquiryMyInviteCode(Member member) {
         // 본인이 생성한 초대 코드 조회
         List<Invite> savedInvites = inviteRepository.findAllByMember(member);
 
-        return savedInvites.stream()
+        List<InviteInquiryMineResponse.InviteInfo> invites = savedInvites.stream()
                 .map(inviteMapper::toInquiryMineResponse)
                 .toList();
+
+        return new InviteInquiryMineResponse(invites);
     }
 
     // 본인의 역할 이상의 역할 부여를 확인하는 함수
     private void checkRolePriority(Member member, Role role) {
         if (member.getRole().getPriority() >= role.getPriority()) {
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_CREATE_INVITE);
+            throw new RestApiException(InviteErrorCode.UNAUTHORIZED_CREATE_INVITE);
         }
     }
 

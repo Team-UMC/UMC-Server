@@ -62,4 +62,3 @@ public class PrincipalDetails implements UserDetails {
         return member.getDeletedAt() == null;
     }
 }
-

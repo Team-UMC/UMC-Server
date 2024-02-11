@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.member.dto.request;
 
+import com.umc.networkingService.domain.member.dto.SemesterPartInfo;
 import lombok.Builder;
 import lombok.Getter;
 

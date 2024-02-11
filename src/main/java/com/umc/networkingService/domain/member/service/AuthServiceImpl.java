@@ -8,7 +8,7 @@ import com.umc.networkingService.domain.member.client.GoogleMemberClient;
 import com.umc.networkingService.domain.member.client.KakaoMemberClient;
 import com.umc.networkingService.domain.member.client.NaverMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
-import com.umc.networkingService.domain.member.dto.response.MemberGenerateNewAccessTokenResponse;
+import com.umc.networkingService.domain.member.dto.response.MemberGenerateTokenResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberIdResponse;
 import com.umc.networkingService.domain.member.dto.response.MemberLoginResponse;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -18,8 +18,9 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,72 +71,75 @@ public class AuthServiceImpl implements AuthService {
     // 회원가입을 수행하는 함수
     @Override
     @Transactional
-    public MemberIdResponse signUp(Member loginMember, MemberSignUpRequest request) {
+    public MemberIdResponse signUp(Member member, MemberSignUpRequest request) {
 
-        Member member = loadEntity(loginMember.getId());
+        Member loginMember = loadEntity(member.getId());
 
         // 소속 대학교 탐색
         University university = universityService.findUniversityByName(request.getUniversityName());
 
         // 멤버 직책 저장
-        memberPositionService.saveMemberPositionInfos(member, request.getCampusPositions(), request.getCenterPositions());
+        memberPositionService.saveMemberPositionInfos(loginMember, request.getCampusPositions(), request.getCenterPositions());
 
         // 기수별 파트 저장
-        semesterPartService.saveSemesterPartInfos(member, request.getSemesterParts());
+        semesterPartService.saveSemesterPartInfos(loginMember, request.getSemesterParts());
 
         // 이외의 기본 정보 저장
-        member.setMemberInfo(request.getName(), request.getNickname(),
-                university, branchUniversityService.findBranchByUniversity(university));
+        loginMember.setMemberInfo(request.getName(), request.getNickname(), university,
+                // 대학교와 멤버의 마지막 기수를 통해 지부 정보 조회
+                branchUniversityService.findBranchByUniversityAndSemester(university, loginMember.getRecentSemester())
+        );
 
-        return new MemberIdResponse(memberService.saveEntity(member).getId());
+        return new MemberIdResponse(memberService.saveEntity(loginMember).getId());
     }
 
     // 새로운 액세스 토큰 발급 함수
     @Override
     @Transactional
-    public MemberGenerateNewAccessTokenResponse generateNewAccessToken(String refreshToken, Member loginMember) {
+    public MemberGenerateTokenResponse generateNewAccessToken(String refreshToken, Member member) {
 
-        Member member = loadEntity(loginMember.getId());
+        Member loginMember = loadEntity(member.getId());
 
-        RefreshToken savedRefreshToken = refreshTokenService.findByMemberId(member.getId())
-                .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
+        RefreshToken savedRefreshToken = refreshTokenService.findByMemberId(loginMember.getId())
+                .orElseThrow(() -> new RestApiException(AuthErrorCode.EXPIRED_MEMBER_JWT));
 
         // 디비에 저장된 refreshToken과 동일하지 않다면 유효하지 않음
         if (!refreshToken.equals(savedRefreshToken.getRefreshToken()))
-            throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_REFRESH_TOKEN);
 
-        return new MemberGenerateNewAccessTokenResponse(jwtTokenProvider.generateAccessToken(member.getId()));
+        return new MemberGenerateTokenResponse(jwtTokenProvider.generateAccessToken(loginMember.getId()));
     }
 
     // 로그아웃 함수
     @Override
     @Transactional
-    public MemberIdResponse logout(Member loginMember) {
-        Member member = loadEntity(loginMember.getId());
+    public MemberIdResponse logout(Member member) {
+        Member loginMember = loadEntity(member.getId());
 
-        deleteRefreshToken(member);
-        return new MemberIdResponse(member.getId());
+        deleteRefreshToken(loginMember);
+        return new MemberIdResponse(loginMember.getId());
     }
 
     // 회원 탈퇴 함수
     @Override
     @Transactional
-    public MemberIdResponse withdrawal(Member loginMember) {
+    public MemberIdResponse withdrawal(Member member) {
         // 멤버 soft delete
-        Member member = loadEntity(loginMember.getId());
+        Member loginMember = loadEntity(member.getId());
 
         // refreshToken 삭제
-        deleteRefreshToken(member);
+        deleteRefreshToken(loginMember);
 
         // 멤버 soft delete
-        member.delete();
+        loginMember.delete();
 
-        return new MemberIdResponse(member.getId());
+        return new MemberIdResponse(loginMember.getId());
     }
 
     private MemberLoginResponse loginByApple(final String accessToken){
         // apple 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = appleMemberClient.getappleClientID(accessToken);
+
         //존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.APPLE);
 
@@ -144,7 +148,8 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.APPLE);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get(), true);
+        boolean isServiceMember = getMember.get().getName() != null;
+        return getNewToken(getMember.get(), isServiceMember);
     }
 
     private MemberLoginResponse loginByKakao(final String accessToken){
@@ -173,7 +178,9 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId,SocialType.NAVER);
         }
         // 2. 있으면 (이미 로그인 했던 적이 있는 경우)
-        return getNewToken(getMember.get(), true);
+        boolean isServiceMember = getMember.get().getName() != null;
+
+        return getNewToken(getMember.get(), isServiceMember);
     }
 
     private MemberLoginResponse loginByGoogle(final String accessToken){
@@ -187,7 +194,8 @@ public class AuthServiceImpl implements AuthService {
             return saveNewMember(clientId, SocialType.GOOGLE);
         }
         // 2. 있으면 : 새로운 토큰 반환
-        return getNewToken(getMember.get(), true);
+        boolean isServiceMember = getMember.get().getName() != null;
+        return getNewToken(getMember.get(), isServiceMember);
     }
 
     private MemberLoginResponse saveNewMember(String clientId, SocialType socialType) {
@@ -217,6 +225,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
     }
 }

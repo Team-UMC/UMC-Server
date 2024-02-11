@@ -1,12 +1,12 @@
 package com.umc.networkingService.domain.member.service;
 
-import com.umc.networkingService.domain.member.dto.request.SemesterPartInfo;
+import com.umc.networkingService.domain.member.dto.SemesterPartInfo;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.SemesterPartErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +52,6 @@ public class SemesterPartServiceImpl implements SemesterPartService {
     @Override
     public SemesterPart loadEntity(UUID id) {
         return semesterPartRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SEMESTER_PART));
+                .orElseThrow(() -> new RestApiException(SemesterPartErrorCode.EMPTY_SEMESTER_PART));
     }
 }
