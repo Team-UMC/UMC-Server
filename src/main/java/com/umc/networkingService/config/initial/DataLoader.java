@@ -64,7 +64,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
                         .startLevel(mascot.getStartLevel())
                         .endLevel(mascot.getEndLevel())
                         .type(mascot.getMascotType())
-                        .dialogue(mascot.getDialogue())
+                        .dialogues(mascot.getDialogue())
                         .image(mascot.getImageUrl())
                         .build())
                 .forEach(mascotRepository::save);
