@@ -56,13 +56,11 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     @Transactional
     public ProjectIdResponse updateProject(Member member, UUID projectId, MultipartFile projectImage, ProjectUpdateRequest request){
-        // 등록되지 않은 프로젝트를 수정하려고 하는 경우에, 예외처리 메세지 반환
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
 
-        // Todo: 해당 프로젝트의 수정 권한이 없을 경우, 에러처리 메세지 반환
+        Project project = loadEntity(projectId);
 
-        // Todo: 해당 프로젝트에서 수정해야 하는 정보를 받아서 업데이트 (일단 이름이랑 슬로건만 받는 상태로 구현)
-        project.updateProject(request.getName(),request.getSlogan());
+        // Todo: 해당 프로젝트에서 수정해야 하는 정보를 받아서 업데이트 (일단 이름, 슬로건, 설명, 태그만 받는 상태로 구현)
+        project.updateProject(request);
 
         return new ProjectIdResponse(project.getId());
     }
@@ -98,5 +96,11 @@ public class ProjectServiceImpl implements ProjectService{
         // 프로젝트 id를 통해 해당 프로젝트의 디테일 데이터 반환
         // Todo: 로고 이미지 반환
         return projectMapper.detailProject(project);
+    }
+
+    @Override
+    public Project loadEntity(UUID id) {
+        return projectRepository.findById(id)
+                .orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
     }
 }

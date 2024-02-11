@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @Tag(name = "운영진용 Project API", description = "운영진용 Project 관련 API")
 @RestController
-@RequestMapping("/project")
+@RequestMapping("/staff/projects")
 @RequiredArgsConstructor
 public class StaffProjectController {
 
@@ -44,7 +44,7 @@ public class StaffProjectController {
             @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다."),
             @ApiResponse(responseCode = "PROJECT002", description = "해당 프로젝트에 대해 수정 권한이 없습니다.")
     })
-    @PostMapping("/update/{projectId}")
+    @PatchMapping("/update/{projectId}")
     public BaseResponse<ProjectIdResponse> updateProject(@CurrentMember Member member,
                                                          @PathVariable("projectId") UUID projectId,
                                                          @RequestPart MultipartFile projectImage,

@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.project.entity;
 
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
@@ -53,8 +54,11 @@ public class Project extends BaseEntity {
     @ColumnDefault("0")
     private Long heartCount;
 
-    public void updateProject(String name, String slogan){
-        this.name = name;
-        this.slogan = slogan;
+    public void updateProject(ProjectUpdateRequest request){
+        this.name = request.getName();
+        this.slogan = request.getSlogan();
+        this.description = request.getDescription();
+        // 이전께 삭제 되는지 확인
+        this.tags = request.getTags();
     }
 }
