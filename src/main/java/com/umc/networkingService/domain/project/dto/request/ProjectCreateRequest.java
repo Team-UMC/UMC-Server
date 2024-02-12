@@ -3,6 +3,7 @@ package com.umc.networkingService.domain.project.dto.request;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.common.validation.annotation.ExistProjectName;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 @Builder
 public class ProjectCreateRequest {
     @NotEmpty(message = "프로젝트명은 공백일 수 없습니다.")
+    @ExistProjectName
     private String name;
     private String description;
     @Size(max = 3, message = "프로젝트 태그는 최대 3개까지 입니다.")
@@ -32,9 +34,7 @@ public class ProjectCreateRequest {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ProjectMemberInfo {
-        @NotEmpty(message = "닉네임은 공백일 수 없습니다.")
         private String nickname;
-        @NotEmpty(message = "닉네임은 공백일 수 없습니다.")
         private String name;
         private Part part;
     }

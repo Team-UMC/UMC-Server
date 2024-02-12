@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
-    Optional<Project> findByName(String projectName);
     Page<Project> findAllBySemester(Semester semester, Pageable pageable);
     Page<Project> findAllByTypesContains(ProjectType type, Pageable pageable);
     Page<Project> findAllBySemesterAndTypesContains(Semester semester, ProjectType type, Pageable pageable);
