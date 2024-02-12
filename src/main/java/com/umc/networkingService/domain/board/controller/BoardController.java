@@ -227,5 +227,4 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.toggleBoardLike(member, boardId));
     }
 
-
 }

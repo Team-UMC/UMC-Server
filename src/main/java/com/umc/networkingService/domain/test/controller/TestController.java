@@ -1,5 +1,7 @@
 package com.umc.networkingService.domain.test.controller;
 
+import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.test.dto.TestRequest;
 import com.umc.networkingService.domain.test.dto.TestResponse;
 import com.umc.networkingService.domain.test.service.TestService;
@@ -19,6 +21,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/test")
 public class TestController {
     private final TestService testService;
+
+    @Operation(summary = "dummy Board 생성 API", description = "보드 더미데이터를 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @PostMapping("/dummy")
+    public BaseResponse<String> createDummyBoard(@CurrentMember Member member) {
+        return BaseResponse.onSuccess(testService.createDummyBoard(member,10));
+    }
 
     @Operation(summary = "성공적인 응답 반환 API", description = "테스트 문자열을 반환하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "테스트 문자열을 성공적으로 반환")
