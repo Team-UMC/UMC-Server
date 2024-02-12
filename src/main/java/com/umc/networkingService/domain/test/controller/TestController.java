@@ -28,7 +28,7 @@ public class TestController {
     })
     @PostMapping("/dummy")
     public BaseResponse<String> createDummyBoard(@CurrentMember Member member) {
-        return BaseResponse.onSuccess(testService.createDummyBoard(member,10));
+        return BaseResponse.onSuccess(testService.createDummyBoard(member));
     }
 
     @Operation(summary = "성공적인 응답 반환 API", description = "테스트 문자열을 반환하는 API입니다.")

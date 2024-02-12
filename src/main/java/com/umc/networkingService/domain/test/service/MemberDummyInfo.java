@@ -23,10 +23,12 @@ public enum MemberDummyInfo {
     MEMBER7("챌린저","최재혁","체이서", List.of(FIFTH),List.of(WEB)),
     MEMBER8("챌린저","김보민","밈보", List.of(FIFTH),List.of(SPRING)),
     MEMBER9("챌린저","박재우","다재",List.of(FIFTH),List.of(SPRING)),
-    MEMBER10("iOS 파트장","이경수","리버", List.of(FIFTH,FOURTH),List.of(SPRING,IOS)),
-    MEMBER11("회장","김준석", "벡스",List.of(FIFTH,THIRD),List.of(SPRING,ANDROID))
-    ;
+    MEMBER10("챌린저","김오비","비오",List.of(FOURTH),List.of(ANDROID)),
+    CampusStaff("iOS 파트장","이경수","리버", List.of(FIFTH,FOURTH),List.of(SPRING,IOS)),
+    BranchStaff("회장","김준석", "벡스",List.of(FIFTH,THIRD),List.of(SPRING,ANDROID)),
+    CenterStaff("운영국장","김루시", "시루",List.of(FIFTH),List.of(SPRING)),
 
+    ;
 
     private final String role;
     private final String name;

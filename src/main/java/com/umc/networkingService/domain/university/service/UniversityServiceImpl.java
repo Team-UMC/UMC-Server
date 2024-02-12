@@ -267,4 +267,10 @@ public class UniversityServiceImpl implements UniversityService {
         }
         return 0;
     }
+
+    @Override
+    public University loadEntity(UUID universityId) {
+        return universityRepository.findById(universityId)
+                .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
+    }
 }
