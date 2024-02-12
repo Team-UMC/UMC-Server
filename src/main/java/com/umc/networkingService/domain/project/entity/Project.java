@@ -54,7 +54,6 @@ public class Project extends BaseEntity {
     public void updateProject(ProjectUpdateRequest request){
         this.name = request.getName();
         this.description = request.getDescription();
-        // 이전께 삭제 되는지 확인
         this.tags = request.getTags();
     }
 

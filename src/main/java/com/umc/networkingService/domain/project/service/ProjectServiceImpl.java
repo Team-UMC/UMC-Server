@@ -62,11 +62,11 @@ public class ProjectServiceImpl implements ProjectService{
 
     @Override
     @Transactional
-    public ProjectIdResponse updateProject(Member member, UUID projectId, MultipartFile projectImage, ProjectUpdateRequest request){
+    public ProjectIdResponse updateProject(Member member, UUID projectId, ProjectUpdateRequest request){
 
         Project project = loadEntity(projectId);
 
-        // Todo: 해당 프로젝트에서 수정해야 하는 정보를 받아서 업데이트 (일단 이름, 슬로건, 설명, 태그만 받는 상태로 구현)
+        // Todo: 해당 프로젝트에서 수정해야 하는 정보를 받아서 업데이트 (일단 이름, 설명, 태그만 받는 상태로 구현)
         project.updateProject(request);
 
         return new ProjectIdResponse(project.getId());
@@ -95,7 +95,7 @@ public class ProjectServiceImpl implements ProjectService{
         // 기수 조건과 타입 조건의 유무에 따라서 조회
         if (semester == null) {
             projects = Optional.ofNullable(type)
-                    .map(t -> projectRepository.findAllByProjectTypeContains(t, pageable))
+                    .map(t -> projectRepository.findAllByTypesContains(t, pageable))
                     .orElseGet(() -> projectRepository.findAll(pageable));
         } else {
             projects = Optional.ofNullable(type)

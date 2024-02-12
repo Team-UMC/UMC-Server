@@ -35,11 +35,12 @@ public class ProjectController {
             @Parameter(name = "semester", description = "기수 조건이 있을 경우 입력하는 파라미터입니다."),
             @Parameter(name = "type", description = "유형 조건이 있을 경우 입력하는 파라미터입니다."),
             @Parameter(name = "page", description = "page를 입력하는 파라미터입니다.(0부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 10개)"),
     })
     @GetMapping
     public BaseResponse<ProjectAllResponse> inquiryProjects(@RequestParam(required = false) Semester semester,
                                                             @RequestParam(required = false) ProjectType type,
-                                                            @PageableDefault(sort = "name", direction = Sort.Direction.DESC)
+                                                            @PageableDefault(sort = "name", direction = Sort.Direction.ASC)
                                                                 @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(projectService.inquiryProjects(semester, type, pageable));
     }
@@ -50,7 +51,7 @@ public class ProjectController {
     })
     @Parameters(value = {
             @Parameter(name = "page", description = "page를 입력하는 파라미터입니다.(0부터 시작)"),
-            @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 20개)"),
+            @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 10개)"),
     })
     @GetMapping("/hot")
     public BaseResponse<ProjectAllResponse> inquiryHotProjects(@PageableDefault(sort = "hitCount", direction = Sort.Direction.DESC)
@@ -65,10 +66,11 @@ public class ProjectController {
     @Parameters(value = {
             @Parameter(name = "keyword", description = "최소 한 글자의 키워드를 입력해야합니다."),
             @Parameter(name = "page", description = "page를 입력하는 파라미터입니다.(0부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 10개)"),
     })
     @GetMapping("/search")
     public BaseResponse<ProjectAllResponse> searchProject(@RequestParam String keyword,
-                                                          @PageableDefault(sort = "name", direction = Sort.Direction.DESC)
+                                                          @PageableDefault(sort = "name", direction = Sort.Direction.ASC)
                                                           @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(projectService.searchProject(keyword, pageable));
     }

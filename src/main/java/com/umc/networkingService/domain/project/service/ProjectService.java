@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public interface ProjectService extends EntityLoader<Project, UUID> {
    ProjectIdResponse createProject(Member member, MultipartFile projectImage, ProjectCreateRequest request);
-   ProjectIdResponse updateProject(Member member,UUID projectId, MultipartFile projectImage, ProjectUpdateRequest request);
+   ProjectIdResponse updateProject(Member member,UUID projectId, ProjectUpdateRequest request);
    ProjectIdResponse deleteProject(UUID projectId);
    ProjectAllResponse inquiryProjects(Semester semester, ProjectType type, Pageable pageable);
    ProjectAllResponse inquiryHotProjects(Pageable pageable);

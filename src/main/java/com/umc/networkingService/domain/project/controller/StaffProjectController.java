@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +32,7 @@ public class StaffProjectController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "IMAGE001", description = "이미지 저장에 실패하였습니다.")
     })
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<ProjectIdResponse> createProject(@CurrentMember Member member,
                                                          @RequestPart MultipartFile projectImage,
                                                          @Valid @RequestPart ProjectCreateRequest request){
@@ -43,12 +44,11 @@ public class StaffProjectController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다.")
     })
-    @PatchMapping("/update/{projectId}")
+    @PatchMapping(value = "/update/{projectId}")
     public BaseResponse<ProjectIdResponse> updateProject(@CurrentMember Member member,
                                                          @PathVariable("projectId") UUID projectId,
-                                                         @RequestPart MultipartFile projectImage,
-                                                         @Valid @RequestPart ProjectUpdateRequest request){
-        return BaseResponse.onSuccess(projectService.updateProject(member, projectId, projectImage, request));
+                                                         @Valid @RequestBody ProjectUpdateRequest request){
+        return BaseResponse.onSuccess(projectService.updateProject(member, projectId, request));
     }
 
     @Operation(summary = "프로젝트 삭제 API", description = "프로젝트를 삭제하는 API입니다.")

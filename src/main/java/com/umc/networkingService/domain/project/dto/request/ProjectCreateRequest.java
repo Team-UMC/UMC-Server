@@ -3,7 +3,6 @@ package com.umc.networkingService.domain.project.dto.request;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
-import com.umc.networkingService.global.common.validation.annotation.ValidEnum;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -24,9 +23,7 @@ public class ProjectCreateRequest {
     @Size(max = 3, message = "프로젝트 태그는 최대 3개까지 입니다.")
     private List<String> tags;
     @Size(min = 1, message = "최소 한 개의 타입을 지정해야 합니다.")
-    @ValidEnum(message = "옳지 않은 값입니다. IOS, AOS, WEB 중 하나 이상을 선택해주세요.",
-            enumClass = ProjectType.class)
-    private List<ProjectType> projectTypes;
+    private List<ProjectType> types;
     private Semester semester;
     private List<ProjectMemberInfo> projectMembers;
 
@@ -39,8 +36,6 @@ public class ProjectCreateRequest {
         private String nickname;
         @NotEmpty(message = "닉네임은 공백일 수 없습니다.")
         private String name;
-        @ValidEnum(message = "옳지 않은 값입니다. PM, DESIGN, SPRING, NODE, ANDROID, WEB 중 하나를 선택해주세요.",
-                enumClass = Part.class)
         private Part part;
     }
 }

@@ -19,7 +19,7 @@ public class ProjectMapper {
                 .description(request.getDescription())
                 .tags(request.getTags())
                 .semester(request.getSemester())
-                .types(request.getProjectTypes())
+                .types(request.getTypes())
                 .build();
     }
 
