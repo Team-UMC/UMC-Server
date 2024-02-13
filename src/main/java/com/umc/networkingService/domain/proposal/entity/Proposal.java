@@ -38,12 +38,7 @@ public class Proposal extends BaseEntity {
     private int commentCount;
 
     public void update(ProposalUpdateRequest request){
-        this.writer = request.getWriter();
         this.title = request.getTitle();
         this.content = request.getContent();
-    }
-
-    public void increaseCommentCount() {
-        this.commentCount++;
     }
 }

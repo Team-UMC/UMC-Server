@@ -32,7 +32,8 @@ public class ProposalController {
 
     @Operation(summary = "건의글 작성 API", description = "건의글을 작성하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패한 경우")
     })
     @PostMapping
     BaseResponse <ProposalIdResponse> createProposal(@CurrentMember Member member,
@@ -45,7 +46,8 @@ public class ProposalController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "PROPOSAL001", description = "존재하지 않는 건의글 입니다."),
-            @ApiResponse(responseCode = "PROPOSAL002", description = "해당 건의글에 대해 수정 권한이 없습니다.")
+            @ApiResponse(responseCode = "PROPOSAL002", description = "해당 건의글에 대해 수정 권한이 없습니다."),
+            @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패한 경우")
     })
     @PostMapping
     BaseResponse <ProposalIdResponse> updateProposal(@CurrentMember Member member,
