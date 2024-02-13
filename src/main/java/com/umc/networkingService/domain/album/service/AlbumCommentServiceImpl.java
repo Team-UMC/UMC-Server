@@ -23,7 +23,6 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
 
     private final AlbumCommentRepository albumCommentRepository;
     private final AlbumRepository albumRepository;
-    private final AlbumService albumService;
     private final AlbumCommentMapper albumCommentMapper;
 
     @Override
@@ -43,8 +42,7 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
     @Override
     @Transactional
     public AlbumCommentIdResponse updateAlbumComment(Member member, UUID commentId, AlbumCommentUpdateRequest request) {
-        AlbumComment comment = albumCommentRepository.findById(commentId).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_ALBUM_COMMENT));
+        AlbumComment comment = loadEntity(commentId);
 
         if(!comment.getWriter().getId().equals(member.getId()))
             throw new RestApiException(ErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
@@ -57,8 +55,7 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
     @Override
     @Transactional
     public AlbumCommentIdResponse deleteAlbumComment(Member member, UUID commentId) {
-        AlbumComment comment = albumCommentRepository.findById(commentId).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_ALBUM_COMMENT));
+        AlbumComment comment = loadEntity(commentId);
 
         Album album = comment.getAlbum();
 
@@ -69,5 +66,11 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
         comment.delete();
 
         return new AlbumCommentIdResponse(comment.getId());
+    }
+
+    private AlbumComment loadEntity(UUID commentId) {
+        AlbumComment comment = albumCommentRepository.findById(commentId).orElseThrow(() -> new RestApiException(
+                ErrorCode.EMPTY_ALBUM_COMMENT));
+        return comment;
     }
 }
