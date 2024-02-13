@@ -24,12 +24,12 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
     private final AlbumCommentRepository albumCommentRepository;
     private final AlbumRepository albumRepository;
     private final AlbumCommentMapper albumCommentMapper;
+    private final AlbumService aLbumService;
 
     @Override
     @Transactional
     public AlbumCommentIdResponse createAlbumComment(Member member, AlbumCommentCreateRequest request) {
-        Album album = albumRepository.findById(request.getAlbumId()).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_ALBUM));
+        Album album = aLbumService.loadEntity(request.getAlbumId());
 
         AlbumComment comment = albumCommentRepository.save(
                 albumCommentMapper.createAlbumComment(member, album, request));
@@ -68,7 +68,8 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
         return new AlbumCommentIdResponse(comment.getId());
     }
 
-    private AlbumComment loadEntity(UUID commentId) {
+    @Override
+    public AlbumComment loadEntity(UUID commentId) {
         AlbumComment comment = albumCommentRepository.findById(commentId).orElseThrow(() -> new RestApiException(
                 ErrorCode.EMPTY_ALBUM_COMMENT));
         return comment;

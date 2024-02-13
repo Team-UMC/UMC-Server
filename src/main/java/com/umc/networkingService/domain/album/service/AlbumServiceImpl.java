@@ -51,8 +51,7 @@ public class AlbumServiceImpl implements AlbumService{
     @Override
     @Transactional
     public AlbumIdResponse updateAlbum(Member member, UUID albumId, AlbumUpdateRequest request, List<MultipartFile> albumImages) {
-        Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_ALBUM));
+        Album album = loadEntity(albumId);
 
         if (!album.getWriter().getId().equals(member.getId())) {
             throw new RestApiException(ErrorCode.NO_AUTHORIZATION_ALBUM);
@@ -68,8 +67,7 @@ public class AlbumServiceImpl implements AlbumService{
     @Override
     @Transactional
     public AlbumIdResponse deleteAlbum(Member member, UUID albumId) {
-        Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_ALBUM));
+        Album album = loadEntity(albumId);
 
         // 로그인한 member와 writer가 같지 않을 경우 삭제 불가능
         if (!album.getWriter().getId().equals(member.getId())) {
@@ -87,10 +85,9 @@ public class AlbumServiceImpl implements AlbumService{
     @Override
     @Transactional
     public AlbumDetailResponse showAlbumDetail(Member member, UUID albumId) {
-         Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
-                 ErrorCode.EMPTY_ALBUM));
+        Album album = loadEntity(albumId);
 
-         boolean isLike = false;
+        boolean isLike = false;
          Optional<AlbumHeart> albumHeart = albumHeartRepository.findByMemberAndAlbum(member, album);
          if(albumHeart.isPresent())
              isLike = albumHeart.get().isChecked();
@@ -111,8 +108,7 @@ public class AlbumServiceImpl implements AlbumService{
     @Override
     @Transactional
     public AlbumIdResponse toggleAlbumLike(Member member, UUID albumId) {
-        Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_ALBUM));
+        Album album = loadEntity(albumId);
 
         AlbumHeart albumHeart = albumHeartRepository.findByMemberAndAlbum(member, album)
                 .orElseGet(() -> {
@@ -125,5 +121,12 @@ public class AlbumServiceImpl implements AlbumService{
         album.setHeartCount(albumHeart.isChecked());
 
         return new AlbumIdResponse(albumId);
+    }
+
+    @Override
+    public Album loadEntity(UUID albumId) {
+        Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
+                ErrorCode.EMPTY_ALBUM));
+        return album;
     }
 }
