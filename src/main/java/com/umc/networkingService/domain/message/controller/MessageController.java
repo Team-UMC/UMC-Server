@@ -1,4 +1,112 @@
 package com.umc.networkingService.domain.message.controller;
 
+
+import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.message.dto.request.MessageRequest;
+import com.umc.networkingService.domain.message.dto.response.MessageResponse;
+import com.umc.networkingService.domain.message.service.MessageRoomServiceImpl;
+import com.umc.networkingService.domain.message.service.MessageServiceImpl;
+import com.umc.networkingService.global.common.base.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@Slf4j
+@Tag(name = "채팅 API", description = "채팅 관련 API")
+@RequestMapping("/messages")
+@RequiredArgsConstructor
 public class MessageController {
+
+    private final MessageServiceImpl messageService;
+    private final MessageRoomServiceImpl messageRoomService;
+
+    @Operation(summary = "쪽지 작성 API",description = "쪽지 작성 API")
+    @PostMapping("/{messageRoomId}")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    public BaseResponse<MessageResponse.MessageId>
+    postMessage(
+            @CurrentMember Member member,
+            @PathVariable UUID messageRoomId,
+            @RequestBody MessageRequest.Message message
+    ){
+        return BaseResponse.onSuccess();
+    }
+
+    @Operation(summary = "쪽지 수정 API",description = "쪽지 수정 API")
+    @PatchMapping("/{messageRoomId}/{messageId}")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    public BaseResponse<MessageResponse.MessageId>
+    postMessage(
+            @CurrentMember Member member,
+            @PathVariable UUID messageRoomId,
+            @PathVariable UUID messageId,
+            @RequestBody MessageRequest.Message message
+    ){
+        return BaseResponse.onSuccess();
+    }
+
+    @Operation(summary = "쪽지 삭제 API",description = "쪽지 삭제 API")
+    @DeleteMapping("/{messageRoomId}/{messageId}")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    public BaseResponse<MessageResponse.MessageId>
+    postMessage(
+            @CurrentMember Member member,
+            @PathVariable UUID messageRoomId,
+            @PathVariable UUID messageId
+    ){
+        return BaseResponse.onSuccess();
+    }
+
+    @Operation(summary = "쪽지 상세 조회 API",description = "쪽지 상세 조회 API")
+    @GetMapping("/{messageRoomId}")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    public BaseResponse<MessageResponse.JoinMessages>
+    postMessage(
+            @CurrentMember Member member,
+            @PathVariable UUID messageRoomId,
+            @RequestParam Long page //페이징 처리
+    ){
+        return BaseResponse.onSuccess();
+    }
+
+    @Operation(summary = "쪽지함 조회 API",description = "쪽지함 조회 API")
+    @GetMapping("")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    public BaseResponse<MessageResponse.JoinMessageRooms>
+    postMessage(
+            @CurrentMember Member member
+    ){
+        return BaseResponse.onSuccess();
+    }
+
+    @Operation(summary = "쪽지 시작하기 API",description = "쪽지 시작하기 API")
+    @PostMapping("")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    public BaseResponse<MessageResponse.MessageRoomId>
+    postMessage(
+            @CurrentMember Member member,
+            @RequestParam UUID receiverId
+    ){
+        return BaseResponse.onSuccess();
+    }
+
 }
