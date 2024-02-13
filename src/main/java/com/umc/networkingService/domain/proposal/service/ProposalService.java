@@ -18,5 +18,5 @@ public interface ProposalService {
     ProposalIdResponse deleteProposal(Member member, UUID proposalId, ProposalDeleteRequest request);
     ProposalPagingResponse showProposals(Member member, Pageable pageable);
 
-    ProposalDetailResponse detailProposal(UUID proposalId);
+    ProposalDetailResponse showProposalDetail(Member member, UUID proposalId);
 }

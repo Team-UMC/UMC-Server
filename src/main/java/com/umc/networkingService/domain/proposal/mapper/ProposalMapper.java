@@ -21,11 +21,14 @@ public class ProposalMapper {
                 .build();
     }
 
-    public ProposalDetailResponse detailProposal(Proposal proposal){
+    public ProposalDetailResponse toProposalDetailResponse(Proposal proposal, List<String> proposalImages){
         return ProposalDetailResponse.builder()
-                .writer(proposal.getWriter())
+                .writer(proposal.getWriter().getNickname() + "/" + proposal.getWriter().getName())
+                .profileImage(proposal.getWriter().getProfileImage())
                 .title(proposal.getTitle())
                 .content(proposal.getContent())
+                .proposalImages(proposalImages)
+                .createdAt(proposal.getCreatedAt())
                 .build();
     }
 
@@ -36,7 +39,6 @@ public class ProposalMapper {
                 .profileImage(proposal.getWriter().getProfileImage())
                 .title(proposal.getTitle())
                 .content(proposal.getContent())
-                .commentCount(proposal.getCommentCount())
                 .createdAt(proposal.getCreatedAt())
                 .build();
     }

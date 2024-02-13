@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.proposal.service;
 
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.proposal.dto.request.*;
 import com.umc.networkingService.domain.proposal.dto.response.ProposalDetailResponse;
@@ -13,6 +12,7 @@ import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import com.umc.networkingService.domain.proposal.entity.ProposalImage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,12 +81,13 @@ public class ProposalServiceImpl implements ProposalService {
     }
 
     @Override
-    public ProposalDetailResponse detailProposal(UUID proposalId){
+    public ProposalDetailResponse showProposalDetail(Member member, UUID proposalId){
         // 유효하지 않은 건의글인 경우, 예외처리 메세지 반환
         Proposal proposal = proposalRepository.findById(proposalId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_PROPOSAL));
 
-        // 건의글의 세부 정보 조회
-        // Todo: proposalImage 처리..
-        return proposalMapper.detailProposal(proposal);
+        List<String> proposalImages = proposalImageService.findProposalImage(proposal).stream()
+                .map(ProposalImage::getUrl).toList();
+
+        return proposalMapper.toProposalDetailResponse(proposal, proposalImages);
     }
 }

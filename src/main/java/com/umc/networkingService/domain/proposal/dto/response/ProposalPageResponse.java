@@ -19,6 +19,5 @@ public class ProposalPageResponse {
     private String writer;
     private String title;
     private String content;
-    private int commentCount;
     private LocalDateTime createdAt;
 }

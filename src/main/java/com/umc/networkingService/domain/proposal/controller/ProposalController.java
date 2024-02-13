@@ -86,7 +86,8 @@ public class ProposalController {
             @ApiResponse(responseCode = "PROPOSAL001", description = "존재하지 않는 건의글 입니다.")
     })
     @GetMapping
-    BaseResponse <ProposalDetailResponse> detailProposal(@PathVariable("proposalId") UUID proposalId){
-        return BaseResponse.onSuccess(proposalService.detailProposal(proposalId));
+    BaseResponse <ProposalDetailResponse> detailProposal(@CurrentMember Member member,
+                                                         @PathVariable("proposalId") UUID proposalId){
+        return BaseResponse.onSuccess(proposalService.showProposalDetail(member, proposalId));
     }
 }
