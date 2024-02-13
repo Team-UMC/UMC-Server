@@ -33,12 +33,7 @@ public class BoardFileServiceImpl implements BoardFileService {
     @Transactional
     public void updateBoardFiles(Board board, List<MultipartFile> files) {
 
-        List<BoardFile> boardFiles = findBoardFiles(board);
-
-        boardFiles.forEach(file -> {
-            s3FileComponent.deleteFile(file.getUrl());
-            boardFileRepository.deleteById(file.getId());
-        });
+        deleteBoardFiles(board);
 
         if (files != null)
             uploadBoardFiles(board, files);
@@ -49,7 +44,10 @@ public class BoardFileServiceImpl implements BoardFileService {
     public void deleteBoardFiles(Board board) {
         List<BoardFile> boardFiles = findBoardFiles(board);
 
-        boardFiles.forEach(BoardFile::delete);
+        boardFiles.forEach(file -> {
+            s3FileComponent.deleteFile(file.getUrl());
+            boardFileRepository.deleteById(file.getId());
+        });
     }
 
     @Override

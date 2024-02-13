@@ -16,6 +16,7 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.AlbumErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +55,7 @@ public class AlbumServiceImpl implements AlbumService{
         Album album = loadEntity(albumId);
 
         if (!album.getWriter().getId().equals(member.getId())) {
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_ALBUM);
+            throw new RestApiException(AlbumErrorCode.NO_AUTHORIZATION_ALBUM);
         }
 
         album.updateAlbum(request.getTitle(), request.getTitle(), request.getSemester());
@@ -73,7 +74,7 @@ public class AlbumServiceImpl implements AlbumService{
         if (!album.getWriter().getId().equals(member.getId())) {
             // staff 역할을 가진 경우 삭제 가능
             if(member.getRole().getPriority() == Role.MEMBER.getPriority())
-                throw new RestApiException(ErrorCode.NO_AUTHORIZATION_ALBUM);
+                throw new RestApiException(AlbumErrorCode.NO_AUTHORIZATION_ALBUM);
         }
 
         albumImageService.deleteAlbumImages(album);
@@ -126,7 +127,7 @@ public class AlbumServiceImpl implements AlbumService{
     @Override
     public Album loadEntity(UUID albumId) {
         Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_ALBUM));
+                AlbumErrorCode.EMPTY_ALBUM));
         return album;
     }
 }

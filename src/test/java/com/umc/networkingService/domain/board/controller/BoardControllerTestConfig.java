@@ -2,11 +2,8 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
-import com.umc.networkingService.domain.board.dto.response.*;
-import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
-import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePageResponse;
-import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
+import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
@@ -120,11 +117,11 @@ public abstract class BoardControllerTestConfig {
 
 
 
-    //가상의 BoardPagingResponse 생성
-    protected BoardPagingResponse createMockBoardPagingResponse() {
-        List<BoardPageResponse> boardPageResponses = new ArrayList<>();
+    //가상의 BoardPageInfos 생성
+    protected BoardResponse.BoardPageInfos createMockBoardPageInfos() {
+        List<BoardResponse.BoardPageElement> boardPageResponses = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BoardPageResponse boardPageResponse = BoardPageResponse.builder()
+            BoardResponse.BoardPageElement boardPageResponse = BoardResponse.BoardPageElement.builder()
                     .title("제목")
                     .content("내용")
                     .writer("루시/김수민")
@@ -139,20 +136,20 @@ public abstract class BoardControllerTestConfig {
 
 
         // 가상의 페이징 정보 설정
-        return BoardPagingResponse.builder()
+        return BoardResponse.BoardPageInfos.builder()
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .boardPageResponses(boardPageResponses)
+                .boardPageElements(boardPageResponses)
                 .isFirst(true)
                 .isLast(false)
                 .build();
     }
 
-    protected BoardSearchPagingResponse createMockBoardSearchPagingResponse() {
-        List<BoardSearchPageResponse> boardSearchPageResponses = new ArrayList<>();
+    protected BoardResponse.BoardSearchPageInfos createMockBoardSearchPageInfos() {
+        List<BoardResponse.BoardSearchPageElement> boardSearchPageElements = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BoardSearchPageResponse boardSearchPageResponse = BoardSearchPageResponse.builder()
+            BoardResponse.BoardSearchPageElement boardSearchPageResponse = BoardResponse.BoardSearchPageElement.builder()
                     .boardType(BoardType.FREE)
                     .hostType(HostType.CAMPUS)
                     .boardId(UUID.randomUUID())
@@ -165,25 +162,25 @@ public abstract class BoardControllerTestConfig {
                     .profileImage(".../img")
                     .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
                     .build();
-            boardSearchPageResponses.add(boardSearchPageResponse);
+            boardSearchPageElements.add(boardSearchPageResponse);
         }
 
 
         // 가상의 페이징 정보 설정
-        return BoardSearchPagingResponse.builder()
+        return BoardResponse.BoardSearchPageInfos.builder()
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .boardSearchPageResponses(boardSearchPageResponses)
+                .boardSearchPageElements(boardSearchPageElements)
                 .isFirst(true)
                 .isLast(false)
                 .build();
     }
 
-    protected MyBoardPagingResponse createMockMyBoardPagingResponse() {
-        List<MyBoardPageResponse> myBoardPageResponses = new ArrayList<>();
+    protected MyBoardResponse.MyBoardPageInfos createMockMyBoardResponse() {
+        List<MyBoardResponse.MyBoardPageElement> myBoardPageElements = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            MyBoardPageResponse myBoardPageResponse = MyBoardPageResponse.builder()
+            MyBoardResponse.MyBoardPageElement myBoardPageElement = MyBoardResponse.MyBoardPageElement.builder()
                     .boardType(BoardType.FREE)
                     .hostType(HostType.CAMPUS)
                     .boardId(UUID.randomUUID())
@@ -192,26 +189,26 @@ public abstract class BoardControllerTestConfig {
                     .heartCount(1)
                     .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
                     .build();
-            myBoardPageResponses.add(myBoardPageResponse);
+            myBoardPageElements.add(myBoardPageElement);
         }
 
 
         // 가상의 페이징 정보 설정
-        return MyBoardPagingResponse.builder()
+        return MyBoardResponse.MyBoardPageInfos.builder()
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .myBoardPageResponses(myBoardPageResponses)
+                .myBoardPageElements(myBoardPageElements)
                 .isFirst(true)
                 .isLast(false)
                 .build();
     }
 
 
-    protected BoardNoticePagingResponse createMockMyBoardNoticePagingResponse() {
-        List<BoardNoticePageResponse> boardNoticePageResponses = new ArrayList<>();
+    protected BoardResponse.NoticePageInfos createMockNoticePageInfos() {
+        List<BoardResponse.NoticePageElement> noticePageElements = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BoardNoticePageResponse boardNoticePageResponse = BoardNoticePageResponse.builder()
+            BoardResponse.NoticePageElement noticePageElement = BoardResponse.NoticePageElement.builder()
                     .hostType(HostType.CAMPUS)
                     .boardId(UUID.randomUUID())
                     .title("제목")
@@ -220,16 +217,16 @@ public abstract class BoardControllerTestConfig {
                     .isFixed(false)
                     .writer("루시/김수민")
                     .build();
-            boardNoticePageResponses.add(boardNoticePageResponse);
+            noticePageElements.add(noticePageElement);
         }
 
 
         // 가상의 페이징 정보 설정
-        return BoardNoticePagingResponse.builder()
+        return BoardResponse.NoticePageInfos.builder()
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .boardNoticePageResponses(boardNoticePageResponses)
+                .noticePageElements(noticePageElements)
                 .isFirst(true)
                 .isLast(false)
                 .build();

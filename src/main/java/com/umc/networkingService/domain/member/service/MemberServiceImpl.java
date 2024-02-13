@@ -3,7 +3,6 @@ package com.umc.networkingService.domain.member.service;
 
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.service.BranchUniversityService;
-import com.umc.networkingService.domain.friend.service.FriendService;
 import com.umc.networkingService.domain.member.client.GithubMemberClient;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateProfileRequest;
@@ -13,9 +12,8 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberPointRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
-import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -52,10 +51,10 @@ public class MemberServiceImpl implements MemberService{
         Member member = loadEntity(loginMember.getId());
 
         // 사진이 존재한다면 업로드 후 url 저장
-        String profileUrl = uploadProfileImage(profileImage);
+        String profileUrl = uploadProfileImage(member, profileImage);
         member.updateMemberInfo(request, profileUrl);
 
-        return new MemberIdResponse(memberRepository.save(loginMember).getId());
+        return new MemberIdResponse(member.getId());
     }
 
     // 프로필 수정 함수(운영진용)
@@ -72,7 +71,7 @@ public class MemberServiceImpl implements MemberService{
         // 직책 및 기수별 파트 정보 수정
         updatePositionAndSemesterPart(updateMember, request);
 
-        return new MemberIdResponse(memberRepository.save(updateMember).getId());
+        return new MemberIdResponse(updateMember.getId());
     }
 
     // 포인트 관련 정보 조회
@@ -83,7 +82,7 @@ public class MemberServiceImpl implements MemberService{
 
         // 소속 대학교 찾기
         University university = Optional.ofNullable(loginMember.getUniversity())
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER_UNIVERSITY));
 
         // 본인 랭킹 구하기
         int rank = calculateMyRank(loginMember, university);
@@ -94,16 +93,18 @@ public class MemberServiceImpl implements MemberService{
     // 깃허브 인증 함수
     @Override
     @Transactional
-    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String code) {
+    public MemberAuthenticateGithubResponse authenticateGithub(Member member, String nickname) {
 
         Member loginMember = loadEntity(member.getId());
 
-        String gitNickname = githubMemberClient.getGithubNickname(code);
+////        String gitNickname = githubMemberClient.getGithubNickname(code);
+//
+//        if (gitNickname == null || gitNickname.isBlank())
+//            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
-        if (gitNickname == null || gitNickname.isBlank())
-            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
-
-        loginMember.authenticateGithub(gitNickname);
+        if (memberRepository.existsByGitNickname(nickname))
+            throw new RestApiException(MemberErrorCode.DUPLICATED_GIT_NICKNAME);
+        loginMember.authenticateGithub(nickname);
 
         return new MemberAuthenticateGithubResponse(loginMember.getGitNickname());
     }
@@ -115,7 +116,7 @@ public class MemberServiceImpl implements MemberService{
 
         String gitNickName = loginMember.getGitNickname();
         if (gitNickName == null)
-            throw new RestApiException(ErrorCode.UNAUTHENTICATED_GITHUB);
+            throw new RestApiException(MemberErrorCode.UNAUTHENTICATED_GITHUB);
         return new MemberInquiryGithubResponse("https://ghchart.rshah.org/2965FF/" + gitNickName);
     }
 
@@ -143,6 +144,21 @@ public class MemberServiceImpl implements MemberService{
         return new MemberSearchInfosResponse(memberInfos);
     }
 
+    // 출석 체크 함수
+    @Override
+    @Transactional
+    public MemberAttendResponse attendMember(Member loingMember) {
+
+        Member member = loadEntity(loingMember.getId());
+        LocalDate lastActiveDate = member.getLastActiveTime().toLocalDate();
+
+        if (!lastActiveDate.equals(LocalDate.now())) {
+            member.addRemainPoint(1L);
+            return new MemberAttendResponse(true);
+        }
+        return new MemberAttendResponse(false);
+    }
+
     @Override
     @Transactional
     public void updateMemberActiveTime(UUID memberId) {
@@ -151,22 +167,25 @@ public class MemberServiceImpl implements MemberService{
         loginMember.updateLastActiveTime(LocalDateTime.now());
     }
 
-    private String uploadProfileImage(MultipartFile profileImage) {
+    private String uploadProfileImage(Member member, MultipartFile profileImage) {
         if (profileImage != null) {
+            // 기존 프로필 이미지 삭제
+            if (member.getProfileImage() != null)
+                s3FileComponent.deleteFile(member.getProfileImage());
             return s3FileComponent.uploadFile("member", profileImage);
         }
-        return null;
+        return member.getProfileImage();
     }
 
     private void checkUpdateAuthority(Member member, Member updateMember, List<String> centerPositions) {
         if (updateMember.getRole().getPriority() <= member.getRole().getPriority()
                 && !member.getId().equals(updateMember.getId())) {
             // 본인보다 높거나 같은 직책의 운영진의 정보를 수정하려 할 경우
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
+            throw new RestApiException(MemberErrorCode.UNAUTHORIZED_UPDATE_MEMBER);
         }
         if (member.getRole().getPriority() > 2 && !centerPositions.isEmpty()) {
             // 학교, 지부 운영진이 중앙 직책을 수정하려는 경우
-            throw new RestApiException(ErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
+            throw new RestApiException(MemberErrorCode.UNAUTHORIZED_UPDATE_CENTER_POSITION);
         }
     }
 
@@ -174,51 +193,13 @@ public class MemberServiceImpl implements MemberService{
         // 직책 수정
         memberPositionService.saveMemberPositionInfos(updateMember, request.getCampusPositions(), request.getCenterPositions());
 
-        // 직책에 따른 Role 수정
-        Role newRole = findMemberRole(updateMember.getPositions());
-        updateMember.updateRole(newRole);
-
         // 특정 기수의 파트 변경
         semesterPartService.saveSemesterPartInfos(updateMember, request.getSemesterParts());
 
         // 기수 변경에 의해 소속 지부 변경
         Branch newBranch = branchUniversityService.findBranchByUniversityAndSemester(
-                updateMember.getUniversity(), updateMember.getLatestSemesterPart().getSemester());
+                updateMember.getUniversity(), updateMember.getRecentSemester());
         updateMember.updateBranch(newBranch);
-    }
-
-    // 멤버의 새로운 Role 찾기 함수
-    private Role findMemberRole(List<MemberPosition> memberPositions) {
-        if (memberPositions.isEmpty()) {
-            return Role.MEMBER;
-        }
-
-        List<MemberPosition> centerPositions = findPositionsByType(memberPositions, PositionType.CENTER);
-
-        if (!centerPositions.isEmpty()) {
-            if (isExecutive(centerPositions))
-                return Role.TOTAL_STAFF;
-            return Role.CENTER_STAFF;
-        }
-
-        List<MemberPosition> campusPositions = findPositionsByType(memberPositions, PositionType.CAMPUS);
-
-        if (isExecutive(campusPositions))
-            return Role.BRANCH_STAFF;
-        return Role.CAMPUS_STAFF;
-    }
-
-    // 특정 타입의 직책을 반환하는 함수
-    private List<MemberPosition> findPositionsByType(List<MemberPosition> memberPositions, PositionType type) {
-        return memberPositions.stream()
-                .filter(memberPosition -> memberPosition.getType() == type)
-                .toList();
-    }
-
-    // 회장, 부회장 판별 함수
-    private boolean isExecutive(List<MemberPosition> positions) {
-        return positions.stream()
-                .anyMatch(position -> position.getName().equals("회장") || position.getName().equals("부회장"));
     }
 
     // 기여도 목록 조회 함수
@@ -269,7 +250,7 @@ public class MemberServiceImpl implements MemberService{
         }
 
         // 학교 구성원 중 멤버를 찾지 못하였을 경우
-        throw new RestApiException(ErrorCode.EMPTY_MEMBER_UNIVERSITY);
+        throw new RestApiException(MemberErrorCode.EMPTY_MEMBER_UNIVERSITY);
     }
 
     // 올바른 키워드인지 확인
@@ -277,7 +258,7 @@ public class MemberServiceImpl implements MemberService{
         // {닉네임/이름} 양식 검증
         String[] splits = keyword.split("/");
         if (splits.length != 2)
-            throw new RestApiException(ErrorCode.INVALID_MEMBER_KEYWORD);
+            throw new RestApiException(MemberErrorCode.INVALID_MEMBER_KEYWORD);
         return splits;
     }
 
@@ -298,6 +279,28 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
     }
+
+    @Override
+    public List<Member> findContributionRankings(Member member) {
+        return memberRepository.findAllByUniversityOrderByContributionPointDesc(member.getUniversity());
+    }
+
+    @Override
+    public Member findByMemberId (UUID memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
+    }
+
+    @Override
+    @Transactional
+    public Member usePoint(Member member, PointType pointType) {
+        Member loginMember = loadEntity(member.getId());
+
+        loginMember.usePoint(pointType.getPoint());
+
+        return memberRepository.save(loginMember);
+    }
+
 }

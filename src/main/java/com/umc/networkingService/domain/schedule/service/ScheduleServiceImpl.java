@@ -8,8 +8,9 @@ import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.*
 import com.umc.networkingService.domain.schedule.entity.Schedule;
 import com.umc.networkingService.domain.schedule.mapper.ScheduleMapper;
 import com.umc.networkingService.domain.schedule.repository.ScheduleRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
+import com.umc.networkingService.global.common.exception.code.ScheduleErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +57,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleDetail getScheduleDetail(Member member, UUID scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ScheduleErrorCode.EMPTY_SCHEDULE));
 
         return scheduleMapper.toScheduleDetail(schedule);
     }
@@ -73,10 +74,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     @Transactional
     public ScheduleId updateSchedule(Member member, UUID scheduleId, UpdateSchedule request) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ScheduleErrorCode.EMPTY_SCHEDULE));
         // 만약 수정하려는 멤버와 일정 작성자가 일치하지 않을 경우 에러 반환
         if (!schedule.getWriter().getId().equals(member.getId())) {
-            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
+            throw new RestApiException(MemberErrorCode.NO_PERMISSION_MEMBER);
         }
 
         schedule.updateSchedule(request);
@@ -87,10 +88,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     @Transactional
     public ScheduleId deleteSchedule(Member member, UUID scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_SCHEDULE));
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ScheduleErrorCode.EMPTY_SCHEDULE));
         // 만약 삭제하려는 멤버와 일정 작성자가 일치하지 않을 경우 에러 반환
         if (!schedule.getWriter().getId().equals(member.getId())) {
-            throw new RestApiException(ErrorCode.NO_PERMISSION_MEMBER);
+            throw new RestApiException(MemberErrorCode.NO_PERMISSION_MEMBER);
         }
         schedule.delete();
 

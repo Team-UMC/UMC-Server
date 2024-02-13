@@ -11,6 +11,7 @@ import com.umc.networkingService.domain.album.repository.AlbumRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.AlbumCommentErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,7 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
         AlbumComment comment = loadEntity(commentId);
 
         if(!comment.getWriter().getId().equals(member.getId()))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
+            throw new RestApiException(AlbumCommentErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
 
         comment.update(request);
 
@@ -60,7 +61,7 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
         Album album = comment.getAlbum();
 
         if(!comment.getWriter().getId().equals(member.getId()))
-            throw new RestApiException(ErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
+            throw new RestApiException(AlbumCommentErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
 
         album.decreaseCommentCount();
         comment.delete();
@@ -71,7 +72,7 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
     @Override
     public AlbumComment loadEntity(UUID commentId) {
         AlbumComment comment = albumCommentRepository.findById(commentId).orElseThrow(() -> new RestApiException(
-                ErrorCode.EMPTY_ALBUM_COMMENT));
+                AlbumCommentErrorCode.EMPTY_ALBUM_COMMENT));
         return comment;
     }
 }

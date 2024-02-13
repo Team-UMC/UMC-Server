@@ -1,14 +1,14 @@
 package com.umc.networkingService.domain.album.dto.response;
 
 import com.umc.networkingService.global.common.enums.Semester;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@SuperBuilder
+@Builder
 public class AlbumPageResponse {
     private UUID albumId;
     private String writer;

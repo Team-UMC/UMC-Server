@@ -17,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "친구 API", description = "친구 관련 API")
@@ -63,14 +61,15 @@ public class FriendController {
     })
     @Parameters(value = {
             @Parameter(name = "status", required = true, description = "접속 상태입니다."),
-            @Parameter(name = "pageable", hidden = true),
-            @Parameter(name = "size", required = true, description = "한 페이지에 포함되는 목록 개수입니다.")
+            @Parameter(name = "page", description = "페이지 번호입니다.(0부터 시작합니다)"),
+            @Parameter(name = "size", description = "한 페이지에 포함되는 목록 개수입니다.")
     })
     @GetMapping
     public BaseResponse<FriendInquiryByStatusResponse> inquiryFriendsByStatus(
             @CurrentMember Member member,
             @RequestParam boolean status,
-            @PageableDefault(page = 1, sort = "receiver.nickname", direction = Sort.Direction.ASC) Pageable pageable) {
+            @PageableDefault(sort = "receiver.nickname", direction = Sort.Direction.ASC)
+            @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(friendService.inquiryFriendsByStatus(member, status, pageable));
     }
 

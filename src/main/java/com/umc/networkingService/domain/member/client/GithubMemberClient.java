@@ -2,8 +2,8 @@ package com.umc.networkingService.domain.member.client;
 
 import com.umc.networkingService.domain.member.dto.client.github.GithubAccessTokenResponse;
 import com.umc.networkingService.domain.member.dto.client.github.GithubInfoResponse;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -52,10 +52,10 @@ public class GithubMemberClient {
                 .retrieve()
                 .bodyToMono(GithubAccessTokenResponse.class)
                 .blockOptional()
-                .orElseThrow(() -> new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION));
+                .orElseThrow(() -> new RestApiException(AuthErrorCode.FAILED_GITHUB_AUTHENTICATION));
 
         if (response == null)
-            throw new RestApiException(ErrorCode.FAILED_GITHUB_AUTHENTICATION);
+            throw new RestApiException(AuthErrorCode.FAILED_GITHUB_AUTHENTICATION);
 
         return response.getAccessToken();
     }
@@ -75,7 +75,7 @@ public class GithubMemberClient {
                 .block();
 
         if (response == null)
-            throw new RestApiException(ErrorCode.FAILED_SOCIAL_LOGIN);
+            throw new RestApiException(AuthErrorCode.FAILED_SOCIAL_LOGIN);
 
         return response.getLogin();
     }

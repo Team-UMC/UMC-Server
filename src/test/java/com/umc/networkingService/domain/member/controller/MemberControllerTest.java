@@ -204,7 +204,7 @@ public class MemberControllerTest extends ControllerTestConfig {
 
         // when & then
         mockMvc.perform(post("/members/github")
-                        .param("code", "깃허브 인가 코드")
+                        .param("nickname", "junseokkim")
                         .header("Authorization", accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())

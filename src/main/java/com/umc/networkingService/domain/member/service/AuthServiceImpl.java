@@ -18,8 +18,9 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.AuthErrorCode;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,9 +85,9 @@ public class AuthServiceImpl implements AuthService {
         semesterPartService.saveSemesterPartInfos(loginMember, request.getSemesterParts());
 
         // 이외의 기본 정보 저장
-        member.setMemberInfo(request.getName(), request.getNickname(), university,
+        loginMember.setMemberInfo(request.getName(), request.getNickname(), university,
                 // 대학교와 멤버의 마지막 기수를 통해 지부 정보 조회
-                branchUniversityService.findBranchByUniversityAndSemester(university, member.getLatestSemesterPart().getSemester())
+                branchUniversityService.findBranchByUniversityAndSemester(university, loginMember.getRecentSemester())
         );
 
         return new MemberIdResponse(memberService.saveEntity(loginMember).getId());
@@ -100,11 +101,11 @@ public class AuthServiceImpl implements AuthService {
         Member loginMember = loadEntity(member.getId());
 
         RefreshToken savedRefreshToken = refreshTokenService.findByMemberId(loginMember.getId())
-                .orElseThrow(() -> new RestApiException(ErrorCode.EXPIRED_MEMBER_JWT));
+                .orElseThrow(() -> new RestApiException(AuthErrorCode.EXPIRED_MEMBER_JWT));
 
         // 디비에 저장된 refreshToken과 동일하지 않다면 유효하지 않음
         if (!refreshToken.equals(savedRefreshToken.getRefreshToken()))
-            throw new RestApiException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_REFRESH_TOKEN);
 
         return new MemberGenerateTokenResponse(jwtTokenProvider.generateAccessToken(loginMember.getId()));
     }
@@ -138,6 +139,7 @@ public class AuthServiceImpl implements AuthService {
     private MemberLoginResponse loginByApple(final String accessToken){
         // apple 서버와 통신해서 유저 고유값(clientId) 받기
         String clientId = appleMemberClient.getappleClientID(accessToken);
+
         //존재 여부 파악
         Optional<Member> getMember = memberRepository.findByClientIdAndSocialType(clientId, SocialType.APPLE);
 
@@ -223,6 +225,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Member loadEntity(UUID id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
     }
 }

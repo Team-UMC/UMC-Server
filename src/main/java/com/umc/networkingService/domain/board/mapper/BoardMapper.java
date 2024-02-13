@@ -1,12 +1,11 @@
 package com.umc.networkingService.domain.board.mapper;
 
-import com.umc.networkingService.domain.board.dto.request.BoardCreateRequest;
-import com.umc.networkingService.domain.board.dto.response.*;
-import com.umc.networkingService.domain.board.dto.response.member.MyBoardPageResponse;
-import com.umc.networkingService.domain.board.dto.response.member.MyBoardPagingResponse;
-import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePageResponse;
-import com.umc.networkingService.domain.board.dto.response.notice.BoardNoticePagingResponse;
+import com.umc.networkingService.domain.board.dto.request.BoardRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
+import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
+import com.umc.networkingService.domain.board.entity.BoardType;
+import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardFileService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -21,20 +20,20 @@ import java.util.List;
 public class BoardMapper {
     private final BoardFileService boardFileService;
 
-    public Board toEntity(Member member, BoardCreateRequest request,
+    public Board toEntity(Member member, BoardRequest.BoardCreateRequest request,
                           List<Semester> semesterPermission) {
         return Board.builder()
                 .writer(member)
                 .title(request.getTitle())
                 .content(request.getContent())
-                .hostType(request.getHostType())
-                .boardType(request.getBoardType())
+                .hostType(HostType.valueOf(request.getHostType()))
+                .boardType(BoardType.valueOf(request.getBoardType()))
                 .semesterPermission(semesterPermission)
                 .build();
     }
 
-    public BoardPageResponse toBoardPageResponse(Board board) {
-        return BoardPageResponse.builder()
+    public BoardResponse.BoardPageElement toBoardPageElement(Board board) {
+        return BoardResponse.BoardPageElement.builder()
                 .boardId(board.getId())
                 .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
                 .profileImage(board.getWriter().getProfileImage())
@@ -48,11 +47,11 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardPagingResponse toBoardPagingResponse(Page<Board> boards) {
+    public BoardResponse.BoardPageInfos toBoardPageInfos(Page<Board> boards) {
 
-        List<BoardPageResponse> BoardPageResponses = boards.map(this::toBoardPageResponse).stream().toList();
-        return BoardPagingResponse.builder()
-                .boardPageResponses(BoardPageResponses)
+        List<BoardResponse.BoardPageElement> boardPageElements = boards.map(this::toBoardPageElement).stream().toList();
+        return BoardResponse.BoardPageInfos.builder()
+                .boardPageElements(boardPageElements)
                 .page(boards.getNumber())
                 .totalPages(boards.getTotalPages())
                 .totalElements((int) boards.getTotalElements())
@@ -62,11 +61,11 @@ public class BoardMapper {
 
     }
 
-    public BoardSearchPagingResponse toBoardSearchPagingResponse(Page<Board> boards) {
+    public BoardResponse.BoardSearchPageInfos toBoardSearchPageInfos(Page<Board> boards) {
 
-        List<BoardSearchPageResponse> boardSearchPageResponses = boards.map(this::toBoardSearchPageResponse).stream().toList();
-        return BoardSearchPagingResponse.builder()
-                .boardSearchPageResponses(boardSearchPageResponses)
+        List<BoardResponse.BoardSearchPageElement> boardSearchPageElements = boards.map(this::toBoardSearchPageElement).stream().toList();
+        return BoardResponse.BoardSearchPageInfos.builder()
+                .boardSearchPageElements(boardSearchPageElements)
                 .page(boards.getNumber())
                 .totalPages(boards.getTotalPages())
                 .totalElements((int) boards.getTotalElements())
@@ -77,8 +76,8 @@ public class BoardMapper {
     }
 
 
-    public BoardSearchPageResponse toBoardSearchPageResponse(Board board) {
-        return BoardSearchPageResponse.builder()
+    public BoardResponse.BoardSearchPageElement toBoardSearchPageElement(Board board) {
+        return BoardResponse.BoardSearchPageElement.builder()
                 .boardType(board.getBoardType())
                 .hostType(board.getHostType())
                 .boardId(board.getId())
@@ -94,11 +93,11 @@ public class BoardMapper {
                 .build();
     }
 
-    public MyBoardPagingResponse toMyBoardPagingResponse(Page<Board> boards) {
-        List<MyBoardPageResponse> myBoardPageResponses = boards.map(this::toMyBoardPageResponse).stream().toList();
+    public MyBoardResponse.MyBoardPageInfos toMyBoardPageInfos(Page<Board> boards) {
+        List<MyBoardResponse.MyBoardPageElement> myBoardPageElements = boards.map(this::toMyBoardPageElement).stream().toList();
 
-        return MyBoardPagingResponse.builder()
-                .myBoardPageResponses(myBoardPageResponses)
+        return MyBoardResponse.MyBoardPageInfos.builder()
+                .myBoardPageElements(myBoardPageElements)
                 .page(boards.getNumber())
                 .totalPages(boards.getTotalPages())
                 .totalElements((int) boards.getTotalElements())
@@ -107,8 +106,8 @@ public class BoardMapper {
                 .build();
     }
 
-    public MyBoardPageResponse toMyBoardPageResponse(Board board) {
-        return MyBoardPageResponse.builder()
+    public MyBoardResponse.MyBoardPageElement toMyBoardPageElement(Board board) {
+        return  MyBoardResponse.MyBoardPageElement.builder()
                 .boardId(board.getId())
                 .hostType(board.getHostType())
                 .boardType(board.getBoardType())
@@ -119,8 +118,8 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardNoticePageResponse toBoardNoticePageResponse(Board board) {
-        return BoardNoticePageResponse.builder()
+    public BoardResponse.NoticePageElement toNoticePageElement(Board board) {
+        return  BoardResponse.NoticePageElement.builder()
                 .boardId(board.getId())
                 .hostType(board.getHostType())
                 .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
@@ -131,11 +130,11 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardNoticePagingResponse toBoardNoticePagingResponse(Page<Board> boards) {
-        List<BoardNoticePageResponse> boardNoticePageResponses = boards.map(this::toBoardNoticePageResponse).stream().toList();
+    public BoardResponse.NoticePageInfos toBoardNoticePagingResponse(Page<Board> boards) {
+        List<BoardResponse.NoticePageElement> noticePageElements = boards.map(this::toNoticePageElement).stream().toList();
 
-        return BoardNoticePagingResponse.builder()
-                .boardNoticePageResponses(boardNoticePageResponses)
+        return BoardResponse.NoticePageInfos.builder()
+                .noticePageElements(noticePageElements)
                 .page(boards.getNumber())
                 .totalPages(boards.getTotalPages())
                 .totalElements((int) boards.getTotalElements())
@@ -144,8 +143,8 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardDetailResponse toBoardDetailResponse(Board board, List<String> boardFiles, boolean isLiked) {
-        return BoardDetailResponse.builder()
+    public BoardResponse.BoardDetail toBoardDetail(Board board, List<String> boardFiles, boolean isLiked) {
+        return BoardResponse.BoardDetail.builder()
                 .hostType(board.getHostType())
                 .boardType(board.getBoardType())
                 .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())

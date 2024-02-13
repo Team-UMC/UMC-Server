@@ -71,8 +71,8 @@ public class MemberController {
     })
     @PostMapping("/github")
     public BaseResponse<MemberAuthenticateGithubResponse> authenticationGithub(@CurrentMember Member member,
-                                                                               @RequestParam String code) {
-        return BaseResponse.onSuccess(memberService.authenticateGithub(member, code));
+                                                                               @RequestParam String nickname) {
+        return BaseResponse.onSuccess(memberService.authenticateGithub(member, nickname));
     }
 
     @Operation(summary = "깃허브 데이터 조회 API", description = "깃허브 잔디 이미지를 조회하는 API입니다.")
@@ -94,4 +94,15 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.inquiryMemberPoints(member));
 
     }
+
+    @Operation(summary = "출석 체크 API", description = "홈화면 불러오고 나서 호출해서 사용하면 됩니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @PostMapping("/attend")
+    public BaseResponse<MemberAttendResponse> attendMember(@CurrentMember Member member) {
+        return BaseResponse.onSuccess(memberService.attendMember(member));
+    }
+
+
 }
