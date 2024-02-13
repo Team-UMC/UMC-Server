@@ -47,7 +47,7 @@ public class MessageController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.MessageId>
-    postMessage(
+    patchMessage(
             @CurrentMember Member member,
             @PathVariable UUID messageRoomId,
             @PathVariable UUID messageId,
@@ -62,7 +62,7 @@ public class MessageController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.MessageId>
-    postMessage(
+    deleteMessage(
             @CurrentMember Member member,
             @PathVariable UUID messageRoomId,
             @PathVariable UUID messageId
@@ -76,7 +76,7 @@ public class MessageController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.JoinMessages>
-    postMessage(
+    joinMessages(
             @CurrentMember Member member,
             @PathVariable UUID messageRoomId,
             @RequestParam Long page //페이징 처리
@@ -90,7 +90,7 @@ public class MessageController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.JoinMessageRooms>
-    postMessage(
+    joinMessageRooms(
             @CurrentMember Member member
     ){
         return BaseResponse.onSuccess();
@@ -102,7 +102,7 @@ public class MessageController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.MessageRoomId>
-    postMessage(
+    startMessage(
             @CurrentMember Member member,
             @RequestParam UUID receiverId
     ){
