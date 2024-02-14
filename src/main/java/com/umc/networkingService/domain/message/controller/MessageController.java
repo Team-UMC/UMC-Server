@@ -74,7 +74,7 @@ public class MessageController {
         return BaseResponse.onSuccess(messageFacade.deleteMessage(member, messageId));
     }
 
-    @Operation(summary = "쪽지 상세 조회 API",description = "쪽지 상세 조회 API")
+    @Operation(summary = "쪽지 상세 조회 API",description = "쪽지 상세 조회 API (페이지 0부터 시작) (isAnonymous가 true일 경우 익명인 메시지))")
     @GetMapping("/{messageRoomId}")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
@@ -83,12 +83,12 @@ public class MessageController {
     joinMessages(
             @CurrentMember Member member,
             @PathVariable UUID messageRoomId,
-            @RequestParam(name= "page") int page //페이징 처리 (1부터 시작)
+            @RequestParam(name= "page") int page //페이징 처리
     ){
         return BaseResponse.onSuccess(messageFacade.joinMessages(member, messageRoomId, page));
     }
 
-    @Operation(summary = "쪽지함 조회 API",description = "쪽지함 조회 API")
+    @Operation(summary = "쪽지함 조회 API",description = "쪽지함 조회 API (isAnonymous가 true일 경우 상대가 익명인 메시지)")
     @GetMapping("")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
