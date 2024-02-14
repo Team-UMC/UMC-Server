@@ -64,7 +64,7 @@ public class MessageServiceImpl {
     }
 
     //쪽지방의 메시지 리스트 조회
-    public MessageResponse.JoinMessages getMessageListByMessageRoomId(Member member ,UUID messageRoomId, int page){
+    public MessageResponse.JoinMessages joinMessages(Member member ,UUID messageRoomId, int page){
 
         if(page < 0)
             throw new RestApiException(GlobalErrorCode._INTERNAL_PAGE_ERROR);
@@ -74,29 +74,29 @@ public class MessageServiceImpl {
         Page<Message> messages = messageRepository.findAllByMessageRoomIdOrderByCreatedAtDesc(
                 messageRoomId, PageRequest.of(page, 20)); //20개씩 페이징
 
-return MessageResponse.JoinMessages.builder()
-        .messageRoomId(messageRoomId)
-        .JoinMessage(
-                messages.getContent().stream()
-                        .map(message -> MessageResponse.JoinMessage.builder()
-                                .messageId(message.getId())
-                                .message(message.getContent())
-                                .messageTime(message.getCreatedAt().toString())
-                                .messageMemberName( //해당 메시지를 보낸 사람 이름
-                                        Boolean.TRUE.equals(message.getIsSender())
-                                                ? messageRoom.getSender().getName()
-                                                : messageRoom.getReceiver().getName()
-                                )
-                                .messageMemberId( //해당 메시지를 보낸 사람 아이디
-                                        Boolean.TRUE.equals(message.getIsSender())
-                                                ? messageRoom.getSender().getId()
-                                                : messageRoom.getReceiver().getId()
-                                )            //해당 메시지를 보낸 사람이 익명인지 여부
-                                .isAnonymous(message.getIsSender()&&messageRoom.getIsAnonymous())
-                                .build()
-                        ).toList()
-        )
-        .build();
+        return MessageResponse.JoinMessages.builder()
+                .messageRoomId(messageRoomId)
+                .JoinMessage(
+                        messages.getContent().stream()
+                                .map(message -> MessageResponse.JoinMessage.builder()
+                                        .messageId(message.getId())
+                                        .message(message.getContent())
+                                        .messageTime(message.getCreatedAt().toString())
+                                        .messageMemberName( //해당 메시지를 보낸 사람 이름
+                                                Boolean.TRUE.equals(message.getIsSender())
+                                                        ? messageRoom.getSender().getName()
+                                                        : messageRoom.getReceiver().getName()
+                                        )
+                                        .messageMemberId( //해당 메시지를 보낸 사람 아이디
+                                                Boolean.TRUE.equals(message.getIsSender())
+                                                        ? messageRoom.getSender().getId()
+                                                        : messageRoom.getReceiver().getId()
+                                        )            //해당 메시지를 보낸 사람이 익명인지 여부
+                                        .isAnonymous(message.getIsSender()&&messageRoom.getIsAnonymous())
+                                        .build()
+                                ).toList()
+                )
+                .build();
 
     }
 

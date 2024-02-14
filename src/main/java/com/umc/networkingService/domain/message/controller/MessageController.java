@@ -77,9 +77,9 @@ public class MessageController {
     joinMessages(
             @CurrentMember Member member,
             @PathVariable UUID messageRoomId,
-            @RequestParam(name= "page") Long page //페이징 처리 (1부터 시작)
+            @RequestParam(name= "page") int page //페이징 처리 (1부터 시작)
     ){
-        return BaseResponse.onSuccess();
+        return BaseResponse.onSuccess(messageService.joinMessages(member, messageRoomId, page));
     }
 
     @Operation(summary = "쪽지함 조회 API",description = "쪽지함 조회 API")
