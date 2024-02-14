@@ -103,6 +103,7 @@ public class MessageServiceImpl implements MessageService{
     //가장 최신의 메시지 찾기
     @Override
     public Message findRecentMessageByMessageRoom(MessageRoom messageRoom){
-        return messageRepository.findTopByMessageRoomOrderByCreatedAtDesc(messageRoom);
+        return messageRepository.findTopByMessageRoomOrderByCreatedAtDesc(messageRoom)
+                .orElseThrow(() -> new RestApiException(MessageErrorCode.NOT_FOUND_RECENT_MESSAGE));
     }
 }

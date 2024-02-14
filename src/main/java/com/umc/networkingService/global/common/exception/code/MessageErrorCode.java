@@ -14,6 +14,7 @@ public enum MessageErrorCode implements ErrorCodeInterface {
     NOT_FOUND_MESSAGE_ROOM(HttpStatus.BAD_REQUEST, "MESSAGE002", "존재하지 않는 쪽지방입니다."),
     ALREADY_EXIST_MESSAGE_ROOM(HttpStatus.BAD_REQUEST, "MESSAGE003", "이미 존재하는 쪽지방입니다."),
     EMPTY_MESSAGE(HttpStatus.BAD_REQUEST, "MESSAGE004", "메시지가 비었습니다."),
+    NOT_FOUND_RECENT_MESSAGE(HttpStatus.BAD_REQUEST, "MESSAGE005", "최신 메시지를 찾을 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

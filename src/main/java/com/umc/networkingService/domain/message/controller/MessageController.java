@@ -11,6 +11,7 @@ import com.umc.networkingService.domain.message.service.MessageRoomServiceImpl;
 import com.umc.networkingService.domain.message.service.MessageService;
 import com.umc.networkingService.domain.message.service.MessageServiceImpl;
 import com.umc.networkingService.global.common.base.BaseResponse;
+import com.umc.networkingService.global.common.exception.code.MessageErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -36,7 +37,8 @@ public class MessageController {
     @Operation(summary = "쪽지 작성 API",description = "쪽지 작성 API")
     @PostMapping("/{messageRoomId}")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MESSAGE002", description = "존재하지 않는 쪽지방"),
     })
     public BaseResponse<MessageResponse.MessageId>
     postMessage(
@@ -50,7 +52,8 @@ public class MessageController {
     @Operation(summary = "쪽지 수정 API",description = "쪽지 수정 API")
     @PatchMapping("/{messageId}")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MESSAGE001", description = "존재하지 않는 쪽지")
     })
     public BaseResponse<MessageResponse.MessageId>
     patchMessage(
@@ -64,7 +67,8 @@ public class MessageController {
     @Operation(summary = "쪽지 삭제 API",description = "쪽지 삭제 API")
     @DeleteMapping("/{messageId}")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MESSAGE001", description = "존재하지 않는 쪽지")
     })
     public BaseResponse<MessageResponse.MessageId>
     deleteMessage(
@@ -77,7 +81,9 @@ public class MessageController {
     @Operation(summary = "쪽지 상세 조회 API",description = "쪽지 상세 조회 API (페이지 0부터 시작) (isAnonymous가 true일 경우 익명인 메시지))")
     @GetMapping("/{messageRoomId}")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MESSAGE002", description = "존재하지 않는 쪽지방"),
+            @ApiResponse(responseCode = "COMMON500", description = "페이지 에러, 0<=page를 입력해주세요")
     })
     public BaseResponse<MessageResponse.JoinMessages>
     joinMessages(
@@ -91,7 +97,8 @@ public class MessageController {
     @Operation(summary = "쪽지함 조회 API",description = "쪽지함 조회 API (isAnonymous가 true일 경우 상대가 익명인 메시지)")
     @GetMapping("")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MESSAGE005", description = "최신 쪽지를 찾을 수 없습니다."),
     })
     public BaseResponse<MessageResponse.JoinMessageRooms>
     joinMessageRooms(
@@ -103,7 +110,9 @@ public class MessageController {
     @Operation(summary = "쪽지 시작하기 API",description = "쪽지 시작하기 API")
     @PostMapping("")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "MESSAGE003", description = "이미 존재하는 쪽지방"),
+            @ApiResponse(responseCode = "MESSAGE004", description = "보내는 메시지가 없음")
     })
     public BaseResponse<MessageResponse.MessageRoomId>
     startMessage(
