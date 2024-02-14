@@ -6,6 +6,8 @@ import com.umc.networkingService.domain.message.entity.Message;
 import com.umc.networkingService.domain.message.entity.MessageRoom;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
+
 
 public class MessageMapper {
 
@@ -14,9 +16,11 @@ public class MessageMapper {
         return MessageResponse.JoinMessageRoom.builder()
                 .messageRoomId(messageRoom.getId())
                 .messageRoomUserId(messageRoomUser.getId())
-                .messageRoomUserName(messageRoomUser.getNickname()+messageRoomUser.getName())
+                .messageRoomUserName(messageRoomUser.getNickname()+"/"+messageRoomUser.getName())
                 .recentMessage(recentMessage.getContent())
-                .recentMessageTime(recentMessage.getCreatedAt().toString())
+                .recentMessageTime(
+                        recentMessage.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
+                )
                 .isAnonymous(messageRoom.getIsAnonymous()&&messageRoom.getSender().getId().equals(messageRoomUser.getId()))
                 .build();
 

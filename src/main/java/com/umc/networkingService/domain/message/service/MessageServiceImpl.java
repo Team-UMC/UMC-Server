@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Service
@@ -79,7 +80,7 @@ public class MessageServiceImpl implements MessageService{
                                 .map(message -> MessageResponse.JoinMessage.builder()
                                         .messageId(message.getId())
                                         .message(message.getContent())
-                                        .messageTime(message.getCreatedAt().toString())
+                                        .messageTime(message.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
                                         .messageMemberName( //해당 메시지를 보낸 사람 이름
                                                 Boolean.TRUE.equals(message.getIsSender())
                                                         ? messageRoom.getSender().getNickname()+"/"+messageRoom.getSender().getName()
@@ -94,7 +95,7 @@ public class MessageServiceImpl implements MessageService{
                                         .build()
                                 ).toList()
                 )
-                .build();  //todo: LocalDateTime을 yyyy-MM-dd hh:mm:ss 형식으로 파싱하기
+                .build();
 
     }
 

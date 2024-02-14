@@ -73,7 +73,7 @@ public class MessageRoomServiceImpl implements MessageRoomService{
                                 .sorted(Comparator.comparing(MessageResponse.JoinMessageRoom::getRecentMessageTime).reversed()) //최신순으로 정렬
                                 .toList()
                 )
-                .build();  //todo: LocalDateTime을 yyyy-MM-dd hh:mm:ss 형식으로 파싱하기
+                .build();
 
         /*
             1. user가 sender인 messageRoom or user가 reciver인 messageRoom 리스트 찾기
