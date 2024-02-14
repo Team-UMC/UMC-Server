@@ -10,10 +10,8 @@ import com.umc.networkingService.domain.message.mapper.MessageMapper;
 import com.umc.networkingService.domain.message.repository.MessageRoomRepository;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.MessageErrorCode;
-import com.umc.networkingService.global.common.exception.code.UniversityErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,21 +19,25 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MessageRoomServiceImpl {
+public class MessageRoomServiceImpl implements MessageRoomService{
 
     private final MessageRoomRepository messageRoomRepository;
 
     private final MemberService memberService;
-    private final MessageServiceImpl messageService;
 
     //채팅방 생성
-    @Transactional
-    public MessageResponse.MessageRoomId createMessageRoom(Member member, UUID receiverId, boolean isAnonymous) {
+    @Override
+    public MessageResponse.MessageRoomId createMessageRoom(Member member, UUID receiverId, boolean isAnonymous, String content){
         Member receiver = memberService.findByMemberId(receiverId);
 
         //메시지룸 이미 있는지 확인
         if(messageRoomRepository.existsByReceiverAndSenderAndIsAnonymous(receiver, member, isAnonymous)){
             throw new RestApiException(MessageErrorCode.ALREADY_EXIST_MESSAGE_ROOM);
+        }
+
+        //메시지룸 생성은 메시지를 보내야지 생성
+        if(content.isEmpty()){
+            throw new RestApiException(MessageErrorCode.EMPTY_MESSAGE);
         }
 
         return MessageResponse.MessageRoomId.builder()
@@ -49,8 +51,8 @@ public class MessageRoomServiceImpl {
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public MessageResponse.JoinMessageRooms joinMessageRooms(Member member){ //메시지룸 리스트 조회
+    @Override
+    public MessageResponse.JoinMessageRooms joinMessageRooms(Member member, MessageService messageService){ //메시지룸 리스트 조회
         List<MessageRoom> messageRooms = messageRoomRepository.findAllByReceiverOrSender(member, member);
 
         return MessageResponse.JoinMessageRooms.builder() //메시지룸 리스트
@@ -82,7 +84,7 @@ public class MessageRoomServiceImpl {
     }
 
     //아이디로 채팅방 찾기
-    @Transactional(readOnly = true)
+    @Override
     public MessageRoom findByMessageRoomId(UUID messageRoomId){
         return messageRoomRepository.findById(messageRoomId)
                 .orElseThrow(() -> new RestApiException(MessageErrorCode.NOT_FOUND_MESSAGE_ROOM));

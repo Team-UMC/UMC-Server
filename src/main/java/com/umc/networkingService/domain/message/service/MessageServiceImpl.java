@@ -16,21 +16,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
-import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MessageServiceImpl {
+public class MessageServiceImpl implements MessageService{
 
     private final MessageRepository messageRepository;
 
-    private final MessageRoomServiceImpl messageRoomService;
 
     //쪽지 보내기
-    @Transactional
-    public MessageResponse.MessageId postMessage(Member sender, UUID messageRoomId, MessageRequest.Message message){
+    @Override
+    public MessageResponse.MessageId postMessage(Member sender, UUID messageRoomId, MessageRequest.Message message, MessageRoomService messageRoomService){
         if(message.getMessage().isEmpty())
             throw new RestApiException(MessageErrorCode.EMPTY_MESSAGE);
 
@@ -46,7 +43,7 @@ public class MessageServiceImpl {
     }
 
     //쪽지 수정
-    @Transactional
+    @Override
     public MessageResponse.MessageId patchMessage(Member member, UUID messageId, MessageRequest.Message message){
         messageRepository.findById(messageId)
                 .orElseThrow(() -> new RestApiException(MessageErrorCode.NOT_FOUND_MESSAGE))
@@ -55,7 +52,7 @@ public class MessageServiceImpl {
     }
 
     //쪽지 삭제
-    @Transactional
+    @Override
     public MessageResponse.MessageId deleteMessage(Member member, UUID messageId){
         messageRepository.findById(messageId)
                 .orElseThrow(() -> new RestApiException(MessageErrorCode.NOT_FOUND_MESSAGE))
@@ -64,7 +61,8 @@ public class MessageServiceImpl {
     }
 
     //쪽지방의 메시지 리스트 조회
-    public MessageResponse.JoinMessages joinMessages(Member member ,UUID messageRoomId, int page){
+    @Override
+    public MessageResponse.JoinMessages joinMessages(Member member ,UUID messageRoomId, int page, MessageRoomService messageRoomService){
 
         if(page < 0)
             throw new RestApiException(GlobalErrorCode._INTERNAL_PAGE_ERROR);
@@ -96,12 +94,13 @@ public class MessageServiceImpl {
                                         .build()
                                 ).toList()
                 )
-                .build();
+                .build();  //todo: LocalDateTime을 yyyy-MM-dd hh:mm:ss 형식으로 파싱하기
 
     }
 
 
     //가장 최신의 메시지 찾기
+    @Override
     public Message findRecentMessageByMessageRoom(MessageRoom messageRoom){
         return messageRepository.findTopByMessageRoomOrderByCreatedAtDesc(messageRoom);
     }

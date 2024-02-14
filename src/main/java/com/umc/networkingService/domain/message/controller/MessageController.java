@@ -5,7 +5,10 @@ import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.message.dto.request.MessageRequest;
 import com.umc.networkingService.domain.message.dto.response.MessageResponse;
+import com.umc.networkingService.domain.message.facade.MessageFacade;
+import com.umc.networkingService.domain.message.service.MessageRoomService;
 import com.umc.networkingService.domain.message.service.MessageRoomServiceImpl;
+import com.umc.networkingService.domain.message.service.MessageService;
 import com.umc.networkingService.domain.message.service.MessageServiceImpl;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,18 +17,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @Slf4j
 @Tag(name = "채팅 API", description = "채팅 관련 API")
+@RestController
+@Validated
 @RequestMapping("/messages")
 @RequiredArgsConstructor
 public class MessageController {
 
-    private final MessageServiceImpl messageService;
-    private final MessageRoomServiceImpl messageRoomService;
+
+    private final MessageFacade messageFacade;
 
     @Operation(summary = "쪽지 작성 API",description = "쪽지 작성 API")
     @PostMapping("/{messageRoomId}")
@@ -38,7 +44,7 @@ public class MessageController {
             @PathVariable UUID messageRoomId,
             @RequestBody MessageRequest.Message message
     ){
-        return BaseResponse.onSuccess(messageService.postMessage(member, messageRoomId, message));
+        return BaseResponse.onSuccess(messageFacade.postMessage(member, messageRoomId, message));
     }
 
     @Operation(summary = "쪽지 수정 API",description = "쪽지 수정 API")
@@ -52,7 +58,7 @@ public class MessageController {
             @PathVariable UUID messageId,
             @RequestBody MessageRequest.Message message
     ){
-        return BaseResponse.onSuccess(messageService.patchMessage(member, messageId, message));
+        return BaseResponse.onSuccess(messageFacade.patchMessage(member, messageId, message));
     }
 
     @Operation(summary = "쪽지 삭제 API",description = "쪽지 삭제 API")
@@ -65,7 +71,7 @@ public class MessageController {
             @CurrentMember Member member,
             @PathVariable UUID messageId
     ){
-        return BaseResponse.onSuccess(messageService.deleteMessage(member, messageId));
+        return BaseResponse.onSuccess(messageFacade.deleteMessage(member, messageId));
     }
 
     @Operation(summary = "쪽지 상세 조회 API",description = "쪽지 상세 조회 API")
@@ -79,7 +85,7 @@ public class MessageController {
             @PathVariable UUID messageRoomId,
             @RequestParam(name= "page") int page //페이징 처리 (1부터 시작)
     ){
-        return BaseResponse.onSuccess(messageService.joinMessages(member, messageRoomId, page));
+        return BaseResponse.onSuccess(messageFacade.joinMessages(member, messageRoomId, page));
     }
 
     @Operation(summary = "쪽지함 조회 API",description = "쪽지함 조회 API")
@@ -91,21 +97,20 @@ public class MessageController {
     joinMessageRooms(
             @CurrentMember Member member
     ){
-        return BaseResponse.onSuccess(messageRoomService.joinMessageRooms(member));
+        return BaseResponse.onSuccess(messageFacade.joinMessageRooms(member));
     }
 
     @Operation(summary = "쪽지 시작하기 API",description = "쪽지 시작하기 API")
-    @PostMapping("/{receiverId}")
+    @PostMapping("")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.MessageRoomId>
     startMessage(
             @CurrentMember Member member,
-            @PathVariable UUID receiverId,
-            @RequestParam Boolean isAnonymous
+            @RequestBody MessageRequest.StartMessageRoom messageRoom
     ){
-        return BaseResponse.onSuccess(messageRoomService.createMessageRoom(member, receiverId, isAnonymous));
+        return BaseResponse.onSuccess(messageFacade.createMessageRoom(member, messageRoom.getMessageRoomUserId(), messageRoom.getIsAnonymous(), messageRoom.getMessageContent()));
     }
 
 }
