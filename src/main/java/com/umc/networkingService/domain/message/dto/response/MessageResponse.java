@@ -28,6 +28,7 @@ public class MessageResponse {
         String messageRoomUserName;
         String recentMessage;
         String recentMessageTime;
+        Boolean isAnonymous;
     }
 
     @Builder
@@ -36,8 +37,7 @@ public class MessageResponse {
     @AllArgsConstructor
     public static class JoinMessages { //쪽지 조회
         List<JoinMessage> JoinMessage;
-        String messageReciverName;
-        UUID messageUserId;
+        UUID messageRoomId;
     }
 
     @Builder
@@ -49,7 +49,9 @@ public class MessageResponse {
         UUID messageId;
         String message;
         String messageTime;
-        Boolean isSender;
+        String messageMemberName;
+        UUID messageMemberId;
+        Boolean isAnonymous; //해당 메시지의 주인이 익명인지
     }
 
     @Builder

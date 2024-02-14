@@ -38,36 +38,34 @@ public class MessageController {
             @PathVariable UUID messageRoomId,
             @RequestBody MessageRequest.Message message
     ){
-        return BaseResponse.onSuccess();
+        return BaseResponse.onSuccess(messageService.postMessage(member, messageRoomId, message));
     }
 
     @Operation(summary = "쪽지 수정 API",description = "쪽지 수정 API")
-    @PatchMapping("/{messageRoomId}/{messageId}")
+    @PatchMapping("/{messageId}")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.MessageId>
     patchMessage(
             @CurrentMember Member member,
-            @PathVariable UUID messageRoomId,
             @PathVariable UUID messageId,
             @RequestBody MessageRequest.Message message
     ){
-        return BaseResponse.onSuccess();
+        return BaseResponse.onSuccess(messageService.patchMessage(member, messageId, message));
     }
 
     @Operation(summary = "쪽지 삭제 API",description = "쪽지 삭제 API")
-    @DeleteMapping("/{messageRoomId}/{messageId}")
+    @DeleteMapping("/{messageId}")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.MessageId>
     deleteMessage(
             @CurrentMember Member member,
-            @PathVariable UUID messageRoomId,
             @PathVariable UUID messageId
     ){
-        return BaseResponse.onSuccess();
+        return BaseResponse.onSuccess(messageService.deleteMessage(member, messageId));
     }
 
     @Operation(summary = "쪽지 상세 조회 API",description = "쪽지 상세 조회 API")
@@ -79,7 +77,7 @@ public class MessageController {
     joinMessages(
             @CurrentMember Member member,
             @PathVariable UUID messageRoomId,
-            @RequestParam Long page //페이징 처리
+            @RequestParam(name= "page") Long page //페이징 처리 (1부터 시작)
     ){
         return BaseResponse.onSuccess();
     }
@@ -93,20 +91,21 @@ public class MessageController {
     joinMessageRooms(
             @CurrentMember Member member
     ){
-        return BaseResponse.onSuccess();
+        return BaseResponse.onSuccess(messageRoomService.joinMessageRooms(member));
     }
 
     @Operation(summary = "쪽지 시작하기 API",description = "쪽지 시작하기 API")
-    @PostMapping("")
+    @PostMapping("/{receiverId}")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     public BaseResponse<MessageResponse.MessageRoomId>
     startMessage(
             @CurrentMember Member member,
-            @RequestParam UUID receiverId
+            @PathVariable UUID receiverId,
+            @RequestParam Boolean isAnonymous
     ){
-        return BaseResponse.onSuccess();
+        return BaseResponse.onSuccess(messageRoomService.createMessageRoom(member, receiverId, isAnonymous));
     }
 
 }
