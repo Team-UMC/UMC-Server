@@ -2,15 +2,9 @@ package com.umc.networkingService.domain.message.service;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.message.dto.response.MessageResponse;
-import com.umc.networkingService.domain.message.entity.Message;
 import com.umc.networkingService.domain.message.entity.MessageRoom;
-import com.umc.networkingService.domain.message.mapper.MessageMapper;
-import com.umc.networkingService.global.common.exception.RestApiException;
-import com.umc.networkingService.global.common.exception.code.MessageErrorCode;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
 
 public interface MessageRoomService {

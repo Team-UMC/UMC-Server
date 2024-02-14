@@ -75,12 +75,6 @@ public class MessageRoomServiceImpl implements MessageRoomService{
                 )
                 .build();
 
-        /*
-            1. user가 sender인 messageRoom or user가 reciver인 messageRoom 리스트 찾기
-            3. 각 메시지 룸 아이디로 최근 메시지 하나 씩 찾음 (messageService로)
-            4. 최신 순으로 정렬
-            5. 데이터 가공 ㄱ
-         */
     }
 
     //아이디로 채팅방 찾기

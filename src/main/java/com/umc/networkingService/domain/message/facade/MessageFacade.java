@@ -3,11 +3,9 @@ package com.umc.networkingService.domain.message.facade;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.message.dto.request.MessageRequest;
 import com.umc.networkingService.domain.message.dto.response.MessageResponse;
-import com.umc.networkingService.domain.message.repository.MessageRoomRepository;
 import com.umc.networkingService.domain.message.service.MessageRoomService;
 import com.umc.networkingService.domain.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

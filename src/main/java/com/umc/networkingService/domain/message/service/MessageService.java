@@ -5,11 +5,6 @@ import com.umc.networkingService.domain.message.dto.request.MessageRequest;
 import com.umc.networkingService.domain.message.dto.response.MessageResponse;
 import com.umc.networkingService.domain.message.entity.Message;
 import com.umc.networkingService.domain.message.entity.MessageRoom;
-import com.umc.networkingService.global.common.exception.RestApiException;
-import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
-import com.umc.networkingService.global.common.exception.code.MessageErrorCode;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;

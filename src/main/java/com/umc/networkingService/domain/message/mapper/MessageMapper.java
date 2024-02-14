@@ -4,7 +4,6 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.message.dto.response.MessageResponse;
 import com.umc.networkingService.domain.message.entity.Message;
 import com.umc.networkingService.domain.message.entity.MessageRoom;
-import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
 
