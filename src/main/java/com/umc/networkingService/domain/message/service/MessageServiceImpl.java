@@ -82,8 +82,8 @@ public class MessageServiceImpl implements MessageService{
                                         .messageTime(message.getCreatedAt().toString())
                                         .messageMemberName( //해당 메시지를 보낸 사람 이름
                                                 Boolean.TRUE.equals(message.getIsSender())
-                                                        ? messageRoom.getSender().getName()
-                                                        : messageRoom.getReceiver().getName()
+                                                        ? messageRoom.getSender().getNickname()+"/"+messageRoom.getSender().getName()
+                                                        : messageRoom.getReceiver().getNickname()+"/"+messageRoom.getReceiver().getName()
                                         )
                                         .messageMemberId( //해당 메시지를 보낸 사람 아이디
                                                 Boolean.TRUE.equals(message.getIsSender())

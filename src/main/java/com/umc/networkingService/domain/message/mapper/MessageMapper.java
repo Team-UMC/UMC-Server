@@ -14,7 +14,7 @@ public class MessageMapper {
         return MessageResponse.JoinMessageRoom.builder()
                 .messageRoomId(messageRoom.getId())
                 .messageRoomUserId(messageRoomUser.getId())
-                .messageRoomUserName(messageRoomUser.getName())
+                .messageRoomUserName(messageRoomUser.getNickname()+messageRoomUser.getName())
                 .recentMessage(recentMessage.getContent())
                 .recentMessageTime(recentMessage.getCreatedAt().toString())
                 .isAnonymous(messageRoom.getIsAnonymous()&&messageRoom.getSender().getId().equals(messageRoomUser.getId()))
