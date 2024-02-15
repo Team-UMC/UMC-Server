@@ -19,6 +19,7 @@ public class ProjectDetailResponse {
     private String description;
     private String logoImage;
     private Semester semester;
+    private boolean isLike;
     private List<ProjectType> types;
     private List<String> tags;
     private List<ProjectMemberInfo> projectMembers;

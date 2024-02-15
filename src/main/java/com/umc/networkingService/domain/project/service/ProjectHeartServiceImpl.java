@@ -44,5 +44,11 @@ public class ProjectHeartServiceImpl implements ProjectHeartService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isLikeProject(Member member, UUID projectId) {
+        return projectHeartRepository.existsByMemberIdAndProjectId(member.getId(),projectId);
+    }
+
 
 }

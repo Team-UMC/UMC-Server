@@ -8,5 +8,4 @@ import java.util.UUID;
 public interface ProjectHeartRepository extends JpaRepository<ProjectHeart, UUID> {
     boolean existsByMemberIdAndProjectId(UUID memberId, UUID projectId);
     void deleteByMemberIdAndProjectId(UUID memberId, UUID projectId);
-    int countByProjectId(UUID projectId);
 }

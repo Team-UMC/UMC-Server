@@ -40,6 +40,8 @@ public class ProjectServiceImpl implements ProjectService{
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
+    private final ProjectHeartService projectHeartService;
+
     @Override
     public ProjectIdResponse createProject(Member member, MultipartFile projectImage, ProjectCreateRequest request) {
 
@@ -92,7 +94,7 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public ProjectAllResponse inquiryProjects(Semester semester, ProjectType type, Pageable pageable) {
+    public ProjectAllResponse inquiryProjects(Member member, Semester semester, ProjectType type, Pageable pageable) {
         Page<Project> projects;
 
         // 기수 조건과 타입 조건의 유무에 따라서 조회
@@ -107,13 +109,15 @@ public class ProjectServiceImpl implements ProjectService{
         }
 
         return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
+                projects.stream().map(
+                        project -> projectMapper.toProjectInfo(project, projectHeartService.isLikeProject(member, project.getId()))
+                        ).toList(),
                 projects.hasNext()
         );
     }
 
     @Override
-    public ProjectAllResponse inquiryHotProjects(Pageable pageable) {
+    public ProjectAllResponse inquiryHotProjects(Member member, Pageable pageable) {
         // 조회수 1점, 하트수 3점으로 점수를 계산해 내림차순 정렬
         List<Project> projects = projectRepository.findAll();
         List<Project> hotProjects = projects.stream()
@@ -124,7 +128,9 @@ public class ProjectServiceImpl implements ProjectService{
 
 
         return ProjectAllResponse.builder()
-                .projects(hotProjects.stream().map(projectMapper::toProjectInfo).toList())
+                .projects(hotProjects.stream().map(
+                        project -> projectMapper.toProjectInfo(project, projectHeartService.isLikeProject(member, project.getId()))
+                ).toList())
                 .build();
     }
 
@@ -133,25 +139,27 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public ProjectAllResponse searchProject(String keyword, Pageable pageable){
+    public ProjectAllResponse searchProject(Member member ,String keyword, Pageable pageable){
         Page<Project> projects = projectRepository.findByNameContainsOrTagContains(keyword, pageable);
 
         return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
+                projects.stream().map(
+                        project -> projectMapper.toProjectInfo(project, projectHeartService.isLikeProject(member, project.getId()))
+                ).toList(),
                 projects.hasNext()
         );
     }
 
     @Override
     @Transactional
-    public ProjectDetailResponse inquiryProjectDetail(UUID projectId){
+    public ProjectDetailResponse inquiryProjectDetail(Member member , UUID projectId){
         Project project = loadEntity(projectId);
         // 조회수 증가
         project.addHitCount();
 
         List<ProjectMember> projectMembers = projectMemberRepository.findAllByProject(project);
 
-        return projectMapper.toProjectDetailResponse(project, projectMembers);
+        return projectMapper.toProjectDetailResponse(project, projectMembers, projectHeartService.isLikeProject(member, projectId));
     }
 
     @Override

@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface ProjectHeartService {
     ProjectLikeResponse likeProject(Member member, UUID projectId);
+    boolean isLikeProject(Member member, UUID projectId);
 }

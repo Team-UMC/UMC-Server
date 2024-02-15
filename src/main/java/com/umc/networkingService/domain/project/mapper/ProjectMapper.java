@@ -32,7 +32,7 @@ public class ProjectMapper {
                 .build();
     }
 
-    public ProjectAllResponse.ProjectInfo toProjectInfo(Project project) {
+    public ProjectAllResponse.ProjectInfo toProjectInfo(Project project, boolean isLike) {
         return ProjectAllResponse.ProjectInfo.builder()
                 .projectId(project.getId())
                 .name(project.getName())
@@ -41,10 +41,11 @@ public class ProjectMapper {
                 .semester(project.getSemester())
                 .types(project.getTypes())
                 .tags(project.getTags())
+                .isLike(isLike)
                 .build();
     }
 
-    public ProjectDetailResponse toProjectDetailResponse(Project project, List<ProjectMember> projectMembers) {
+    public ProjectDetailResponse toProjectDetailResponse(Project project, List<ProjectMember> projectMembers, boolean isLike) {
         return ProjectDetailResponse.builder()
                 .name(project.getName())
                 .description(project.getDescription())
@@ -53,6 +54,7 @@ public class ProjectMapper {
                 .types(project.getTypes())
                 .tags(project.getTags())
                 .projectMembers(toProjectMemberInfos(projectMembers))
+                .isLike(isLike)
                 .build();
     }
 

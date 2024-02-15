@@ -52,7 +52,7 @@ public class Project extends BaseEntity {
     private Long hitCount;
 
     @ColumnDefault("0")
-    private int heartCount; //좋아요수
+    private int heartCount; //좋아요 수
 
     public void updateProject(ProjectUpdateRequest request){
         this.name = request.getName();
