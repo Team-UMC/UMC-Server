@@ -24,10 +24,10 @@ public class ProjectHeart extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name="project_id")
-    private Project projectId;
+    private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name="member_id")
-    private Member memberId;
+    private Member member;
 
 }

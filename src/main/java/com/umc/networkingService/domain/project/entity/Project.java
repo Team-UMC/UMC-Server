@@ -67,4 +67,12 @@ public class Project extends BaseEntity {
     public void addHitCount() {
         this.hitCount += 1L;
     }
+
+    public void addHeartCount() {
+        this.heartCount += 1;
+    }
+
+    public void subtractHeartCount() {
+        this.heartCount -= 1;
+    }
 }

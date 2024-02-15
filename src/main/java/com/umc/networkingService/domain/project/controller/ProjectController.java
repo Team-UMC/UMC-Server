@@ -1,8 +1,13 @@
 package com.umc.networkingService.domain.project.controller;
 
+import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectLike;
+import com.umc.networkingService.domain.project.dto.response.ProjectLikeResponse;
 import com.umc.networkingService.domain.project.entity.ProjectType;
+import com.umc.networkingService.domain.project.service.ProjectHeartService;
 import com.umc.networkingService.domain.project.service.ProjectService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -26,6 +31,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
+    private final ProjectHeartService projectHeartService;
 
     @Operation(summary = "프로젝트 조회 API", description = "프로젝트를 특정 조건(기수, 유형)에 따라 조회화는 API입니다.")
     @ApiResponses(value = {
@@ -83,6 +89,19 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public BaseResponse<ProjectDetailResponse> inquiryProjectDetail(@PathVariable ("projectId") UUID projectId){
         return BaseResponse.onSuccess(projectService.inquiryProjectDetail(projectId));
+    }
+
+    @Operation(summary = "프로젝트 좋아요/취소 API", description = "프로젝트에 좋아요를 누르는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다.")
+    })
+    @PostMapping("/{projectId}/like")
+    public BaseResponse<ProjectLikeResponse> likeProject(
+            @CurrentMember Member member,
+            @PathVariable ("projectId") UUID projectId
+    ){
+        return BaseResponse.onSuccess(projectHeartService.likeProject(member, projectId));
     }
 
 

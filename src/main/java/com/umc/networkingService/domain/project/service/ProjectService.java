@@ -6,6 +6,7 @@ import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectLikeResponse;
 import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.global.common.base.EntityLoader;
@@ -23,4 +24,7 @@ public interface ProjectService extends EntityLoader<Project, UUID> {
    ProjectAllResponse inquiryHotProjects(Pageable pageable);
    ProjectAllResponse searchProject(String keyword, Pageable pageable);
    ProjectDetailResponse inquiryProjectDetail(UUID projectId);
+
+   int heartCountUp(Project project);
+   int heartCountdown(Project project);
 }

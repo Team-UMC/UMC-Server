@@ -6,6 +6,7 @@ import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectLikeResponse;
 import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.domain.project.entity.ProjectMember;
 import com.umc.networkingService.domain.project.entity.ProjectType;
@@ -23,9 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -111,12 +114,22 @@ public class ProjectServiceImpl implements ProjectService{
 
     @Override
     public ProjectAllResponse inquiryHotProjects(Pageable pageable) {
-        Page<Project> projects = projectRepository.findAll(pageable);
+        // 조회수 1점, 하트수 3점으로 점수를 계산해 내림차순 정렬
+        List<Project> projects = projectRepository.findAll();
+        List<Project> hotProjects = projects.stream()
+                .sorted(Comparator.comparingLong(this::calculateScore).reversed()) //점수 내림차순 정렬
+                .skip(pageable.getOffset()) // page * size 만큼 skip
+                .limit(pageable.getPageSize()) // size 만큼 limit
+                .toList();
 
-        return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
-                projects.hasNext()
-        );
+
+        return ProjectAllResponse.builder()
+                .projects(hotProjects.stream().map(projectMapper::toProjectInfo).toList())
+                .build();
+    }
+
+    private Long calculateScore(Project project) { // 조회수 1점, 하트수 3점으로 점수를 계산
+        return project.getHitCount() + (project.getHeartCount() * 3L);
     }
 
     @Override
@@ -145,5 +158,19 @@ public class ProjectServiceImpl implements ProjectService{
     public Project loadEntity(UUID id) {
         return projectRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
+    }
+
+    @Override
+    @Transactional
+    public int heartCountUp(Project project){
+        project.addHeartCount();
+        return project.getHeartCount();
+    }
+
+    @Override
+    @Transactional
+    public int heartCountdown(Project project){
+        project.subtractHeartCount();
+        return project.getHeartCount();
     }
 }
