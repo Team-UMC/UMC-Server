@@ -11,6 +11,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum ProjectInfo {
 
+    // 3기
+    TODAYSGYM("오늘의 짐", "오늘의 짐(GYM) - 아바타와 함께 성장하는 운동 기록 SNS", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/THIRD/%EC%98%A4%EB%8A%98%EC%9D%98+%EC%A7%90.png", List.of("운동기록", "캘린더", "아바타"), Semester.THIRD, List.of(ProjectType.AOS)),
+
+    // 4기
+    OWORI("오월이", " 모여봐요 우리가족, 우리가족만의 소중한 추억을 기록하고 소통해요", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FOURTH/%EC%98%A4%EC%9B%94%EC%9D%B4+%EB%A1%9C%EA%B3%A0.png", List.of("가족", "소통", "추억"), Semester.FOURTH, List.of(ProjectType.IOS)),
+    ARF("알프", "교내 재학생 - 교환학생 커뮤니티 및 모임 플랫폼", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FOURTH/%EC%95%8C%ED%94%84.png", List.of("안전", "외국인", "대학생"), Semester.FOURTH, List.of(ProjectType.IOS)),
+    MYOJIPSA("묘집사", "미션형 커뮤니티 서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FOURTH/%EB%AC%98%EC%A7%91%EC%82%AC.svg", List.of("커뮤니티", "토끼", "미션"), Semester.FOURTH, List.of(ProjectType.AOS)),
+
+
     // 5기
     // GACI
     CAMPUS_NOTE("캠퍼스 노트", "시간표 연동 강의 필기 앱, 캠퍼스 노트 어플리케이션", "", List.of("필기", "노트", "대학"), Semester.FIFTH, List.of(ProjectType.AOS)),
@@ -22,7 +31,7 @@ public enum ProjectInfo {
     HAGOSIMDA("하고심다", "나만의 정원을 가꾸는 일정 관리 서비스", "", List.of("나만의 정원", "일정관리", "투두리스트"), Semester.FIFTH, List.of(ProjectType.AOS, ProjectType.WEB)),
     MARIAJEU("마리아주", "어떠한 술과도 가장 행복한 추억을 줄 수 있는 마리아주 레시피 서비스", "", List.of("페어링(완전한 궁합)", "즐거움(놀이)", "공유 및 리뷰"), Semester.FIFTH, List.of(ProjectType.AOS, ProjectType.WEB)),
     UMC_NETWORKING_SERVICE("UMC", "연합 동아리 네트워킹 서비스", "", List.of("연합", "네트워킹", "히스토리"), Semester.FIFTH, List.of(ProjectType.IOS, ProjectType.WEB)),
-    CLIMUS("클라이머스", "클라이머들이 꿈꾸던 볼더링 문제 풀이 플랫폼", "", List.of("클라이밍", "볼더링"), Semester.FIFTH, List.of(ProjectType.AOS)),
+    CLIMUS("클라이머스", "클라이머들이 꿈꾸던 볼더링 문제 풀이 플랫폼", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%5B%ED%81%B4%EB%B0%8B%5D+%ED%81%B4%EB%9D%BC%EC%9D%B4%EB%A8%B8%EB%A5%BC+%EC%9C%84%ED%95%9C+%EB%B3%BC%EB%8D%94%EB%A7%81+%EB%A3%A8%ED%8A%B8+%ED%92%80%EC%9D%B4+%ED%94%8C%EB%9E%AB%ED%8F%BC.svg", List.of("클라이밍", "볼더링"), Semester.FIFTH, List.of(ProjectType.AOS)),
     REVIEW_ZIP("Review.zip", "장소 리뷰 공유 서비스 a.k.a 립스타그램", "", List.of("장소", "리뷰", "친구"), Semester.FIFTH, List.of(ProjectType.WEB)),
     UMC_MATCHING_CENTER("UMC Matching Center", "UMC 팀 매칭을 하나의 웹 페이지로, 한 번에, 더 편하게", "", List.of("팀 매칭", "All in 1", "편리함"), Semester.FIFTH, List.of(ProjectType.WEB)),
     RE_MEMORY("RE:MEMORY", "단순히 기억을 보관하는 것을 넘어서, 추억과 감정을 선물하는 타임캡슐 서비스. RE:memory", "", List.of("타임캡슐", "편지", "롤링페이퍼"), Semester.FIFTH, List.of(ProjectType.WEB)),
@@ -89,7 +98,7 @@ public enum ProjectInfo {
     MY_PLACE("마플", "사용자가 등록한 관심 장소를 기반으로 장소를 제안하고 장소를 기록하는 서비스", "", List.of("관심장소", "기록"), Semester.FIFTH, List.of(ProjectType.IOS)),
     SPON_US("Spon-us", "대학생 단체와 기업 간의 협찬/제휴/연계프로그램 (이하 협력) 컨택을 도우는 서비스입니다.", "", List.of("편리함", "매칭", "도우미"), Semester.FIFTH, List.of(ProjectType.IOS)),
     ISA_ZIP("이사.zip", "이사 혹은 주거지에 대한 정보와 편리함을 담고있는 어플", "", List.of("매칭", "편리성", "접근성"), Semester.FIFTH, List.of(ProjectType.AOS)),
-    GOMIN_CHINGU("고민친구", "세상의 모든 고민이 거쳐가는 공간, 고민친구", "", List.of("고민해결", "결정장애", "의사결정능력"), Semester.FIFTH, List.of(ProjectType.WEB)),
+    GOMIN_CHINGU("고민친구", "세상의 모든 고민이 거쳐가는 공간, 고민친구", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%EA%B3%A0%EB%AF%BC%EC%B9%9C%EA%B5%AC.png", List.of("고민해결", "결정장애", "의사결정능력"), Semester.FIFTH, List.of(ProjectType.WEB)),
     // NEPTUNE
     MUGGLE("일상의 기록", "나의 일상을 자동으로 기록하는 편리한 일기 작성 서비스", "", List.of("편리함", "나만의 이야기", "아름다운 추억"), Semester.FIFTH, List.of(ProjectType.AOS)),
     BABIN("바빈", "교내 시설물 활성화 서비스", "", List.of("교내 시설물 활성화", "보물 찾기"), Semester.FIFTH, List.of(ProjectType.WEB)),
