@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProjectLikeResponse{
     private int likeCount;
-    private boolean isLike;
+    private Boolean isLike;
 }

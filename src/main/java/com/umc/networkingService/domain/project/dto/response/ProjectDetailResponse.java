@@ -32,6 +32,6 @@ public class ProjectDetailResponse {
         private Part part;
         private String nickname;
         private String name;
-        private boolean isLike;
+        private Boolean isLike;
     }
 }
