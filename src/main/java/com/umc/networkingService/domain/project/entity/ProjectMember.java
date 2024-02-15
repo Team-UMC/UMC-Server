@@ -32,6 +32,7 @@ public class ProjectMember extends BaseEntity {
     @JoinColumn
     private Project project;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Part part;
 }

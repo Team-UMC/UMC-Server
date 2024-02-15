@@ -70,7 +70,7 @@ public enum ProjectInfo {
     // HEDGES
     TEACHER_FOR_BOSS("티쳐 포 보스", "자영업자 솔루션 서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%ED%8B%B0%EC%B3%90%ED%8F%AC%EB%B3%B4%EC%8A%A4.svg", List.of("자영업", "사장"), Semester.FIFTH, List.of(ProjectType.AOS)),
     GLOBAL_STUDENTS("Global Students", "유학생 개방형 커뮤니티", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/Global+Students.svg", List.of("유학생", "개방형 커뮤티니", "생활편의"), Semester.FIFTH, List.of(ProjectType.WEB)),
-    COUPLE("커플", "", "데이트 코스 랜덤 추천 서비스", List.of("데이트", "커플"), Semester.FIFTH, List.of(ProjectType.IOS)),
+    COUPLE("커플", "데이트 코스 랜덤 추천 서비스", "", List.of("데이트", "커플"), Semester.FIFTH, List.of(ProjectType.IOS)),
     A_WRITE("각사각", "당신의 감정을 사각사각, 국내 자기 성장 도우미 서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%EC%82%AC%EA%B0%81%EC%82%AC%EA%B0%81+(A-write).png", List.of("통합성", "간편함", "기록적인"), Semester.FIFTH, List.of(ProjectType.AOS)),
     SURVEY_MATE("썰매", "설문 조사 중개를 위한 C2C 서비스",  "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%EC%8D%B0%EB%A7%A4+(Survey+Mate).svg", List.of("설문 조사", "신뢰", "앱테크"), Semester.FIFTH, List.of(ProjectType.WEB)),
     YOUNET("Younet", "유학생을 위한 네트워크", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/YOUNET.png", List.of("유학생", "네트워크", "연결고리"), Semester.FIFTH, List.of(ProjectType.IOS)),
