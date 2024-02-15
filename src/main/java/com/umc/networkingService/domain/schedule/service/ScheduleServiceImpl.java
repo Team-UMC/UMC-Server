@@ -30,8 +30,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return scheduleMapper.toScheduleInfoSummariesInCalendar(
                 scheduleRepository.findSchedulesByYearAndMonth(date).stream()
-                .map(schedule -> scheduleMapper.toScheduleInfoSummaryInCalendar(schedule))
-                .toList());
+                        .map(schedule -> scheduleMapper.toScheduleInfoSummaryInCalendar(schedule))
+                        .toList());
     }
 
     @Override

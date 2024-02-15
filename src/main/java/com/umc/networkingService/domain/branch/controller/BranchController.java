@@ -1,11 +1,7 @@
 package com.umc.networkingService.domain.branch.controller;
 
-import com.umc.networkingService.config.security.auth.CurrentMember;
-import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.service.BranchServiceImpl;
-import com.umc.networkingService.domain.branch.service.BranchUniversityServiceImpl;
-import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -15,9 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "지부 API", description = "지부 관련 API")

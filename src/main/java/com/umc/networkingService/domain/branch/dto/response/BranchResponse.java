@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.branch.dto.response;
 
-import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.global.common.enums.Semester;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

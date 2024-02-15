@@ -3,7 +3,6 @@ package com.umc.networkingService.domain.mascot.service;
 import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.domain.mascot.entity.MascotType;
 import com.umc.networkingService.domain.mascot.repository.MascotRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.MascotErrorCode;
 import lombok.RequiredArgsConstructor;

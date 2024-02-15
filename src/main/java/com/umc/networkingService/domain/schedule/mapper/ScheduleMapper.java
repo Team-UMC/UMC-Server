@@ -59,7 +59,6 @@ public class ScheduleMapper {
                 .build();
     }
 
-
     public Schedule createScheduleToSchedule(Member member, CreateSchedule request) {
         return Schedule.builder()
                 .title(request.getTitle())
@@ -73,14 +72,9 @@ public class ScheduleMapper {
                 .build();
     }
 
-
     public ScheduleId UUIDtoScheduleId(UUID scheduleId) {
         return ScheduleId.builder()
                 .scheduleId(scheduleId)
                 .build();
     }
-
-
-
-
 }

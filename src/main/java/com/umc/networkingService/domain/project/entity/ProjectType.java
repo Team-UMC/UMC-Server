@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Type {
+public enum ProjectType {
     AOS("안드로이드"),
     IOS("아이오에스"),
     WEB("웹");
