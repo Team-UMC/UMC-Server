@@ -51,6 +51,9 @@ public class Project extends BaseEntity {
     @ColumnDefault("0")
     private Long hitCount;
 
+    @ColumnDefault("0")
+    private int heartCount; //좋아요수
+
     public void updateProject(ProjectUpdateRequest request){
         this.name = request.getName();
         this.description = request.getDescription();
