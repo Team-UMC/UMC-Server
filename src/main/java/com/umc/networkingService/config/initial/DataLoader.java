@@ -58,7 +58,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
         // 새로운 프로젝트 생성
         List<Project> newProjects = insertNewProjects();
-        insertProjectMembers(newProjects);
+        if (!newProjects.isEmpty()) insertProjectMembers(newProjects);
     }
 
     // 새로운 마스코트를 추가하는 함수
