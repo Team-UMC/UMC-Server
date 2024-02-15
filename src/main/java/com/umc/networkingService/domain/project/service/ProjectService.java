@@ -25,6 +25,6 @@ public interface ProjectService extends EntityLoader<Project, UUID> {
    ProjectAllResponse searchProject(Member member, String keyword, Pageable pageable);
    ProjectDetailResponse inquiryProjectDetail(Member member, UUID projectId);
 
-   int heartCountUp(Project project);
-   int heartCountdown(Project project);
+   ProjectLikeResponse likeProject(Member member, UUID projectId);
+   boolean isLikeProject(Member member, UUID projectId);
 }

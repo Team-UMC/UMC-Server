@@ -8,9 +8,11 @@ import com.umc.networkingService.domain.project.dto.response.ProjectDetailRespon
 import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectLikeResponse;
 import com.umc.networkingService.domain.project.entity.Project;
+import com.umc.networkingService.domain.project.entity.ProjectHeart;
 import com.umc.networkingService.domain.project.entity.ProjectMember;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.domain.project.mapper.ProjectMapper;
+import com.umc.networkingService.domain.project.repository.ProjectHeartRepository;
 import com.umc.networkingService.domain.project.repository.ProjectMemberRepository;
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -39,8 +41,8 @@ public class ProjectServiceImpl implements ProjectService{
     private final ProjectMapper projectMapper;
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
+    private final ProjectHeartRepository projectHeartRepository;
 
-    private final ProjectHeartService projectHeartService;
 
     @Override
     public ProjectIdResponse createProject(Member member, MultipartFile projectImage, ProjectCreateRequest request) {
@@ -110,7 +112,7 @@ public class ProjectServiceImpl implements ProjectService{
 
         return new ProjectAllResponse(
                 projects.stream().map(
-                        project -> projectMapper.toProjectInfo(project, projectHeartService.isLikeProject(member, project.getId()))
+                        project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
                         ).toList(),
                 projects.hasNext()
         );
@@ -129,7 +131,7 @@ public class ProjectServiceImpl implements ProjectService{
 
         return ProjectAllResponse.builder()
                 .projects(hotProjects.stream().map(
-                        project -> projectMapper.toProjectInfo(project, projectHeartService.isLikeProject(member, project.getId()))
+                        project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
                 ).toList())
                 .build();
     }
@@ -144,7 +146,7 @@ public class ProjectServiceImpl implements ProjectService{
 
         return new ProjectAllResponse(
                 projects.stream().map(
-                        project -> projectMapper.toProjectInfo(project, projectHeartService.isLikeProject(member, project.getId()))
+                        project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
                 ).toList(),
                 projects.hasNext()
         );
@@ -159,7 +161,7 @@ public class ProjectServiceImpl implements ProjectService{
 
         List<ProjectMember> projectMembers = projectMemberRepository.findAllByProject(project);
 
-        return projectMapper.toProjectDetailResponse(project, projectMembers, projectHeartService.isLikeProject(member, projectId));
+        return projectMapper.toProjectDetailResponse(project, projectMembers, isLikeProject(member, projectId));
     }
 
     @Override
@@ -170,15 +172,32 @@ public class ProjectServiceImpl implements ProjectService{
 
     @Override
     @Transactional
-    public int heartCountUp(Project project){
-        project.addHeartCount();
-        return project.getHeartCount();
+    public ProjectLikeResponse likeProject(Member member, UUID projectId) {
+        Project project = loadEntity(projectId);
+        if(projectHeartRepository.existsByMemberIdAndProjectId(member.getId(),projectId)){ //이미 하트가 있는지 확인
+            projectHeartRepository.deleteByMemberIdAndProjectId(member.getId(),projectId); //하트 엔티티 삭제
+            project.subtractHeartCount();
+            return ProjectLikeResponse.builder()
+                    .likeCount(project.getHeartCount())
+                    .isLike(false).build();
+
+        } else{
+            projectHeartRepository.save( //하트 엔티티 생성
+                    ProjectHeart.builder()
+                            .member(member)
+                            .project(project)
+                            .build()
+            );
+            project.addHeartCount();
+            return ProjectLikeResponse.builder()
+                    .likeCount(project.getHeartCount())
+                    .isLike(true).build();
+        }
     }
 
     @Override
-    @Transactional
-    public int heartCountdown(Project project){
-        project.subtractHeartCount();
-        return project.getHeartCount();
+    @Transactional(readOnly = true)
+    public boolean isLikeProject(Member member, UUID projectId) {
+        return projectHeartRepository.existsByMemberIdAndProjectId(member.getId(),projectId);
     }
 }
