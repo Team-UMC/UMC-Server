@@ -47,7 +47,10 @@ public class AlbumImageServiceImpl implements AlbumImageService{
     public void deleteAlbumImages(Album album) {
         List<AlbumImage> albumImages = findAlbumImages(album);
 
-        albumImages.forEach(AlbumImage::delete);
+        albumImages.forEach(albumImage -> {
+            s3FileComponent.deleteFile(albumImage.getUrl());
+            albumImageRepository.deleteById(albumImage.getId());
+        });
     }
 
     @Override
