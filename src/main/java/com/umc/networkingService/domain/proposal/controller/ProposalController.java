@@ -13,19 +13,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "건의글 API", description = "건의글 관련 API")
 @RequiredArgsConstructor
-@RequestMapping("/proposal")
+@RequestMapping("/proposals")
 @RestController
 public class ProposalController {
     private final ProposalService proposalService;
@@ -35,7 +38,7 @@ public class ProposalController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패한 경우")
     })
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     BaseResponse <ProposalIdResponse> createProposal(@CurrentMember Member member,
                                                      @Valid @RequestPart ProposalCreateRequest request,
                                                      @RequestPart(name = "proposalImage",required = false) List<MultipartFile> proposalImages){
@@ -49,7 +52,7 @@ public class ProposalController {
             @ApiResponse(responseCode = "PROPOSAL002", description = "해당 건의글에 대해 수정 권한이 없습니다."),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패한 경우")
     })
-    @PostMapping
+    @PostMapping(value = "/{proposalId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     BaseResponse <ProposalIdResponse> updateProposal(@CurrentMember Member member,
                                                      @PathVariable("proposalId") UUID proposalId,
                                                      @Valid @RequestPart ProposalUpdateRequest request,
@@ -87,7 +90,7 @@ public class ProposalController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "PROPOSAL001", description = "존재하지 않는 건의글 입니다.")
     })
-    @GetMapping
+    @GetMapping("/{proposalId}")
     BaseResponse <ProposalDetailResponse> detailProposal(@CurrentMember Member member,
                                                          @PathVariable("proposalId") UUID proposalId){
         return BaseResponse.onSuccess(proposalService.showProposalDetail(member, proposalId));

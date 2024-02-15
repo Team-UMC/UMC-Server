@@ -17,4 +17,5 @@ public enum Role {
     private final String toKorean;
 
     private final int priority;
+
 }

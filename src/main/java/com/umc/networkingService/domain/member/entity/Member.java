@@ -4,7 +4,11 @@ import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.BaseEntity;
+import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.SemesterPartErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -13,9 +17,8 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -67,7 +70,6 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<MemberPosition> positions = new ArrayList<>();
 
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -75,7 +77,15 @@ public class Member extends BaseEntity {
 
     private String notionLink;
 
+    // 가장 최근 호출 시간
     private LocalDateTime lastActiveTime;
+
+
+    //포인트 차감
+    public void usePoint(Long usedPoint) {
+        this.remainPoint -= usedPoint;
+        this.contributionPoint += usedPoint;
+    }
 
     // 기본 정보 설정 함수
     public void setMemberInfo(String name, String nickname, University university, Branch branch) {
@@ -114,14 +124,55 @@ public class Member extends BaseEntity {
         else this.contributionPoint += usedPoint;
     }
 
-    // Role 업데이트 함수
+    //가장 최근 기수 찾기
+    public Semester getRecentSemester() {
+        List<SemesterPart> semesterParts = this.getSemesterParts();
+
+        return semesterParts.stream()
+                .map(SemesterPart::getSemester)
+                .max(Comparator.comparingInt(Enum::ordinal))
+                .orElseThrow(()-> new RestApiException(SemesterPartErrorCode.EMPTY_SEMESTER_PART));
+    }
+
+
+    //가장 최신 파트 찾기
+    public Part getRecentPart() {
+        // 최신 Semester에 해당하는 SemesterPart 찾기
+        Semester recentSemester = getRecentSemester();
+        List<SemesterPart> semesterParts = this.getSemesterParts();
+
+        Optional<SemesterPart> recentSemesterPart = semesterParts.stream()
+                .filter(part -> part.getSemester() == recentSemester)
+                .findFirst();
+
+        return recentSemesterPart.map(SemesterPart::getPart)
+                .orElseThrow(()-> new RestApiException(SemesterPartErrorCode.EMPTY_SEMESTER_PART));
+    }
+
+    //사용자가 활동한 기수를 모두 찾기
+    public List<Semester> getSemesters() {
+        return this.getSemesterParts().stream()
+                .map(SemesterPart::getSemester)
+                .collect(Collectors.toList());
+    }
+
     public void updateRole(Role role) {
         this.role = role;
+    }
+
+    // 지부 업데이트 함수
+    public void updateBranch(Branch branch) {
+        this.branch = branch;
     }
 
     // 최근 활동 시간 업데이트 함수
     public void updateLastActiveTime(LocalDateTime lastActiveTime) {
         this.lastActiveTime = lastActiveTime;
+    }
+
+    // 포인트 획득 함수
+    public void addRemainPoint(Long point) {
+        this.remainPoint += point;
     }
 
 }

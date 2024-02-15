@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.member.controller;
 
 
+import com.umc.networkingService.domain.friend.service.FriendShipService;
 import com.umc.networkingService.domain.member.dto.request.MemberUpdateMyProfileRequest;
 import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.MemberRelation;
@@ -39,6 +40,7 @@ public class MemberControllerTest extends ControllerTestConfig {
     @Autowired private MemberMapper memberMapper;
 
     @MockBean private MemberService memberService;
+    @MockBean private FriendShipService friendShipService;
 
     @DisplayName("나의 프로필 수정 API 테스트 - 프로필 이미지 없음")
     @Test
@@ -121,7 +123,7 @@ public class MemberControllerTest extends ControllerTestConfig {
                 .owner(MemberRelation.MINE)
                 .build();
 
-        given(memberService.inquiryProfile(any(), any())).willReturn(response);
+        given(friendShipService.inquiryProfile(any(), any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
@@ -154,7 +156,7 @@ public class MemberControllerTest extends ControllerTestConfig {
                 .owner(MemberRelation.OTHERS)
                 .build();
 
-        given(memberService.inquiryProfile(any(), any())).willReturn(response);
+        given(friendShipService.inquiryProfile(any(), any())).willReturn(response);
         given(memberRepository.findById(any(UUID.class))).willReturn(Optional.of(member));
 
         // when & then
@@ -202,7 +204,7 @@ public class MemberControllerTest extends ControllerTestConfig {
 
         // when & then
         mockMvc.perform(post("/members/github")
-                        .param("code", "깃허브 인가 코드")
+                        .param("nickname", "junseokkim")
                         .header("Authorization", accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())

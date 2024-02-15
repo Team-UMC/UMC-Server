@@ -2,8 +2,8 @@ package com.umc.networkingService.config.security.auth;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +20,7 @@ public class PrincipalDetailsService implements UserDetailsService {
     @Override
     public PrincipalDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member memberEntity = memberRepository.findById(UUID.fromString(username))
-                .orElseThrow(() -> new RestApiException(ErrorCode.EMPTY_MEMBER));
+                .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
         return new PrincipalDetails(memberEntity);
     }
 }

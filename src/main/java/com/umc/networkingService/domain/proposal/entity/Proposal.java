@@ -6,6 +6,7 @@ import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
+@DynamicInsert
 @SQLRestriction("deleted_at is null")
 public class Proposal extends BaseEntity {
 
@@ -33,9 +35,6 @@ public class Proposal extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
-
-    @ColumnDefault("0")
-    private int commentCount;
 
     public void update(ProposalUpdateRequest request){
         this.title = request.getTitle();
