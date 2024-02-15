@@ -14,7 +14,6 @@ import com.umc.networkingService.domain.album.repository.AlbumHeartRepository;
 import com.umc.networkingService.domain.album.repository.AlbumRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.exception.ErrorCode;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.AlbumErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,7 @@ public class AlbumServiceImpl implements AlbumService{
     @Transactional
     public AlbumIdResponse createAlbum(Member member, AlbumCreateRequest request, List<MultipartFile> albumImages) {
 
-        Album album = albumRepository.save(albumMapper.createAlbum(member, request));
+        Album album = albumRepository.save(albumMapper.toAlbumEntity(member, request));
 
         if(albumImages != null)
             albumImageService.uploadAlbumImages(album, albumImages);
