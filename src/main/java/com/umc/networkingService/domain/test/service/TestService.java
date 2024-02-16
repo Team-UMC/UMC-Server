@@ -63,8 +63,11 @@ public class TestService {
         createBoard(members, BoardType.QUESTION, HostType.CAMPUS);
         createBoard(members, BoardType.QUESTION, HostType.BRANCH);
         createBoard(members, BoardType.QUESTION, HostType.CENTER);
+        createOB(members, HostType.CAMPUS);
+        createOB(members, HostType.BRANCH);
+        createOB(members, HostType.CENTER);
         createNoticeAndWorkbook(members);
-        createOB(members);
+
 
         return "더미데이터 생성 완료";
     }
@@ -202,16 +205,16 @@ public class TestService {
 
     }
 
-    private void createOB(List<Member> members) {
+    private void createOB(List<Member> members, HostType hostType) {
         List<MultipartFile> files = new ArrayList<>();
         Member obMember = members.stream().filter(member -> !member.getRecentSemester().isActive()).findFirst().get();
 
         for (int i = 0; i < 25; i++) {
             BoardCreateRequest request = BoardCreateRequest.builder()
-                    .hostType(HostType.CAMPUS.toString())
+                    .hostType(hostType.toString())
                     .boardType(BoardType.OB.toString())
                     .title("저는 OB에요" + i)
-                    .content("UMC 챌린저분들 화이팅!!!!!!!!!!!!!!" + i * 60)
+                    .content("UMC 챌린저분들 화이팅!!!!!!!!!!!!!!" + i)
                     .build();
             Board board = boardService.loadEntity(boardService.createBoard(obMember, request, files).getBoardId());
             boardFileService.uploadBoardFilesForDummy(board, getRandomThumbnail());
