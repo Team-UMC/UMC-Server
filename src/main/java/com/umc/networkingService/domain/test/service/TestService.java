@@ -144,10 +144,11 @@ public class TestService {
         Random random = new Random();
         List<MultipartFile> files = new ArrayList<>();
 
-        //멤버 랜덤 선택
-        int randomIndex = random.nextInt(members.size());
-        Member randomMember = members.get(randomIndex);
+
         for (int i = 0; i < 25; i++) {
+            //멤버 랜덤 선택
+            int randomIndex = random.nextInt(members.size());
+            Member randomMember = members.get(randomIndex);
             BoardCreateRequest request = BoardCreateRequest.builder()
                     .boardType(boardType.toString())
                     .hostType(hostType.toString())
