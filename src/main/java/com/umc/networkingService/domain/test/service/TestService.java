@@ -157,7 +157,7 @@ public class TestService {
                     .build();
 
             Board board = boardService.loadEntity(boardService.createBoard(randomMember, request, files).getBoardId());
-            boardFileService.uploadBoardFilesForDummy(board, getRandomThumbnail());
+            boardFileService.uploadBoardFilesForDummy(board, getRandomImages());
         }
 
     }
@@ -200,13 +200,13 @@ public class TestService {
 
             boardService.createBoard(campusStaff, request, files);
             Board board1 = boardService.loadEntity(boardService.createBoard(campusStaff, request, files).getBoardId());
-            boardFileService.uploadBoardFilesForDummy(board1, getRandomThumbnail());
+            boardFileService.uploadBoardFilesForDummy(board1, getRandomImages());
             Board board2 = boardService.loadEntity(boardService.createBoard(branchStaff, request2, files).getBoardId());
-            boardFileService.uploadBoardFilesForDummy(board2, getRandomThumbnail());
+            boardFileService.uploadBoardFilesForDummy(board2, getRandomImages());
             Board board3 = boardService.loadEntity(boardService.createBoard(centerStaff, request3, files).getBoardId());
-            boardFileService.uploadBoardFilesForDummy(board3, getRandomThumbnail());
+            boardFileService.uploadBoardFilesForDummy(board3, getRandomImages());
             Board board4 = boardService.loadEntity(boardService.createBoard(campusStaff, request4, files).getBoardId());
-            boardFileService.uploadBoardFilesForDummy(board4, getRandomThumbnail());
+            boardFileService.uploadBoardFilesForDummy(board4, getRandomImages());
 
         }
 
@@ -224,13 +224,13 @@ public class TestService {
                     .content("UMC 챌린저분들 화이팅!!!!!!!!!!!!!!" + i)
                     .build();
             Board board = boardService.loadEntity(boardService.createBoard(obMember, request, files).getBoardId());
-            boardFileService.uploadBoardFilesForDummy(board, getRandomThumbnail());
+            boardFileService.uploadBoardFilesForDummy(board, getRandomImages());
 
         }
     }
 
-    public List<String> getRandomThumbnail() {
-        List<String> urls = getDummyThumbnails(bucket);
+    public List<String> getRandomImages() {
+        List<String> urls = getDummyImages(bucket);
 
         Random random = new Random();
         int numFilesToFetch = random.nextInt(3); // 0에서 2까지의 랜덤 개수로 설정
@@ -242,7 +242,7 @@ public class TestService {
 
 
     //bucket에서 파일 url을 모두 가져오기
-    private List<String> getDummyThumbnails(String bucketName) {
+    private List<String> getDummyImages(String bucketName) {
         List<String> fileUrls = new ArrayList<>();
         List<S3ObjectSummary> objectSummaries = amazonS3Client.listObjects(bucketName,"dummy/").getObjectSummaries();
         for (S3ObjectSummary objectSummary : objectSummaries) {
