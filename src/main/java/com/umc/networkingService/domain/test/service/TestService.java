@@ -2,8 +2,6 @@ package com.umc.networkingService.domain.test.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.umc.networkingService.config.initial.BranchInfo;
-import com.umc.networkingService.config.initial.UniversityInfo;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
@@ -11,6 +9,7 @@ import com.umc.networkingService.domain.board.service.BoardFileService;
 import com.umc.networkingService.domain.board.service.BoardService;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.service.BranchService;
+import com.umc.networkingService.domain.branch.service.BranchUniversityService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
@@ -42,6 +41,7 @@ public class TestService {
     private final BranchService branchService;
     private final UniversityService universityService;
     private final SemesterPartRepository semesterPartRepository;
+    private final BranchUniversityService branchUniversityService;
     private final MemberMapper memberMapper;
 
     private final BoardService boardService;
@@ -83,12 +83,8 @@ public class TestService {
         //로그인 한 멤버의 지부와 학교 정보 불러오기
         Branch branch = branchService.loadEntity(loginMember.getBranch().getId());
         University university = universityService.loadEntity(loginMember.getUniversity().getId());
-
         //로그인한 멤버의 지부에 해당하는 university list를 불러오기
-        List<University> universities = new ArrayList<>();
-        List<UniversityInfo> univInfos = BranchInfo.getBranchInfo(branch.getName()).getUniversities();
-        for (UniversityInfo univInfo : univInfos)
-            universities.add(universityService.findUniversityByName(univInfo.getName()));
+        List<University> universities = branchUniversityService.findUniversitiesByBranch(branch);
 
         //멤버 생성
         for (MemberDummyInfo memberInfo : MemberDummyInfo.values()) {

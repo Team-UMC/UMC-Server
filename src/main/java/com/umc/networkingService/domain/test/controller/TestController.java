@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
     private final TestService testService;
 
-    @Operation(summary = "dummy Board 생성 API", description = "보드 더미데이터를 생성합니다.")
+    @Operation(summary = "dummy Board 생성 API", description = "보드 더미데이터를 생성합니다. 회원 가입 완료 후 사용해주세요!")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
