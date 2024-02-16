@@ -21,6 +21,7 @@ import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -38,13 +39,15 @@ import static com.umc.networkingService.domain.board.dto.request.BoardRequest.Bo
 public class TestService {
     private final MemberService memberService;
     private final AuthService authService;
-    private final SemesterPartRepository semesterPartRepository;
-    private final UniversityService universityService;
-    private final BoardService boardService;
     private final BranchService branchService;
+    private final UniversityService universityService;
+    private final SemesterPartRepository semesterPartRepository;
     private final MemberMapper memberMapper;
-    private final AmazonS3Client amazonS3Client;
+
+    private final BoardService boardService;
     private final BoardFileService boardFileService;
+
+    private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -105,9 +108,12 @@ public class TestService {
                     centerPositions.add(memberInfo.getRole());
                 else {
                     campusPositions.add(memberInfo.getRole());
-                    randomUniv =university;
+                    randomUniv = university;
                 }
             }
+
+            if (!memberInfo.getSemesters().contains(Semester.FIFTH))
+                randomUniv = university;
 
             MemberSignUpRequest request = MemberSignUpRequest.builder()
                     .name(memberInfo.getName())
