@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class MyBoardResponse {
         private String title;
         private int hitCount;
         private int heartCount;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
 
@@ -46,6 +48,7 @@ public class MyBoardResponse {
         private BoardType boardType;
         private String title;
         private String comment;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime commentCreatedAt;
     }
 
