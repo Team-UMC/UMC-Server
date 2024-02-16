@@ -6,18 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-
 @Getter
 @AllArgsConstructor
-public enum S3ErrorCode implements ErrorCodeInterface {
-    // Image
-    FAILED_UPLOAD_S3_IMAGE(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE001", "S3에 이미지 저장에 실패하였습니다."),
-    FALIED_READ_IMAGE(HttpStatus.BAD_REQUEST, "IMAGE002","이미지 파일을 읽는 중 문제가 발생하였습니다."),
-
-    // File
-    FAILED_UPLOAD_S3_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "FILE001", "S3에 파일 저장에 실패하였습니다."),
-    FALIED_READ_FILE(HttpStatus.BAD_REQUEST, "FILE002","파일을 읽는 중 문제가 발생하였습니다."),
-
+public enum ProjectErrorCode implements ErrorCodeInterface {
+    EMPTY_PROJECT(HttpStatus.BAD_REQUEST, "PROJECT001", "존재하지 않는 프로젝트입니다."),
+    EMPTY_PROJECT_IMAGE(HttpStatus.BAD_REQUEST, "PROJECT002", "프로젝트 이미지는 필수입니다."),
     ;
 
     private final HttpStatus httpStatus;

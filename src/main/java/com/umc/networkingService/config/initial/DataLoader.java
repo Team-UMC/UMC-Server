@@ -7,12 +7,14 @@ import com.umc.networkingService.domain.branch.repository.BranchUniversityReposi
 import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.domain.mascot.repository.MascotRepository;
 import com.umc.networkingService.domain.project.entity.Project;
+import com.umc.networkingService.domain.project.entity.ProjectMember;
+import com.umc.networkingService.domain.project.repository.ProjectMemberRepository;
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
-import com.umc.networkingService.global.common.exception.code.MascotErrorCode;
+import com.umc.networkingService.global.common.exception.code.ProjectErrorCode;
 import com.umc.networkingService.global.common.exception.code.UniversityErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
@@ -31,11 +33,13 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     private final BranchRepository branchRepository;
     private final BranchUniversityRepository branchUniversityRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
     private List<MascotInfo> mascots = Arrays.stream(MascotInfo.values()).toList();
     private List<UniversityInfo> universities = Arrays.stream(UniversityInfo.values()).toList();
     private List<BranchInfo> branches = Arrays.stream(BranchInfo.values()).toList();
     private List<ProjectInfo> projects = Arrays.stream(ProjectInfo.values()).toList();
+    private List<ProjectMemberInfo> projectMembers = Arrays.stream(ProjectMemberInfo.values()).toList();
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -53,7 +57,8 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         }
 
         // 새로운 프로젝트 생성
-        insertNewProjects();
+        List<Project> newProjects = insertNewProjects();
+        if (!newProjects.isEmpty()) insertProjectMembers(newProjects);
     }
 
     // 새로운 마스코트를 추가하는 함수
@@ -136,19 +141,39 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     // 새로운 프로젝트를 추가하는 함수
-    private void insertNewProjects() {
-        projects.stream()
+    private List<Project> insertNewProjects() {
+        return projects.stream()
                 .filter(project -> !projectRepository.existsByName(project.getName()))
                 .map(project -> Project.builder()
                         .name(project.getName())
                         .logoImage(project.getImage())
-                        .slogan(project.getSlogan())
                         .description(project.getDescription())
                         .tags(project.getTags())
                         .semester(project.getSemester())
-                        .type(project.getTypes())
+                        .types(project.getProjectTypes())
                         .build())
-                .forEach(projectRepository::save);
+                .map(projectRepository::save)
+                .toList();
+    }
+
+    // 프로젝트에 멤버 추가하는 함수
+    private void insertProjectMembers(List<Project> newProjects) {
+        projectMembers.stream()
+                .map(projectMember -> ProjectMember.builder()
+                        .project(findProject(newProjects, projectMember.getProjectName()))
+                        .part(projectMember.getPart())
+                        .name(projectMember.getName())
+                        .nickname(projectMember.getNickname())
+                        .build())
+                .forEach(projectMemberRepository::save);
+
+    }
+
+    private Project findProject(List<Project> newProjects, String projectName) {
+        return newProjects.stream()
+                .filter(newProject -> newProject.getName().equals(projectName))
+                .findFirst()
+                .orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
     }
 
     @Override

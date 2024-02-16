@@ -59,6 +59,4 @@ public class ScheduleController {
 
         return BaseResponse.onSuccess(scheduleService.getCalendarByMonth(date));
     }
-
-
 }

@@ -1,9 +1,10 @@
 package com.umc.networkingService.domain.branch.dto.request;
 
-import com.umc.networkingService.domain.branch.validation.annotation.ExistBranch;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

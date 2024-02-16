@@ -1,10 +1,7 @@
 package com.umc.networkingService.global.utils;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.S3ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
@@ -30,17 +28,39 @@ public class S3FileComponent {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
 
+        // 파일 타입 확인
+        boolean isImage = multipartFile.getContentType() != null && multipartFile.getContentType().startsWith("image");
+
+        // 바이트 배열로 파일 내용 읽기
+        byte[] bytes;
+        try {
+            bytes = multipartFile.getBytes();
+        } catch (IOException e) {
+            // 파일 업로드 실패 시 에러 코드 분기
+            if (isImage) {
+                throw new RestApiException(S3ErrorCode.FALIED_READ_IMAGE);
+            } else {
+                throw new RestApiException(S3ErrorCode.FALIED_READ_FILE);
+            }
+        }
+
+        // Content-Length 설정
+        objectMetadata.setContentLength(bytes.length);
+
+        // ByteArrayInputStream 생성
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+
         // S3에 업로드
         try {
-            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), objectMetadata)
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, byteArrayInputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-
-            if (multipartFile.getContentType().startsWith("image"))
+        } catch (AmazonS3Exception e) {
+            // S3 업로드 실패 시 에러 코드 분기
+            if (isImage) {
                 throw new RestApiException(S3ErrorCode.FAILED_UPLOAD_S3_IMAGE);
-            else
+            } else {
                 throw new RestApiException(S3ErrorCode.FAILED_UPLOAD_S3_FILE);
-
+            }
         }
 
         return amazonS3Client.getUrl(bucket, fileName).toString();
