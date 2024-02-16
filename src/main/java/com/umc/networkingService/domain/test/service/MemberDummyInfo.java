@@ -30,7 +30,7 @@ public enum MemberDummyInfo {
 
     ;
 
-    private final String role;
+    private final String position;
     private final String name;
     private final String nickname;
     private final List<Semester> semesters;

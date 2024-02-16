@@ -103,11 +103,11 @@ public class TestService {
             List<String> campusPositions = new ArrayList<>();
             List<String> centerPositions = new ArrayList<>();
 
-            if (!memberInfo.getRole().equals("챌린저")) {
-                if (memberInfo.getRole().equals("운영국장"))
-                    centerPositions.add(memberInfo.getRole());
+            if (!memberInfo.getPosition().equals("챌린저")) {
+                if (memberInfo.getPosition().equals("운영국장"))
+                    centerPositions.add(memberInfo.getPosition());
                 else {
-                    campusPositions.add(memberInfo.getRole());
+                    campusPositions.add(memberInfo.getPosition());
                     randomUniv = university;
                 }
             }
