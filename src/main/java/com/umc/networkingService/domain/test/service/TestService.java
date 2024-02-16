@@ -1,18 +1,19 @@
 package com.umc.networkingService.domain.test.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.umc.networkingService.config.initial.BranchInfo;
 import com.umc.networkingService.config.initial.UniversityInfo;
-import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
+import com.umc.networkingService.domain.board.service.BoardFileService;
 import com.umc.networkingService.domain.board.service.BoardService;
 import com.umc.networkingService.domain.branch.entity.Branch;
 import com.umc.networkingService.domain.branch.service.BranchService;
 import com.umc.networkingService.domain.member.dto.request.MemberSignUpRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.SemesterPart;
-import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
 import com.umc.networkingService.domain.member.service.AuthService;
@@ -20,22 +21,17 @@ import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.global.common.enums.Role;
-import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.GlobalErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
-import static com.umc.networkingService.domain.board.dto.request.BoardRequest.*;
+import static com.umc.networkingService.domain.board.dto.request.BoardRequest.BoardCreateRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -47,16 +43,20 @@ public class TestService {
     private final BoardService boardService;
     private final BranchService branchService;
     private final MemberMapper memberMapper;
-
+    private final AmazonS3Client amazonS3Client;
+    private final BoardFileService boardFileService;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     public void CheckFlag(Integer flag) {
+
         if (flag == 1)
             throw new RestApiException(GlobalErrorCode.TEMP_EXCEPTION);
     }
 
     @Transactional
     public String createDummyBoard(Member member) {
-        List<Member> members = generateDummyMember(member);
+        List<Member> members = createDummyMember(member);
         createBoard(members, BoardType.FREE, HostType.CAMPUS);
         createBoard(members, BoardType.FREE, HostType.BRANCH);
         createBoard(members, BoardType.FREE, HostType.CENTER);
@@ -70,19 +70,22 @@ public class TestService {
     }
 
     @Transactional
-    public List<Member> generateDummyMember(Member loginMember) {
+    public List<Member> createDummyMember(Member loginMember) {
         Random random = new Random();
         List<Member> members = new ArrayList<>();
-        List<University> universities = new ArrayList<>();
+
+        //로그인 한 멤버의 지부와 학교 정보 불러오기
         Branch branch = branchService.loadEntity(loginMember.getBranch().getId());
         University university = universityService.loadEntity(loginMember.getUniversity().getId());
+
         //로그인한 멤버의 지부에 해당하는 university list를 불러오기
+        List<University> universities = new ArrayList<>();
         List<UniversityInfo> univInfos = BranchInfo.getBranchInfo(branch.getName()).getUniversities();
         for (UniversityInfo univInfo : univInfos)
             universities.add(universityService.findUniversityByName(univInfo.getName()));
 
+        //멤버 생성
         for (MemberDummyInfo memberInfo : MemberDummyInfo.values()) {
-
             //지부 내 학교 중 랜덤 선택
             int randomIndex = random.nextInt(universities.size());
             University randomUniv = universities.get(randomIndex);
@@ -93,6 +96,7 @@ public class TestService {
             //멤버 정보 생성 후 signup
             List<String> campusPositions = new ArrayList<>();
             List<String> centerPositions = new ArrayList<>();
+
             if (!memberInfo.getRole().equals("챌린저")) {
                 if (memberInfo.getRole().equals("운영국장"))
                     centerPositions.add(memberInfo.getRole());
@@ -111,6 +115,7 @@ public class TestService {
                     .centerPositions(centerPositions)
                     .build();
             authService.signUp(member, request);
+
             members.add(member);
         }
 
@@ -141,7 +146,8 @@ public class TestService {
                     .content("다들 준비는 잘 되가나욥?!?!?! 화이팅화이팅화이팅!!!!!!! 할수있다!!" + i)
                     .build();
 
-            boardService.createBoard(randomMember, request, files);
+            Board board = boardService.loadEntity(boardService.createBoard(randomMember, request, files).getBoardId());
+            boardFileService.uploadBoardFilesForDummy(board, getRandomThumbnail());
         }
 
     }
@@ -183,9 +189,15 @@ public class TestService {
 
 
             boardService.createBoard(campusStaff, request, files);
-            boardService.createBoard(branchStaff, request2, files);
-            boardService.createBoard(centerStaff, request3, files);
-            boardService.createBoard(campusStaff, request4, files);
+            Board board1 = boardService.loadEntity(boardService.createBoard(campusStaff, request, files).getBoardId());
+            boardFileService.uploadBoardFilesForDummy(board1, getRandomThumbnail());
+            Board board2 = boardService.loadEntity(boardService.createBoard(branchStaff, request2, files).getBoardId());
+            boardFileService.uploadBoardFilesForDummy(board2, getRandomThumbnail());
+            Board board3 = boardService.loadEntity(boardService.createBoard(centerStaff, request3, files).getBoardId());
+            boardFileService.uploadBoardFilesForDummy(board3, getRandomThumbnail());
+            Board board4 = boardService.loadEntity(boardService.createBoard(campusStaff, request4, files).getBoardId());
+            boardFileService.uploadBoardFilesForDummy(board4, getRandomThumbnail());
+
         }
 
     }
@@ -201,8 +213,32 @@ public class TestService {
                     .title("저는 OB에요" + i)
                     .content("UMC 챌린저분들 화이팅!!!!!!!!!!!!!!" + i * 60)
                     .build();
-            boardService.createBoard(obMember, request, files);
+            Board board = boardService.loadEntity(boardService.createBoard(obMember, request, files).getBoardId());
+            boardFileService.uploadBoardFilesForDummy(board, getRandomThumbnail());
+
         }
+    }
+
+    public List<String> getRandomThumbnail() {
+        List<String> urls = getDummyThumbnails(bucket);
+
+        Random random = new Random();
+        int numFilesToFetch = random.nextInt(3); // 0에서 2까지의 랜덤 개수로 설정
+        
+        //파일 목록을 섞어서 url list를 반환
+        Collections.shuffle(urls);
+        return urls.subList(0, Math.min(numFilesToFetch, urls.size()));
+    }
+
+
+    //bucket에서 파일 url을 모두 가져오기
+    private List<String> getDummyThumbnails(String bucketName) {
+        List<String> fileUrls = new ArrayList<>();
+        List<S3ObjectSummary> objectSummaries = amazonS3Client.listObjects(bucketName,"dummy/").getObjectSummaries();
+        for (S3ObjectSummary objectSummary : objectSummaries) {
+            fileUrls.add(amazonS3Client.getUrl(bucketName, objectSummary.getKey()).toString());
+        }
+        return fileUrls;
     }
 
 
