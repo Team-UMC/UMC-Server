@@ -67,7 +67,6 @@ public class TestService {
         createBoard(members, BoardType.QUESTION, HostType.BRANCH);
         createBoard(members, BoardType.QUESTION, HostType.CENTER);
         createOB(members, HostType.CAMPUS);
-        createOB(members, HostType.BRANCH);
         createOB(members, HostType.CENTER);
         createNoticeAndWorkbook(members);
 
