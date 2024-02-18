@@ -8,6 +8,7 @@ import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearned
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
+import com.umc.networkingService.domain.todayILearned.entity.TodayILearnedFile;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedMapper;
 import com.umc.networkingService.domain.todayILearned.repository.TodayILearnedRepository;
 import com.umc.networkingService.global.common.exception.RestApiException;
@@ -93,6 +94,21 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
         todayILearned.delete();
 
         return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
+    }
+
+    @Override
+    public TodayILearnedResponse.TodayILearnedDetail getTodayILearnedDetail(
+            Member member, UUID todayILearnedId) {
+
+        TodayILearned todayILearned = loadEntity(todayILearnedId);
+
+        validateMember(todayILearned, member);
+
+        return todayILearnedMapper.toTodayILearnedDetail(
+                todayILearned,
+                todayILearnedFileService.findTodayILearnedFiles(todayILearned).stream()
+                        .map(TodayILearnedFile::getUrl)
+                        .toList());
     }
 
     private void validateMember(TodayILearned todayILearned, Member member) {
