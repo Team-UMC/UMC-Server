@@ -18,7 +18,7 @@ public enum ProjectInfo {
     OWORI("오월이", " 모여봐요 우리가족, 우리가족만의 소중한 추억을 기록하고 소통해요", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FOURTH/%EC%98%A4%EC%9B%94%EC%9D%B4+%EB%A1%9C%EA%B3%A0.png", List.of("가족", "소통", "추억"), Semester.FOURTH, List.of(ProjectType.IOS)),
     ARF("알프", "교내 재학생 - 교환학생 커뮤니티 및 모임 플랫폼", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FOURTH/%EC%95%8C%ED%94%84.png", List.of("안전", "외국인", "대학생"), Semester.FOURTH, List.of(ProjectType.IOS)),
     MYOJIPSA("묘집사", "미션형 커뮤니티 서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FOURTH/%EB%AC%98%EC%A7%91%EC%82%AC.svg", List.of("커뮤니티", "토끼", "미션"), Semester.FOURTH, List.of(ProjectType.AOS)),
-
+    EM_SAM("엠쌤", "MBTI 고민 상담소, 도와줘요 M쌤!", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FOURTH/%EC%97%A0%EC%8C%A4.png", List.of("MBTI", "상담", "채팅"), Semester.FOURTH, List.of(ProjectType.WEB)),
 
     // 5기
     // GACI
@@ -40,7 +40,7 @@ public enum ProjectInfo {
     BLOOD_TRAIL("BloodTrail", "헌혈 원포인트 어플", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%5B%ED%81%B4%EB%B0%8B%5D.svg", List.of("헌혈", "커뮤니티"), Semester.FIFTH, List.of(ProjectType.WEB)),
     NANGMAN_CAT("낭만 고양이", "마음을 전달하는 모바일 편지 서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%EB%82%AD%EB%A7%8C+%EA%B3%A0%EC%96%91%EC%9D%B4.png", List.of("느린 우체통", "개성", "소통"), Semester.FIFTH, List.of(ProjectType.WEB)),
     UJU_JEONGGEOJANG("우주 정거장", "나를 위한 글쓰기", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%EC%9A%B0%EC%A3%BC%EC%A0%95%EA%B1%B0%EC%9E%A5_.svg", List.of("글쓰기", "몰입", "자기개발"),Semester.FIFTH, List.of(ProjectType.WEB)),
-    HOMEAT("Homeat", "챌린지형 식비 관리 커뮤니티 어플", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/Friend+-.jpg", List.of("1인가구", "식비관리", "정보공유"), Semester.FIFTH, List.of(ProjectType.IOS)),
+    HOMEAT("Homeat", "챌린지형 식비 관리 커뮤니티 어플", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/Homeat(%ED%99%88%EC%9E%87).png", List.of("1인가구", "식비관리", "정보공유"), Semester.FIFTH, List.of(ProjectType.IOS)),
     FORGRAD("FORGRAD", "당신의 졸업을 위한 모든 것! 졸업정보서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%ED%8F%AC%EC%96%B4%EA%B7%B8%EB%9E%98%EB%93%9C.svg", List.of("졸업", "소통", "편리함"), Semester.FIFTH, List.of(ProjectType.AOS)),
     INTERPHONE("인터폰!", "자신에게 맞는 기업추천 서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%EC%9D%B8%ED%84%B0%ED%8F%B0.svg", List.of("인턴", "대학생", "스펙쌓기"), Semester.FIFTH, List.of(ProjectType.WEB)),
     DONGNEHYEONG("동네형", "당신 근처의 ‘동네형’에게 운동을 배우세요.", "", List.of("헬스", "PT"), Semester.FIFTH, List.of(ProjectType.WEB)),
@@ -116,7 +116,7 @@ public enum ProjectInfo {
     JJIKJJIKI("찍찍이", "갤러리에서 다른 사진들과 소중한 추억 섞어 보관하지 말자!!!", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%EC%B0%8D%EC%B0%8D%EC%9D%B4.svg", List.of("네컷사진", "앨범", "추억"), Semester.FIFTH, List.of(ProjectType.IOS)),
     CUPI("큐피", "당신의 호기심을 찐전문가가 해결해줍니다!", "", List.of("전문가", "답변"), Semester.FIFTH, List.of(ProjectType.AOS, ProjectType.WEB)),
     ONANDOFF("온앤오프", "회고를 통해 일잘러로 성장하고, 일의 on&off 를 도와주는 워라벨 서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/ONNOFF.png", List.of("회고", "직장인", "워라벨"), Semester.FIFTH, List.of(ProjectType.IOS)),
-    VI_NO("VI.NO", "영상보다 글이 편한 당신을 위한, 영상 블로그화 솔루션","https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/UMC+Matching+Center.png", List.of("영상정리", "영상요약", "생성형AI"), Semester.FIFTH, List.of(ProjectType.WEB)),
+    VI_NO("VI.NO", "영상보다 글이 편한 당신을 위한, 영상 블로그화 솔루션","https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/Vi.NO.svg", List.of("영상정리", "영상요약", "생성형AI"), Semester.FIFTH, List.of(ProjectType.WEB)),
     MOAMOA("모아모아", "상품을 모아 사람을 모아 당신의 합리적 소비를 돕기 위한 공동 구매 플랫폼", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/%EB%AA%A8%EC%95%84%EB%AA%A8%EC%95%84.svg", List.of("공동 구매", "합리적 소비", "이웃"), Semester.FIFTH, List.of(ProjectType.WEB)),
     WITHYOU("with 'You'", "여행을 함께하는 그 사람(당신)과의 Travel Log / 추억 저장소", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/with+%E2%80%98You%E2%80%99.svg", List.of("함께 쓰는 여행", "with who?!"), Semester.FIFTH, List.of(ProjectType.IOS)),
     ECOLINK("에코링크", "서울 내 다양한 지역에서 운영되고 있는 제로웨이스트 샵들의 위치와 판매 제품 정보, 매장 이용 방법, 그리고 매장 별 다양한 이벤트를 한눈에 확인할 수 있는 플랫폼 서비스", "https://umc-service-bucket.s3.ap-northeast-2.amazonaws.com/project/FIFTH/5%EA%B8%B0+%ED%94%8C%EC%A0%9D+%EC%82%AC%EC%A7%84/Map+To+Zero.svg", List.of("친환경"), Semester.FIFTH, List.of(ProjectType.WEB)),

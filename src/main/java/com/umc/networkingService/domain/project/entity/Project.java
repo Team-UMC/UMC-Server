@@ -49,7 +49,7 @@ public class Project extends BaseEntity {
     private List<ProjectType> types = new ArrayList<>();
 
     @ColumnDefault("0")
-    private Long hitCount;
+    private int hitCount;
 
     @ColumnDefault("0")
     private int heartCount; //좋아요 수

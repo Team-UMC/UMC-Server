@@ -16,7 +16,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProjectAllResponse {
     private List<ProjectInfo> projects;
-    private boolean hasNext;
+    private int page;
+    private int totalPages;
+    private int totalElements;
+    private Boolean isFirst;
+    private Boolean isLast;
 
 
     @Getter

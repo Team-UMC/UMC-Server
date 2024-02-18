@@ -110,46 +110,35 @@ public class ProjectServiceImpl implements ProjectService{
                     .orElseGet(() -> projectRepository.findAllBySemester(semester, pageable));
         }
 
-        return new ProjectAllResponse(
+        return projectMapper.toProjectAllResponse(
+                projects,
                 projects.stream().map(
                         project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
-                        ).toList(),
-                projects.hasNext()
-        );
+                ).toList());
     }
 
     @Override
     public ProjectAllResponse inquiryHotProjects(Member member, Pageable pageable) {
         // 조회수 1점, 하트수 3점으로 점수를 계산해 내림차순 정렬
-        List<Project> projects = projectRepository.findAll();
-        List<Project> hotProjects = projects.stream()
-                .sorted(Comparator.comparingLong(this::calculateScore).reversed()) //점수 내림차순 정렬
-                .skip(pageable.getOffset()) // page * size 만큼 skip
-                .limit(pageable.getPageSize()) // size 만큼 limit
-                .toList();
+        Page<Project> hotProjects = projectRepository.findHotProjects(pageable);
 
-
-        return ProjectAllResponse.builder()
-                .projects(hotProjects.stream().map(
+        return projectMapper.toProjectAllResponse(
+                hotProjects,
+                hotProjects.stream().map(
                         project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
-                ).toList())
-                .build();
+                ).toList());
     }
 
-    private Long calculateScore(Project project) { // 조회수 1점, 하트수 3점으로 점수를 계산
-        return project.getHitCount() + (project.getHeartCount() * 3L);
-    }
 
     @Override
     public ProjectAllResponse searchProject(Member member ,String keyword, Pageable pageable){
         Page<Project> projects = projectRepository.findByNameContainsOrTagContains(keyword, pageable);
 
-        return new ProjectAllResponse(
+        return projectMapper.toProjectAllResponse(
+                projects,
                 projects.stream().map(
                         project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
-                ).toList(),
-                projects.hasNext()
-        );
+                ).toList());
     }
 
     @Override
