@@ -7,6 +7,7 @@ import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearned
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfos;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearnedFile;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedMapper;
@@ -64,6 +65,18 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
                 todayILearnedRepository.findTodayILearnedByWriterAndCreateDate(member, date)
                         .stream()
                         .map(todayILearnedMapper::toTodayILearnedInfo)
+                        .toList());
+    }
+
+    @Override
+    public TodayILearnedWebInfos getTodayILearnedWebInfos(Member member, String stringDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(stringDate,formatter);
+
+        return new TodayILearnedWebInfos(
+                todayILearnedRepository.findTodayILearnedByWriterAndCreateDate(member, date)
+                        .stream()
+                        .map(todayILearnedMapper::toTodayILearnedWebInfo)
                         .toList());
     }
 
