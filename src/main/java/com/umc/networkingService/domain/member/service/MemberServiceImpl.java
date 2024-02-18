@@ -150,9 +150,9 @@ public class MemberServiceImpl implements MemberService{
     public MemberAttendResponse attendMember(Member loingMember) {
 
         Member member = loadEntity(loingMember.getId());
-        LocalDate lastActiveDate = member.getLastActiveTime().toLocalDate();
+        LocalDateTime lastActiveTime = member.getLastActiveTime();
 
-        if (!lastActiveDate.equals(LocalDate.now())) {
+        if (lastActiveTime == null || !lastActiveTime.toLocalDate().equals(LocalDate.now())) {
             member.addRemainPoint(1L);
             return new MemberAttendResponse(true);
         }
