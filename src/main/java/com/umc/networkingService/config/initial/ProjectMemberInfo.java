@@ -12,19 +12,21 @@ public enum ProjectMemberInfo {
     BORA("보라", "유지수", Part.PM, ProjectInfo.TODAYSGYM.getName()),
     CHOROK("초록", "윤지민", Part.DESIGN, ProjectInfo.TODAYSGYM.getName()),
     BEX_1("벡스", "김준석", Part.ANDROID, ProjectInfo.TODAYSGYM.getName()),
-    BORA_1("보라", "유지수", Part.SPRING, ProjectInfo.TODAYSGYM.getName()),
     HERON("헤론", "박세웅", Part.SPRING, ProjectInfo.TODAYSGYM.getName()),
 
     // 4기
     ARI("아리", "허영은", Part.PM, ProjectInfo.OWORI.getName()),
     LIBER_1("리버", "이경수", Part.IOS, ProjectInfo.OWORI.getName()),
     BEX_2("벡스", "김준석", Part.SPRING, ProjectInfo.OWORI.getName()),
-
     HANA_1("하나", "심세원", Part.ANDROID, ProjectInfo.MYOJIPSA.getName()),
-
     YENI_1("예니", "나예은", Part.IOS, ProjectInfo.ARF.getName()),
+    MANGO("망고", "이재원", Part.SPRING, ProjectInfo.ARF.getName()),
+    BORA_1("보라", "유지수", Part.PM, ProjectInfo.EM_SAM.getName()),
+    HERON_1("헤론", "박세웅", Part.SPRING, ProjectInfo.EM_SAM.getName()),
+    JINRO_1("진로", "박지운", Part.SPRING, ProjectInfo.EM_SAM.getName()),
+    LIU_1("리우", "송민혁", Part.SPRING, ProjectInfo.EM_SAM.getName()),
 
-
+    // 5기
     LIBER("리버", "이경수", Part.PM, ProjectInfo.UMC_NETWORKING_SERVICE.getName()),
     DELO("델로", "오정현", Part.DESIGN, ProjectInfo.UMC_NETWORKING_SERVICE.getName()),
     DEUGI("더기", "양유진", Part.DESIGN, ProjectInfo.UMC_NETWORKING_SERVICE.getName()),
