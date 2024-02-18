@@ -1,7 +1,10 @@
 package com.umc.networkingService.domain.project.controller;
 
+import com.umc.networkingService.config.security.auth.CurrentMember;
+import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectLikeResponse;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.domain.project.service.ProjectService;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -38,11 +41,13 @@ public class ProjectController {
             @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 10개)"),
     })
     @GetMapping
-    public BaseResponse<ProjectAllResponse> inquiryProjects(@RequestParam(required = false) Semester semester,
-                                                            @RequestParam(required = false) ProjectType type,
-                                                            @PageableDefault(sort = "name", direction = Sort.Direction.ASC)
-                                                                @Parameter(hidden = true) Pageable pageable) {
-        return BaseResponse.onSuccess(projectService.inquiryProjects(semester, type, pageable));
+    public BaseResponse<ProjectAllResponse> inquiryProjects(
+            @CurrentMember Member member,
+            @RequestParam(required = false) Semester semester,
+            @RequestParam(required = false) ProjectType type,
+            @PageableDefault(sort = "name", direction = Sort.Direction.ASC)
+            @Parameter(hidden = true) Pageable pageable) {
+        return BaseResponse.onSuccess(projectService.inquiryProjects(member, semester, type, pageable));
     }
 
     @Operation(summary = "HOT 프로젝트 조회 API", description = "조회수 기준으로 HOT 프로젝트를 조회하는 API입니다.")
@@ -54,9 +59,11 @@ public class ProjectController {
             @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 10개)"),
     })
     @GetMapping("/hot")
-    public BaseResponse<ProjectAllResponse> inquiryHotProjects(@PageableDefault(sort = "hitCount", direction = Sort.Direction.DESC)
-                                                               @Parameter(hidden = true) Pageable pageable) {
-        return BaseResponse.onSuccess(projectService.inquiryHotProjects(pageable));
+    public BaseResponse<ProjectAllResponse> inquiryHotProjects(
+            @CurrentMember Member member,
+            @PageableDefault(sort = "hitCount", direction = Sort.Direction.DESC)
+            @Parameter(hidden = true) Pageable pageable) {
+        return BaseResponse.onSuccess(projectService.inquiryHotProjects(member, pageable));
     }
 
     @Operation(summary = "프로젝트 검색 API", description = "키워드가 프로젝트명 또는 태그에 포함된 프로젝트 목록을 검색하는 API입니다.")
@@ -69,10 +76,12 @@ public class ProjectController {
             @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 10개)"),
     })
     @GetMapping("/search")
-    public BaseResponse<ProjectAllResponse> searchProject(@RequestParam String keyword,
-                                                          @PageableDefault(sort = "name", direction = Sort.Direction.ASC)
-                                                          @Parameter(hidden = true) Pageable pageable) {
-        return BaseResponse.onSuccess(projectService.searchProject(keyword, pageable));
+    public BaseResponse<ProjectAllResponse> searchProject(
+            @CurrentMember Member member,
+            @RequestParam String keyword,
+            @PageableDefault(sort = "name", direction = Sort.Direction.ASC)
+            @Parameter(hidden = true) Pageable pageable) {
+        return BaseResponse.onSuccess(projectService.searchProject(member ,keyword, pageable));
     }
 
     @Operation(summary = "프로젝트 상세 조회 API", description = "프로젝트를 상세 조회하는 API입니다.")
@@ -81,8 +90,23 @@ public class ProjectController {
             @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다.")
     })
     @GetMapping("/{projectId}")
-    public BaseResponse<ProjectDetailResponse> inquiryProjectDetail(@PathVariable ("projectId") UUID projectId){
-        return BaseResponse.onSuccess(projectService.inquiryProjectDetail(projectId));
+    public BaseResponse<ProjectDetailResponse> inquiryProjectDetail(
+            @CurrentMember Member member,
+            @PathVariable ("projectId") UUID projectId){
+        return BaseResponse.onSuccess(projectService.inquiryProjectDetail(member, projectId));
+    }
+
+    @Operation(summary = "프로젝트 좋아요/취소 API", description = "프로젝트에 좋아요를 누르는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+            @ApiResponse(responseCode = "PROJECT001", description = "존재하지 않는 프로젝트 입니다.")
+    })
+    @PostMapping("/{projectId}/like")
+    public BaseResponse<ProjectLikeResponse> likeProject(
+            @CurrentMember Member member,
+            @PathVariable ("projectId") UUID projectId
+    ){
+        return BaseResponse.onSuccess(projectService.likeProject(member, projectId));
     }
 
 

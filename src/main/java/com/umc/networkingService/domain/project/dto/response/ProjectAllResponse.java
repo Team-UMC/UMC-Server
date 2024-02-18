@@ -31,5 +31,6 @@ public class ProjectAllResponse {
         private Semester semester;
         private List<ProjectType> types;
         private List<String> tags;
+        private Boolean isLike;
     }
 }

@@ -6,10 +6,13 @@ import com.umc.networkingService.domain.project.dto.request.ProjectUpdateRequest
 import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectIdResponse;
+import com.umc.networkingService.domain.project.dto.response.ProjectLikeResponse;
 import com.umc.networkingService.domain.project.entity.Project;
+import com.umc.networkingService.domain.project.entity.ProjectHeart;
 import com.umc.networkingService.domain.project.entity.ProjectMember;
 import com.umc.networkingService.domain.project.entity.ProjectType;
 import com.umc.networkingService.domain.project.mapper.ProjectMapper;
+import com.umc.networkingService.domain.project.repository.ProjectHeartRepository;
 import com.umc.networkingService.domain.project.repository.ProjectMemberRepository;
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -23,9 +26,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +41,8 @@ public class ProjectServiceImpl implements ProjectService{
     private final ProjectMapper projectMapper;
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
+    private final ProjectHeartRepository projectHeartRepository;
+
 
     @Override
     public ProjectIdResponse createProject(Member member, MultipartFile projectImage, ProjectCreateRequest request) {
@@ -89,7 +96,7 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public ProjectAllResponse inquiryProjects(Semester semester, ProjectType type, Pageable pageable) {
+    public ProjectAllResponse inquiryProjects(Member member, Semester semester, ProjectType type, Pageable pageable) {
         Page<Project> projects;
 
         // 기수 조건과 타입 조건의 유무에 따라서 조회
@@ -104,46 +111,93 @@ public class ProjectServiceImpl implements ProjectService{
         }
 
         return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
+                projects.stream().map(
+                        project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
+                        ).toList(),
                 projects.hasNext()
         );
     }
 
     @Override
-    public ProjectAllResponse inquiryHotProjects(Pageable pageable) {
-        Page<Project> projects = projectRepository.findAll(pageable);
+    public ProjectAllResponse inquiryHotProjects(Member member, Pageable pageable) {
+        // 조회수 1점, 하트수 3점으로 점수를 계산해 내림차순 정렬
+        List<Project> projects = projectRepository.findAll();
+        List<Project> hotProjects = projects.stream()
+                .sorted(Comparator.comparingLong(this::calculateScore).reversed()) //점수 내림차순 정렬
+                .skip(pageable.getOffset()) // page * size 만큼 skip
+                .limit(pageable.getPageSize()) // size 만큼 limit
+                .toList();
 
-        return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
-                projects.hasNext()
-        );
+
+        return ProjectAllResponse.builder()
+                .projects(hotProjects.stream().map(
+                        project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
+                ).toList())
+                .build();
+    }
+
+    private Long calculateScore(Project project) { // 조회수 1점, 하트수 3점으로 점수를 계산
+        return project.getHitCount() + (project.getHeartCount() * 3L);
     }
 
     @Override
-    public ProjectAllResponse searchProject(String keyword, Pageable pageable){
+    public ProjectAllResponse searchProject(Member member ,String keyword, Pageable pageable){
         Page<Project> projects = projectRepository.findByNameContainsOrTagContains(keyword, pageable);
 
         return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
+                projects.stream().map(
+                        project -> projectMapper.toProjectInfo(project, isLikeProject(member, project.getId()))
+                ).toList(),
                 projects.hasNext()
         );
     }
 
     @Override
     @Transactional
-    public ProjectDetailResponse inquiryProjectDetail(UUID projectId){
+    public ProjectDetailResponse inquiryProjectDetail(Member member , UUID projectId){
         Project project = loadEntity(projectId);
         // 조회수 증가
         project.addHitCount();
 
         List<ProjectMember> projectMembers = projectMemberRepository.findAllByProject(project);
 
-        return projectMapper.toProjectDetailResponse(project, projectMembers);
+        return projectMapper.toProjectDetailResponse(project, projectMembers, isLikeProject(member, projectId));
     }
 
     @Override
     public Project loadEntity(UUID id) {
         return projectRepository.findById(id)
                 .orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
+    }
+
+    @Override
+    @Transactional
+    public ProjectLikeResponse likeProject(Member member, UUID projectId) {
+        Project project = loadEntity(projectId);
+        if(projectHeartRepository.existsByMemberIdAndProjectId(member.getId(),projectId)){ //이미 하트가 있는지 확인
+            projectHeartRepository.deleteByMemberIdAndProjectId(member.getId(),projectId); //하트 엔티티 삭제
+            project.subtractHeartCount();
+            return ProjectLikeResponse.builder()
+                    .likeCount(project.getHeartCount())
+                    .isLike(false).build();
+
+        } else{
+            projectHeartRepository.save( //하트 엔티티 생성
+                    ProjectHeart.builder()
+                            .member(member)
+                            .project(project)
+                            .build()
+            );
+            project.addHeartCount();
+            return ProjectLikeResponse.builder()
+                    .likeCount(project.getHeartCount())
+                    .isLike(true).build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isLikeProject(Member member, UUID projectId) {
+        return projectHeartRepository.existsByMemberIdAndProjectId(member.getId(),projectId);
     }
 }
