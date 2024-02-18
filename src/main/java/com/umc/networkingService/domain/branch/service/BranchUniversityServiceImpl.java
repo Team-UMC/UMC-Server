@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +42,14 @@ public class BranchUniversityServiceImpl implements BranchUniversityService {
         return branchUniversityRepository.findByUniversityAndIsActive(university, true)
                 .orElseThrow(() -> new RestApiException(BranchErrorCode.BRANCH_NOT_FOUND))
                 .getBranch();
+    }
+
+    @Override
+    public List<University> findUniversitiesByBranch(Branch branch) {
+        List<BranchUniversity> universities = branchUniversityRepository.findAllByBranch(branch);
+        return universities.stream()
+                .map(BranchUniversity::getUniversity)
+                .collect(Collectors.toList());
     }
 
     //지부, 대학 연결하기

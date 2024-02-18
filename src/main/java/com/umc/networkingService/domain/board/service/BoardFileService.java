@@ -17,4 +17,8 @@ public interface BoardFileService {
 
     String findThumbnailImage(Board board);
 
+    //dummy data 용
+    void uploadBoardFilesForDummy(Board board, List<String> files);
+
+
 }
