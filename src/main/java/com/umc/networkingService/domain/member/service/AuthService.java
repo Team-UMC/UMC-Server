@@ -17,4 +17,6 @@ public interface AuthService extends EntityLoader<Member, UUID> {
     MemberGenerateTokenResponse generateNewAccessToken(String refreshToken, Member member);
     MemberIdResponse logout(Member member);
     MemberIdResponse withdrawal(Member member);
+    MemberIdResponse saveNewDummyMember(String clientId);
+
 }

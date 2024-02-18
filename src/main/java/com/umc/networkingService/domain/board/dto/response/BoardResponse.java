@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Part;
@@ -32,6 +33,7 @@ public class BoardResponse {
         private int heartCount;
         private int commentCount;
         private boolean isLiked;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
 
@@ -53,6 +55,7 @@ public class BoardResponse {
         private int hitCount;
         private int heartCount;
         private int commentCount;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
         private boolean isFixed;
     }
@@ -112,6 +115,7 @@ public class BoardResponse {
         private String title;
         private int hitCount;
         private boolean isFixed;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
 

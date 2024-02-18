@@ -2,9 +2,7 @@ package com.umc.networkingService.domain.album.entity;
 
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -14,6 +12,8 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
+@Builder
+@AllArgsConstructor
 public class AlbumImage extends BaseEntity {
 
     @Id

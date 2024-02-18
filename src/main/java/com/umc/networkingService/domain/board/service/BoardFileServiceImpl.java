@@ -73,4 +73,11 @@ public class BoardFileServiceImpl implements BoardFileService {
                 lowerCaseUrl.endsWith(".png") || lowerCaseUrl.endsWith(".gif");
     }
 
+    @Override
+    @Transactional
+    public void uploadBoardFilesForDummy(Board board, List<String> files) {
+        if(!files.isEmpty())
+            files.forEach(file -> boardFileRepository.save(boardFileMapper
+                .toBoardFileEntity(board, file)));
+    }
 }

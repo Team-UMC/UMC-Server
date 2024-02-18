@@ -4,14 +4,13 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -19,6 +18,8 @@ import java.util.UUID;
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
 @DynamicInsert
+@Builder
+@AllArgsConstructor
 public class Album extends BaseEntity {
 
     @Id
@@ -49,4 +50,34 @@ public class Album extends BaseEntity {
     @ColumnDefault("0")
     private int commentCount;
 
+    private boolean isFixed;
+
+    public void updateAlbum(String title, String content, Semester semester) {
+        this.title = title;
+        this.content = content;
+        this.semester = semester;
+    }
+
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    public void increaseHitCount() {
+        this.hitCount++;
+    }
+
+    public void decreaseCommentCount() {
+        this.commentCount--;
+    }
+
+    public void setHeartCount(boolean isChecked) {
+        if(isChecked)
+            this.heartCount++;
+        else
+            this.heartCount--;
+    }
+
+    public void setIsFixed(boolean isFixed) {
+        this.isFixed = isFixed;
+    }
 }

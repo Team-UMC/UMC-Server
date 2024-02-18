@@ -40,7 +40,7 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public  BoardResponse.BoardPageInfos showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
+    public BoardResponse.BoardPageInfos showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
         //특정 게시글 조회에 HostType ALL 불가능
@@ -108,18 +108,20 @@ public class BoardServiceImpl implements BoardService {
     public MyBoardResponse.MyBoardPageInfos showBoardsByMemberForApp(Member member, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByWriterForApp(member, keyword, pageable));
     }
+
     @Override
     public MyBoardResponse.MyBoardPageInfos showBoardsByMemberForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByWriterForWeb(member, hostType, boardType, keyword, pageable));
     }
+
     @Override
-    public  MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
+    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForApp(member, keyword, pageable));
     }
 
     @Override
-    public  MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForWeb(Member member,HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForWeb(member,hostType, boardType, keyword, pageable));
+    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable));
     }
 
 
