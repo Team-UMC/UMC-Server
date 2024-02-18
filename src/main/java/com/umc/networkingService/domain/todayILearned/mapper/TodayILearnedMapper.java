@@ -5,6 +5,7 @@ import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearned
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfo;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedDetail;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import org.springframework.stereotype.Component;
 
@@ -45,5 +46,13 @@ public class TodayILearnedMapper {
                 .build();
     }
 
-
+    public TodayILearnedDetail toTodayILearnedDetail(TodayILearned todayILearned, List<String> files) {
+        return TodayILearnedDetail.builder()
+                .todayILearnedId(todayILearned.getId())
+                .title(todayILearned.getTitle())
+                .subTitle(todayILearned.getSubtitle())
+                .content(todayILearned.getContent())
+                .files(files)
+                .build();
+    }
 }
