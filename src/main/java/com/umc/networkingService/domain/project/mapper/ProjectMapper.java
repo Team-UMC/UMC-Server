@@ -5,8 +5,10 @@ import com.umc.networkingService.domain.project.dto.response.ProjectAllResponse;
 import com.umc.networkingService.domain.project.dto.response.ProjectDetailResponse;
 import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.domain.project.entity.ProjectMember;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 
@@ -29,6 +31,21 @@ public class ProjectMapper {
                 .nickname(memberInfo.getNickname())
                 .name(memberInfo.getName())
                 .part(memberInfo.getPart())
+                .build();
+    }
+
+    public ProjectAllResponse toProjectAllResponse(Page<Project> projects) {
+        List<ProjectAllResponse.ProjectInfo> projectInfos = projects.stream()
+                .map(this::toProjectInfo)
+                .toList();
+
+        return ProjectAllResponse.builder()
+                .projects(projectInfos)
+                .page(projects.getNumber())
+                .totalPages(projects.getTotalPages())
+                .totalElements((int) projects.getTotalElements())
+                .isFirst(projects.isFirst())
+                .isLast(projects.isLast())
                 .build();
     }
 

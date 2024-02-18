@@ -103,30 +103,21 @@ public class ProjectServiceImpl implements ProjectService{
                     .orElseGet(() -> projectRepository.findAllBySemester(semester, pageable));
         }
 
-        return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
-                projects.hasNext()
-        );
+        return projectMapper.toProjectAllResponse(projects);
     }
 
     @Override
     public ProjectAllResponse inquiryHotProjects(Pageable pageable) {
         Page<Project> projects = projectRepository.findAll(pageable);
 
-        return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
-                projects.hasNext()
-        );
+        return projectMapper.toProjectAllResponse(projects);
     }
 
     @Override
     public ProjectAllResponse searchProject(String keyword, Pageable pageable){
         Page<Project> projects = projectRepository.findByNameContainsOrTagContains(keyword, pageable);
 
-        return new ProjectAllResponse(
-                projects.stream().map(projectMapper::toProjectInfo).toList(),
-                projects.hasNext()
-        );
+        return projectMapper.toProjectAllResponse(projects);
     }
 
     @Override
