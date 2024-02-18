@@ -12,14 +12,11 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public interface ScheduleService {
-    ScheduleInfoSummariesInCalendar getCalendarByMonth(LocalDate date);
+    ScheduleInfoSummariesInCalendar getCalendarByMonth(Member member, LocalDate date);
     ScheduleId createSchedule(Member member, CreateSchedule request);
     ScheduleId updateSchedule(Member member, UUID scheduleId, UpdateSchedule request);
-
     ScheduleId deleteSchedule(Member member, UUID scheduleId);
-
-    ScheduleInfoSummaryLists getScheduleLists(LocalDate date);
-
+    ScheduleInfoSummaryLists getScheduleLists(Member member, LocalDate date);
     ScheduleDetail getScheduleDetail(Member member, UUID scheduleId);
 
 }

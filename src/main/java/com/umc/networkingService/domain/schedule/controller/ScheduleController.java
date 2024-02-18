@@ -31,9 +31,10 @@ public class ScheduleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    public BaseResponse<ScheduleInfoSummaryLists> getScheduleLists(@RequestParam LocalDate date) {
+    public BaseResponse<ScheduleInfoSummaryLists> getScheduleLists(@CurrentMember Member member,
+                                                                   @RequestParam LocalDate date) {
 
-        return BaseResponse.onSuccess((scheduleService.getScheduleLists(date)));
+        return BaseResponse.onSuccess((scheduleService.getScheduleLists(member, date)));
     }
 
     @Operation(summary = "일정 조회(상세조회)", description = "홈화면의 달력에서 일정을 상세조회하는 API입니다.")
@@ -55,8 +56,9 @@ public class ScheduleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    public BaseResponse<ScheduleInfoSummariesInCalendar> getSchedule(@RequestParam LocalDate date) {
+    public BaseResponse<ScheduleInfoSummariesInCalendar> getSchedule(@CurrentMember Member member,
+                                                                     @RequestParam LocalDate date) {
 
-        return BaseResponse.onSuccess(scheduleService.getCalendarByMonth(date));
+        return BaseResponse.onSuccess(scheduleService.getCalendarByMonth(member, date));
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Tag(name = "운영진 스케줄 API", description = "운영진 스케줄 관련 API")
+@Tag(name = "운영진 일정 API", description = "운영진 일정 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/staff/schedules")
