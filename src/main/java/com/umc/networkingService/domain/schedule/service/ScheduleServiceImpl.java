@@ -30,7 +30,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return scheduleMapper.toScheduleInfoSummariesInCalendar(
                 scheduleRepository.findSchedulesByYearAndMonth(date).stream()
-                        .map(schedule -> scheduleMapper.toScheduleInfoSummaryInCalendar(schedule))
+                        .map(scheduleMapper::toScheduleInfoSummaryInCalendar)
                         .toList());
     }
 
@@ -51,13 +51,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     private List<ScheduleInfoSummary> filterSchedulesByHostType(List<Schedule> schedules, HostType hostType) {
         return schedules.stream()
                 .filter(schedule -> schedule.getHostType().equals(hostType))
-                .map(schedule -> scheduleMapper.toScheduleInfoSummary(schedule))
+                .map(scheduleMapper::toScheduleInfoSummary)
                 .toList();
     }
 
     @Override
     public ScheduleDetail getScheduleDetail(Member member, UUID scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ScheduleErrorCode.EMPTY_SCHEDULE));
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new RestApiException(ScheduleErrorCode.EMPTY_SCHEDULE));
 
         return scheduleMapper.toScheduleDetail(schedule);
     }

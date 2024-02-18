@@ -15,11 +15,8 @@ public interface ScheduleService {
     ScheduleInfoSummariesInCalendar getCalendarByMonth(LocalDate date);
     ScheduleId createSchedule(Member member, CreateSchedule request);
     ScheduleId updateSchedule(Member member, UUID scheduleId, UpdateSchedule request);
-
     ScheduleId deleteSchedule(Member member, UUID scheduleId);
-
     ScheduleInfoSummaryLists getScheduleLists(LocalDate date);
-
     ScheduleDetail getScheduleDetail(Member member, UUID scheduleId);
 
 }

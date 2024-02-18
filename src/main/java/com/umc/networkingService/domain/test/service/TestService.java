@@ -17,6 +17,8 @@ import com.umc.networkingService.domain.member.mapper.MemberMapper;
 import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
 import com.umc.networkingService.domain.member.service.AuthService;
 import com.umc.networkingService.domain.member.service.MemberService;
+import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest;
+import com.umc.networkingService.domain.schedule.service.ScheduleService;
 import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.domain.university.service.UniversityService;
 import com.umc.networkingService.global.common.enums.Role;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.umc.networkingService.domain.board.dto.request.BoardRequest.BoardCreateRequest;
@@ -46,6 +49,7 @@ public class TestService {
 
     private final BoardService boardService;
     private final BoardFileService boardFileService;
+    private final ScheduleService scheduleService;
 
     private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
@@ -70,6 +74,7 @@ public class TestService {
         createOB(members, HostType.CENTER);
         createNoticeAndWorkbook(members);
 
+        members.forEach(this::createSchedules);
 
         return "더미데이터 생성 완료";
     }
@@ -125,6 +130,7 @@ public class TestService {
 
         return members;
     }
+
 
     public List<SemesterPart> createSemesterPart(Member member, MemberDummyInfo memberInfo) {
         List<SemesterPart> semesterParts = new ArrayList<>();
@@ -246,5 +252,70 @@ public class TestService {
         return fileUrls;
     }
 
+    private void createSchedules(Member member) {
+        Optional<HostType> hostType = getHostType(member);
+        if (hostType.isPresent()) {
+            createDemoDaySchedule(member, hostType.get());
+            createHackathonSchedule(member, hostType.get());
+            createDiningSchedule(member, hostType.get());
+        }
+    }
 
+    private void createDemoDaySchedule(Member member, HostType hostType) {
+        ScheduleRequest.CreateSchedule request = ScheduleRequest.CreateSchedule.builder()
+                .title("UMC 5기 데모데이")
+                .content("데모데이가 코 앞으로 다가왔습니당")
+                .startDateTime(LocalDateTime.of(2024, 2, 19, 0,0))
+                .endDateTime(LocalDateTime.of(2024, 2, 21,23,59))
+                .semesterPermission(List.of(Semester.FIFTH, Semester.FOURTH, Semester.THIRD, Semester.SECOND, Semester.FIRST))
+                .hostType(hostType)
+                .placeSetting("올댓마인드 문래점")
+                .build();
+        scheduleService.createSchedule(member, request);
+    }
+
+    private void createDiningSchedule(Member member, HostType hostType) {
+        int day = getRandomNumber();
+        ScheduleRequest.CreateSchedule request = ScheduleRequest.CreateSchedule.builder()
+                .title("회식")
+                .content("여러분들 회식 많이 참여해주세요")
+                .startDateTime(LocalDateTime.of(2024, 2, day, 18,0))
+                .endDateTime(LocalDateTime.of(2024, 2, day,23,59))
+                .semesterPermission(List.of(Semester.FIFTH))
+                .hostType(hostType)
+                .placeSetting("장소 미정")
+                .build();
+        scheduleService.createSchedule(member, request);
+    }
+
+    private void createHackathonSchedule(Member member, HostType hostType) {
+        int day = getRandomNumber();
+        ScheduleRequest.CreateSchedule request = ScheduleRequest.CreateSchedule.builder()
+                .title("UMC 헤커톤")
+                .content("헤커톤 우승 상금 백만원!!!")
+                .startDateTime(LocalDateTime.of(2024, 2, day, 14,0))
+                .endDateTime(LocalDateTime.of(2024, 2, day + 1,14,0))
+                .semesterPermission(List.of(Semester.FIFTH, Semester.FOURTH, Semester.THIRD, Semester.SECOND, Semester.FIRST))
+                .hostType(hostType)
+                .placeSetting("헤커톤 장소")
+                .build();
+        scheduleService.createSchedule(member, request);
+    }
+
+    private Optional<HostType> getHostType(Member member) {
+        int rolePriority = member.getRole().getPriority();
+        if (rolePriority > 4)
+            return Optional.empty();
+        if (rolePriority > 3)
+            return Optional.of(HostType.CAMPUS);
+        if (rolePriority > 2)
+            return Optional.of(HostType.BRANCH);
+        return Optional.of(HostType.CENTER);
+    }
+
+    // 1 ~ 29 중 랜덤 숫자 생성
+    private int getRandomNumber() {
+        Random random = new Random();
+        return random.nextInt(28) + 1;
+    }
 }
