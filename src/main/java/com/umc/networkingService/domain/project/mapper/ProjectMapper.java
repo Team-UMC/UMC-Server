@@ -34,22 +34,18 @@ public class ProjectMapper {
                 .build();
     }
 
-    public ProjectAllResponse toProjectAllResponse(Page<Project> projects) {
-        List<ProjectAllResponse.ProjectInfo> projectInfos = projects.stream()
-                .map(this::toProjectInfo)
-                .toList();
-
+    public ProjectAllResponse toProjectAllResponse(Page<Project> pageInfo, List<ProjectAllResponse.ProjectInfo> projects) {
         return ProjectAllResponse.builder()
-                .projects(projectInfos)
-                .page(projects.getNumber())
-                .totalPages(projects.getTotalPages())
-                .totalElements((int) projects.getTotalElements())
-                .isFirst(projects.isFirst())
-                .isLast(projects.isLast())
+                .projects(projects)
+                .page(pageInfo.getNumber())
+                .totalPages(pageInfo.getTotalPages())
+                .totalElements((int) pageInfo.getTotalElements())
+                .isFirst(pageInfo.isFirst())
+                .isLast(pageInfo.isLast())
                 .build();
     }
 
-    public ProjectAllResponse.ProjectInfo toProjectInfo(Project project) {
+    public ProjectAllResponse.ProjectInfo toProjectInfo(Project project, boolean isLike) {
         return ProjectAllResponse.ProjectInfo.builder()
                 .projectId(project.getId())
                 .name(project.getName())
@@ -58,10 +54,11 @@ public class ProjectMapper {
                 .semester(project.getSemester())
                 .types(project.getTypes())
                 .tags(project.getTags())
+                .isLike(isLike)
                 .build();
     }
 
-    public ProjectDetailResponse toProjectDetailResponse(Project project, List<ProjectMember> projectMembers) {
+    public ProjectDetailResponse toProjectDetailResponse(Project project, List<ProjectMember> projectMembers, boolean isLike) {
         return ProjectDetailResponse.builder()
                 .name(project.getName())
                 .description(project.getDescription())
@@ -70,6 +67,7 @@ public class ProjectMapper {
                 .types(project.getTypes())
                 .tags(project.getTags())
                 .projectMembers(toProjectMemberInfos(projectMembers))
+                .isLike(isLike)
                 .build();
     }
 

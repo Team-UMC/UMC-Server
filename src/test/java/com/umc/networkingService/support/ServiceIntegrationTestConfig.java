@@ -109,7 +109,6 @@ public abstract class ServiceIntegrationTestConfig {
     protected Mascot createMascot() {
         return mascotRepository.save(
                 Mascot.builder()
-                        .dialogue("테스트")
                         .startLevel(1)
                         .endLevel(10)
                         .build()

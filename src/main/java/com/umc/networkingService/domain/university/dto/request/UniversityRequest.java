@@ -14,7 +14,7 @@ public class UniversityRequest {
     @NoArgsConstructor
     @AllArgsConstructor // 대학교 생성, 수정
     public static class universityInfo {
-        //todo:마스코트 처리
+        //todo: 마스코트 처리
         String universityName;
         MultipartFile universityLogo;
         MultipartFile semesterLogo;

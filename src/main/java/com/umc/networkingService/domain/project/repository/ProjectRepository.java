@@ -18,5 +18,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
     Page<Project> findAllBySemesterAndTypesContains(Semester semester, ProjectType type, Pageable pageable);
     @Query("SELECT DISTINCT p FROM Project p JOIN p.tags t WHERE p.name LIKE %:keyword% OR t LIKE %:keyword%")
     Page<Project> findByNameContainsOrTagContains(@Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT p FROM Project p ORDER BY (p.hitCount * 1 + p.heartCount * 3) DESC")
+    Page<Project> findHotProjects(Pageable pageable);
     boolean existsByName(String name);
 }
