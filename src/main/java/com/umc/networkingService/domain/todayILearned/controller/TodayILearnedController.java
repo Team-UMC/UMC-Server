@@ -8,6 +8,7 @@ import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearned
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedDetail;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfos;
 import com.umc.networkingService.domain.todayILearned.service.TodayILearnedService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,6 +73,19 @@ public class TodayILearnedController {
                                                                   @RequestParam(value = "date") String date) {
 
         return BaseResponse.onSuccess(todayILearnedService.getTodayILearnedInfos(member, date));
+    }
+
+    @Operation(summary = "Today I Learned 조회(일별) - Web", description = "웹용 TIL(일별)을 조회하는 API입니다.")
+    @GetMapping("/web")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @Parameters(value = {
+            @Parameter(name="date", description = "현재 날짜를 2024-02-08 형식으로 전달해 주세요.")
+    })
+    public BaseResponse<TodayILearnedWebInfos> getTodayILearnedWebInfos(@CurrentMember Member member,
+                                                                        @RequestParam(value = "date") String date) {
+        return BaseResponse.onSuccess(todayILearnedService.getTodayILearnedWebInfos(member, date));
     }
 
 

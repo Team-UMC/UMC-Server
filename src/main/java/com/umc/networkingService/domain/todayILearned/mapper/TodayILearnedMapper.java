@@ -2,10 +2,14 @@ package com.umc.networkingService.domain.todayILearned.mapper;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfo;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedDetail;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfos;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfo;
+
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +47,16 @@ public class TodayILearnedMapper {
     public TodayILearnedInfos toTodayILearnedInfos(List<TodayILearnedInfo> todayILearnedInfos) {
         return TodayILearnedInfos.builder()
                 .todayILearnedInfos(todayILearnedInfos)
+                .build();
+    }
+
+    public TodayILearnedWebInfo toTodayILearnedWebInfo(TodayILearned todayILearned) {
+        return TodayILearnedWebInfo.builder()
+                .todayILearnedId(todayILearned.getId())
+                .title(todayILearned.getTitle())
+                .subTitle(todayILearned.getSubtitle())
+                .content(todayILearned.getContent())
+                .part(todayILearned.getPart())
                 .build();
     }
 
