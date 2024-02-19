@@ -25,7 +25,22 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     QBoardHeart boardHeart = QBoardHeart.boardHeart;
 
 
-    
+    /*
+    Home 화면에 보여지는 notices 목록 반환
+     */
+    @Override
+    public List<Board> findNoticesByMember(Member member) {
+        return query.selectFrom(board)
+                .where(board.isFixed.eq(true)
+                        .and(
+                                CenterPermission()
+                                        .or(BranchPermission(member))
+                                        .or(CampusPermission(member))
+                        ))
+                .orderBy(board.createdAt.desc())
+                .fetch();
+    }
+
     /*
     HostType, BoardType에 따라 게시글 목록 조회
      */
@@ -304,7 +319,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         return new PageImpl<>(boards, pageable, query.selectFrom(board).where(eqBoardType(BoardType.NOTICE), predicate).fetch().size());
 
     }
-
 
 
     //hostTYpe과 boardType에 따라 조건 추가

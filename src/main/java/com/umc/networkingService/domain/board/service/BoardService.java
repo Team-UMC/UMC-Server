@@ -21,6 +21,8 @@ public interface BoardService extends EntityLoader<Board, UUID> {
 
     BoardResponse.BoardId deleteBoard(Member member, UUID boardId);
 
+    BoardResponse.PinnedNotices showPinnedNotices(Member member);
+
     BoardResponse.BoardPageInfos showBoards(Member member, HostType host, BoardType board, Pageable pageable);
 
     BoardResponse.BoardDetail showBoardDetail(Member member, UUID boardId);
@@ -30,8 +32,11 @@ public interface BoardService extends EntityLoader<Board, UUID> {
     BoardResponse.BoardId toggleBoardLike(Member member, UUID boardId);
 
     MyBoardResponse.MyBoardPageInfos showBoardsByMemberForApp(Member member, String keyword, Pageable pageable);
+
     MyBoardResponse.MyBoardPageInfos showBoardsByMemberForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable);
+
     MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable);
+
     MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable);
 
 }
