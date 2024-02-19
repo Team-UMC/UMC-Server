@@ -94,12 +94,13 @@ public class UniversityResponse {
     @NoArgsConstructor
     @AllArgsConstructor // 학교 마스코트
     public static class joinUniversityMascot {
+        String universityName;
         Integer level;
         Long point;
+        Long levelUpPoint;
         Integer rank;
         String mascotImage;
         List<String> mascotDialog;
-        String universityImage;
 
         public static joinUniversityMascot setRank(joinUniversityMascot universityMascot, Integer rank) {
             universityMascot.rank = rank;

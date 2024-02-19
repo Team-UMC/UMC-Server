@@ -65,14 +65,15 @@ public class UniversityMapper {
 
     // 학교 마스코트 조회
     public static UniversityResponse.joinUniversityMascot toJoinUniversityMascot(
-            University university, Mascot mascot
+            University university, Mascot mascot, Long levelUpPoint
     ){
         return UniversityResponse.joinUniversityMascot.builder()
+                .universityName(university.getName())
                 .mascotDialog(mascot.getRandomDialogues())
                 .mascotImage(mascot.getImage())
                 .level(university.getCurrentLevel())
                 .point(university.getTotalPoint())
-                .universityImage(university.getUniversityLogo())
+                .levelUpPoint(levelUpPoint)
                 .build();
     }
 
