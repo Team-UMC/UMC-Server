@@ -67,6 +67,7 @@ public class TodayILearnedMapper {
                 .subTitle(todayILearned.getSubtitle())
                 .content(todayILearned.getContent())
                 .files(files)
+                .part(todayILearned.getPart())
                 .build();
     }
 }

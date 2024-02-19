@@ -77,5 +77,6 @@ public class TodayILearnedResponse {
         private String subTitle;
         private String content;
         private List<String> files;
+        private Part part;
     }
 }
