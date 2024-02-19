@@ -12,8 +12,8 @@ import java.util.UUID;
 @Component
 public class ScheduleMapper {
 
-    public ScheduleDetail toScheduleDetail(Schedule schedule) {
-        return ScheduleDetail.builder()
+    public ScheduleInfo toScheduleInfo(Schedule schedule) {
+        return ScheduleInfo.builder()
                 .scheduleId(schedule.getId())
                 .writerName(schedule.getWriter().getName())
                 .writerNickname(schedule.getWriter().getNickname())

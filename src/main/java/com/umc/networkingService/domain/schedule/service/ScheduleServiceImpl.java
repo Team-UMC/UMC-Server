@@ -30,16 +30,29 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final MemberService memberService;
 
     @Override
-    public ScheduleInfoSummariesInCalendar getCalendarByMonth(Member loginMember, LocalDate date) {
+    public ScheduleInfoSummariesInCalendar getScheduleByMonth(Member loginMember, LocalDate date) {
 
         Member member = memberService.loadEntity(loginMember.getId());
 
-        List<Schedule> schedulesLists = validateSchedules(member,
-                scheduleRepository.findSchedulesByYearAndMonth(date));
+        List<Schedule> schedulesLists = validateSchedules(member, scheduleRepository.findSchedulesByYearAndMonth(date))
+                .stream().sorted(Comparator.comparing(Schedule::getStartDateTime)).toList();
 
         return scheduleMapper.toScheduleInfoSummariesInCalendar(
                 schedulesLists.stream()
                         .map(scheduleMapper::toScheduleInfoSummaryInCalendar)
+                        .toList());
+    }
+
+    @Override
+    public ScheduleInfos getScheduleByMonthToWeb(Member loginMember, LocalDate date) {
+        Member member = memberService.loadEntity(loginMember.getId());
+
+        List<Schedule> schedulesLists = validateSchedules(member, scheduleRepository.findSchedulesByYearAndMonth(date))
+                .stream().sorted(Comparator.comparing(Schedule::getStartDateTime)).toList();
+
+        return new ScheduleInfos(
+                schedulesLists.stream()
+                        .map(scheduleMapper::toScheduleInfo)
                         .toList());
     }
 
@@ -91,11 +104,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduleDetail getScheduleDetail(Member member, UUID scheduleId) {
+    public ScheduleInfo getScheduleDetail(Member member, UUID scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RestApiException(ScheduleErrorCode.EMPTY_SCHEDULE));
 
-        return scheduleMapper.toScheduleDetail(schedule);
+        return scheduleMapper.toScheduleInfo(schedule);
     }
 
     @Override
