@@ -87,6 +87,14 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.deleteBoard(member, boardId));
     }
 
+    @Operation(summary = "핀고정된 notice 조회 API", description = "핀 고정된 공지 게시글을 조회하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @GetMapping("/pinned")
+    public BaseResponse<BoardResponse.PinnedNotices> showPinnedNotices(@CurrentMember Member member) {
+        return BaseResponse.onSuccess(boardService.showPinnedNotices(member));
+    }
 
     @Operation(summary = "특정 게시판의 게시글 목록 조회 API", description = "특정 게시판의 게시글 목록을 조회하는 API입니다.  " +
             "host: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +

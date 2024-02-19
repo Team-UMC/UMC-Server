@@ -20,9 +20,9 @@ public interface BoardService extends EntityLoader<Board, UUID> {
     BoardResponse.BoardId updateBoard(Member member, UUID boardId, BoardRequest.BoardUpdateRequest request, List<MultipartFile> files);
 
     BoardResponse.BoardId deleteBoard(Member member, UUID boardId);
+    BoardResponse.PinnedNotices showPinnedNotices(Member member);
 
     BoardResponse.BoardPageInfos showBoards(Member member, HostType host, BoardType board, Pageable pageable);
-
     BoardResponse.BoardDetail showBoardDetail(Member member, UUID boardId);
 
     BoardResponse.BoardSearchPageInfos searchBoard(Member member, String keyword, Pageable pageable);

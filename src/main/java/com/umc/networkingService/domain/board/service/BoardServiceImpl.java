@@ -40,6 +40,13 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
+    public BoardResponse.PinnedNotices showPinnedNotices(Member loginMember) {
+        Member member = memberService.loadEntity(loginMember.getId());
+
+        return boardMapper.toPinnedNotices(boardRepository.findNoticesByMember(member));
+
+    }
+    @Override
     public BoardResponse.BoardPageInfos showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
@@ -48,6 +55,7 @@ public class BoardServiceImpl implements BoardService {
 
         return boardMapper.toBoardPageInfos(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
+
 
     @Override
     public BoardResponse.BoardSearchPageInfos searchBoard(Member loginMember, String keyword, Pageable pageable) {

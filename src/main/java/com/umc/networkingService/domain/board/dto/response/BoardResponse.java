@@ -119,6 +119,19 @@ public class BoardResponse {
         private LocalDateTime createdAt;
     }
 
+    @Getter
+    @Builder
+    public static class PinnedNotice {
+        private HostType hostType;
+        private String title;
+    }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PinnedNotices {
+        List<PinnedNotice> pinnedNotices = new ArrayList<>();
+    }
 
 }
