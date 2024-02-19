@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface AlbumImageRepository extends JpaRepository<AlbumImage, UUID> {
     List<AlbumImage> findAllByAlbum(Album album);
+    int countAllByAlbum(Album album);
 }

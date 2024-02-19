@@ -13,4 +13,5 @@ public interface AlbumImageService {
     List<AlbumImage> findAlbumImages(Album album);
     void deleteAlbumImages(Album album);
     String findThumbnailImage(Album album);
+    int countAlbumImages(Album album);
 }

@@ -13,10 +13,12 @@ import com.umc.networkingService.domain.album.mapper.AlbumMapper;
 import com.umc.networkingService.domain.album.repository.AlbumHeartRepository;
 import com.umc.networkingService.domain.album.repository.AlbumRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.AlbumErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +37,8 @@ public class AlbumServiceImpl implements AlbumService{
     private final AlbumImageService albumImageService;
     private final AlbumHeartRepository albumHeartRepository;
     private final AlbumHeartMapper albumHeartMapper;
+
+    private final MemberService memberService;
 
     @Override
     @Transactional
@@ -101,8 +105,21 @@ public class AlbumServiceImpl implements AlbumService{
     }
 
     @Override
-    public AlbumPagingResponse showAlbums(Member member, Pageable pageable) {
-        return albumMapper.toAlbumPagingResponse(albumRepository.findAllAlbums(member, pageable));
+    public AlbumPagingResponse showAlbums(Member loginMember, Pageable pageable) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
+
+        Page<Album> albumPage = albumRepository.findAllByWriter_University(member.getUniversity(), pageable);
+
+        return albumMapper.toAlbumPagingResponse(
+                albumPage,
+                albumPage.stream()
+                        .map(album -> albumMapper.toAlbumPageResponse(album, getImageCnt(album)))
+                        .toList());
+    }
+
+    private int getImageCnt(Album album) {
+        return albumImageService.countAlbumImages(album);
     }
 
     @Override

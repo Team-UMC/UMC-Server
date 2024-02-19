@@ -67,6 +67,12 @@ public class AlbumImageServiceImpl implements AlbumImageService{
                 .orElse(null);
     }
 
+    // 특정 앨범 이미지 개수 조회 함수
+    @Override
+    public int countAlbumImages(Album album) {
+        return albumImageRepository.countAllByAlbum(album);
+    }
+
     public static boolean isImageFile(String url) {
         String lowerCaseUrl = url.toLowerCase();
 

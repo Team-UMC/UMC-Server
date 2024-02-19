@@ -17,6 +17,7 @@ public class AlbumPageResponse {
     private String title;
     private String content;
     private String thumbnail;
+    private int imageCnt;
     private int hitCount;
     private int heartCount;
     private int commentCount;

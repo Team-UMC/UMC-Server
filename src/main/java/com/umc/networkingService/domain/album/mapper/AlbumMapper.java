@@ -27,7 +27,7 @@ public class AlbumMapper {
                 .build();
     }
 
-    public AlbumPageResponse toAlbumPageResponse(Album album) {
+    public AlbumPageResponse toAlbumPageResponse(Album album, int imageCnt) {
         return AlbumPageResponse.builder()
                 .albumId(album.getId())
                 .writer(album.getWriter().getNickname() + "/" + album.getWriter().getName())
@@ -36,6 +36,7 @@ public class AlbumMapper {
                 .semester(album.getSemester())
                 .content(album.getContent())
                 .thumbnail(albumImageService.findThumbnailImage(album))
+                .imageCnt(imageCnt)
                 .hitCount(album.getHitCount())
                 .heartCount(album.getHeartCount())
                 .commentCount(album.getCommentCount())
@@ -43,12 +44,10 @@ public class AlbumMapper {
                 .build();
     }
 
-    public AlbumPagingResponse toAlbumPagingResponse(Page<Album> albums) {
-        List<AlbumPageResponse> AlbumPageResponses = albums.map(this::toAlbumPageResponse)
-                .stream().toList();
+    public AlbumPagingResponse toAlbumPagingResponse(Page<Album> albums, List<AlbumPageResponse> albumPageResponses) {
 
         return AlbumPagingResponse.builder()
-                .albumPageResponses(AlbumPageResponses)
+                .albumPageResponses(albumPageResponses)
                 .page(albums.getNumber())
                 .totalPages(albums.getNumber())
                 .totalElements((int)albums.getTotalElements())
