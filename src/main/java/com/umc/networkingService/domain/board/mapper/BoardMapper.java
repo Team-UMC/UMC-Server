@@ -36,6 +36,7 @@ public class BoardMapper {
         return BoardResponse.PinnedNotice.builder()
                 .hostType(board.getHostType())
                 .title(board.getTitle())
+                .boardId(board.getId())
                 .build();
     }
     public BoardResponse.PinnedNotices toPinnedNotices(List<Board> boards) {

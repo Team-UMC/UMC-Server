@@ -124,6 +124,7 @@ public class BoardResponse {
     public static class PinnedNotice {
         private HostType hostType;
         private String title;
+        private UUID boardId;
     }
 
     @Getter
