@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,9 +123,11 @@ public class BoardResponse {
     @Getter
     @Builder
     public static class PinnedNotice {
-        private HostType hostType;
-        private String title;
         private UUID boardId;
+        private String title;
+        private String content;
+        private HostType hostType;
+        private String nickname;
     }
 
     @Getter

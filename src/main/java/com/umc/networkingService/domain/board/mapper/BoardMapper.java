@@ -37,6 +37,8 @@ public class BoardMapper {
                 .hostType(board.getHostType())
                 .title(board.getTitle())
                 .boardId(board.getId())
+                .content(board.getContent())
+                .nickname(board.getWriter().getNickname())
                 .build();
     }
     public BoardResponse.PinnedNotices toPinnedNotices(List<Board> boards) {
