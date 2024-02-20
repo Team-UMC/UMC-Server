@@ -171,7 +171,8 @@ public class TestService {
 
     }
 
-    private void createNoticeAndWorkbook(List<Member> members) {
+    @Transactional
+    public void createNoticeAndWorkbook(List<Member> members) {
         List<MultipartFile> files = new ArrayList<>();
         Member campusStaff = members.stream().filter(member -> member.getRole().equals(Role.CAMPUS_STAFF)).findFirst().get();
         Member branchStaff = members.stream().filter(member -> member.getRole().equals(Role.BRANCH_STAFF)).findFirst().get();
@@ -202,8 +203,10 @@ public class TestService {
 
             boardService.createBoard(campusStaff, request, files);
             Board board1 = boardService.loadEntity(boardService.createBoard(campusStaff, request, files).getBoardId());
+            board1.setIsFixed(true);
             boardFileService.uploadBoardFilesForDummy(board1, getRandomImages());
             Board board2 = boardService.loadEntity(boardService.createBoard(branchStaff, request2, files).getBoardId());
+            board2.setIsFixed(true);
             boardFileService.uploadBoardFilesForDummy(board2, getRandomImages());
 
             if (!boardService.existsByBoardTypeAndHostType(BoardType.NOTICE, HostType.CENTER)) {
@@ -215,6 +218,7 @@ public class TestService {
                         .build();
 
                 Board board3 = boardService.loadEntity(boardService.createBoard(centerStaff, request3, files).getBoardId());
+                board3.setIsFixed(true);
                 boardFileService.uploadBoardFilesForDummy(board3, getRandomImages());
             }
             Board board4 = boardService.loadEntity(boardService.createBoard(campusStaff, request4, files).getBoardId());
