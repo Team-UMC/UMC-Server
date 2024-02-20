@@ -206,7 +206,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
     //dummy 데이터 생성용
     public MemberIdResponse saveNewDummyMember(String clientId) {
         Member member = memberMapper.toMember(clientId, SocialType.KAKAO);

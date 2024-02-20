@@ -112,6 +112,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    public boolean existsByHostType(HostType hostType) {
+        return scheduleRepository.existsByHostType(hostType);
+    }
+
+    @Override
     public ScheduleId createSchedule(Member member, CreateSchedule request) {
         Schedule schedule = scheduleMapper.createScheduleToSchedule(member, request);
 

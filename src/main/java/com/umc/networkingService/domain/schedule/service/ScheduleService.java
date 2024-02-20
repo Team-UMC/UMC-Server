@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.schedule.service;
 
+import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
@@ -21,4 +22,5 @@ public interface ScheduleService {
     ScheduleId deleteSchedule(Member member, UUID scheduleId);
     ScheduleInfoSummaryLists getScheduleLists(Member member, LocalDate date);
     ScheduleInfo getScheduleDetail(Member member, UUID scheduleId);
+    boolean existsByHostType(HostType hostType);
 }

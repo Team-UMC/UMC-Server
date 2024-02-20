@@ -64,14 +64,18 @@ public class TestService {
     @Transactional
     public String createDummyBoard(Member member) {
         List<Member> members = createDummyMember(member);
+        if (members.isEmpty()) return "이미 존재합니다.";
         createBoard(members, BoardType.FREE, HostType.CAMPUS);
         createBoard(members, BoardType.FREE, HostType.BRANCH);
-        createBoard(members, BoardType.FREE, HostType.CENTER);
+        if (!boardService.existsByBoardTypeAndHostType(BoardType.FREE, HostType.CENTER))
+            createBoard(members, BoardType.FREE, HostType.CENTER);
         createBoard(members, BoardType.QUESTION, HostType.CAMPUS);
         createBoard(members, BoardType.QUESTION, HostType.BRANCH);
-        createBoard(members, BoardType.QUESTION, HostType.CENTER);
+        if (!boardService.existsByBoardTypeAndHostType(BoardType.QUESTION, HostType.CENTER))
+            createBoard(members, BoardType.QUESTION, HostType.CENTER);
         createOB(members, HostType.CAMPUS);
-        createOB(members, HostType.CENTER);
+        if (!boardService.existsByBoardTypeAndHostType(BoardType.OB, HostType.CENTER))
+            createOB(members, HostType.CENTER);
         createNoticeAndWorkbook(members);
 
         members.forEach(this::createSchedules);
@@ -87,6 +91,10 @@ public class TestService {
         //로그인 한 멤버의 지부와 학교 정보 불러오기
         Branch branch = branchService.loadEntity(loginMember.getBranch().getId());
         University university = universityService.loadEntity(loginMember.getUniversity().getId());
+
+        if (memberService.existsByUniversityAndNicknameAndName(university, "시루", "김루시"))
+            return List.of();
+
         //로그인한 멤버의 지부에 해당하는 university list를 불러오기
         List<University> universities = branchUniversityService.findUniversitiesByBranch(branch);
 
@@ -141,7 +149,7 @@ public class TestService {
         return semesterPartRepository.saveAll(semesterParts);
     }
 
-    private void createBoard(List<Member> members, BoardType boardType, HostType hostType) {
+    public void createBoard(List<Member> members, BoardType boardType, HostType hostType) {
         Random random = new Random();
         List<MultipartFile> files = new ArrayList<>();
 
@@ -184,13 +192,6 @@ public class TestService {
                     .content("여러분~~~~ 이제 UMC 5기도 마지막이에요ㅠㅠ." + i)
                     .build();
 
-            BoardCreateRequest request3 = BoardCreateRequest.builder()
-                    .hostType(HostType.CENTER.toString())
-                    .boardType(BoardType.NOTICE.toString())
-                    .title("UMC 서울 해커톤 개최!" + i)
-                    .content("해커톤을 개최합니다 여러분 많은 참여 부탁드려요."+i)
-                    .build();
-
             BoardCreateRequest request4 = BoardCreateRequest.builder()
                     .hostType(HostType.CAMPUS.toString())
                     .boardType(BoardType.WORKBOOK.toString())
@@ -204,8 +205,18 @@ public class TestService {
             boardFileService.uploadBoardFilesForDummy(board1, getRandomImages());
             Board board2 = boardService.loadEntity(boardService.createBoard(branchStaff, request2, files).getBoardId());
             boardFileService.uploadBoardFilesForDummy(board2, getRandomImages());
-            Board board3 = boardService.loadEntity(boardService.createBoard(centerStaff, request3, files).getBoardId());
-            boardFileService.uploadBoardFilesForDummy(board3, getRandomImages());
+
+            if (!boardService.existsByBoardTypeAndHostType(BoardType.NOTICE, HostType.CENTER)) {
+                BoardCreateRequest request3 = BoardCreateRequest.builder()
+                        .hostType(HostType.CENTER.toString())
+                        .boardType(BoardType.NOTICE.toString())
+                        .title("UMC 서울 해커톤 개최!" + i)
+                        .content("해커톤을 개최합니다 여러분 많은 참여 부탁드려요."+i)
+                        .build();
+
+                Board board3 = boardService.loadEntity(boardService.createBoard(centerStaff, request3, files).getBoardId());
+                boardFileService.uploadBoardFilesForDummy(board3, getRandomImages());
+            }
             Board board4 = boardService.loadEntity(boardService.createBoard(campusStaff, request4, files).getBoardId());
             boardFileService.uploadBoardFilesForDummy(board4, getRandomImages());
 
@@ -255,9 +266,11 @@ public class TestService {
     private void createSchedules(Member member) {
         Optional<HostType> hostType = getHostType(member);
         if (hostType.isPresent()) {
-            createDemoDaySchedule(member, hostType.get());
-            createHackathonSchedule(member, hostType.get());
-            createDiningSchedule(member, hostType.get());
+            if (hostType.get() != HostType.CENTER || !scheduleService.existsByHostType(hostType.get())) {
+                createDemoDaySchedule(member, hostType.get());
+                createHackathonSchedule(member, hostType.get());
+                createDiningSchedule(member, hostType.get());
+            }
         }
     }
 

@@ -22,6 +22,8 @@ public class MemberMapper {
                 .clientId(clientId)
                 .socialType(socialType)
                 .role(Role.MEMBER)
+                .contributionPoint(0L)
+                .remainPoint(0L)
                 .build();
     }
 

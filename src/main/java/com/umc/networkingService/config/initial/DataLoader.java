@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +53,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
         // 새로운 지부가 있는 경우 대학교 연결(새로운 기수인 경우)
         if (!newBranches.isEmpty()) {
-            updateBranchUniversities(branchUniversityRepository.findAll());
+            updateBranchUniversities();
             connectNewBranchesAndUniversities(newBranches);
         }
 
@@ -126,9 +127,12 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     // 새로운 기수가 생길 경우 이전 기수들의 isActive 정보 수정
-    private void updateBranchUniversities(List<BranchUniversity> branchUniversities) {
+    @Transactional
+    public void updateBranchUniversities() {
+        List<BranchUniversity> branchUniversities = branchUniversityRepository.findAllByIsActive(Boolean.TRUE);
         for (BranchUniversity branchUniversity : branchUniversities) {
-            if (branchUniversity.getBranch().getSemester() != Semester.findActiveSemester()) {
+            Branch branch = branchUniversity.getBranch();
+            if (branch.getSemester() != Semester.findActiveSemester()) {
                 branchUniversity.updateIsActive(Boolean.FALSE);
                 branchUniversityRepository.save(branchUniversity);
             }

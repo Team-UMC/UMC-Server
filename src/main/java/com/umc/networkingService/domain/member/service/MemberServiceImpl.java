@@ -294,6 +294,12 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    public boolean existsByUniversityAndNicknameAndName(University university, String nickname, String name) {
+        return memberRepository.existsByUniversityAndNicknameAndName(
+                university, nickname, name);
+    }
+
+    @Override
     @Transactional
     public Member usePoint(Member member, PointType pointType) {
         Member loginMember = loadEntity(member.getId());

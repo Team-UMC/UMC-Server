@@ -133,6 +133,11 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable));
     }
 
+    @Override
+    public Boolean existsByBoardTypeAndHostType(BoardType boardType, HostType hostType) {
+        return boardRepository.existsByBoardTypeAndHostType(boardType, hostType);
+    }
+
 
     @Override
     @Transactional

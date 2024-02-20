@@ -39,4 +39,6 @@ public interface BoardService extends EntityLoader<Board, UUID> {
 
     MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable);
 
+    Boolean existsByBoardTypeAndHostType(BoardType boardType, HostType hostType);
+
 }

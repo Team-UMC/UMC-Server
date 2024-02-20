@@ -6,6 +6,7 @@ import com.umc.networkingService.domain.member.dto.response.*;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.member.entity.PositionType;
+import com.umc.networkingService.domain.university.entity.University;
 import com.umc.networkingService.global.common.base.EntityLoader;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,10 +25,8 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     void updateMemberActiveTime(UUID memberId);
     List<String> getPositionNamesByType(Member member, PositionType type);
     Member saveEntity(Member member);
-
     List<Member> findContributionRankings(Member member);
-
     Member usePoint (Member member, PointType pointType);
-
     Member findByMemberId (UUID memberId);
+    boolean existsByUniversityAndNicknameAndName(University university, String nickname, String name);
 }
