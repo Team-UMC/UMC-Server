@@ -83,7 +83,7 @@ public class AlbumController {
     })
     @GetMapping
     public BaseResponse<AlbumPagingResponse> showAlbums(@CurrentMember Member member,
-                                                        @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+                                                        @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                         @Parameter(hidden = true) Pageable pageable){
         return BaseResponse.onSuccess(albumService.showAlbums(member, pageable));
     }
