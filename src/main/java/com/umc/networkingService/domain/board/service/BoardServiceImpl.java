@@ -58,6 +58,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponse.BoardDetail showBoardDetail(Member loginMember, UUID boardId) {
 
         Member member = memberService.loadEntity(loginMember.getId());
