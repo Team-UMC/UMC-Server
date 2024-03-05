@@ -205,6 +205,14 @@ public class AuthServiceImpl implements AuthService {
         return getNewToken(newMember, false);
     }
 
+    @Override
+    //dummy 데이터 생성용
+    public MemberIdResponse saveNewDummyMember(String clientId) {
+        Member member = memberMapper.toMember(clientId, SocialType.KAKAO);
+        return new MemberIdResponse(memberRepository.save(member).getId());
+
+    }
+
     private MemberLoginResponse getNewToken(Member member, boolean isServiceMember) {
         // jwt 토큰 생성
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId());

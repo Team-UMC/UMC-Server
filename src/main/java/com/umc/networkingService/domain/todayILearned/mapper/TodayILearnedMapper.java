@@ -2,9 +2,14 @@ package com.umc.networkingService.domain.todayILearned.mapper;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfo;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedDetail;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfos;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfo;
+
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import org.springframework.stereotype.Component;
 
@@ -45,5 +50,24 @@ public class TodayILearnedMapper {
                 .build();
     }
 
+    public TodayILearnedWebInfo toTodayILearnedWebInfo(TodayILearned todayILearned) {
+        return TodayILearnedWebInfo.builder()
+                .todayILearnedId(todayILearned.getId())
+                .title(todayILearned.getTitle())
+                .subTitle(todayILearned.getSubtitle())
+                .content(todayILearned.getContent())
+                .part(todayILearned.getPart())
+                .build();
+    }
 
+    public TodayILearnedDetail toTodayILearnedDetail(TodayILearned todayILearned, List<String> files) {
+        return TodayILearnedDetail.builder()
+                .todayILearnedId(todayILearned.getId())
+                .title(todayILearned.getTitle())
+                .subTitle(todayILearned.getSubtitle())
+                .content(todayILearned.getContent())
+                .files(files)
+                .part(todayILearned.getPart())
+                .build();
+    }
 }

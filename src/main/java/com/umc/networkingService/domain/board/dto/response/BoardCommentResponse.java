@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Semester;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class BoardCommentResponse {
         private Semester semester;
         private Part part;
         private String content;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
 
     }

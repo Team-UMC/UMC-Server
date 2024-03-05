@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.schedule.service;
 
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.*;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,19 +27,42 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ScheduleMapper scheduleMapper;
 
+    private final MemberService memberService;
+
     @Override
-    public ScheduleInfoSummariesInCalendar getCalendarByMonth(LocalDate date) {
+    public ScheduleInfoSummariesInCalendar getScheduleByMonth(Member loginMember, LocalDate date) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
+
+        List<Schedule> schedulesLists = validateSchedules(member, scheduleRepository.findSchedulesByYearAndMonth(date))
+                .stream().sorted(Comparator.comparing(Schedule::getStartDateTime)).toList();
 
         return scheduleMapper.toScheduleInfoSummariesInCalendar(
-                scheduleRepository.findSchedulesByYearAndMonth(date).stream()
-                .map(schedule -> scheduleMapper.toScheduleInfoSummaryInCalendar(schedule))
-                .toList());
+                schedulesLists.stream()
+                        .map(scheduleMapper::toScheduleInfoSummaryInCalendar)
+                        .toList());
     }
 
     @Override
-    public ScheduleInfoSummaryLists getScheduleLists(LocalDate date) {
+    public ScheduleInfos getScheduleByMonthToWeb(Member loginMember, LocalDate date) {
+        Member member = memberService.loadEntity(loginMember.getId());
 
-        List<Schedule> schedulesLists = scheduleRepository.findSchedulesByYearAndMonth(date);
+        List<Schedule> schedulesLists = validateSchedules(member, scheduleRepository.findSchedulesByYearAndMonth(date))
+                .stream().sorted(Comparator.comparing(Schedule::getStartDateTime)).toList();
+
+        return new ScheduleInfos(
+                schedulesLists.stream()
+                        .map(scheduleMapper::toScheduleInfo)
+                        .toList());
+    }
+
+    @Override
+    public ScheduleInfoSummaryLists getScheduleLists(Member loginMember, LocalDate date) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
+
+        List<Schedule> schedulesLists = validateSchedules(member,
+                scheduleRepository.findSchedulesByYearAndMonth(date));
 
         List<ScheduleInfoSummary> campusSchedules = filterSchedulesByHostType(schedulesLists, HostType.CAMPUS);
 
@@ -51,15 +76,44 @@ public class ScheduleServiceImpl implements ScheduleService {
     private List<ScheduleInfoSummary> filterSchedulesByHostType(List<Schedule> schedules, HostType hostType) {
         return schedules.stream()
                 .filter(schedule -> schedule.getHostType().equals(hostType))
-                .map(schedule -> scheduleMapper.toScheduleInfoSummary(schedule))
+                .map(scheduleMapper::toScheduleInfoSummary)
+                .sorted(Comparator.comparing(ScheduleInfoSummary::getStartDateTime))
                 .toList();
     }
 
-    @Override
-    public ScheduleDetail getScheduleDetail(Member member, UUID scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RestApiException(ScheduleErrorCode.EMPTY_SCHEDULE));
+    private List<Schedule> validateSchedules(Member member, List<Schedule> schedules) {
+        return schedules.stream()
+                .filter(schedule -> validateScheduleUniversityAndBranch(member, schedule))
+                .filter(schedule -> validateScheduleSemester(member, schedule))
+                .toList();
+    }
 
-        return scheduleMapper.toScheduleDetail(schedule);
+    private boolean validateScheduleUniversityAndBranch(Member member, Schedule schedule) {
+        if (schedule.getHostType().equals(HostType.CENTER))
+            return true;
+        if (schedule.getHostType().equals(HostType.BRANCH)
+                && member.getBranch() == schedule.getWriter().getBranch())
+            return true;
+        return schedule.getHostType().equals(HostType.CAMPUS)
+                && member.getUniversity() == schedule.getWriter().getUniversity();
+    }
+
+    private boolean validateScheduleSemester(Member member, Schedule schedule) {
+        return member.getSemesters().stream()
+                .anyMatch(memberSemester -> schedule.getSemesterPermission().contains(memberSemester));
+    }
+
+    @Override
+    public ScheduleInfo getScheduleDetail(Member member, UUID scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new RestApiException(ScheduleErrorCode.EMPTY_SCHEDULE));
+
+        return scheduleMapper.toScheduleInfo(schedule);
+    }
+
+    @Override
+    public boolean existsByHostType(HostType hostType) {
+        return scheduleRepository.existsByHostType(hostType);
     }
 
     @Override

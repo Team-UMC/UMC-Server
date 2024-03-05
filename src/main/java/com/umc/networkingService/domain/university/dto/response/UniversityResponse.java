@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.university.dto.response;
 
-import com.umc.networkingService.domain.branch.entity.Branch;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -95,12 +94,13 @@ public class UniversityResponse {
     @NoArgsConstructor
     @AllArgsConstructor // 학교 마스코트
     public static class joinUniversityMascot {
+        String universityName;
         Integer level;
         Long point;
+        Long levelUpPoint;
         Integer rank;
         String mascotImage;
-        String mascotDialog;
-        String universityImage;
+        List<String> mascotDialog;
 
         public static joinUniversityMascot setRank(joinUniversityMascot universityMascot, Integer rank) {
             universityMascot.rank = rank;

@@ -2,9 +2,10 @@ package com.umc.networkingService.domain.schedule.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.member.entity.Member;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleDetail;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfo;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummariesInCalendar;
 import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummaryLists;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfos;
 import com.umc.networkingService.domain.schedule.service.ScheduleService;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,9 +32,10 @@ public class ScheduleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    public BaseResponse<ScheduleInfoSummaryLists> getScheduleLists(@RequestParam LocalDate date) {
+    public BaseResponse<ScheduleInfoSummaryLists> getScheduleLists(@CurrentMember Member member,
+                                                                   @RequestParam LocalDate date) {
 
-        return BaseResponse.onSuccess((scheduleService.getScheduleLists(date)));
+        return BaseResponse.onSuccess((scheduleService.getScheduleLists(member, date)));
     }
 
     @Operation(summary = "일정 조회(상세조회)", description = "홈화면의 달력에서 일정을 상세조회하는 API입니다.")
@@ -42,8 +44,8 @@ public class ScheduleController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "SCHEDULE001", description = "존재하지 않은 스케줄입니다.")
     })
-    public BaseResponse<ScheduleDetail> getScheduleDetail(@CurrentMember Member member,
-                                                          @PathVariable("scheduleId") UUID scheduleId) {
+    public BaseResponse<ScheduleInfo> getScheduleDetail(@CurrentMember Member member,
+                                                        @PathVariable("scheduleId") UUID scheduleId) {
 
         return BaseResponse.onSuccess(scheduleService.getScheduleDetail(member, scheduleId));
     }
@@ -55,10 +57,19 @@ public class ScheduleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
-    public BaseResponse<ScheduleInfoSummariesInCalendar> getSchedule(@RequestParam LocalDate date) {
+    public BaseResponse<ScheduleInfoSummariesInCalendar> getScheduleByMonth(@CurrentMember Member member,
+                                                                            @RequestParam LocalDate date) {
 
-        return BaseResponse.onSuccess(scheduleService.getCalendarByMonth(date));
+        return BaseResponse.onSuccess(scheduleService.getScheduleByMonth(member, date));
     }
 
-
+    @Operation(summary = "웹용 캘린더 조회 API", description = "홈 화면의 달력을 조회하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공")
+    })
+    @GetMapping("/calendar/web")
+    public BaseResponse<ScheduleInfos> getScheduleByMonthToWeb(@CurrentMember Member member,
+                                                               @RequestParam LocalDate date) {
+        return BaseResponse.onSuccess(scheduleService.getScheduleByMonthToWeb(member, date));
+    }
 }

@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Part;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ public class BoardResponse {
         private int heartCount;
         private int commentCount;
         private boolean isLiked;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
 
@@ -53,6 +56,7 @@ public class BoardResponse {
         private int hitCount;
         private int heartCount;
         private int commentCount;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
         private boolean isFixed;
     }
@@ -112,9 +116,26 @@ public class BoardResponse {
         private String title;
         private int hitCount;
         private boolean isFixed;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
 
+    @Getter
+    @Builder
+    public static class PinnedNotice {
+        private UUID boardId;
+        private String title;
+        private String content;
+        private HostType hostType;
+        private String nickname;
+    }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PinnedNotices {
+        List<PinnedNotice> pinnedNotices = new ArrayList<>();
+    }
 
 }

@@ -65,7 +65,7 @@ public class ScheduleResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class ScheduleDetail {
+    public static class ScheduleInfo {
         private UUID scheduleId;
         private String writerName;
         private String writerNickname;
@@ -75,8 +75,13 @@ public class ScheduleResponse {
         private LocalDateTime endDateTime;
         private String placeSetting;
         private HostType hostType;
-
     }
 
-
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ScheduleInfos {
+        private List<ScheduleInfo> schedules;
+    }
 }

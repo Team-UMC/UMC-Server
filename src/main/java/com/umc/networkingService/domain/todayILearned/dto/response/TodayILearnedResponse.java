@@ -47,4 +47,36 @@ public class TodayILearnedResponse {
         private List<TodayILearnedInfo> todayILearnedInfos;
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TodayILearnedWebInfo {
+        private UUID todayILearnedId;
+        private String title;
+        private String subTitle;
+        private String content;
+        private Part part;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TodayILearnedWebInfos {
+        private List<TodayILearnedWebInfo> todayILearnedInfos;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TodayILearnedDetail {
+        private UUID todayILearnedId;
+        private String title;
+        private String subTitle;
+        private String content;
+        private List<String> files;
+        private Part part;
+    }
 }

@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
-
 public class UniversityRequest {
 
     @Builder
@@ -16,7 +14,7 @@ public class UniversityRequest {
     @NoArgsConstructor
     @AllArgsConstructor // 대학교 생성, 수정
     public static class universityInfo {
-        //todo:마스코트 처리
+        //todo: 마스코트 처리
         String universityName;
         MultipartFile universityLogo;
         MultipartFile semesterLogo;

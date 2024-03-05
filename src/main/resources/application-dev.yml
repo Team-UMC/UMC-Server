@@ -11,9 +11,15 @@ spring:
       import: classpath:application.yml
 
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+
+logging:
+  level:
+    org.springframework.web: ERROR

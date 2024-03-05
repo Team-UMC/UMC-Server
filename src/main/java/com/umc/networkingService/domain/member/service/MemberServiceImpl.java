@@ -150,9 +150,9 @@ public class MemberServiceImpl implements MemberService{
     public MemberAttendResponse attendMember(Member loingMember) {
 
         Member member = loadEntity(loingMember.getId());
-        LocalDate lastActiveDate = member.getLastActiveTime().toLocalDate();
+        LocalDateTime lastActiveTime = member.getLastActiveTime();
 
-        if (!lastActiveDate.equals(LocalDate.now())) {
+        if (lastActiveTime == null || !lastActiveTime.toLocalDate().equals(LocalDate.now())) {
             member.addRemainPoint(1L);
             return new MemberAttendResponse(true);
         }
@@ -291,6 +291,12 @@ public class MemberServiceImpl implements MemberService{
     public Member findByMemberId (UUID memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER));
+    }
+
+    @Override
+    public boolean existsByUniversityAndNicknameAndName(University university, String nickname, String name) {
+        return memberRepository.existsByUniversityAndNicknameAndName(
+                university, nickname, name);
     }
 
     @Override

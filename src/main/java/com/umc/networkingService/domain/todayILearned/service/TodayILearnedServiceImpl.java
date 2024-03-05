@@ -7,7 +7,9 @@ import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearned
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
 import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfos;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
+import com.umc.networkingService.domain.todayILearned.entity.TodayILearnedFile;
 import com.umc.networkingService.domain.todayILearned.mapper.TodayILearnedMapper;
 import com.umc.networkingService.domain.todayILearned.repository.TodayILearnedRepository;
 import com.umc.networkingService.global.common.exception.RestApiException;
@@ -67,6 +69,18 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
     }
 
     @Override
+    public TodayILearnedWebInfos getTodayILearnedWebInfos(Member member, String stringDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(stringDate,formatter);
+
+        return new TodayILearnedWebInfos(
+                todayILearnedRepository.findTodayILearnedByWriterAndCreateDate(member, date)
+                        .stream()
+                        .map(todayILearnedMapper::toTodayILearnedWebInfo)
+                        .toList());
+    }
+
+    @Override
     @Transactional
     public TodayILearnedId updateTodayILearned(Member member, UUID todayILearnedId, List<MultipartFile> files,
                                                TodayILearnedUpdate request) {
@@ -93,6 +107,21 @@ public class TodayILearnedServiceImpl implements TodayILearnedService {
         todayILearned.delete();
 
         return todayILearnedMapper.toTodayILearnedId(todayILearned.getId());
+    }
+
+    @Override
+    public TodayILearnedResponse.TodayILearnedDetail getTodayILearnedDetail(
+            Member member, UUID todayILearnedId) {
+
+        TodayILearned todayILearned = loadEntity(todayILearnedId);
+
+        validateMember(todayILearned, member);
+
+        return todayILearnedMapper.toTodayILearnedDetail(
+                todayILearned,
+                todayILearnedFileService.findTodayILearnedFiles(todayILearned).stream()
+                        .map(TodayILearnedFile::getUrl)
+                        .toList());
     }
 
     private void validateMember(TodayILearned todayILearned, Member member) {

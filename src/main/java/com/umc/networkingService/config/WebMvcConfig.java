@@ -18,7 +18,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(lastActiveInterceptor)
                 .addPathPatterns("/**") // 모든 요청에 대해 인터셉터 적용
                 .excludePathPatterns("/v3/**", "/swagger-ui/**") // 스웨거 요청은 제외
-                .excludePathPatterns("/members/login"); // 로그인 API 제외
+                .excludePathPatterns("/members/login", "/members", "/members/attend", "/invites/**"); // 로그인 및 회원가입 API 제외
     }
 
     //cors 에러 해결

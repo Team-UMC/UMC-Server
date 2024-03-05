@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.university.service;
 
-import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.domain.mascot.repository.MascotRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.entity.PointType;
@@ -19,9 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -119,12 +115,12 @@ public class UniversityServiceIntegrationTest extends ServiceIntegrationTestConf
     @Transactional
     public void joinUniversityMascotTest_Success() {
         //given
-        System.out.println(member.getUniversity().getMascot().getDialogue());
+        System.out.println(member.getUniversity().getMascot().getDialogues());
         //when
         UniversityResponse.joinUniversityMascot universityMascot = universityService.joinUniversityMascot(member);
 
         //then
-        assertThat(universityMascot.getMascotDialog()).isEqualTo(mascot.getDialogue());
+        assertThat(universityMascot.getMascotDialog()).isEqualTo(mascot.getDialogues());
     }
 
     @Test

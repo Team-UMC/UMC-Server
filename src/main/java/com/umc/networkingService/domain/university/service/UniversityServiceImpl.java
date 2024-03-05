@@ -7,15 +7,15 @@ import com.umc.networkingService.domain.member.entity.MemberPoint;
 import com.umc.networkingService.domain.member.entity.PointType;
 import com.umc.networkingService.domain.member.service.MemberPointService;
 import com.umc.networkingService.domain.member.service.MemberService;
-import com.umc.networkingService.domain.university.mapper.UniversityMapper;
 import com.umc.networkingService.domain.university.dto.request.UniversityRequest;
 import com.umc.networkingService.domain.university.dto.response.UniversityResponse;
 import com.umc.networkingService.domain.university.entity.University;
+import com.umc.networkingService.domain.university.mapper.UniversityMapper;
 import com.umc.networkingService.domain.university.repository.UniversityRepository;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.MemberErrorCode;
-import com.umc.networkingService.global.utils.S3FileComponent;
 import com.umc.networkingService.global.common.exception.code.UniversityErrorCode;
+import com.umc.networkingService.global.utils.S3FileComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,11 +98,13 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional(readOnly = true)    //우리 대학교 마스코트 조회
     public UniversityResponse.joinUniversityMascot joinUniversityMascot(Member member) {
         Member memberEntity = memberService.findByMemberId(member.getId());
+        University university = memberEntity.getUniversity();
 
         UniversityResponse.joinUniversityMascot universityMascot
                 = UniversityMapper.toJoinUniversityMascot(
-                memberEntity.getUniversity()
-                ,memberEntity.getUniversity().getMascot()
+                university
+                ,university.getMascot(),
+                (long) (university.getCurrentLevel() * 200)
         );
 
         List<University> universityRankList = universityRepository.findAllByOrderByTotalPointDesc(); //랭킹 순 정렬
@@ -266,5 +268,11 @@ public class UniversityServiceImpl implements UniversityService {
             }
         }
         return 0;
+    }
+
+    @Override
+    public University loadEntity(UUID universityId) {
+        return universityRepository.findById(universityId)
+                .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
     }
 }

@@ -25,10 +25,8 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     void updateMemberActiveTime(UUID memberId);
     List<String> getPositionNamesByType(Member member, PositionType type);
     Member saveEntity(Member member);
-
     List<Member> findContributionRankings(Member member);
-
     Member usePoint (Member member, PointType pointType);
-
     Member findByMemberId (UUID memberId);
+    boolean existsByUniversityAndNicknameAndName(University university, String nickname, String name);
 }

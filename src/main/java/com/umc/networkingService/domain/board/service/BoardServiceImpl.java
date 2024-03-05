@@ -40,19 +40,28 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public  BoardResponse.BoardPageInfos showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
+    public BoardResponse.PinnedNotices showPinnedNotices(Member loginMember) {
 
         Member member = memberService.loadEntity(loginMember.getId());
-        //특정 게시글 조회에 HostType ALL 불가능
-        checkHostType(hostType);
+
+        return boardMapper.toPinnedNotices(boardRepository.findNoticesByMember(member));
+
+    }
+    @Override
+    public BoardResponse.BoardPageInfos showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
+        checkBadRequest(hostType,boardType);
 
         return boardMapper.toBoardPageInfos(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
+
 
     @Override
     public BoardResponse.BoardSearchPageInfos searchBoard(Member loginMember, String keyword, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
+
         return boardMapper.toBoardSearchPageInfos(boardRepository.findKeywordBoards(member, keyword, pageable));
 
     }
@@ -109,18 +118,25 @@ public class BoardServiceImpl implements BoardService {
     public MyBoardResponse.MyBoardPageInfos showBoardsByMemberForApp(Member member, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByWriterForApp(member, keyword, pageable));
     }
+
     @Override
     public MyBoardResponse.MyBoardPageInfos showBoardsByMemberForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByWriterForWeb(member, hostType, boardType, keyword, pageable));
     }
+
     @Override
-    public  MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
+    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForApp(member, keyword, pageable));
     }
 
     @Override
-    public  MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForWeb(Member member,HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForWeb(member,hostType, boardType, keyword, pageable));
+    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable));
+    }
+
+    @Override
+    public Boolean existsByBoardTypeAndHostType(BoardType boardType, HostType hostType) {
+        return boardRepository.existsByBoardTypeAndHostType(boardType, hostType);
     }
 
 
@@ -131,14 +147,12 @@ public class BoardServiceImpl implements BoardService {
         HostType hostType = HostType.valueOf(request.getHostType());
         BoardType boardType = BoardType.valueOf(request.getBoardType());
 
-        //게시글 작성에 HostType ALL 불가능
-        checkHostType(hostType);
-
-        //boardType과 HostType에 따라 권한 판단
+        //boardType과 HostType에 따라 금지된 요청, 권한 판단
+        checkBadRequest(hostType,boardType);
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
-        Board board = boardRepository.save(boardMapper.toEntity(member, request, semesterPermission));
 
+        Board board = boardRepository.save(boardMapper.toEntity(member, request, semesterPermission));
         if (files != null)
             boardFileService.uploadBoardFiles(board, files);
 
@@ -154,10 +168,8 @@ public class BoardServiceImpl implements BoardService {
         HostType hostType = HostType.valueOf(request.getHostType());
         BoardType boardType = BoardType.valueOf(request.getBoardType());
 
-        //게시글 수정에 HostType ALL 불가능
-        checkHostType(hostType);
-
-        //boardType과 HostType에 따라 권한 판단
+        //boardType과 HostType에 따라 금지된 요청, 권한 판단
+        checkBadRequest(hostType,boardType);
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
@@ -202,7 +214,7 @@ public class BoardServiceImpl implements BoardService {
             case OB -> checkPermissionForOBBoard(member, nowSemester);
             case NOTICE -> checkPermissionForNoticeBoard(member, hostType);
             case WORKBOOK -> {
-                checkPermissionForWorkbookBoard(member, hostType);
+                checkPermissionForWorkbookBoard(member);
                 //워크북의 경우 현재 기수만 볼 수 있도록 허용
                 permissionSemesters = List.of(nowSemester);
             }
@@ -213,6 +225,7 @@ public class BoardServiceImpl implements BoardService {
 
     //OB 게시판 권한 확인 함수
     public void checkPermissionForOBBoard(Member member, Semester nowSemester) {
+
         // OB -> Semester의 isActive가 활성화되지 않은 사용자만 가능
         if (member.getRecentSemester().equals(nowSemester))
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
@@ -227,11 +240,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     //workbook 게시판 권한 확인 함수
-    public void checkPermissionForWorkbookBoard(Member member, HostType hostType) {
-
-        //hostType이 CAMPUS가 아닐 경우 금지된 요청
-        if (hostType != HostType.CAMPUS)
-            throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
+    public void checkPermissionForWorkbookBoard(Member member) {
 
         //CAMPUS && WORKBOOK -> 일반 MEMBER는 작성 불가
         if (member.getRole().getPriority() >= Role.MEMBER.getPriority())
@@ -249,10 +258,15 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
-
-    //게시글 작성, 수정에 HostType ALL 불가능
-    public void checkHostType(HostType hostType) {
+    public void checkBadRequest(HostType hostType, BoardType boardType) {
+        //운영진 공지사항 목록 조회 제외하고는 HostType ALL 불가능
         if (hostType.equals(HostType.ALL))
+            throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
+        //boardType: workbook, hostType: CAMPUS 가 아닐 경우 금지된 요청
+        if (boardType == BoardType.WORKBOOK && hostType != HostType.CAMPUS)
+            throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
+        //boardType: OB, hostType: Branch일 경우 금지된 요청
+        if (boardType == BoardType.OB && hostType == HostType.BRANCH)
             throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
     }
 
