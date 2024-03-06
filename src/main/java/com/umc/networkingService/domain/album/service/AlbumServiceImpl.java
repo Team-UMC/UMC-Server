@@ -40,43 +40,48 @@ public class AlbumServiceImpl implements AlbumService{
 
     private final MemberService memberService;
 
+    // 사진첩 생성 함수
     @Override
-    @Transactional
-    public AlbumIdResponse createAlbum(Member member, AlbumCreateRequest request, List<MultipartFile> albumImages) {
+    public AlbumIdResponse createAlbum(
+            Member member, AlbumCreateRequest request, List<MultipartFile> albumImages) {
 
-        Album album = albumRepository.save(albumMapper.toAlbumEntity(member, request));
+        Album album = albumRepository.save(albumMapper.toAlbum(member, request));
 
-        if(albumImages != null)
-            albumImageService.uploadAlbumImages(album, albumImages);
+        if (albumImages != null)
+            albumImageService.createAlbumImages(album, albumImages);
 
         return new AlbumIdResponse(album.getId());
     }
 
+    // 사진첩 수정 함수
     @Override
     @Transactional
-    public AlbumIdResponse updateAlbum(Member member, UUID albumId, AlbumUpdateRequest request, List<MultipartFile> albumImages) {
+    public AlbumIdResponse updateAlbum(
+            Member member, UUID albumId, AlbumUpdateRequest request, List<MultipartFile> albumImages) {
+
         Album album = loadEntity(albumId);
 
-        if (!album.getWriter().getId().equals(member.getId())) {
+        // 본인만 삭제 가능
+        if (!album.getWriter().getId().equals(member.getId()))
             throw new RestApiException(AlbumErrorCode.NO_AUTHORIZATION_ALBUM);
-        }
 
-        album.updateAlbum(request.getTitle(), request.getTitle(), request.getSemester());
+        album.updateAlbum(request);
 
-        albumImageService.updateAlbumImages(album, albumImages);
+        if (albumImages != null)
+            albumImageService.updateAlbumImages(album, albumImages);
 
         return new AlbumIdResponse(album.getId());
     }
 
     @Override
-    @Transactional
     public AlbumIdResponse deleteAlbum(Member member, UUID albumId) {
+
         Album album = loadEntity(albumId);
 
         // 로그인한 member와 writer가 같지 않을 경우 삭제 불가능
         if (!album.getWriter().getId().equals(member.getId())) {
-            // staff 역할을 가진 경우 삭제 가능
-            if(member.getRole().getPriority() == Role.MEMBER.getPriority())
+            // 상위 staff 역할을 가진 경우 삭제 가능
+            if(member.getRole().getPriority() < album.getWriter().getRole().getPriority())
                 throw new RestApiException(AlbumErrorCode.NO_AUTHORIZATION_ALBUM);
         }
 

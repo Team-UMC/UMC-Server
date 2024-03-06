@@ -29,7 +29,7 @@ import java.util.UUID;
 @Tag(name = "사진첩 API", description = "사진첩 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/albums")
+@RequestMapping("")
 public class AlbumController {
 
     private final AlbumService albumService;
@@ -39,10 +39,11 @@ public class AlbumController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패한 경우")
     })
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<AlbumIdResponse> createAlbum(@CurrentMember Member member,
-                                                     @Valid @RequestPart("request")AlbumCreateRequest request,
-                                                     @RequestPart(name = "albumImages", required = false) List<MultipartFile> albumImages) {
+    @PostMapping(value = "/staff/albums", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<AlbumIdResponse> createAlbum(
+            @CurrentMember Member member,
+            @Valid @RequestPart("request") AlbumCreateRequest request,
+            @RequestPart(name = "albumImages", required = false) List<MultipartFile> albumImages) {
         return BaseResponse.onSuccess(albumService.createAlbum(member, request, albumImages));
     }
 
@@ -53,11 +54,12 @@ public class AlbumController {
             @ApiResponse(responseCode = "ALBUM002", description = "해당 사진첩에 대한 권한이 없습니다."),
             @ApiResponse(responseCode = "IMAGE001", description = "파일 S3 업로드 실패한 경우")
     })
-    @PatchMapping(value = "/{albumId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<AlbumIdResponse> updateAlbum(@CurrentMember Member member,
-                                                     @PathVariable(value = "albumId") UUID albumId,
-                                                     @Valid @RequestPart("request")AlbumUpdateRequest request,
-                                                     @RequestPart(name = "albumImages", required = false) List<MultipartFile> albumImages) {
+    @PatchMapping(value = "/staff/albums/{albumId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<AlbumIdResponse> updateAlbum(
+            @CurrentMember Member member,
+            @PathVariable(value = "albumId") UUID albumId,
+            @Valid @RequestPart("request") AlbumUpdateRequest request,
+            @RequestPart(name = "albumImages", required = false) List<MultipartFile> albumImages) {
         return BaseResponse.onSuccess(albumService.updateAlbum(member, albumId, request, albumImages));
     }
 
@@ -68,11 +70,11 @@ public class AlbumController {
             @ApiResponse(responseCode = "ALBUM002", description = "해당 사진첩에 대한 권한이 없습니다.")
     })
     @DeleteMapping("/{albumId}")
-    public BaseResponse<AlbumIdResponse> deleteAlbum(@CurrentMember Member member,
-                                                     @PathVariable(value = "albumId") UUID albumId) {
+    public BaseResponse<AlbumIdResponse> deleteAlbum(
+            @CurrentMember Member member,
+            @PathVariable(value = "albumId") UUID albumId) {
         return BaseResponse.onSuccess(albumService.deleteAlbum(member, albumId));
     }
-
 
     @Operation(summary = "사진첩 조회 API", description = "사진첩 조회하는 API입니다.")
     @ApiResponses(value = {

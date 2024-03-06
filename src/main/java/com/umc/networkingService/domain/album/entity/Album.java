@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.album.entity;
 
+import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseEntity;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -52,10 +53,10 @@ public class Album extends BaseEntity {
 
     private boolean isFixed;
 
-    public void updateAlbum(String title, String content, Semester semester) {
-        this.title = title;
-        this.content = content;
-        this.semester = semester;
+    public void updateAlbum(AlbumUpdateRequest request) {
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.semester = request.getSemester();
     }
 
     public void increaseCommentCount() {

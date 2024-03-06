@@ -22,28 +22,26 @@ public class AlbumImageServiceImpl implements AlbumImageService{
     private final S3FileComponent s3FileComponent;
 
     @Override
-    @Transactional
-    public void uploadAlbumImages(Album album, List<MultipartFile> albumImages) {
-        albumImages.forEach(albumImage -> albumImageRepository.save(albumImageMapper
-                .toAlbumImage(album, s3FileComponent.uploadFile("Album", albumImage))));
+    public void createAlbumImages(Album album, List<MultipartFile> albumImages) {
+
+        albumImages.forEach(albumImage -> albumImageRepository.save(
+                albumImageMapper.toAlbumImage(
+                        album,
+                        s3FileComponent.uploadFile("Album", albumImage))));
     }
 
     @Override
     @Transactional
     public void updateAlbumImages(Album album, List<MultipartFile> albumImages) {
-        List<AlbumImage> Images = findAlbumImages(album);
 
-        Images.forEach(albumImage -> {
-            s3FileComponent.deleteFile(albumImage.getUrl());
-            albumImageRepository.deleteById(albumImage.getId());
-        });
+        // 기존 이미지 삭제
+        deleteAlbumImages(album);
 
-        if(Images != null)
-            uploadAlbumImages(album, albumImages);
+        if (albumImages != null)
+            createAlbumImages(album, albumImages);
     }
 
     @Override
-    @Transactional
     public void deleteAlbumImages(Album album) {
         List<AlbumImage> albumImages = findAlbumImages(album);
 

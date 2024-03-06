@@ -18,7 +18,7 @@ import java.util.List;
 public class AlbumMapper {
 
     private final AlbumImageService albumImageService;
-    public Album toAlbumEntity(Member member, AlbumCreateRequest request) {
+    public Album toAlbum(Member member, AlbumCreateRequest request) {
         return Album.builder()
                 .writer(member)
                 .semester(request.getSemester())
