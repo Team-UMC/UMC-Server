@@ -5,10 +5,12 @@ import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
 import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumIdResponse;
+import com.umc.networkingService.domain.album.dto.response.AlbumInquiryResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.service.AlbumService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseResponse;
+import com.umc.networkingService.global.common.enums.Semester;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -69,7 +71,7 @@ public class AlbumController {
             @ApiResponse(responseCode = "ALBUM001", description = "존재하지 않는 사진첩입니다."),
             @ApiResponse(responseCode = "ALBUM002", description = "해당 사진첩에 대한 권한이 없습니다.")
     })
-    @DeleteMapping("/{albumId}")
+    @DeleteMapping("/staff/albums/{albumId}")
     public BaseResponse<AlbumIdResponse> deleteAlbum(
             @CurrentMember Member member,
             @PathVariable(value = "albumId") UUID albumId) {
@@ -81,16 +83,21 @@ public class AlbumController {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
     @Parameters(value = {
-            @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다.")
+            @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
+            @Parameter(name = "semester", description = "기수 조건이 있을 경우 입력하는 파라미터입니다."),
     })
-    @GetMapping
-    public BaseResponse<AlbumPagingResponse> showAlbums(@CurrentMember Member member,
-                                                        @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
-                                                        @Parameter(hidden = true) Pageable pageable){
-        return BaseResponse.onSuccess(albumService.showAlbums(member, pageable));
+    @GetMapping("/albums")
+    public BaseResponse<AlbumPagingResponse<AlbumInquiryResponse>> inquiryAlbums(
+            @CurrentMember Member member,
+            @RequestParam(required = false) Semester semester,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            @Parameter(hidden = true) Pageable pageable) {
+        return BaseResponse.onSuccess(albumService.inquiryAlbums(member, semester, pageable));
     }
 
-    @Operation(summary = "특정 사진첩 상세 조회 API", description = "특정 사진첩을 상세 조회합니다.")
+//    @Operation(summary = "대표 사진첩 조회 API", description = "")
+
+    @Operation(summary = "사진첩 상세 조회 API", description = "특정 사진첩을 상세 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "ALBUM001", description = "존재하지 않는 사진첩입니다.")
@@ -98,7 +105,7 @@ public class AlbumController {
     @GetMapping("/{albumId}")
     public BaseResponse<AlbumDetailResponse> showAlbumDetail(@CurrentMember Member member,
                                                              @PathVariable(value = "albumId") UUID albumId) {
-        return BaseResponse.onSuccess(albumService.showAlbumDetail(member, albumId));
+        return BaseResponse.onSuccess(albumService.inquiryAlbumDetail(member, albumId));
     }
 
     @Operation(summary = "사진첩 좋아요/취소 API", description = "클릭 시 좋아요 or 취소 됩니다.")

@@ -4,6 +4,7 @@ import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
 import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumIdResponse;
+import com.umc.networkingService.domain.album.dto.response.AlbumInquiryResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.entity.Album;
 import com.umc.networkingService.domain.album.entity.AlbumHeart;
@@ -15,6 +16,7 @@ import com.umc.networkingService.domain.album.repository.AlbumRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.enums.Role;
+import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.AlbumErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -92,35 +94,39 @@ public class AlbumServiceImpl implements AlbumService{
     }
 
     @Override
-    @Transactional
-    public AlbumDetailResponse showAlbumDetail(Member member, UUID albumId) {
-        Album album = loadEntity(albumId);
-
-        boolean isLike = false;
-         Optional<AlbumHeart> albumHeart = albumHeartRepository.findByMemberAndAlbum(member, album);
-         if(albumHeart.isPresent())
-             isLike = albumHeart.get().isChecked();
-
-         album.increaseHitCount();
-
-         List<String> albumImages = albumImageService.findAlbumImages(album).stream()
-                 .map(AlbumImage::getUrl).toList();
-
-         return albumMapper.toAlbumDetailResponse(album, albumImages, isLike);
-    }
-
-    @Override
-    public AlbumPagingResponse showAlbums(Member loginMember, Pageable pageable) {
+    public AlbumPagingResponse<AlbumInquiryResponse> inquiryAlbums(
+            Member loginMember, Semester semester, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
 
-        Page<Album> albumPage = albumRepository.findAllByWriter_University(member.getUniversity(), pageable);
+        Page<Album> albumPage = albumRepository.findAllByWriter_UniversityAndSemester(member.getUniversity(), semester, pageable);
 
         return albumMapper.toAlbumPagingResponse(
                 albumPage,
                 albumPage.stream()
-                        .map(album -> albumMapper.toAlbumPageResponse(album, getImageCnt(album)))
+                        .map(album -> albumMapper.toAlbumPageResponse(
+                                album,
+                                albumImageService.findThumbnailImage(album),
+                                getImageCnt(album)))
                         .toList());
+    }
+
+    @Override
+    @Transactional
+    public AlbumDetailResponse inquiryAlbumDetail(Member member, UUID albumId) {
+        Album album = loadEntity(albumId);
+
+        boolean isLike = false;
+        Optional<AlbumHeart> albumHeart = albumHeartRepository.findByMemberAndAlbum(member, album);
+        if(albumHeart.isPresent())
+            isLike = albumHeart.get().isChecked();
+
+        album.increaseHitCount();
+
+        List<String> albumImages = albumImageService.findAlbumImages(album).stream()
+                .map(AlbumImage::getUrl).toList();
+
+        return albumMapper.toAlbumDetailResponse(album, albumImages, isLike);
     }
 
     private int getImageCnt(Album album) {
