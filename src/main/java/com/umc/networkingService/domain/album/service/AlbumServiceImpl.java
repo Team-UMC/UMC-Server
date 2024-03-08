@@ -2,10 +2,7 @@ package com.umc.networkingService.domain.album.service;
 
 import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
-import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumIdResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumInquiryResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
+import com.umc.networkingService.domain.album.dto.response.*;
 import com.umc.networkingService.domain.album.entity.Album;
 import com.umc.networkingService.domain.album.entity.AlbumHeart;
 import com.umc.networkingService.domain.album.entity.AlbumImage;
@@ -15,7 +12,6 @@ import com.umc.networkingService.domain.album.repository.AlbumHeartRepository;
 import com.umc.networkingService.domain.album.repository.AlbumRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.AlbumErrorCode;
@@ -104,11 +100,26 @@ public class AlbumServiceImpl implements AlbumService{
         return albumMapper.toAlbumPagingResponse(
                 albumPage,
                 albumPage.stream()
-                        .map(album -> albumMapper.toAlbumPageResponse(
+                        .map(album -> albumMapper.toAlbumInquiryResponse(
                                 album,
                                 albumImageService.findThumbnailImage(album),
                                 getImageCnt(album)))
                         .toList());
+    }
+
+    @Override
+    public AlbumPagingResponse<AlbumInquiryFeaturedResponse> inquiryAlbumsFeatured(Member loginMember, Pageable pageable) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
+
+        Page<Album> albumPage = albumRepository.findAllByWriter_UniversityOrderByHeartCount(member.getUniversity(), pageable);
+
+        return albumMapper.toAlbumPagingResponse(
+                albumPage,
+                albumPage.stream()
+                        .map(album -> albumMapper.toAlbumPageFeaturedResponse(
+                                album, albumImageService.findThumbnailImage(album)
+                        )).toList());
     }
 
     @Override

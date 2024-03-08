@@ -2,6 +2,7 @@ package com.umc.networkingService.domain.album.mapper;
 
 import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
+import com.umc.networkingService.domain.album.dto.response.AlbumInquiryFeaturedResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumInquiryResponse;
 import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
 import com.umc.networkingService.domain.album.entity.Album;
@@ -26,7 +27,7 @@ public class AlbumMapper {
                 .build();
     }
 
-    public AlbumInquiryResponse toAlbumPageResponse(Album album, String thumbnail, int imageCnt) {
+    public AlbumInquiryResponse toAlbumInquiryResponse(Album album, String thumbnail, int imageCnt) {
         return AlbumInquiryResponse.builder()
                 .albumId(album.getId())
                 .writer(DataConverter.convertToWriter(album.getWriter()))
@@ -41,10 +42,19 @@ public class AlbumMapper {
                 .build();
     }
 
-    public AlbumPagingResponse<AlbumInquiryResponse> toAlbumPagingResponse(
-            Page<Album> albums, List<AlbumInquiryResponse> albumPageResponses) {
+    public AlbumInquiryFeaturedResponse toAlbumPageFeaturedResponse(Album album, String thumbnail) {
+        return AlbumInquiryFeaturedResponse.builder()
+                .albumId(album.getId())
+                .title(album.getTitle())
+                .thumbnail(thumbnail)
+                .createdAt(DataConverter.convertToRelativeTimeFormat(album.getCreatedAt()))
+                .build();
+    }
 
-        return AlbumPagingResponse.<AlbumInquiryResponse>builder()
+    public <T> AlbumPagingResponse<T> toAlbumPagingResponse(
+            Page<Album> albums, List<T> albumPageResponses) {
+
+        return AlbumPagingResponse.<T>builder()
                 .albumPageResponses(albumPageResponses)
                 .page(albums.getNumber())
                 .totalPages(albums.getTotalPages())

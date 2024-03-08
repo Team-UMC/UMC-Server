@@ -3,10 +3,7 @@ package com.umc.networkingService.domain.album.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumUpdateRequest;
-import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumIdResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumInquiryResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
+import com.umc.networkingService.domain.album.dto.response.*;
 import com.umc.networkingService.domain.album.service.AlbumService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseResponse;
@@ -78,7 +75,7 @@ public class AlbumController {
         return BaseResponse.onSuccess(albumService.deleteAlbum(member, albumId));
     }
 
-    @Operation(summary = "사진첩 조회 API", description = "사진첩 조회하는 API입니다.")
+    @Operation(summary = "사진첩 조회 API", description = "사진첩을 조회하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })
@@ -95,16 +92,30 @@ public class AlbumController {
         return BaseResponse.onSuccess(albumService.inquiryAlbums(member, semester, pageable));
     }
 
-//    @Operation(summary = "대표 사진첩 조회 API", description = "")
+    @Operation(summary = "대표 사진첩 조회 API", description = "대표 사진첩을 조회하는 API입니다.(좋아요 순)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @Parameters(value = {
+            @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다.(한 페이지당 10개)"),
+    })
+    @GetMapping("/albums/featured")
+    public BaseResponse<AlbumPagingResponse<AlbumInquiryFeaturedResponse>> inquiryAlbumsFeatured(
+            @CurrentMember Member member,
+            @PageableDefault(sort = "heartCount", direction = Sort.Direction.DESC, size = 10)
+            @Parameter(hidden = true) Pageable pageable) {
+        return BaseResponse.onSuccess(albumService.inquiryAlbumsFeatured(member, pageable));
+    }
 
-    @Operation(summary = "사진첩 상세 조회 API", description = "특정 사진첩을 상세 조회합니다.")
+    @Operation(summary = "사진첩 상세 조회 API", description = "특정 사진첩을 상세 조회하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "ALBUM001", description = "존재하지 않는 사진첩입니다.")
     })
-    @GetMapping("/{albumId}")
-    public BaseResponse<AlbumDetailResponse> showAlbumDetail(@CurrentMember Member member,
-                                                             @PathVariable(value = "albumId") UUID albumId) {
+    @GetMapping("/albums/{albumId}")
+    public BaseResponse<AlbumDetailResponse> inquiryAlbumDetail(
+            @CurrentMember Member member,
+            @PathVariable(value = "albumId") UUID albumId) {
         return BaseResponse.onSuccess(albumService.inquiryAlbumDetail(member, albumId));
     }
 
