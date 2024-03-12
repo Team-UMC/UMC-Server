@@ -142,27 +142,23 @@ public class AlbumServiceImpl implements AlbumService{
 
     @Override
     @Transactional
-    public AlbumIdResponse toggleAlbumLike(Member member, UUID albumId) {
+    public AlbumHeartResponse toggleAlbumLike(Member member, UUID albumId) {
         Album album = loadEntity(albumId);
 
         AlbumHeart albumHeart = albumHeartRepository.findByMemberAndAlbum(member, album)
-                .orElseGet(() -> {
-                    AlbumHeart newHeart = albumHeartMapper.toAlbumHeartEntity(album, member);
-                    albumHeartRepository.save(newHeart);
-                    return newHeart;
-                });
+                .orElse(albumHeartRepository.save(
+                                albumHeartMapper.toAlbumHeartEntity(album, member)));
 
         albumHeart.toggleHeart();
         album.setHeartCount(albumHeart.isChecked());
 
-        return new AlbumIdResponse(albumId);
+        return new AlbumHeartResponse(albumHeart.isChecked(), album.getHeartCount());
     }
 
     @Override
     public Album loadEntity(UUID albumId) {
-        Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
+        return albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
                 AlbumErrorCode.EMPTY_ALBUM));
-        return album;
     }
 
     private int getImageCnt(Album album) {

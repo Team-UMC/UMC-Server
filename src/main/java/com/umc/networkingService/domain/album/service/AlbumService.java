@@ -20,5 +20,5 @@ public interface AlbumService extends EntityLoader<Album, UUID> {
     AlbumPagingResponse<AlbumInquiryResponse> inquiryAlbums(Member member, Semester semester, Pageable pageable);
     AlbumPagingResponse<AlbumInquiryFeaturedResponse> inquiryAlbumsFeatured(Member member, Pageable pageable);
     AlbumDetailResponse inquiryAlbumDetail(Member member, UUID albumId);
-    AlbumIdResponse toggleAlbumLike(Member member, UUID albumId);
+    AlbumHeartResponse toggleAlbumLike(Member member, UUID albumId);
 }

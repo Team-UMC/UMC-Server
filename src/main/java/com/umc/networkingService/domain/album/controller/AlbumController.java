@@ -124,8 +124,8 @@ public class AlbumController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "ALBUM001", description = "존재하지 않는 사진첩입니다.")
     })
-    @PostMapping("/{albumId}/heart")
-    public BaseResponse<AlbumIdResponse> toggleAlbumLike(@CurrentMember Member member,
+    @PostMapping("/albums/{albumId}/heart")
+    public BaseResponse<AlbumHeartResponse> toggleAlbumLike(@CurrentMember Member member,
                                                          @PathVariable(value = "albumId") UUID albumId) {
         return BaseResponse.onSuccess(albumService.toggleAlbumLike(member, albumId));
     }
