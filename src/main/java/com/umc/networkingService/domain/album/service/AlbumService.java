@@ -18,6 +18,7 @@ public interface AlbumService extends EntityLoader<Album, UUID> {
     AlbumIdResponse updateAlbum(Member member, UUID albumId, AlbumUpdateRequest request, List<MultipartFile> albumImages);
     AlbumIdResponse deleteAlbum(Member member, UUID albumId);
     AlbumPagingResponse<AlbumInquiryResponse> inquiryAlbums(Member member, Semester semester, Pageable pageable);
+    AlbumPagingResponse<AlbumInquiryResponse> searchAlbums(Member member, String keyword, Pageable pageable);
     AlbumPagingResponse<AlbumInquiryFeaturedResponse> inquiryAlbumsFeatured(Member member, Pageable pageable);
     AlbumDetailResponse inquiryAlbumDetail(Member member, UUID albumId);
     AlbumHeartResponse toggleAlbumLike(Member member, UUID albumId);

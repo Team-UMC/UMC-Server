@@ -97,14 +97,18 @@ public class AlbumServiceImpl implements AlbumService{
 
         Page<Album> albumPage = albumRepository.findAllByWriter_UniversityAndSemester(member.getUniversity(), semester, pageable);
 
-        return albumMapper.toAlbumPagingResponse(
-                albumPage,
-                albumPage.stream()
-                        .map(album -> albumMapper.toAlbumInquiryResponse(
-                                album,
-                                albumImageService.findThumbnailImage(album),
-                                getImageCnt(album)))
-                        .toList());
+        return getAlbumPagingResponse(albumPage);
+    }
+
+    @Override
+    public AlbumPagingResponse<AlbumInquiryResponse> searchAlbums(
+            Member loginMember, String keyword, Pageable pageable) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
+
+        Page<Album> albumPage = albumRepository.findAllByTitleContainsOrContentContains(keyword, member.getUniversity(), pageable);
+
+        return getAlbumPagingResponse(albumPage);
     }
 
     @Override
@@ -159,6 +163,17 @@ public class AlbumServiceImpl implements AlbumService{
     public Album loadEntity(UUID albumId) {
         return albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
                 AlbumErrorCode.EMPTY_ALBUM));
+    }
+
+    private AlbumPagingResponse<AlbumInquiryResponse> getAlbumPagingResponse(Page<Album> albumPage) {
+        return albumMapper.toAlbumPagingResponse(
+                albumPage,
+                albumPage.stream()
+                        .map(album -> albumMapper.toAlbumInquiryResponse(
+                                album,
+                                albumImageService.findThumbnailImage(album),
+                                getImageCnt(album)))
+                        .toList());
     }
 
     private int getImageCnt(Album album) {

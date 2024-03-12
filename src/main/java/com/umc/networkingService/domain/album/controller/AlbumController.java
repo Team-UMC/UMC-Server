@@ -92,6 +92,24 @@ public class AlbumController {
         return BaseResponse.onSuccess(albumService.inquiryAlbums(member, semester, pageable));
     }
 
+    @Operation(summary = "사진첩 검색 API", description = "키워드가 제목 또는 내용에 포함된 사진첩 목록을 검색하는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @Parameters(value = {
+            @Parameter(name = "keyword", description = "최소 한 글자의 키워드를 입력해야합니다."),
+            @Parameter(name = "page", description = "page를 입력하는 파라미터입니다.(0부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 조회되는 프로젝트 수입니다,(미입력 시 기본 10개)"),
+    })
+    @GetMapping("/albums/search")
+    public BaseResponse<AlbumPagingResponse<AlbumInquiryResponse>> searchAlbums(
+            @CurrentMember Member member,
+            @RequestParam String keyword,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            @Parameter(hidden = true) Pageable pageable) {
+        return BaseResponse.onSuccess(albumService.searchAlbums(member, keyword, pageable));
+    }
+
     @Operation(summary = "대표 사진첩 조회 API", description = "대표 사진첩을 조회하는 API입니다.(좋아요 순)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
