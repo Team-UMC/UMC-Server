@@ -33,7 +33,7 @@ public class BoardResponse {
         private int hitCount;
         private int heartCount;
         private int commentCount;
-        private boolean isLiked;
+        private Boolean isLiked;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
@@ -58,7 +58,7 @@ public class BoardResponse {
         private int commentCount;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
-        private boolean isFixed;
+        private Boolean isFixed;
     }
 
     @Getter
@@ -115,7 +115,7 @@ public class BoardResponse {
         private String writer;
         private String title;
         private int hitCount;
-        private boolean isFixed;
+        private Boolean isFixed;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
