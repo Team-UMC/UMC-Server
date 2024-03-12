@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,18 +25,42 @@ public class MemberPositionServiceImpl implements MemberPositionService {
     @Override
     public void saveMemberPositionInfos(Member member, List<String> campusPositions, List<String> centerPositions) {
         // 기존 직책 삭제
-        member.getPositions().forEach(MemberPosition::delete);
+        memberPositionRepository.deleteAll(findMemberPositionByMember(member));
 
         List<MemberPosition> memberPositions = new ArrayList<>();
         memberPositions.addAll(saveMemberPositions(member, campusPositions, PositionType.CAMPUS));
         memberPositions.addAll(saveMemberPositions(member, centerPositions, PositionType.CENTER));
 
-        member.updatePositions(memberPositions);
-
         // 직책에 따른 Role 수정
-        Role newRole = findMemberRole(member.getPositions());
+        Role newRole = findMemberRole(memberPositions);
         member.updateRole(newRole);
     }
+
+    @Override
+    public List<MemberPosition> findMemberPositionByMember(Member member) {
+        return memberPositionRepository.findAllByMember(member);
+    }
+
+    // 멤버의 대표 직책 반환 함수
+    @Override
+    public String findRepresentativePosition(Member member) {
+        List<MemberPosition> memberPositions = memberPositionRepository.findAllByMember(member);
+
+        // 대표 Position 선정 방식
+        // 1. CENTER > CAMPUS
+        // 2. 회장, 부회장 > 나머지
+        Optional<String> centerPositionName = findPositionByNameAndType(memberPositions, PositionType.CENTER);
+        return centerPositionName
+                .orElseGet(() -> findPositionByNameAndType(memberPositions, PositionType.CAMPUS).orElse("부원"));
+    }
+
+    private Optional<String> findPositionByNameAndType(List<MemberPosition> memberPositions, PositionType type) {
+        return memberPositions.stream()
+                .filter(mp -> mp.getType() == type)
+                .min(Comparator.comparing(mp -> !(mp.getName().equals("회장") || mp.getName().equals("부회장"))))
+                .map(MemberPosition::getName);
+    }
+
 
     // 멤버 직책을 디비에 저장하는 함수
     private List<MemberPosition> saveMemberPositions(Member member, List<String> positions, PositionType positionType) {
