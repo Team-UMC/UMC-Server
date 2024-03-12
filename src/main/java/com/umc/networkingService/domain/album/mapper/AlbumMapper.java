@@ -64,11 +64,10 @@ public class AlbumMapper {
                 .build();
     }
 
-    public AlbumDetailResponse toAlbumDetailResponse(Album album, List<String> albumImages, boolean isLiked) {
+    public AlbumDetailResponse toAlbumDetailResponse(
+            Album album, List<String> albumImages, AlbumDetailResponse.WriterInfo writer, boolean isLiked, boolean isMine) {
         return AlbumDetailResponse.builder()
-                .writer(album.getWriter().getNickname() + "/" + album.getWriter().getName())
-                .profileImage(album.getWriter().getProfileImage())
-                .semester(album.getSemester())
+                .writer(writer)
                 .title(album.getTitle())
                 .content(album.getContent())
                 .hitCount(album.getHitCount())
@@ -76,7 +75,17 @@ public class AlbumMapper {
                 .commentCount(album.getCommentCount())
                 .albumImages(albumImages)
                 .isLiked(isLiked)
-                .createdAt(album.getCreatedAt())
+                .isMine(isMine)
+                .createdAt(DataConverter.convertToRelativeTimeFormat(album.getCreatedAt()))
+                .build();
+    }
+
+    public AlbumDetailResponse.WriterInfo toWriterInfo(Member member, String position) {
+        return AlbumDetailResponse.WriterInfo.builder()
+                .nickname(member.getNickname())
+                .name(member.getName())
+                .profileImage(member.getProfileImage())
+                .position(position)
                 .build();
     }
 }

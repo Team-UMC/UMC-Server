@@ -125,23 +125,19 @@ public class AlbumServiceImpl implements AlbumService{
     @Override
     @Transactional
     public AlbumDetailResponse inquiryAlbumDetail(Member member, UUID albumId) {
+
         Album album = loadEntity(albumId);
 
-        boolean isLike = false;
-        Optional<AlbumHeart> albumHeart = albumHeartRepository.findByMemberAndAlbum(member, album);
-        if(albumHeart.isPresent())
-            isLike = albumHeart.get().isChecked();
-
+        // 조회수 증가
         album.increaseHitCount();
 
-        List<String> albumImages = albumImageService.findAlbumImages(album).stream()
-                .map(AlbumImage::getUrl).toList();
-
-        return albumMapper.toAlbumDetailResponse(album, albumImages, isLike);
-    }
-
-    private int getImageCnt(Album album) {
-        return albumImageService.countAlbumImages(album);
+        // 앨범 상세 정보 매핑
+        return albumMapper.toAlbumDetailResponse(
+                album,
+                findAlbumImageUrls(album),
+                albumMapper.toWriterInfo(member, memberService.findRepresentativePosition(member)),
+                checkAlbumLikeByMember(member,album),
+                album.getId().equals(member.getId()));
     }
 
     @Override
@@ -167,5 +163,21 @@ public class AlbumServiceImpl implements AlbumService{
         Album album = albumRepository.findById(albumId).orElseThrow(() -> new RestApiException(
                 AlbumErrorCode.EMPTY_ALBUM));
         return album;
+    }
+
+    private int getImageCnt(Album album) {
+        return albumImageService.countAlbumImages(album);
+    }
+
+    private boolean checkAlbumLikeByMember(Member member, Album album) {
+        return albumHeartRepository.findByMemberAndAlbum(member, album)
+                .map(AlbumHeart::isChecked)
+                .orElse(false);
+    }
+
+    private List<String> findAlbumImageUrls(Album album) {
+        return albumImageService.findAlbumImages(album).stream()
+                .map(AlbumImage::getUrl)
+                .toList();
     }
 }

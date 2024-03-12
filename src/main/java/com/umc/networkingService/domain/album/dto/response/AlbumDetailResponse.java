@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.album.dto.response;
 
 import com.umc.networkingService.global.common.enums.Semester;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,9 +11,7 @@ import java.util.List;
 @Getter
 @Builder
 public class AlbumDetailResponse {
-    private String writer;
-    private String profileImage;
-    private Semester semester;
+    private WriterInfo writer;
     private String title;
     private String content;
     private List<String> albumImages;
@@ -20,5 +19,15 @@ public class AlbumDetailResponse {
     private int heartCount;
     private int commentCount;
     private boolean isLiked;
-    private LocalDateTime createdAt;
+    private boolean isMine;
+    private String createdAt;
+
+    @Getter
+    @Builder
+    public static class WriterInfo {
+        private String nickname;
+        private String name;
+        private String profileImage;
+        private String position;
+    }
 }
