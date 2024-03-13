@@ -24,11 +24,11 @@ public class AlbumComment extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,name = "member_id")
+    @JoinColumn(name = "member_id")
     private Member writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,name = "album_id")
+    @JoinColumn(name = "album_id")
     private Album album;
 
     //최상위 댓글인 경우 null

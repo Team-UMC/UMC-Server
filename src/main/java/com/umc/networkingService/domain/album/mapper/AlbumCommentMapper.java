@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AlbumCommentMapper {
-    public AlbumComment createAlbumComment(Member member, Album album, AlbumCommentCreateRequest request) {
+    public AlbumComment createAlbumComment(Member member, Album album, String content) {
         return AlbumComment.builder()
                 .writer(member)
-                .content(request.getContent())
+                .content(content)
                 .album(album)
                 .build();
     }
