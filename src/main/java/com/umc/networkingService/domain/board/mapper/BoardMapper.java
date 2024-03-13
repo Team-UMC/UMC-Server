@@ -59,6 +59,7 @@ public class BoardMapper {
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())
                 .createdAt(board.getCreatedAt())
+                .isFixed(false)
                 .build();
     }
 
@@ -105,6 +106,7 @@ public class BoardMapper {
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())
                 .createdAt(board.getCreatedAt())
+                .isFixed(false)
                 .build();
     }
 

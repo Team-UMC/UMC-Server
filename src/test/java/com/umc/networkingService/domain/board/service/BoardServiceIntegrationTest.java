@@ -224,7 +224,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(1, boardDetail.getHitCount());
         assertEquals(Semester.FIFTH, boardDetail.getSemester());
         assertEquals(Part.SPRING, boardDetail.getPart());
-        assertEquals(false, boardDetail.isLiked());
+        assertEquals(false, boardDetail.getIsLiked());
         assertEquals(0, boardDetail.getHeartCount());
     }
 
@@ -243,7 +243,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
 
         //then
         assertNotNull(boardPageInfos.getBoardPageElements().get(0).getBoardId());
-        assertFalse(boardPageInfos.getBoardPageElements().get(0).isFixed());
+        assertFalse(boardPageInfos.getBoardPageElements().get(0).getIsFixed());
         assertEquals(0, boardPageInfos.getPage());
         assertEquals(1, boardPageInfos.getBoardPageElements().size());
         assertEquals(1, boardPageInfos.getTotalElements());

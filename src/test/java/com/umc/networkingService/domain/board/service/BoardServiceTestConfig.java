@@ -176,6 +176,7 @@ public abstract class BoardServiceTestConfig {
                 .hitCount(0)
                 .heartCount(0)
                 .commentCount(0)
+                .isFixed(false)
                 .build());
     }
 
@@ -234,6 +235,7 @@ public abstract class BoardServiceTestConfig {
                     .hitCount(0)
                     .heartCount(0)
                     .commentCount(0)
+                    .isFixed(false)
                     .build());
         }
     }
