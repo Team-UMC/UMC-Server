@@ -226,6 +226,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(Part.SPRING, boardDetail.getPart());
         assertEquals(false, boardDetail.getIsLiked());
         assertEquals(0, boardDetail.getHeartCount());
+        assertTrue(boardDetail.getIsMine());
     }
 
 

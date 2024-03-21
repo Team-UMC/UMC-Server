@@ -47,11 +47,12 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.toPinnedNotices(boardRepository.findNoticesByMember(member));
 
     }
+
     @Override
     public BoardResponse.BoardPageInfos showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
-        checkBadRequest(hostType,boardType);
+        checkBadRequest(hostType, boardType);
 
         return boardMapper.toBoardPageInfos(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
@@ -85,11 +86,16 @@ public class BoardServiceImpl implements BoardService {
         //조회수 증가
         board.increaseHitCount();
 
+        //본인글인지 확인
+        boolean isMine = false;
+        if (board.getWriter().getId() == member.getId())
+            isMine = true;
+
         //해당 게시글의 모든 첨부파일 url
         List<String> boardFiles = boardFileService.findBoardFiles(board).stream()
                 .map(BoardFile::getUrl).toList();
 
-        return boardMapper.toBoardDetail(board, boardFiles, isLike);
+        return boardMapper.toBoardDetail(board, boardFiles, isLike, isMine);
 
     }
 
@@ -148,7 +154,7 @@ public class BoardServiceImpl implements BoardService {
         BoardType boardType = BoardType.valueOf(request.getBoardType());
 
         //boardType과 HostType에 따라 금지된 요청, 권한 판단
-        checkBadRequest(hostType,boardType);
+        checkBadRequest(hostType, boardType);
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
 
@@ -169,7 +175,7 @@ public class BoardServiceImpl implements BoardService {
         BoardType boardType = BoardType.valueOf(request.getBoardType());
 
         //boardType과 HostType에 따라 금지된 요청, 권한 판단
-        checkBadRequest(hostType,boardType);
+        checkBadRequest(hostType, boardType);
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음

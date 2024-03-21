@@ -43,12 +43,14 @@ public class BoardMapper {
                 .createdAt(board.getCreatedAt())
                 .build();
     }
+
     public BoardResponse.PinnedNotices toPinnedNotices(List<Board> boards) {
         List<BoardResponse.PinnedNotice> pinnedNotices = boards.stream().map(this::toPinnedNotice).toList();
         return BoardResponse.PinnedNotices.builder()
                 .pinnedNotices(pinnedNotices)
                 .build();
     }
+
     public BoardResponse.BoardPageElement toBoardPageElement(Board board) {
         return BoardResponse.BoardPageElement.builder()
                 .boardId(board.getId())
@@ -126,7 +128,7 @@ public class BoardMapper {
     }
 
     public MyBoardResponse.MyBoardPageElement toMyBoardPageElement(Board board) {
-        return  MyBoardResponse.MyBoardPageElement.builder()
+        return MyBoardResponse.MyBoardPageElement.builder()
                 .boardId(board.getId())
                 .hostType(board.getHostType())
                 .boardType(board.getBoardType())
@@ -138,7 +140,7 @@ public class BoardMapper {
     }
 
     public BoardResponse.NoticePageElement toNoticePageElement(Board board) {
-        return  BoardResponse.NoticePageElement.builder()
+        return BoardResponse.NoticePageElement.builder()
                 .boardId(board.getId())
                 .hostType(board.getHostType())
                 .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
@@ -162,7 +164,7 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardResponse.BoardDetail toBoardDetail(Board board, List<String> boardFiles, boolean isLiked) {
+    public BoardResponse.BoardDetail toBoardDetail(Board board, List<String> boardFiles, boolean isLiked, boolean isMine) {
         return BoardResponse.BoardDetail.builder()
                 .hostType(board.getHostType())
                 .boardType(board.getBoardType())
@@ -177,6 +179,7 @@ public class BoardMapper {
                 .commentCount(board.getCommentCount())
                 .boardFiles(boardFiles)
                 .isLiked(isLiked)
+                .isMine(isMine)
                 .createdAt(board.getCreatedAt())
                 .build();
     }

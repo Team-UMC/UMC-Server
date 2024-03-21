@@ -34,6 +34,7 @@ public class BoardResponse {
         private int heartCount;
         private int commentCount;
         private Boolean isLiked;
+        private Boolean isMine;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
