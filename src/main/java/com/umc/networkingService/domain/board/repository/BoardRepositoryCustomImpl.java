@@ -94,7 +94,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     게시글의 모든 댓글 목록 조회
      */
     @Override
-    public Page<BoardComment> findAllBoardComments(Member member, Board board, Pageable pageable) {
+    public Page<BoardComment> findAllBoardComments(Board board, Pageable pageable) {
 
         List<BoardComment> boardComments = query.selectFrom(boardComment)
                 .where(boardComment.board.id.eq(board.getId()))
