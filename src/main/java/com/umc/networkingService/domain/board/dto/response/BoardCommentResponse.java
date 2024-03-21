@@ -29,6 +29,7 @@ public class BoardCommentResponse {
         private Semester semester;
         private Part part;
         private String content;
+        private Boolean isMine;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
 

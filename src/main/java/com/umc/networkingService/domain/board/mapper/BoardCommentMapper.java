@@ -1,10 +1,9 @@
 package com.umc.networkingService.domain.board.mapper;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
+import com.umc.networkingService.domain.board.service.BoardCommentService;
 import com.umc.networkingService.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,8 +11,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.BoardCommentPageElement;
+import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.BoardCommentPageInfos;
+import static com.umc.networkingService.domain.board.dto.response.MyBoardResponse.MyBoardCommentPageElement;
+import static com.umc.networkingService.domain.board.dto.response.MyBoardResponse.MyBoardCommentPageInfos;
+
 @Component
-@RequiredArgsConstructor
 public class BoardCommentMapper {
     public BoardComment toEntity(Member member, Board board, BoardCommentRequest.BoardCommentAddRequest request) {
         return BoardComment.builder()
@@ -23,11 +26,10 @@ public class BoardCommentMapper {
                 .build();
     }
 
-    public BoardCommentResponse.BoardCommentPageInfos toBoardCommentPageInfos(Page<BoardComment> comments) {
-        List<BoardCommentResponse.BoardCommentPageElement> responses = comments.map(this::toBoardCommentPageElement)
-                .stream().toList();
-        return BoardCommentResponse.BoardCommentPageInfos.builder()
-                .boardCommentPageElements(responses)
+    public BoardCommentPageInfos toBoardCommentPageInfos(Page<BoardComment> comments, List<BoardCommentPageElement> commentPageElements) {
+
+        return BoardCommentPageInfos.builder()
+                .boardCommentPageElements(commentPageElements)
                 .page(comments.getNumber())
                 .totalPages(comments.getTotalPages())
                 .totalElements((int) comments.getTotalElements())
@@ -36,23 +38,24 @@ public class BoardCommentMapper {
                 .build();
     }
 
-    public BoardCommentResponse.BoardCommentPageElement toBoardCommentPageElement(BoardComment comment) {
-        return BoardCommentResponse.BoardCommentPageElement.builder()
+    public BoardCommentPageElement toBoardCommentPageElement(BoardComment comment, boolean isMine) {
+        return BoardCommentPageElement.builder()
                 .commentId(comment.getId())
                 .writer(comment.getWriter().getNickname() + "/" + comment.getWriter().getName())
                 .profileImage(comment.getWriter().getProfileImage())
                 .part(comment.getWriter().getRecentPart())
                 .semester(comment.getWriter().getRecentSemester())
                 .content(comment.getContent())
+                .isMine(isMine)
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
 
-    public MyBoardResponse.MyBoardCommentPageInfos toMyBoardCommentPageInfos(Page<BoardComment> comments) {
-        List<MyBoardResponse.MyBoardCommentPageElement> responses = comments.map(this::toMyBoardCommentPageElement)
+    public MyBoardCommentPageInfos toMyBoardCommentPageInfos(Page<BoardComment> comments) {
+        List<MyBoardCommentPageElement> commentPageElements = comments.map(this::toMyBoardCommentPageElement)
                 .stream().toList();
-        return MyBoardResponse.MyBoardCommentPageInfos.builder()
-                .myBoardCommentPageElement(responses)
+        return MyBoardCommentPageInfos.builder()
+                .myBoardCommentPageElement(commentPageElements)
                 .page(comments.getNumber())
                 .totalPages(comments.getTotalPages())
                 .totalElements((int) comments.getTotalElements())
@@ -61,8 +64,8 @@ public class BoardCommentMapper {
                 .build();
     }
 
-    public MyBoardResponse.MyBoardCommentPageElement toMyBoardCommentPageElement(BoardComment comment) {
-        return MyBoardResponse.MyBoardCommentPageElement.builder()
+    public MyBoardCommentPageElement toMyBoardCommentPageElement(BoardComment comment) {
+        return MyBoardCommentPageElement.builder()
                 .boardId(comment.getBoard().getId())
                 .hostType(comment.getBoard().getHostType())
                 .boardType(comment.getBoard().getBoardType())
@@ -71,6 +74,8 @@ public class BoardCommentMapper {
                 .commentCreatedAt(comment.getCreatedAt())
                 .build();
     }
+
+
 
 
 }

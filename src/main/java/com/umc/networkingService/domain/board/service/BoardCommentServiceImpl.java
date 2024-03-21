@@ -14,10 +14,12 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.BoardCommentErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -76,8 +78,15 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     @Override
     public BoardCommentResponse.BoardCommentPageInfos showBoardComments(Member member, UUID boardId, Pageable pageable) {
         Board board = boardService.loadEntity(boardId);
-        return boardCommentMapper.toBoardCommentPageInfos(
-                boardCommentRepository.findAllBoardComments(member, board, pageable));
+        Page<BoardComment> comments = boardCommentRepository.findAllBoardComments(member, board, pageable);
+
+        //isMine 여부를 포함
+        List<BoardCommentResponse.BoardCommentPageElement> commentPageElements = comments.map(comment -> {
+            boolean isMine = isMyComment(comment, member);
+            return boardCommentMapper.toBoardCommentPageElement(comment, isMine);
+        }).stream().toList();
+
+        return boardCommentMapper.toBoardCommentPageInfos(comments, commentPageElements);
     }
 
 
@@ -96,6 +105,16 @@ public class BoardCommentServiceImpl implements BoardCommentService {
             throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
 
     }
+
+    //본인 댓글인지 확인
+    @Override
+    public boolean isMyComment(BoardComment boardComment, Member member) {
+        if (boardComment.getWriter().getId() == member.getId())
+            return true;
+        else
+            return false;
+    }
+
 
     @Override
     public BoardComment loadEntity(UUID commentId) {

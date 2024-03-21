@@ -97,7 +97,7 @@ public class BoardServiceImpl implements BoardService {
         board.increaseHitCount();
 
         //본인글인지 확인
-        boolean isMine = isMine(board, member);
+        boolean isMine = isMyBoard(board, member);
 
         //해당 게시글의 모든 첨부파일 url
         List<String> boardFiles = boardFileService.findBoardFiles(board).stream()
@@ -303,7 +303,7 @@ public class BoardServiceImpl implements BoardService {
 
 
     //본인 글인지 확인
-    private boolean isMine(Board board, Member member) {
+    private boolean isMyBoard(Board board, Member member) {
         if (board.getWriter().getId() == member.getId())
             return true;
         else

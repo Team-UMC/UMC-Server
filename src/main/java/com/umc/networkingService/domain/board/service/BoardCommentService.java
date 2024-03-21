@@ -25,5 +25,7 @@ public interface BoardCommentService extends EntityLoader<BoardComment, UUID> {
 
     MyBoardResponse.MyBoardCommentPageInfos showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable);
 
+    boolean isMyComment(BoardComment boardComment, Member member);
+
 }
 

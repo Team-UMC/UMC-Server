@@ -391,7 +391,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.asc("created_at")));
 
         //when
-        BoardCommentResponse.BoardCommentPageInfos response = boardCommentService.showBoardComments(inhaMember, board.getId(), pageable);
+        BoardCommentResponse.BoardCommentPageInfos response = boardCommentService.showBoardComments(inhaStaff, board.getId(), pageable);
 
         //then
         assertEquals(1, response.getPage());
@@ -399,6 +399,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(21, response.getTotalElements());
         assertEquals(10, response.getBoardCommentPageElements().size());
         assertEquals("벡스/김준석", response.getBoardCommentPageElements().get(0).getWriter());
+        assertFalse(response.getBoardCommentPageElements().get(0).getIsMine());
     }
 
 
