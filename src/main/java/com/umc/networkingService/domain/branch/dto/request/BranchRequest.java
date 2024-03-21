@@ -21,7 +21,6 @@ public class BranchRequest {
         private String name; //todo: 글자수 제한 .. 중복 검증도?
         @NotNull
         private String description; //todo: 글자수 제한
-        private MultipartFile image;
         @NotNull
         private Semester semester;
 

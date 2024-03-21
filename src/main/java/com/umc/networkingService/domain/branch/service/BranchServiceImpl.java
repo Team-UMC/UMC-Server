@@ -32,12 +32,12 @@ public class BranchServiceImpl implements BranchService {
     private static final String BRANCH_CATEGORY = "branch";
 
     @Transactional         //지부 생성
-    public BranchResponse.BranchId postBranch(BranchRequest.BranchInfoDTO request) {
+    public BranchResponse.BranchId postBranch(BranchRequest.BranchInfoDTO request, MultipartFile image) {
 
         validateBranchNameAndDescription(request.getName(), request.getDescription());
 
         Branch savedBranch = branchRepository.save(
-                BranchMapper.toBranch(request,uploadImageS3(BRANCH_CATEGORY,request.getImage()))
+                BranchMapper.toBranch(request,uploadImageS3(BRANCH_CATEGORY,image))
         );
 
         if (savedBranch.getId() == null) {
@@ -48,7 +48,7 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Transactional          //지부 수정
-    public BranchResponse.BranchId patchBranch(BranchRequest.BranchInfoDTO request, UUID branchId) {
+    public BranchResponse.BranchId patchBranch(BranchRequest.BranchInfoDTO request, UUID branchId, MultipartFile image) {
 
         Optional<Branch> optionalBranch = branchRepository.findById(branchId);
         if(optionalBranch.isEmpty()){
@@ -58,7 +58,11 @@ public class BranchServiceImpl implements BranchService {
         validateBranchNameAndDescription(request.getName(), request.getDescription());
 
         Branch branch = optionalBranch.get();
-        branch.updateBranch(request, uploadImageS3(BRANCH_CATEGORY, request.getImage()));
+        if(image != null && !image.isEmpty()){
+            s3FileComponent.deleteFile(branch.getImage()); // 기존 이미지 삭제
+            branch.setImage(uploadImageS3(BRANCH_CATEGORY, image)); // 새로운 이미지 업로드
+        }
+        branch.updateBranchInfo(request); // 이름, 설명, 기수 수정
         return BranchResponse.BranchId.builder()
                         .branchId(branch.getId()).build();
 

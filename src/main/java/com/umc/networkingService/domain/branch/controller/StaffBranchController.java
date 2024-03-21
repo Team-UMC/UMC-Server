@@ -13,10 +13,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "운영진용 지부 API", description = "운영진용 지부 관련 API")
@@ -30,8 +33,6 @@ public class StaffBranchController {
     private final BranchServiceImpl branchService;
     private final BranchUniversityServiceImpl branchUniversityService;
 
-    //todo: 다음 기수 생성하기?, 현재 진행중인 기수 바꾸기? api 추가하기 (현재 기수 isActive false로 만들기)
-
     @Operation(summary = "지부 생성 API")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
@@ -41,10 +42,10 @@ public class StaffBranchController {
     })
     @PostMapping("")
     public BaseResponse<BranchResponse.BranchId> postBranch(
-            @CurrentMember Member member,
-            @RequestBody BranchRequest.BranchInfoDTO request
+            @Valid @RequestPart("request") BranchRequest.BranchInfoDTO request,
+            @RequestPart(name = "file", required = false) MultipartFile file
     ){
-        return BaseResponse.onSuccess(branchService.postBranch(request));
+        return BaseResponse.onSuccess(branchService.postBranch(request, file));
     }
 
     @Operation(summary = "지부 수정 API")
@@ -56,11 +57,11 @@ public class StaffBranchController {
     })
     @PatchMapping("/{branchId}")
     public BaseResponse<BranchResponse.BranchId> patchBranch(
-            @CurrentMember Member member,
             @PathVariable("branchId") @ExistBranch UUID branchId,
-            @RequestBody BranchRequest.BranchInfoDTO request
+            @Valid @RequestPart("request") BranchRequest.BranchInfoDTO request,
+            @RequestPart(name = "file", required = false) MultipartFile file
     ){
-        return BaseResponse.onSuccess(branchService.patchBranch(request, branchId));
+        return BaseResponse.onSuccess(branchService.patchBranch(request, branchId, file));
     }
 
     @Operation(summary = "지부 삭제 API")
