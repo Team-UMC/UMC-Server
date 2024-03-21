@@ -3,9 +3,7 @@ package com.umc.networkingService.domain.board.mapper;
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
-import com.umc.networkingService.domain.board.service.BoardCommentService;
 import com.umc.networkingService.domain.member.entity.Member;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 

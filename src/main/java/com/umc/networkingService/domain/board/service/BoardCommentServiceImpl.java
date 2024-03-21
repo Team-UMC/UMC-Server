@@ -11,6 +11,7 @@ import com.umc.networkingService.domain.board.mapper.BoardCommentMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.BoardCommentErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     private final BoardService boardService;
     private final BoardCommentMapper boardCommentMapper;
     private final BoardMapper boardMapper;
+    private final MemberService memberService;
 
     @Override
     @Transactional
@@ -46,8 +48,8 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId updateBoardComment(Member member, UUID commentId,
-                                                     BoardCommentRequest.BoardCommentUpdateRequest request) {
+    public BoardCommentResponse.BoardCommentId updateBoardComment(Member loginMember, UUID commentId, BoardCommentRequest.BoardCommentUpdateRequest request) {
+        Member member = memberService.loadEntity(loginMember.getId());
         BoardComment comment = loadEntity(commentId);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
@@ -60,8 +62,8 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId deleteBoardComment(Member member, UUID commentId) {
-
+    public BoardCommentResponse.BoardCommentId deleteBoardComment(Member loginMember, UUID commentId) {
+        Member member = memberService.loadEntity(loginMember.getId());
         BoardComment comment = loadEntity(commentId);
         Board board = comment.getBoard();
 
@@ -76,9 +78,11 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     }
 
     @Override
-    public BoardCommentResponse.BoardCommentPageInfos showBoardComments(Member member, UUID boardId, Pageable pageable) {
+    public BoardCommentResponse.BoardCommentPageInfos showBoardComments(Member loginMember, UUID boardId, Pageable pageable) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
         Board board = boardService.loadEntity(boardId);
-        Page<BoardComment> comments = boardCommentRepository.findAllBoardComments(member, board, pageable);
+        Page<BoardComment> comments = boardCommentRepository.findAllBoardComments(board, pageable);
 
         //isMine 여부를 포함
         List<BoardCommentResponse.BoardCommentPageElement> commentPageElements = comments.map(comment -> {
