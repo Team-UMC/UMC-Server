@@ -544,7 +544,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         //then
         assertEquals(1, noticePageInfos.getNoticePageElements().size());
         assertEquals(1, noticePageInfos.getTotalElements());
-        assertEquals("공지",noticePageInfos.getNoticePageElements().get(0).getTitle());
+        assertEquals("연합공지",noticePageInfos.getNoticePageElements().get(0).getTitle());
 
     }
 

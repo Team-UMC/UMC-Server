@@ -38,7 +38,9 @@ public class BoardServiceImpl implements BoardService {
     private final BoardHeartMapper boardHeartMapper;
     private final MemberService memberService;
 
-
+    /*
+    핀고정된 공지사항 조회
+     */
     @Override
     public BoardResponse.PinnedNotices showPinnedNotices(Member loginMember) {
 
@@ -48,6 +50,9 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
+    /*
+    해당 hostType, boardType의 글 전체 조회 with Paging
+     */
     @Override
     public BoardResponse.BoardPageInfos showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
 
@@ -57,7 +62,9 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.toBoardPageInfos(boardRepository.findAllBoards(member, hostType, boardType, pageable));
     }
 
-
+    /*
+    keyword로 글 전체 조회 with Paging
+     */
     @Override
     public BoardResponse.BoardSearchPageInfos searchBoard(Member loginMember, String keyword, Pageable pageable) {
 
@@ -67,6 +74,9 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
+    /*
+    게시글 상세 조회
+     */
     @Override
     @Transactional
     public BoardResponse.BoardDetail showBoardDetail(Member loginMember, UUID boardId) {
@@ -87,9 +97,7 @@ public class BoardServiceImpl implements BoardService {
         board.increaseHitCount();
 
         //본인글인지 확인
-        boolean isMine = false;
-        if (board.getWriter().getId() == member.getId())
-            isMine = true;
+        boolean isMine = isMine(board, member);
 
         //해당 게시글의 모든 첨부파일 url
         List<String> boardFiles = boardFileService.findBoardFiles(board).stream()
@@ -99,7 +107,9 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
-
+    /*
+    좋아요/취소
+     */
     @Override
     @Transactional
     public BoardResponse.BoardId toggleBoardLike(Member member, UUID boardId) {
@@ -119,7 +129,9 @@ public class BoardServiceImpl implements BoardService {
         return new BoardResponse.BoardId(boardId);
     }
 
-
+    /*
+    내 글 목록 조회
+     */
     @Override
     public MyBoardResponse.MyBoardPageInfos showBoardsByMemberForApp(Member member, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByWriterForApp(member, keyword, pageable));
@@ -130,6 +142,9 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByWriterForWeb(member, hostType, boardType, keyword, pageable));
     }
 
+    /*
+    내가 좋아요한 글 목록 조회
+     */
     @Override
     public MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForApp(member, keyword, pageable));
@@ -140,12 +155,9 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable));
     }
 
-    @Override
-    public Boolean existsByBoardTypeAndHostType(BoardType boardType, HostType hostType) {
-        return boardRepository.existsByBoardTypeAndHostType(boardType, hostType);
-    }
-
-
+    /*
+    board 생성
+     */
     @Override
     @Transactional
     public BoardResponse.BoardId createBoard(Member member, BoardRequest.BoardCreateRequest request, List<MultipartFile> files) {
@@ -165,6 +177,9 @@ public class BoardServiceImpl implements BoardService {
         return new BoardResponse.BoardId(board.getId());
     }
 
+    /*
+    board 수정
+     */
     @Override
     @Transactional
     public BoardResponse.BoardId updateBoard(Member member, UUID boardId, BoardRequest.BoardUpdateRequest request, List<MultipartFile> files) {
@@ -188,6 +203,9 @@ public class BoardServiceImpl implements BoardService {
         return new BoardResponse.BoardId(board.getId());
     }
 
+    /*
+    board 삭제
+     */
     @Override
     @Transactional
     public BoardResponse.BoardId deleteBoard(Member member, UUID boardId) {
@@ -207,9 +225,14 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
+    @Override
+    public Boolean existsByBoardTypeAndHostType(BoardType boardType, HostType hostType) {
+        return boardRepository.existsByBoardTypeAndHostType(boardType, hostType);
+    }
+
 
     //게시글 작성, 수정 시 권한 Check
-    public List<Semester> checkPermission(Member member, HostType hostType, BoardType boardType) {
+    private List<Semester> checkPermission(Member member, HostType hostType, BoardType boardType) {
         //현재 기수
         Semester nowSemester = Semester.findActiveSemester();
 
@@ -231,7 +254,7 @@ public class BoardServiceImpl implements BoardService {
 
 
     //OB 게시판 권한 확인 함수
-    public void checkPermissionForOBBoard(Member member, Semester nowSemester) {
+    private void checkPermissionForOBBoard(Member member, Semester nowSemester) {
 
         // OB -> Semester의 isActive가 활성화되지 않은 사용자만 가능
         if (member.getRecentSemester().equals(nowSemester))
@@ -239,7 +262,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     //공지사항 게시판 권한 확인 함수
-    public void checkPermissionForNoticeBoard(Member member, HostType hostType) {
+    private void checkPermissionForNoticeBoard(Member member, HostType hostType) {
 
         //HostType priority와 Member Role priority를 비교하여 권한 CHECK
         if (member.getRole().getPriority() >= hostType.getPriority())
@@ -247,7 +270,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     //workbook 게시판 권한 확인 함수
-    public void checkPermissionForWorkbookBoard(Member member) {
+    private void checkPermissionForWorkbookBoard(Member member) {
 
         //CAMPUS && WORKBOOK -> 일반 MEMBER는 작성 불가
         if (member.getRole().getPriority() >= Role.MEMBER.getPriority())
@@ -265,7 +288,8 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
-    public void checkBadRequest(HostType hostType, BoardType boardType) {
+    //badRequest check
+    private void checkBadRequest(HostType hostType, BoardType boardType) {
         //운영진 공지사항 목록 조회 제외하고는 HostType ALL 불가능
         if (hostType.equals(HostType.ALL))
             throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
@@ -275,6 +299,15 @@ public class BoardServiceImpl implements BoardService {
         //boardType: OB, hostType: Branch일 경우 금지된 요청
         if (boardType == BoardType.OB && hostType == HostType.BRANCH)
             throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
+    }
+
+
+    //본인 글인지 확인
+    private boolean isMine(Board board, Member member) {
+        if (board.getWriter().getId() == member.getId())
+            return true;
+        else
+            return false;
     }
 
 
