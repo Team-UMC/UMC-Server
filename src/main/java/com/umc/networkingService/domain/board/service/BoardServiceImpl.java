@@ -193,6 +193,7 @@ public class BoardServiceImpl implements BoardService {
                 throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
             }
         }
+
         boardFileService.deleteBoardFiles(board);
         board.delete();
 

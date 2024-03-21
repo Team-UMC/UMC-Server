@@ -301,7 +301,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         switch (permissionHostType) {
             case CENTER:
-                predicate.and(CenterPermission());
+                predicate.or(CenterPermission());
             case BRANCH:
                 predicate.or(BranchPermission(member));
             case CAMPUS:
@@ -341,7 +341,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         }
     }
 
-
     private BooleanExpression eqUniversity(Member member) {
         if (member != null && member.getUniversity() != null)
             return board.writer.university.eq(member.getUniversity());
@@ -373,5 +372,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     private BooleanExpression CampusPermission(Member member) {
         return eqHostType(CAMPUS).and(eqUniversity(member));
     }
+
 }
 

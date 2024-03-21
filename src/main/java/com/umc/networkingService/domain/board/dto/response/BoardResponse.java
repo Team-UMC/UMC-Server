@@ -127,7 +127,11 @@ public class BoardResponse {
         private String title;
         private String content;
         private HostType hostType;
-        private String nickname;
+        private int hitCount;
+        private String writer;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime createdAt;
+
     }
 
     @Getter

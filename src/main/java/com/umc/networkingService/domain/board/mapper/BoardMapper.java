@@ -32,17 +32,19 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardResponse.PinnedNotice topinnedNotice(Board board) {
+    public BoardResponse.PinnedNotice toPinnedNotice(Board board) {
         return BoardResponse.PinnedNotice.builder()
                 .hostType(board.getHostType())
                 .title(board.getTitle())
                 .boardId(board.getId())
                 .content(board.getContent())
-                .nickname(board.getWriter().getNickname())
+                .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
+                .hitCount(board.getHitCount())
+                .createdAt(board.getCreatedAt())
                 .build();
     }
     public BoardResponse.PinnedNotices toPinnedNotices(List<Board> boards) {
-        List<BoardResponse.PinnedNotice> pinnedNotices = boards.stream().map(this::topinnedNotice).toList();
+        List<BoardResponse.PinnedNotice> pinnedNotices = boards.stream().map(this::toPinnedNotice).toList();
         return BoardResponse.PinnedNotices.builder()
                 .pinnedNotices(pinnedNotices)
                 .build();

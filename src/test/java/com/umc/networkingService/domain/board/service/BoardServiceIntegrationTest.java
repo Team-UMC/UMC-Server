@@ -538,7 +538,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardResponse.NoticePageInfos noticePageInfos = staffBoardService.showNotices(inhaStaff,HostType.ALL,null , pageable);
+        BoardResponse.NoticePageInfos noticePageInfos = staffBoardService.showNotices(centerStaff, HostType.ALL,null , pageable);
 
         //then
         assertEquals(1, noticePageInfos.getNoticePageElements().size());
