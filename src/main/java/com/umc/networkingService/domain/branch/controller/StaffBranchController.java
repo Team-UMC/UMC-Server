@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +41,7 @@ public class StaffBranchController {
             @ApiResponse(responseCode = "BRANCH002", description = "지부 이름이 비어있는 경우"),
             @ApiResponse(responseCode = "BRANCH003", description = "지부 설명이 비어있는 경우")
     })
-    @PostMapping("")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<BranchResponse.BranchId> postBranch(
             @Valid @RequestPart("request") BranchRequest.BranchInfoDTO request,
             @RequestPart(name = "file", required = false) MultipartFile file
@@ -55,7 +56,7 @@ public class StaffBranchController {
             @ApiResponse(responseCode = "BRANCH002", description = "지부 이름이 비어있는 경우"),
             @ApiResponse(responseCode = "BRANCH003", description = "지부 설명이 비어있는 경우")
     })
-    @PatchMapping("/{branchId}")
+    @PatchMapping(value = "/{branchId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<BranchResponse.BranchId> patchBranch(
             @PathVariable("branchId") @ExistBranch UUID branchId,
             @Valid @RequestPart("request") BranchRequest.BranchInfoDTO request,
