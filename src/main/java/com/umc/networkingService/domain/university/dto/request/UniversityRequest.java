@@ -16,8 +16,6 @@ public class UniversityRequest {
     public static class universityInfo {
         //todo: 마스코트 처리
         String universityName;
-        MultipartFile universityLogo;
-        MultipartFile semesterLogo;
         Semester semester;
     }
 

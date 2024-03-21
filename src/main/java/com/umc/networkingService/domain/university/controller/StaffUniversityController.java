@@ -11,8 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -27,35 +29,37 @@ public class StaffUniversityController {
     private final UniversityServiceImpl universityService;
 
     @Operation(summary = "학교 생성하기 API",description = "학교 생성하기 API")
-    @PostMapping("")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<UniversityResponse.UniversityId>
     createUniversity(
-            @CurrentMember Member member,
-            @RequestBody @Valid UniversityRequest.universityInfo request
+            @Valid @RequestPart("request") UniversityRequest.universityInfo request,
+            @RequestPart(name = "file", required = false) MultipartFile universityLogo,
+            @RequestPart(name = "file", required = false) MultipartFile semesterLogo
     )
     {
-        return BaseResponse.onSuccess(universityService.createUniversity(request));
+        return BaseResponse.onSuccess(universityService.createUniversity(request, universityLogo, semesterLogo));
     }
 
     @Operation(summary = "학교 삭제하기 API",description = "학교 삭제하기 API")
     @DeleteMapping("/{universityId}")
     public BaseResponse<UniversityResponse.UniversityId>
     deleteUniversity(
-            @CurrentMember Member member,
             @PathVariable @Valid UUID universityId
     ){
         return BaseResponse.onSuccess(universityService.deleteUniversity(universityId));
     }
 
     @Operation(summary = "학교 정보 수정하기 API",description = "학교 정보 수정하기 API")
-    @PatchMapping("/{universityId}")
+    @PatchMapping(value = "/{universityId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<UniversityResponse.UniversityId>
     patchUniversity(
-            @CurrentMember Member member,
             @PathVariable @Valid UUID universityId,
-            @RequestBody @Valid UniversityRequest.universityInfo request
+            @Valid @RequestPart("request") UniversityRequest.universityInfo request,
+            @RequestPart(name = "file", required = false) MultipartFile universityLogo,
+            @RequestPart(name = "file", required = false) MultipartFile semesterLogo
+
     ){
-        return BaseResponse.onSuccess(universityService.patchUniversity(request, universityId));
+        return BaseResponse.onSuccess(universityService.patchUniversity(request, universityId, universityLogo, semesterLogo));
     }
 
 }

@@ -54,6 +54,21 @@ public class University extends BaseEntity {
         this.semesterLogo = semesterLogo;
     }
 
+    // 학교 이름 변경
+    public void updateUniversityName(String name) {
+        this.name = name;
+    }
+
+    // 학교 로고 변경
+    public void updateUniversityLogo(String universityLogo) {
+        this.universityLogo = universityLogo;
+    }
+
+    // 기수 로고 변경
+    public void updateSemesterLogo(String semesterLogo) {
+        this.semesterLogo = semesterLogo;
+    }
+
     //레벨 증가
     public void setLevel(Integer level) {
         this.currentLevel=level;

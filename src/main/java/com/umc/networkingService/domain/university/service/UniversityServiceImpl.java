@@ -163,7 +163,7 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional    //학교 생성
-    public UniversityResponse.UniversityId createUniversity(UniversityRequest.universityInfo request) {
+    public UniversityResponse.UniversityId createUniversity(UniversityRequest.universityInfo request, MultipartFile universityLogo, MultipartFile semesterLogo) {
         if (universityRepository.findByName(request.getUniversityName()).isPresent()) {
             throw new RestApiException(UniversityErrorCode.DUPLICATE_UNIVERSITY_NAME);
         }
@@ -177,8 +177,8 @@ public class UniversityServiceImpl implements UniversityService {
                                 universityRepository.save(University.builder()
                                         .name(request.getUniversityName())
                                         .mascot(mascotService.getMascotByStartLevel(1, mascotType))
-                                        .universityLogo(uploadImage("university", request.getUniversityLogo()))
-                                        .semesterLogo(uploadImage("semester", request.getSemesterLogo()))
+                                        .universityLogo(uploadImage("university", universityLogo))
+                                        .semesterLogo(uploadImage("semester", semesterLogo))
                                         .build()).getId()
                         ).build();
 
@@ -195,15 +195,20 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Transactional    //학교 정보 수정
-    public UniversityResponse.UniversityId patchUniversity(UniversityRequest.universityInfo request, UUID universityId) {
+    public UniversityResponse.UniversityId patchUniversity(UniversityRequest.universityInfo request, UUID universityId, MultipartFile universityLogo, MultipartFile semesterLogo) {
 
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY));
 
-        university.updateUniversity(
-                request.getUniversityName()
-                , uploadImage("university", request.getUniversityLogo())
-                , uploadImage("semester", request.getSemesterLogo()));
+        university.updateUniversityName(request.getUniversityName());
+        if(universityLogo != null&&!universityLogo.isEmpty()){
+            deleteImage(university.getUniversityLogo()); //기존 이미지 삭제
+            university.updateUniversityLogo(uploadImage("university", universityLogo)); //새로운 이미지 업로드
+        }
+        if(semesterLogo != null&&!semesterLogo.isEmpty()){
+            deleteImage(university.getSemesterLogo()); //기존 이미지 삭제
+            university.updateSemesterLogo(uploadImage("semester", semesterLogo)); //새로운 이미지 업로드
+        }
 
         return UniversityResponse.UniversityId.builder()
                         .universityId(university.getId())
@@ -216,6 +221,14 @@ public class UniversityServiceImpl implements UniversityService {
             return "";
         }
         return s3FileComponent.uploadFile(category, imageFile);
+    }
+
+    //s3에 이미지 삭제
+    public void deleteImage(String imageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return;
+        }
+        s3FileComponent.deleteFile(imageUrl);
     }
 
     //동점자 처리 (기여도) (동점차는 동일한 순위 부여 후 랭킹 건너뛰기)
