@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,12 +28,16 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
 
     @Override
     @Transactional
-    public AlbumCommentResponse createAlbumComment(Member member, AlbumCommentCreateRequest request) {
+    public AlbumCommentResponse createAlbumComment(Member member, UUID commentId, AlbumCommentCreateRequest request) {
 
         Album album = aLbumService.loadEntity(request.getAlbumId());
 
+        AlbumComment parentComment = Optional.ofNullable(commentId)
+                .map(this::loadEntity)
+                .orElse(null);
+
         AlbumComment comment = albumCommentRepository.save(
-                albumCommentMapper.createAlbumComment(member, album, request.getContent()));
+                albumCommentMapper.createAlbumComment(member, parentComment, album, request.getContent()));
 
         album.increaseCommentCount();
 

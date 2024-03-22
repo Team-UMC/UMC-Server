@@ -10,7 +10,7 @@ import com.umc.networkingService.global.common.base.EntityLoader;
 import java.util.UUID;
 
 public interface AlbumCommentService extends EntityLoader<AlbumComment, UUID> {
-    AlbumCommentResponse createAlbumComment(Member member, AlbumCommentCreateRequest request);
+    AlbumCommentResponse createAlbumComment(Member member, UUID commentId, AlbumCommentCreateRequest request);
     AlbumCommentResponse updateAlbumComment(Member member, UUID commentId, AlbumCommentUpdateRequest request);
     AlbumCommentResponse deleteAlbumComment(Member member, UUID commentId);
 }
