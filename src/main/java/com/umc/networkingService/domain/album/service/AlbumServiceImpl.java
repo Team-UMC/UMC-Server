@@ -72,6 +72,7 @@ public class AlbumServiceImpl implements AlbumService{
     }
 
     @Override
+    @Transactional
     public AlbumIdResponse deleteAlbum(Member member, UUID albumId) {
 
         Album album = loadEntity(albumId);
