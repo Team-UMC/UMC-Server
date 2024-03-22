@@ -44,4 +44,8 @@ public class BoardComment extends BaseEntity {
         this.content = request.getContent();
     }
 
+    public void setParentComment(BoardComment parentComment) {
+        this.parentComment = parentComment;
+    }
+
 }

@@ -16,10 +16,10 @@ import static com.umc.networkingService.domain.board.dto.response.MyBoardRespons
 
 @Component
 public class BoardCommentMapper {
-    public BoardComment toEntity(Member member, Board board, BoardCommentRequest.BoardCommentAddRequest request) {
+    public BoardComment toEntity(Member member, Board board, String content) {
         return BoardComment.builder()
                 .writer(member)
-                .content(request.getContent())
+                .content(content)
                 .board(board)
                 .build();
     }

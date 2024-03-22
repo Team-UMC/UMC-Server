@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.*;
+import static com.umc.networkingService.domain.board.dto.response.MyBoardResponse.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,19 +39,37 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId addBoardComment(Member member, BoardCommentRequest.BoardCommentAddRequest request) {
+    public BoardCommentId addBoardComment(Member member, BoardCommentRequest.BoardCommentAddRequest request) {
         Board board = boardService.loadEntity(request.getBoardId());
-
+        String content = request.getContent();
         BoardComment comment = boardCommentRepository.save(
-                boardCommentMapper.toEntity(member, board, request));
+                boardCommentMapper.toEntity(member, board, content));
         board.increaseCommentCount();
 
-        return new BoardCommentResponse.BoardCommentId(comment.getId());
+        return new BoardCommentId(comment.getId());
     }
 
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId updateBoardComment(Member loginMember, UUID commentId, BoardCommentRequest.BoardCommentUpdateRequest request) {
+    public BoardCommentId addReplyToBoardComment(Member loginMember, BoardCommentRequest.BoardCommentReplyRequest request) {
+        Member member = memberService.loadEntity(loginMember.getId());
+        BoardComment parentComment = loadEntity(request.getCommentId());
+        String content = request.getContent();
+
+        //대댓글 저장, parentComment를 세팅
+        BoardComment replyComment = boardCommentRepository.save(
+                boardCommentMapper.toEntity(member, parentComment.getBoard(), content)
+        );
+
+        replyComment.setParentComment(parentComment);
+
+        return new BoardCommentId(replyComment.getId());
+    }
+
+
+    @Override
+    @Transactional
+    public BoardCommentId updateBoardComment(Member loginMember, UUID commentId, BoardCommentRequest.BoardCommentUpdateRequest request) {
         Member member = memberService.loadEntity(loginMember.getId());
         BoardComment comment = loadEntity(commentId);
 
@@ -57,12 +78,12 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         comment.update(request);
 
-        return new BoardCommentResponse.BoardCommentId(comment.getId());
+        return new BoardCommentId(comment.getId());
     }
 
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId deleteBoardComment(Member loginMember, UUID commentId) {
+    public BoardCommentId deleteBoardComment(Member loginMember, UUID commentId) {
         Member member = memberService.loadEntity(loginMember.getId());
         BoardComment comment = loadEntity(commentId);
         Board board = comment.getBoard();
@@ -74,18 +95,18 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         comment.delete();
 
 
-        return new BoardCommentResponse.BoardCommentId(comment.getId());
+        return new BoardCommentId(comment.getId());
     }
 
     @Override
-    public BoardCommentResponse.BoardCommentPageInfos showBoardComments(Member loginMember, UUID boardId, Pageable pageable) {
+    public BoardCommentPageInfos showBoardComments(Member loginMember, UUID boardId, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
         Board board = boardService.loadEntity(boardId);
         Page<BoardComment> comments = boardCommentRepository.findAllBoardComments(board, pageable);
 
         //isMine 여부를 포함
-        List<BoardCommentResponse.BoardCommentPageElement> commentPageElements = comments.map(comment -> {
+        List<BoardCommentPageElement> commentPageElements = comments.map(comment -> {
             boolean isMine = isMyComment(comment, member);
             return boardCommentMapper.toBoardCommentPageElement(comment, isMine);
         }).stream().toList();
@@ -95,12 +116,12 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
 
     @Override
-    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
+    public MyBoardPageInfos showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
         return boardMapper.toMyBoardPageInfos(boardCommentRepository.findBoardsByMemberCommentForApp(member, keyword, pageable));
     }
 
     @Override
-    public MyBoardResponse.MyBoardCommentPageInfos showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+    public MyBoardCommentPageInfos showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
         return boardCommentMapper.toMyBoardCommentPageInfos(boardCommentRepository.findBoardsByMemberCommentForWeb(member, hostType, boardType, keyword, pageable));
     }
 
