@@ -19,4 +19,5 @@ public interface AlbumRepository extends JpaRepository<Album, UUID>, AlbumReposi
     Page<Album> findAllByWriter_UniversityOrderByHeartCount(University writer_university, Pageable pageable);
     @Query("SELECT a FROM Album a WHERE (a.title LIKE %:keyword% OR a.content LIKE %:keyword%) AND a.writer.university = :university")
     Page<Album> findAllByTitleContainsOrContentContains(@Param("keyword") String keyword, @Param("university") University university, Pageable pageable);
+    boolean existsByTitle(String title);
 }
