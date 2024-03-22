@@ -42,4 +42,8 @@ public class AlbumComment extends BaseEntity {
     public void update(AlbumCommentUpdateRequest request) {
         this.content = request.getContent();
     }
+
+    public void deleteComment() {
+        this.content = "삭제된 댓글입니다.";
+    }
 }

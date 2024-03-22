@@ -47,10 +47,11 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
     @Override
     @Transactional
     public AlbumCommentResponse updateAlbumComment(Member member, UUID commentId, AlbumCommentUpdateRequest request) {
-
         AlbumComment comment = loadEntity(commentId);
 
-        checkWriter(comment.getWriter(),member);
+        if (!checkUpdateAuthorization(comment.getWriter(), member)) {
+            throw new RestApiException(AlbumCommentErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
+        }
 
         comment.update(request);
 
@@ -62,32 +63,48 @@ public class AlbumCommentServiceImpl implements AlbumCommentService{
     @Override
     @Transactional
     public AlbumCommentResponse deleteAlbumComment(Member member, UUID commentId) {
-
         AlbumComment comment = loadEntity(commentId);
         Album album = comment.getAlbum();
 
-        checkWriter(comment.getWriter(), member);
-        checkHighStaff(comment.getWriter(), member);
+        if (!checkDeleteAuthorization(comment.getWriter(), member)) {
+            throw new RestApiException(AlbumCommentErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
+        }
 
         album.decreaseCommentCount();
-        comment.delete();
+
+        handleCommentDeletion(comment);
 
         return new AlbumCommentResponse(comment.getId(), album.getCommentCount());
+    }
+
+    private boolean checkUpdateAuthorization(Member writer, Member loginMember) {
+        return checkWriter(writer, loginMember);
+    }
+
+    private boolean checkDeleteAuthorization(Member writer, Member loginMember) {
+        // 작성자이거나 더 높은 권한을 가진 경우 삭제 권한 부여
+        return checkWriter(writer, loginMember) || checkHighStaff(writer, loginMember);
+    }
+
+    private boolean checkWriter(Member writer, Member loginMember) {
+        return writer.getId().equals(loginMember.getId());
+    }
+
+    private boolean checkHighStaff(Member writer, Member loginMember) {
+        return loginMember.getRole().getPriority() < writer.getRole().getPriority();
+    }
+
+    private void handleCommentDeletion(AlbumComment comment) {
+        if (albumCommentRepository.existsByParentComment(comment)) {
+            comment.deleteComment();
+        } else {
+            comment.delete();
+        }
     }
 
     @Override
     public AlbumComment loadEntity(UUID commentId) {
         return albumCommentRepository.findById(commentId).orElseThrow(
                 () -> new RestApiException(AlbumCommentErrorCode.EMPTY_ALBUM_COMMENT));
-    }
-
-    private void checkWriter(Member writer, Member loginMember) {
-        if (!loginMember.getId().equals(writer.getId()))
-            throw new RestApiException(AlbumCommentErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
-    }
-
-    private void checkHighStaff(Member writer, Member loginMember) {
-        if (loginMember.getRole().getPriority() >= writer.getRole().getPriority())
-            throw new RestApiException(AlbumCommentErrorCode.NO_AUTHORIZATION_ALBUM_COMMENT);
     }
 }
