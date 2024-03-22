@@ -7,7 +7,6 @@ import com.umc.networkingService.domain.album.entity.Album;
 import com.umc.networkingService.domain.album.entity.AlbumComment;
 import com.umc.networkingService.domain.album.mapper.AlbumCommentMapper;
 import com.umc.networkingService.domain.album.repository.AlbumCommentRepository;
-import com.umc.networkingService.domain.album.repository.AlbumRepository;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.AlbumCommentErrorCode;

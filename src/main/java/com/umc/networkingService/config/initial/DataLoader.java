@@ -16,7 +16,6 @@ import com.umc.networkingService.domain.member.entity.PositionType;
 import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
-import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
 import com.umc.networkingService.domain.project.entity.Project;
 import com.umc.networkingService.domain.project.entity.ProjectMember;
 import com.umc.networkingService.domain.project.repository.ProjectMemberRepository;

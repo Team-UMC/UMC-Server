@@ -1,11 +1,8 @@
 package com.umc.networkingService.domain.album.dto.response;
 
-import com.umc.networkingService.global.common.enums.Semester;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter

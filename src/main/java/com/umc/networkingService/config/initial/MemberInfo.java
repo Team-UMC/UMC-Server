@@ -4,15 +4,8 @@ import com.umc.networkingService.domain.member.entity.SocialType;
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
-import com.umc.networkingService.global.common.exception.RestApiException;
-import com.umc.networkingService.global.common.exception.code.BranchErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static com.umc.networkingService.config.initial.UniversityInfo.*;
 
 @Getter
 @RequiredArgsConstructor

@@ -2,14 +2,7 @@ package com.umc.networkingService.domain.todayILearned.mapper;
 
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.todayILearned.dto.requeest.TodayILearnedRequest.TodayILearnedCreate;
-import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse;
-import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedId;
-import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfo;
-import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedInfos;
-import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedDetail;
-import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfos;
-import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.TodayILearnedWebInfo;
-
+import com.umc.networkingService.domain.todayILearned.dto.response.TodayILearnedResponse.*;
 import com.umc.networkingService.domain.todayILearned.entity.TodayILearned;
 import org.springframework.stereotype.Component;
 

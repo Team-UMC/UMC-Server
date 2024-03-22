@@ -7,8 +7,8 @@ import com.umc.networkingService.domain.album.entity.Album;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.EntityLoader;
 import com.umc.networkingService.global.common.enums.Semester;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;

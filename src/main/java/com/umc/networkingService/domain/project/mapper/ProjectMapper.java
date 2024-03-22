@@ -8,7 +8,6 @@ import com.umc.networkingService.domain.project.entity.ProjectMember;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 

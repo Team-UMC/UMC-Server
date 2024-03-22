@@ -1,7 +1,6 @@
 package com.umc.networkingService.global.common.validation.validator;
 
 import com.umc.networkingService.domain.project.repository.ProjectRepository;
-import com.umc.networkingService.global.common.exception.code.ProjectErrorCode;
 import com.umc.networkingService.global.common.validation.annotation.ExistProjectName;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

@@ -4,7 +4,6 @@ import com.umc.networkingService.global.common.enums.Semester;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
