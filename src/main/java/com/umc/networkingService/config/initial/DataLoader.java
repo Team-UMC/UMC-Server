@@ -11,7 +11,10 @@ import com.umc.networkingService.domain.branch.repository.BranchUniversityReposi
 import com.umc.networkingService.domain.mascot.entity.Mascot;
 import com.umc.networkingService.domain.mascot.repository.MascotRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.entity.MemberPosition;
+import com.umc.networkingService.domain.member.entity.PositionType;
 import com.umc.networkingService.domain.member.entity.SocialType;
+import com.umc.networkingService.domain.member.repository.MemberPositionRepository;
 import com.umc.networkingService.domain.member.repository.MemberRepository;
 import com.umc.networkingService.domain.member.repository.SemesterPartRepository;
 import com.umc.networkingService.domain.project.entity.Project;
@@ -47,6 +50,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     private final ProjectMemberRepository projectMemberRepository;
 
     private final MemberRepository memberRepository;
+    private final MemberPositionRepository memberPositionRepository;
     private final AlbumRepository albumRepository;
     private final AlbumImageRepository albumImageRepository;
 
@@ -82,55 +86,6 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
         // 앨범 데이터 생성
         insertNewAlbums();
-    }
-
-    // 앨범 작성자를 추가하는 함수
-    private void insertAlbumWriters() {
-        albumMembers.stream()
-                .filter(albumMember -> !memberRepository.existsByClientIdAndSocialType(
-                        albumMember.getClientId(), albumMember.getType()))
-                .map(albumMember -> Member.builder()
-                        .clientId(albumMember.getClientId())
-                        .socialType(albumMember.getType())
-                        .university(universityRepository.findByName(albumMember.getUniversity())
-                                .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY)))
-                        .nickname(albumMember.getNickname())
-                        .name(albumMember.getName())
-                        .role(albumMember.getRole())
-                        .build())
-                .forEach(memberRepository::save);
-    }
-
-    // 새로운 앨범을 추가하는 함수
-    private void insertNewAlbums() {
-        albums.stream()
-                .filter(album -> !albumRepository.existsByTitle(album.getTitle()))
-                .forEach(this::saveAlbum);
-    }
-
-    // 새로운 앨범을 저장하는 함수
-    private void saveAlbum(AlbumInfo albumInfo) {
-        Album album = Album.builder()
-                .writer(memberRepository.findByClientIdAndSocialType(
-                                albumInfo.getClientId(), SocialType.KAKAO)
-                        .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER)))
-                .semester(albumInfo.getSemester())
-                .title(albumInfo.getTitle())
-                .content(albumInfo.getContent())
-                .build();
-
-        insertAlbumImages(
-                albumRepository.save(album),
-                albumInfo.getImages()
-        );
-    }
-
-    // 앨범 이미지를 추가하는 함수
-    private void insertAlbumImages(Album album, List<String> images) {
-        images.stream()
-                .map(image -> AlbumImage.builder()
-                        .album(album).url(image).build())
-                .forEach(albumImageRepository::save);
     }
 
     // 새로운 마스코트를 추가하는 함수
@@ -249,6 +204,71 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
                 .filter(newProject -> newProject.getName().equals(projectName))
                 .findFirst()
                 .orElseThrow(() -> new RestApiException(ProjectErrorCode.EMPTY_PROJECT));
+    }
+
+    // 앨범 작성자를 추가하는 함수
+    private void insertAlbumWriters() {
+        albumMembers.stream()
+                .filter(albumMember -> !memberRepository.existsByClientIdAndSocialType(
+                        albumMember.getClientId(), albumMember.getType()))
+                .forEach(this::saveAlbumMember);
+    }
+
+    private void saveAlbumMember(MemberInfo albumMember) {
+        Member member = Member.builder()
+                .clientId(albumMember.getClientId())
+                .socialType(albumMember.getType())
+                .university(universityRepository.findByName(albumMember.getUniversity())
+                        .orElseThrow(() -> new RestApiException(UniversityErrorCode.EMPTY_UNIVERSITY)))
+                .nickname(albumMember.getNickname())
+                .name(albumMember.getName())
+                .role(albumMember.getRole())
+                .build();
+
+        insertMemberPosition(memberRepository.save(member), albumMember.getPosition());
+    }
+
+    // 앨범 작성자 직책을 추가하는 함수
+    private void insertMemberPosition(Member member, String position) {
+        MemberPosition memberPosition = MemberPosition.builder()
+                .member(member)
+                .name(position)
+                .type(PositionType.CAMPUS)
+                .build();
+
+        memberPositionRepository.save(memberPosition);
+    }
+
+    // 새로운 앨범을 추가하는 함수
+    private void insertNewAlbums() {
+        albums.stream()
+                .filter(album -> !albumRepository.existsByTitle(album.getTitle()))
+                .forEach(this::saveAlbum);
+    }
+
+    // 새로운 앨범을 저장하는 함수
+    private void saveAlbum(AlbumInfo albumInfo) {
+        Album album = Album.builder()
+                .writer(memberRepository.findByClientIdAndSocialType(
+                                albumInfo.getClientId(), SocialType.KAKAO)
+                        .orElseThrow(() -> new RestApiException(MemberErrorCode.EMPTY_MEMBER)))
+                .semester(albumInfo.getSemester())
+                .title(albumInfo.getTitle())
+                .content(albumInfo.getContent())
+                .build();
+
+        insertAlbumImages(
+                albumRepository.save(album),
+                albumInfo.getImages()
+        );
+    }
+
+    // 앨범 이미지를 추가하는 함수
+    private void insertAlbumImages(Album album, List<String> images) {
+        images.stream()
+                .map(image -> AlbumImage.builder()
+                        .album(album).url(image).build())
+                .forEach(albumImageRepository::save);
     }
 
     @Override
