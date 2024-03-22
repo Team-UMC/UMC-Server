@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.branch.service;
 
+import com.umc.networkingService.config.initial.DataLoader;
 import com.umc.networkingService.domain.branch.dto.request.BranchRequest;
 import com.umc.networkingService.domain.branch.dto.response.BranchResponse;
 import com.umc.networkingService.domain.branch.entity.Branch;
@@ -29,6 +30,8 @@ public class BranchServiceImpl implements BranchService {
     private final BranchUniversityRepository branchUniversityRepository;
     private final S3FileComponent s3FileComponent;
 
+    private final DataLoader dataLoader;
+
     private static final String BRANCH_CATEGORY = "branch";
 
     @Transactional         //지부 생성
@@ -39,6 +42,10 @@ public class BranchServiceImpl implements BranchService {
         Branch savedBranch = branchRepository.save(
                 BranchMapper.toBranch(request,uploadImageS3(BRANCH_CATEGORY,image))
         );
+
+        if(!branchRepository.existsBySemester(request.getSemester())){
+            dataLoader.updateBranchUniversities(); // 새로운 기수인 경우 기존 BranchUniv 상태 false로 변경
+        }
 
         if (savedBranch.getId() == null) {
             throw new RestApiException(BranchErrorCode.BRANCH_SAVE_FAIL);
