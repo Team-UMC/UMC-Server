@@ -1,10 +1,7 @@
 package com.umc.networkingService.domain.album.mapper;
 
 import com.umc.networkingService.domain.album.dto.request.AlbumCreateRequest;
-import com.umc.networkingService.domain.album.dto.response.AlbumDetailResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumInquiryFeaturedResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumInquiryResponse;
-import com.umc.networkingService.domain.album.dto.response.AlbumPagingResponse;
+import com.umc.networkingService.domain.album.dto.response.*;
 import com.umc.networkingService.domain.album.entity.Album;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.converter.DataConverter;
@@ -27,10 +24,10 @@ public class AlbumMapper {
                 .build();
     }
 
-    public AlbumInquiryResponse toAlbumInquiryResponse(Album album, String thumbnail, int imageCnt) {
+    public AlbumInquiryResponse toAlbumInquiryResponse(Album album, WriterInfo writer, String thumbnail, int imageCnt) {
         return AlbumInquiryResponse.builder()
                 .albumId(album.getId())
-                .writer(DataConverter.convertToWriter(album.getWriter()))
+                .writer(writer)
                 .title(album.getTitle())
                 .semester(album.getSemester())
                 .thumbnail(thumbnail)
@@ -65,7 +62,7 @@ public class AlbumMapper {
     }
 
     public AlbumDetailResponse toAlbumDetailResponse(
-            Album album, List<String> albumImages, AlbumDetailResponse.WriterInfo writer, boolean isLiked, boolean isMine) {
+            Album album, List<String> albumImages, WriterInfo writer, boolean isLiked, boolean isMine) {
         return AlbumDetailResponse.builder()
                 .writer(writer)
                 .title(album.getTitle())
@@ -80,10 +77,9 @@ public class AlbumMapper {
                 .build();
     }
 
-    public AlbumDetailResponse.WriterInfo toWriterInfo(Member member, String position) {
-        return AlbumDetailResponse.WriterInfo.builder()
-                .nickname(member.getNickname())
-                .name(member.getName())
+    public WriterInfo toWriterInfo(Member member, String position) {
+        return WriterInfo.builder()
+                .writer(DataConverter.convertToWriter(member))
                 .profileImage(member.getProfileImage())
                 .position(position)
                 .build();

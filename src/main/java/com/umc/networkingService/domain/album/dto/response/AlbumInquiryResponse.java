@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 public class AlbumInquiryResponse {
     private UUID albumId;
-    private String writer;
+    private WriterInfo writer;
     private Semester semester;
     private String title;
     private String thumbnail;

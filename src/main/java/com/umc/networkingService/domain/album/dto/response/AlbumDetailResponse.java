@@ -21,13 +21,4 @@ public class AlbumDetailResponse {
     private boolean isLiked;
     private boolean isMine;
     private String createdAt;
-
-    @Getter
-    @Builder
-    public static class WriterInfo {
-        private String nickname;
-        private String name;
-        private String profileImage;
-        private String position;
-    }
 }
