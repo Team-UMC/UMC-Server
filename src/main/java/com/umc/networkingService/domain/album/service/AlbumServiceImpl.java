@@ -80,7 +80,7 @@ public class AlbumServiceImpl implements AlbumService{
         // 로그인한 member와 writer가 같지 않을 경우 삭제 불가능
         if (!album.getWriter().getId().equals(member.getId())) {
             // 상위 staff 역할을 가진 경우 삭제 가능
-            if(member.getRole().getPriority() < album.getWriter().getRole().getPriority())
+            if(member.getRole().getPriority() >= album.getWriter().getRole().getPriority())
                 throw new RestApiException(AlbumErrorCode.NO_AUTHORIZATION_ALBUM);
         }
 
