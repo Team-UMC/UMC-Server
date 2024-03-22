@@ -22,12 +22,16 @@ public class AlbumImageServiceImpl implements AlbumImageService{
     private final S3FileComponent s3FileComponent;
 
     @Override
+    @Transactional
     public void createAlbumImages(Album album, List<MultipartFile> albumImages) {
 
-        albumImages.forEach(albumImage -> albumImageRepository.save(
-                albumImageMapper.toAlbumImage(
-                        album,
-                        s3FileComponent.uploadFile("Album", albumImage))));
+        List<AlbumImage> album1 = albumImages.stream()
+                .map(albumImage -> albumImageRepository.save(
+                        albumImageMapper.toAlbumImage(
+                                album,
+                                s3FileComponent.uploadFile("album", albumImage)))).toList();
+
+        System.out.println(album1);
     }
 
     @Override
