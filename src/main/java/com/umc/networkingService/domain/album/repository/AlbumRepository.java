@@ -16,6 +16,7 @@ import java.util.UUID;
 public interface AlbumRepository extends JpaRepository<Album, UUID>, AlbumRepositoryCustom {
 
     Page<Album> findAllByWriter_UniversityAndSemester(University writer_university, Semester semester, Pageable pageable);
+    Page<Album> findAllByWriter_University(University writer_university, Pageable pageable);
     Page<Album> findAllByWriter_UniversityOrderByHeartCount(University writer_university, Pageable pageable);
     @Query("SELECT a FROM Album a WHERE (a.title LIKE %:keyword% OR a.content LIKE %:keyword%) AND a.writer.university = :university")
     Page<Album> findAllByTitleContainsOrContentContains(@Param("keyword") String keyword, @Param("university") University university, Pageable pageable);

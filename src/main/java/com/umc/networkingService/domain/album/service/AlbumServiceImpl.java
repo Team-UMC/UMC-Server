@@ -91,14 +91,16 @@ public class AlbumServiceImpl implements AlbumService{
     }
 
     @Override
-    public AlbumPagingResponse<AlbumInquiryResponse> inquiryAlbums(
-            Member loginMember, Semester semester, Pageable pageable) {
-
+    public AlbumPagingResponse<AlbumInquiryResponse> inquiryAlbums(Member loginMember, Semester semester, Pageable pageable) {
         Member member = memberService.loadEntity(loginMember.getId());
 
-        Page<Album> albumPage = albumRepository.findAllByWriter_UniversityAndSemester(member.getUniversity(), semester, pageable);
-
-        return getAlbumPagingResponse(albumPage);
+        if (semester == null) {
+            Page<Album> albumPage = albumRepository.findAllByWriter_University(member.getUniversity(), pageable);
+            return getAlbumPagingResponse(albumPage);
+        } else {
+            Page<Album> albumPage = albumRepository.findAllByWriter_UniversityAndSemester(member.getUniversity(), semester, pageable);
+            return getAlbumPagingResponse(albumPage);
+        }
     }
 
     @Override
@@ -172,6 +174,7 @@ public class AlbumServiceImpl implements AlbumService{
                 albumPage.stream()
                         .map(album -> albumMapper.toAlbumInquiryResponse(
                                 album,
+                                albumMapper.toWriterInfo(album.getWriter(), memberService.findRepresentativePosition(album.getWriter())),
                                 albumImageService.findThumbnailImage(album),
                                 getImageCnt(album)))
                         .toList());
