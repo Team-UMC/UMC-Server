@@ -28,7 +28,7 @@ public class SwaggerConfig {
                         .scheme("Bearer"));
 
         Server server = new Server();
-        server.setUrl("https://umcservice.shop");
+        server.setUrl("http://localhost:8080");
 
         return new OpenAPI()
                 .addSecurityItem(securityRequirement)

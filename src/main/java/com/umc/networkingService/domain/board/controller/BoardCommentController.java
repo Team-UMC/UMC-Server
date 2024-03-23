@@ -35,28 +35,19 @@ public class BoardCommentController {
 
     private final BoardCommentService boardCommentService;
 
-    @Operation(summary = "댓글 작성 API", description = "댓글을 작성하는 API입니다.")
+    @Operation(summary = "댓글 작성 API", description = "댓글을 작성하는 API입니다. + 대댓글일 경우, 부모 댓글의 commentId를 param으로 주세요")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생")
+            @ApiResponse(responseCode = "BOARD002", description = "게시글을 찾을 수 없을 경우 발생"),
+            @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생")
     })
     @PostMapping
     public BaseResponse<BoardCommentId> addBoardComment(@CurrentMember Member member,
+                                                        @RequestParam(required = false) UUID commentId,
                                                         @Valid @RequestBody BoardCommentRequest.BoardCommentAddRequest request) {
-        return BaseResponse.onSuccess(boardCommentService.addBoardComment(member, request));
+        return BaseResponse.onSuccess(boardCommentService.addBoardComment(member, commentId, request));
     }
 
-
-    @Operation(summary = "대댓글 작성 API", description = "대댓글을 작성하는 API입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공"),
-            @ApiResponse(responseCode = "COMMENT001", description = "댓글을 찾을 수 없을 경우 발생")
-    })
-    @PostMapping("/reply")
-    public BaseResponse<BoardCommentId> addReplyToBoardComment(@CurrentMember Member member,
-                                                               @Valid @RequestBody BoardCommentRequest.BoardCommentReplyRequest request) {
-        return BaseResponse.onSuccess(boardCommentService.addReplyToBoardComment(member, request));
-    }
     @Operation(summary = "댓글 수정 API", description = "댓글을 수정하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),

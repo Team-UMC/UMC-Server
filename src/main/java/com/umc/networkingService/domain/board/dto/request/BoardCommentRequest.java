@@ -23,19 +23,6 @@ public class BoardCommentRequest {
 
     @Getter
     @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class BoardCommentReplyRequest {
-        @NotNull(message = "commentId는 필수 입력값입니다.")
-        private UUID commentId;
-        @NotBlank(message = "content는 필수 입력값입니다.")
-        private String content;
-    }
-
-
-
-    @Getter
-    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class BoardCommentUpdateRequest {

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.*;
@@ -39,32 +40,20 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
     @Override
     @Transactional
-    public BoardCommentId addBoardComment(Member member, BoardCommentRequest.BoardCommentAddRequest request) {
+    public BoardCommentId addBoardComment(Member member, UUID commentId, BoardCommentRequest.BoardCommentAddRequest request) {
         Board board = boardService.loadEntity(request.getBoardId());
-        String content = request.getContent();
+
+        BoardComment parentComment = Optional.ofNullable(commentId)
+                .map(this::loadEntity).orElse(null);
+
         BoardComment comment = boardCommentRepository.save(
-                boardCommentMapper.toEntity(member, board, content));
+                boardCommentMapper.toEntity(member, board, parentComment, request.getContent()));
+
         board.increaseCommentCount();
 
         return new BoardCommentId(comment.getId());
     }
 
-    @Override
-    @Transactional
-    public BoardCommentId addReplyToBoardComment(Member loginMember, BoardCommentRequest.BoardCommentReplyRequest request) {
-        Member member = memberService.loadEntity(loginMember.getId());
-        BoardComment parentComment = loadEntity(request.getCommentId());
-        String content = request.getContent();
-
-        //대댓글 저장, parentComment를 세팅
-        BoardComment replyComment = boardCommentRepository.save(
-                boardCommentMapper.toEntity(member, parentComment.getBoard(), content)
-        );
-
-        replyComment.setParentComment(parentComment);
-
-        return new BoardCommentId(replyComment.getId());
-    }
 
 
     @Override

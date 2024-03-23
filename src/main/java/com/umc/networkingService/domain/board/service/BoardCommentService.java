@@ -16,9 +16,8 @@ import static com.umc.networkingService.domain.board.dto.response.MyBoardRespons
 import static com.umc.networkingService.domain.board.dto.response.MyBoardResponse.MyBoardPageInfos;
 
 public interface BoardCommentService extends EntityLoader<BoardComment, UUID> {
-    BoardCommentId addBoardComment(Member member, BoardCommentAddRequest request);
+    BoardCommentId addBoardComment(Member member, UUID commentId,BoardCommentAddRequest request);
 
-    BoardCommentId addReplyToBoardComment(Member member, BoardCommentReplyRequest request);
     BoardCommentId updateBoardComment(Member member, UUID commentId, BoardCommentUpdateRequest request);
 
     BoardCommentId deleteBoardComment(Member member, UUID commentId);
