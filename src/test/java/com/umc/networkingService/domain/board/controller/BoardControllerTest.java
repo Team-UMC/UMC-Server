@@ -5,6 +5,8 @@ import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
+import com.umc.networkingService.domain.board.entity.Board;
+import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Semester;
@@ -238,10 +240,10 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 .build();
 
         String request = objectMapper.writeValueAsString(boardCommentAddRequest);
-        BoardCommentResponse.BoardCommentId response = new BoardCommentResponse.BoardCommentId(board.getId());
+        BoardCommentResponse.BoardCommentId response = new BoardCommentResponse.BoardCommentId(comment.getId());
 
         //when
-        when(boardCommentService.addBoardComment(eq(member), any(BoardCommentRequest.BoardCommentAddRequest.class))).thenReturn(response);
+        when(boardCommentService.addBoardComment(eq(member), eq(null), any(BoardCommentRequest.BoardCommentAddRequest.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         //then
@@ -256,6 +258,39 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
                 .andExpect(jsonPath("$.result").exists());
     }
+
+    @Test
+    @DisplayName("대댓글 작성 성공 테스트")
+    public void addReplyBoardCommentTest() throws Exception {
+        //given
+        BoardCommentRequest.BoardCommentAddRequest boardCommentAddRequest =
+                BoardCommentRequest.BoardCommentAddRequest.builder()
+                        .content("대댓글")
+                        .boardId(board.getId())
+                        .build();
+
+        String request = objectMapper.writeValueAsString(boardCommentAddRequest);
+        BoardCommentResponse.BoardCommentId response = new BoardCommentResponse.BoardCommentId(board.getId());
+
+        //when
+        when(boardCommentService.addBoardComment(eq(member), eq(comment.getId()), any(BoardCommentRequest.BoardCommentAddRequest.class))).thenReturn(response);
+        when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
+
+        //then
+        this.mockMvc.perform(
+                        post("/boards/comments").param("commentId",String.valueOf(comment.getId()))
+                                .header("Authorization", accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(request))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("COMMON200"))
+                .andExpect(jsonPath("$.message").value("요청에 성공하였습니다."))
+                .andExpect(jsonPath("$.result").exists())
+        ;
+
+    }
+
 
 
     @Test

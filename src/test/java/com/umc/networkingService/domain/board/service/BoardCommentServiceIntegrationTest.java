@@ -34,7 +34,7 @@ public class BoardCommentServiceIntegrationTest extends BoardServiceTestConfig {
                 .build();
 
         //when
-        BoardCommentResponse.BoardCommentId response = boardCommentService.addBoardComment(inhaMember, request);
+        BoardCommentResponse.BoardCommentId response = boardCommentService.addBoardComment(inhaMember, null, request);
         Optional<BoardComment> optionalBoardComment = boardCommentRepository.findById(response.getCommentId());
         assertTrue(optionalBoardComment.isPresent());
         BoardComment comment = optionalBoardComment.get();
@@ -50,12 +50,12 @@ public class BoardCommentServiceIntegrationTest extends BoardServiceTestConfig {
     @Transactional
     public void addReplyOnComment() {
 
-        BoardCommentRequest.BoardCommentReplyRequest request = BoardCommentRequest.BoardCommentReplyRequest.builder()
-                .commentId(comment.getId())
+        BoardCommentRequest.BoardCommentAddRequest request = BoardCommentRequest.BoardCommentAddRequest.builder()
+                .boardId(board.getId())
                 .content("대댓글")
                 .build();
 
-        BoardCommentResponse.BoardCommentId replyId = boardCommentService.addReplyToBoardComment(inhaMember, request);
+        BoardCommentResponse.BoardCommentId replyId = boardCommentService.addBoardComment(inhaMember, comment.getId(), request);
 
         BoardComment replyComment = boardCommentService.loadEntity(replyId.getCommentId());
 
