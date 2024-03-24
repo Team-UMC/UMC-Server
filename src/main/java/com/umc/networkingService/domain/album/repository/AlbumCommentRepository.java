@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface AlbumCommentRepository extends JpaRepository<AlbumComment, UUID> {
     Optional<AlbumComment> findById(UUID albumCommentId);
+    boolean existsByParentComment(AlbumComment parentComment);
 }

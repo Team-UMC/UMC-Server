@@ -11,7 +11,4 @@ import java.util.UUID;
 public interface SemesterPartService extends EntityLoader<SemesterPart, UUID> {
 
     void saveSemesterPartInfos(Member member, List<SemesterPartInfo> semesterPartInfos);
-
-    SemesterPart saveEntity(SemesterPart semesterPart);
-
 }

@@ -15,7 +15,6 @@ public enum Role {
     MEMBER("챌린저", 5);
 
     private final String toKorean;
-
     private final int priority;
 
 }

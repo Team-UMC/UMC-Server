@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.album.dto.request;
 
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.common.validation.annotation.ExistAlbumTitle;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AlbumUpdateRequest {
     @NotBlank(message = "title은 필수 입력값입니다.")
+    @ExistAlbumTitle
     private String title;
 
     @NotBlank(message = "content는 필수 입력갑입니다.")

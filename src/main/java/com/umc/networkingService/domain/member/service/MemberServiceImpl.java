@@ -265,7 +265,7 @@ public class MemberServiceImpl implements MemberService{
     // 타입에 따른 직책 찾기 함수
     @Override
     public List<String> getPositionNamesByType(Member member, PositionType type) {
-        return member.getPositions().stream()
+        return memberPositionService.findMemberPositionByMember(member).stream()
                 .filter(position -> position.getType() == type)
                 .map(MemberPosition::getName)
                 .toList();
@@ -297,6 +297,11 @@ public class MemberServiceImpl implements MemberService{
     public boolean existsByUniversityAndNicknameAndName(University university, String nickname, String name) {
         return memberRepository.existsByUniversityAndNicknameAndName(
                 university, nickname, name);
+    }
+
+    @Override
+    public String findRepresentativePosition(Member member) {
+        return memberPositionService.findRepresentativePosition(member);
     }
 
     @Override

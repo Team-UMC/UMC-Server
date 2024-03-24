@@ -1,8 +1,6 @@
 package com.umc.networkingService.domain.message.dto.request;
 
-import com.umc.networkingService.global.common.enums.Semester;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 

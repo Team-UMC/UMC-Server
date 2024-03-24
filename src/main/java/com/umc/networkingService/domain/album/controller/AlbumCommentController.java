@@ -3,11 +3,13 @@ package com.umc.networkingService.domain.album.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.album.dto.request.AlbumCommentCreateRequest;
 import com.umc.networkingService.domain.album.dto.request.AlbumCommentUpdateRequest;
-import com.umc.networkingService.domain.album.dto.response.AlbumCommentIdResponse;
+import com.umc.networkingService.domain.album.dto.response.AlbumCommentResponse;
 import com.umc.networkingService.domain.album.service.AlbumCommentService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.base.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,10 +32,15 @@ public class AlbumCommentController {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "ALBUM001", description = "존재하지 않는 사진첩입니다.")
     })
+    @Parameters(value = {
+            @Parameter(name = "commentId", description = "대댓글일 경우 상위 댓글 id값입니다.(대댓글이 아닐 경우, 미포함)"),
+    })
     @PostMapping
-    public BaseResponse<AlbumCommentIdResponse> createAlbumComment(@CurrentMember Member member,
-                                                                   @Valid @RequestBody AlbumCommentCreateRequest request) {
-        return BaseResponse.onSuccess(albumCommentService.createAlbumComment(member, request));
+    public BaseResponse<AlbumCommentResponse> createAlbumComment(
+            @CurrentMember Member member,
+            @RequestParam(required = false) UUID commentId,
+            @Valid @RequestBody AlbumCommentCreateRequest request) {
+        return BaseResponse.onSuccess(albumCommentService.createAlbumComment(member, commentId, request));
     }
 
     @Operation(summary = "댓글 수정 API", description = "댓글을 수정하는 API입니다.")
@@ -43,9 +50,10 @@ public class AlbumCommentController {
             @ApiResponse(responseCode = "COMMENT002", description = "댓글 수정 권한이 없을 경우 발생")
     })
     @PatchMapping("/{commentId}")
-    public BaseResponse<AlbumCommentIdResponse> updateAlbumComment(@CurrentMember Member member,
-                                                                   @PathVariable(value = "commentId") UUID commentId,
-                                                                   @Valid @RequestBody AlbumCommentUpdateRequest request) {
+    public BaseResponse<AlbumCommentResponse> updateAlbumComment(
+            @CurrentMember Member member,
+            @PathVariable(value = "commentId") UUID commentId,
+            @Valid @RequestBody AlbumCommentUpdateRequest request) {
         return BaseResponse.onSuccess(albumCommentService.updateAlbumComment(member, commentId, request));
     }
 
@@ -56,8 +64,8 @@ public class AlbumCommentController {
             @ApiResponse(responseCode = "COMMENT002", description = "댓글 수정 권한이 없을 경우 발생")
     })
     @DeleteMapping("/{commentId}")
-    public BaseResponse<AlbumCommentIdResponse> deleteAlbumComment(@CurrentMember Member member,
-                                                                   @PathVariable(value = "commentId") UUID commentId) {
+    public BaseResponse<AlbumCommentResponse> deleteAlbumComment(@CurrentMember Member member,
+                                                                 @PathVariable(value = "commentId") UUID commentId) {
         return BaseResponse.onSuccess(albumCommentService.deleteAlbumComment(member, commentId));
     }
 }

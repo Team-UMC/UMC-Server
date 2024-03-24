@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AlbumCommentIdResponse {
+public class AlbumCommentResponse {
     private UUID commentId;
+    private int commentCnt;
 }

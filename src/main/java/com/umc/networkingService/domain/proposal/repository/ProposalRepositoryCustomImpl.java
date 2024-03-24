@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.proposal.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.proposal.entity.Proposal;
 import com.umc.networkingService.domain.proposal.entity.QProposal;
@@ -9,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import java.util.List;
 

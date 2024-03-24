@@ -16,7 +16,6 @@ public enum Semester {
 
     private final String name;
     private final String color;
-
     private final boolean isActive;
 
 

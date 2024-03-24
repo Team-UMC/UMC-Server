@@ -5,7 +5,6 @@ import com.umc.networkingService.domain.proposal.dto.request.ProposalUpdateReque
 import com.umc.networkingService.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
