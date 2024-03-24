@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.album.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,7 +16,7 @@ public class AlbumDetailResponse {
     private int hitCount;
     private int heartCount;
     private int commentCount;
-    private boolean isLiked;
-    private boolean isMine;
+    private Boolean isLiked;
+    private Boolean isMine;
     private String createdAt;
 }
