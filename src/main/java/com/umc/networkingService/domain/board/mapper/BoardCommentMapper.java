@@ -39,7 +39,7 @@ public class BoardCommentMapper {
     public BoardCommentPageElement toBoardCommentPageElement(BoardComment comment, boolean isMine) {
         return BoardCommentPageElement.builder()
                 .commentId(comment.getId())
-                .writer(comment.getWriter().getNickname() + "/" + comment.getWriter().getName())
+                .writer(DataConverter.convertToWriter(comment.getWriter()))
                 .profileImage(comment.getWriter().getProfileImage())
                 .part(comment.getWriter().getRecentPart())
                 .semester(comment.getWriter().getRecentSemester())
@@ -57,7 +57,7 @@ public class BoardCommentMapper {
                 .boardType(comment.getBoard().getBoardType())
                 .title(comment.getBoard().getTitle())
                 .comment(comment.getContent())
-                .commentCreatedAt(comment.getCreatedAt())
+                .commentCreatedAt(DataConverter.convertToRelativeTimeFormat(comment.getCreatedAt()))
                 .build();
     }
 
