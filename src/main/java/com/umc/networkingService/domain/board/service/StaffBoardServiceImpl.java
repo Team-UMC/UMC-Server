@@ -47,14 +47,14 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
     @Override
     @Transactional
-    public BoardResponse.BoardId toggleNoticePin(Member member, UUID boardId, boolean isPinned) {
+    public BoardResponse.BoardId toggleNoticePin(Member member, UUID boardId, boolean isFixed) {
 
         Board board = boardService.loadEntity(boardId);
         HostType hostType = board.getHostType();
 
         checkPermissionForNoticeBoard(member, hostType);
 
-        board.setIsFixed(isPinned);
+        board.setIsFixed(isFixed);
 
         return new BoardResponse.BoardId(board.getId());
     }

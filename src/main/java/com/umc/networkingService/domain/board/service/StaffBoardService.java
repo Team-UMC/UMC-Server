@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.board.service;
 
-import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardId;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.NoticePageElement;
@@ -13,5 +12,5 @@ import java.util.UUID;
 public interface StaffBoardService {
     BoardPageInfos<NoticePageElement> showNotices(Member member, HostType hostType, String keyword, Pageable pageable);
 
-    BoardId toggleNoticePin(Member member, UUID boardId, boolean isPinned);
+    BoardId toggleNoticePin(Member member, UUID boardId, boolean isFixed);
 }

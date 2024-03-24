@@ -91,7 +91,7 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.deleteBoard(member, boardId));
     }
 
-    @Operation(summary = "핀고정된 notice 조회 API", description = "핀 고정된 공지 게시글을 조회하는 API입니다.")
+    @Operation(summary = "핀고정된 notice 조회 API", description = "핀 고정된 공지 게시글을 조회하는 API입니다. 최대 10개까지 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
     })

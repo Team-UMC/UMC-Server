@@ -58,12 +58,12 @@ public class StaffBoardController {
     })
     @Parameters(value = {
             @Parameter(name = "boardId", description = "핀을 설정하고자 하는 boardId입니다."),
-            @Parameter(name = "isPinned", description = "isPinned = true이면 핀으로 설정됩니다. false이면 핀 설정 해제됩니다.")
+            @Parameter(name = "isFixed", description = "isFixed = true이면 핀으로 설정됩니다. false이면 핀 설정 해제됩니다.")
     })
     @PatchMapping("notices/{boardId}/pin")
     public BaseResponse<BoardResponse.BoardId> toggleNoticePin(@CurrentMember Member member,
                                                                @PathVariable(value = "boardId") UUID boardId,
-                                                               @RequestParam boolean isPinned) {
-        return BaseResponse.onSuccess(staffBoardService.toggleNoticePin(member, boardId, isPinned));
+                                                               @RequestParam boolean isFixed) {
+        return BaseResponse.onSuccess(staffBoardService.toggleNoticePin(member, boardId, isFixed));
     }
 }

@@ -26,7 +26,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 
     /*
-    Home 화면에 보여지는 notices 목록 반환
+    핀 고정된 notices 목록 최대 10개 반환
      */
     @Override
     public List<Board> findNoticesByMember(Member member) {
@@ -38,6 +38,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                                         .or(CampusPermission(member))
                         ))
                 .orderBy(board.createdAt.desc())
+                .limit(10)
                 .fetch();
     }
 
