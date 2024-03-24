@@ -1,7 +1,7 @@
 package com.umc.networkingService.global.common.validation.validator;
 
-import com.umc.networkingService.domain.project.repository.ProjectRepository;
-import com.umc.networkingService.global.common.validation.annotation.ExistProjectName;
+import com.umc.networkingService.domain.album.repository.AlbumRepository;
+import com.umc.networkingService.global.common.validation.annotation.ExistAlbumTitle;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
@@ -9,17 +9,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ProjectNameValidator implements ConstraintValidator<ExistProjectName, String> {
+public class AlbumTitleValidator implements ConstraintValidator<ExistAlbumTitle, String> {
 
-    private final ProjectRepository projectRepository;
-
+    private final AlbumRepository albumRepository;
     @Override
-    public void initialize(ExistProjectName constraintAnnotation) {
+    public void initialize(ExistAlbumTitle constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return  !projectRepository.existsByName(value);
+        return !albumRepository.existsByTitle(value);
     }
 }

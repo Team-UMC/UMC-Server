@@ -4,22 +4,19 @@ import com.umc.networkingService.global.common.enums.Semester;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Builder
-public class AlbumPageResponse {
+public class AlbumInquiryResponse {
     private UUID albumId;
-    private String writer;
-    private String profileImage;
+    private WriterInfo writer;
     private Semester semester;
     private String title;
-    private String content;
     private String thumbnail;
     private int imageCnt;
     private int hitCount;
     private int heartCount;
     private int commentCount;
-    private LocalDateTime createdAt;
+    private String createdAt;
 }

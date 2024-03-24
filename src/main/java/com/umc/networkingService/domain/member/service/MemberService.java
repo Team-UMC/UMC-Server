@@ -29,4 +29,5 @@ public interface MemberService extends EntityLoader<Member, UUID> {
     Member usePoint (Member member, PointType pointType);
     Member findByMemberId (UUID memberId);
     boolean existsByUniversityAndNicknameAndName(University university, String nickname, String name);
+    String findRepresentativePosition(Member member);
 }

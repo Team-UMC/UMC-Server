@@ -1,7 +1,6 @@
 package com.umc.networkingService.domain.test.service;
 
 import com.umc.networkingService.global.common.enums.Part;
-import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

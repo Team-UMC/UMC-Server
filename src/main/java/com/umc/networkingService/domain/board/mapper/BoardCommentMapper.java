@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.board.mapper;
 
-import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -73,8 +72,6 @@ public class BoardCommentMapper {
                 .commentCreatedAt(comment.getCreatedAt())
                 .build();
     }
-
-
 
 
 }

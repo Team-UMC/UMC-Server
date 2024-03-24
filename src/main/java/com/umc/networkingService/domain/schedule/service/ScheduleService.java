@@ -4,12 +4,7 @@ import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.CreateSchedule;
 import com.umc.networkingService.domain.schedule.dto.request.ScheduleRequest.UpdateSchedule;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfo;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleId;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummariesInCalendar;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfoSummaryLists;
-import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.ScheduleInfos;
+import com.umc.networkingService.domain.schedule.dto.response.ScheduleResponse.*;
 
 import java.time.LocalDate;
 import java.util.UUID;

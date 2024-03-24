@@ -42,12 +42,6 @@ public class SemesterPartServiceImpl implements SemesterPartService {
 
     }
 
-    // 엔티티 저장 함수
-    @Override
-    public SemesterPart saveEntity(SemesterPart semesterPart) {
-        return semesterPartRepository.save(semesterPart);
-    }
-
     // 엔티티 로드 함수
     @Override
     public SemesterPart loadEntity(UUID id) {

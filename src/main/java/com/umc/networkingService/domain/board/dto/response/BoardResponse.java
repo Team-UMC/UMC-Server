@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +32,7 @@ public class BoardResponse {
         private int hitCount;
         private int heartCount;
         private int commentCount;
-        private Boolean isLiked;
-        private Boolean isMine;
+        private boolean isLiked;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
@@ -116,7 +114,7 @@ public class BoardResponse {
         private String writer;
         private String title;
         private int hitCount;
-        private Boolean isFixed;
+        private boolean isFixed;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }

@@ -66,10 +66,6 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<SemesterPart> semesterParts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<MemberPosition> positions = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -103,11 +99,6 @@ public class Member extends BaseEntity {
         this.profileImage = profileImage;
     }
 
-    // 직책 업데이트 함수
-    public void updatePositions(List<MemberPosition> memberPositions) {
-        this.positions = memberPositions;
-    }
-
     // 기수별 파트 업데이트 함수
     public void updateSemesterParts(List<SemesterPart> semesterParts) {
         this.semesterParts = semesterParts;
@@ -124,7 +115,7 @@ public class Member extends BaseEntity {
         else this.contributionPoint += usedPoint;
     }
 
-    //가장 최근 기수 찾기
+    // 가장 최근 기수 찾기
     public Semester getRecentSemester() {
         List<SemesterPart> semesterParts = this.getSemesterParts();
 
@@ -135,7 +126,7 @@ public class Member extends BaseEntity {
     }
 
 
-    //가장 최신 파트 찾기
+    // 가장 최신 파트 찾기
     public Part getRecentPart() {
         // 최신 Semester에 해당하는 SemesterPart 찾기
         Semester recentSemester = getRecentSemester();
@@ -149,7 +140,7 @@ public class Member extends BaseEntity {
                 .orElseThrow(()-> new RestApiException(SemesterPartErrorCode.EMPTY_SEMESTER_PART));
     }
 
-    //사용자가 활동한 기수를 모두 찾기
+    // 사용자가 활동한 기수를 모두 찾기
     public List<Semester> getSemesters() {
         return this.getSemesterParts().stream()
                 .map(SemesterPart::getSemester)
@@ -174,5 +165,4 @@ public class Member extends BaseEntity {
     public void addRemainPoint(Long point) {
         this.remainPoint += point;
     }
-
 }

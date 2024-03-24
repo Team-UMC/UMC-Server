@@ -12,9 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlbumPagingResponse {
+public class AlbumPagingResponse<T> {
+    private List<T> albumPageResponses = new ArrayList<>();
     private int page;
-    private List<AlbumPageResponse> albumPageResponses = new ArrayList<>();
     private int totalPages;
     private Boolean isFirst;
     private Boolean isLast;
