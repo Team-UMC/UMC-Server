@@ -18,7 +18,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class BoardMapper {
-    private final BoardFileService boardFileService;
 
     public Board toEntity(Member member, BoardRequest.BoardCreateRequest request,
                           List<Semester> semesterPermission) {
@@ -51,14 +50,14 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardPageElement toBoardPageElement(Board board) {
+    public BoardPageElement toBoardPageElement(Board board, String thumbnail) {
         return BoardPageElement.builder()
                 .boardId(board.getId())
                 .writer(DataConverter.convertToWriter(board.getWriter()))
                 .profileImage(board.getWriter().getProfileImage())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .thumbnail(boardFileService.findThumbnailImage(board))
+                .thumbnail(thumbnail)
                 .hitCount(board.getHitCount())
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())
@@ -68,7 +67,7 @@ public class BoardMapper {
     }
 
 
-    public BoardSearchPageElement toBoardSearchPageElement(Board board) {
+    public BoardSearchPageElement toBoardSearchPageElement(Board board, String thumbnail) {
         return BoardSearchPageElement.builder()
                 .boardType(board.getBoardType())
                 .hostType(board.getHostType())
@@ -77,7 +76,7 @@ public class BoardMapper {
                 .profileImage(board.getWriter().getProfileImage())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .thumbnail(boardFileService.findThumbnailImage(board))
+                .thumbnail(thumbnail)
                 .hitCount(board.getHitCount())
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())

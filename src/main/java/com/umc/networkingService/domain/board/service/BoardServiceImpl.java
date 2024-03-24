@@ -2,7 +2,7 @@ package com.umc.networkingService.domain.board.service;
 
 
 import com.umc.networkingService.domain.board.dto.request.BoardRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
@@ -40,9 +39,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardHeartMapper boardHeartMapper;
     private final MemberService memberService;
 
-    /*
-    핀고정된 공지사항 조회
-     */
+
     @Override
     public PinnedNotices showPinnedNotices(Member loginMember) {
 
@@ -52,36 +49,28 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
-    /*
-    해당 hostType, boardType의 글 전체 조회 with Paging
-     */
     @Override
     public BoardPageInfos<BoardPageElement> showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
 
-        Member member = memberService.loadEntity(loginMember.getId());
         checkBadRequest(hostType, boardType);
 
+        Member member = memberService.loadEntity(loginMember.getId());
+
         Page<Board> boards = boardRepository.findAllBoards(member, hostType, boardType, pageable);
-        return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toBoardPageElement).stream().toList());
+        return boardMapper.toBoardPageInfos(boards, boards.map(board ->
+                boardMapper.toBoardPageElement(board, boardFileService.findThumbnailImage(board))).stream().toList());
     }
 
-    /*
-    keyword로 글 전체 조회 with Paging
-     */
     @Override
     public BoardPageInfos<BoardSearchPageElement> searchBoard(Member loginMember, String keyword, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
 
         Page<Board> searchBoards = boardRepository.findKeywordBoards(member, keyword, pageable);
-        return boardMapper.toBoardPageInfos(searchBoards,
-                searchBoards.map(boardMapper::toBoardSearchPageElement).stream().toList());
-
+        return boardMapper.toBoardPageInfos(searchBoards, searchBoards.map(board ->
+                boardMapper.toBoardSearchPageElement(board, boardFileService.findThumbnailImage(board))).stream().toList());
     }
 
-    /*
-    게시글 상세 조회
-     */
     @Override
     @Transactional
     public BoardDetail showBoardDetail(Member loginMember, UUID boardId) {
@@ -89,32 +78,27 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberService.loadEntity(loginMember.getId());
         Board board = loadEntity(boardId);
 
-        //게시글을 열람할 권한이 있는지 check
+        //게시글 열람 권한 check
         checkSemesterPermission(member, board);
 
         //좋아요 여부 확인
-        boolean isLike = false;
-        Optional<BoardHeart> boardHeart = boardHeartRepository.findByMemberAndBoard(member, board);
-        if (boardHeart.isPresent())
-            isLike = boardHeart.get().isChecked();
-
-        //조회수 증가
-        board.increaseHitCount();
+        boolean isLike = boardHeartRepository.findByMemberAndBoard(member, board)
+                .map(BoardHeart::isChecked)
+                .orElse(false);
 
         //본인글인지 확인
         boolean isMine = isMyBoard(board, member);
+
+        //조회수 증가
+        board.increaseHitCount();
 
         //해당 게시글의 모든 첨부파일 url
         List<String> boardFiles = boardFileService.findBoardFiles(board).stream()
                 .map(BoardFile::getUrl).toList();
 
         return boardMapper.toBoardDetail(board, boardFiles, isLike, isMine);
-
     }
 
-    /*
-    좋아요/취소
-     */
     @Override
     @Transactional
     public BoardId toggleBoardLike(Member member, UUID boardId) {
@@ -124,47 +108,36 @@ public class BoardServiceImpl implements BoardService {
         BoardHeart boardHeart = boardHeartRepository.findByMemberAndBoard(member, board)
                 .orElseGet(() -> {
                     BoardHeart newHeart = boardHeartMapper.toBoardHeartEntity(board, member);
-                    boardHeartRepository.save(newHeart);
-                    return newHeart;
+                    return boardHeartRepository.save(newHeart);
                 });
 
         boardHeart.toggleHeart();
         board.setHeartCount(boardHeart.isChecked());
 
-        return new BoardId(boardId);
+        return new BoardResponse.BoardId(boardId);
     }
 
-    /*
-    내 글 목록 조회
-     */
+
     @Override
     public BoardPageInfos<MyBoardPageElement> showBoardsByMember(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
-        Page<Board> boards;
-        if (hostType != null && boardType != null)
-            boards = boardRepository.findBoardsByWriterForWeb(member, hostType, boardType, keyword, pageable);
-        else
-            boards = boardRepository.findBoardsByWriterForApp(member, keyword, pageable);
+        Page<Board> boards = (hostType != null && boardType != null) ?
+                boardRepository.findBoardsByWriterForWeb(member, hostType, boardType, keyword, pageable) :
+                boardRepository.findBoardsByWriterForApp(member, keyword, pageable);
 
         return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toMyBoardPageElement).stream().toList());
     }
 
-    /*
-    내가 좋아요한 글 목록 조회
-     */
+
     @Override
     public BoardPageInfos<MyBoardPageElement> showBoardsByMemberHeart(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
-        Page<Board> boards;
-        if (hostType != null && boardType != null)
-            boards = boardRepository.findBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable);
-        else
-            boards = boardRepository.findBoardsByMemberHeartForApp(member, keyword, pageable);
+        Page<Board> boards = (hostType != null && boardType != null) ?
+                boardRepository.findBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable) :
+                boardRepository.findBoardsByMemberHeartForApp(member, keyword, pageable);
 
         return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toMyBoardPageElement).stream().toList());
     }
 
-    /*
-    board 생성
-     */
+
     @Override
     @Transactional
     public BoardId createBoard(Member member, BoardRequest.BoardCreateRequest request, List<MultipartFile> files) {
@@ -176,17 +149,14 @@ public class BoardServiceImpl implements BoardService {
         checkBadRequest(hostType, boardType);
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
-
         Board board = boardRepository.save(boardMapper.toEntity(member, request, semesterPermission));
         if (files != null)
             boardFileService.uploadBoardFiles(board, files);
 
-        return new BoardId(board.getId());
+        return new BoardResponse.BoardId(board.getId());
     }
 
-    /*
-    board 수정
-     */
+
     @Override
     @Transactional
     public BoardId updateBoard(Member member, UUID boardId, BoardRequest.BoardUpdateRequest request, List<MultipartFile> files) {
@@ -207,12 +177,10 @@ public class BoardServiceImpl implements BoardService {
         board.update(request, semesterPermission);
         boardFileService.updateBoardFiles(board, files);
 
-        return new BoardId(board.getId());
+        return new BoardResponse.BoardId(board.getId());
     }
 
-    /*
-    board 삭제
-     */
+
     @Override
     @Transactional
     public BoardId deleteBoard(Member member, UUID boardId) {
@@ -228,7 +196,7 @@ public class BoardServiceImpl implements BoardService {
         boardFileService.deleteBoardFiles(board);
         board.delete();
 
-        return new BoardId(board.getId());
+        return new BoardResponse.BoardId(board.getId());
 
     }
 
@@ -238,7 +206,6 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-    //게시글 작성, 수정 시 권한 Check
     private List<Semester> checkPermission(Member member, HostType hostType, BoardType boardType) {
         //현재 기수
         Semester nowSemester = Semester.findActiveSemester();
@@ -289,8 +256,9 @@ public class BoardServiceImpl implements BoardService {
         List<Semester> memberSemesters = member.getSemesters();
         List<Semester> boardSemesterPermissions = board.getSemesterPermission();
 
-        if (!memberSemesters.stream()
-                .anyMatch(boardSemesterPermissions::contains))
+        //memberSemester의 어떤 기수도 허용기수에 포함되지 않으면 예외를 반환
+        if (memberSemesters.stream()
+                .noneMatch(boardSemesterPermissions::contains))
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
 
     }
@@ -311,12 +279,8 @@ public class BoardServiceImpl implements BoardService {
 
     //본인 글인지 확인
     private boolean isMyBoard(Board board, Member member) {
-        if (board.getWriter().getId() == member.getId())
-            return true;
-        else
-            return false;
+        return board.getWriter().getId() == member.getId();
     }
-
 
     @Override
     public Board loadEntity(UUID id) {

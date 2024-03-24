@@ -34,13 +34,11 @@ public class StaffBoardServiceImpl implements StaffBoardService {
         //해당 운영진이 조회 가능한 최상위 hostType을 구함
         HostType permissionHostType = HostType.getPermmissionHostType(member.getRole());
 
-        Page<Board> notices;
         // findAllNotices -> 해당 운영진이 조회 가능한 모든 hostType의 공지를 조회 가능
-        if(hostType.equals(HostType.ALL))
-            notices = boardRepository.findAllNotices(member, permissionHostType, keyword, pageable);
         // findNoticesByHostType -> 해당 hostType만 조회 가능 (해당 멤버가 조회 가능한 hostType인지 확인 필요)
-        else
-            notices = boardRepository.findNoticesByHostType(member, hostType, keyword, pageable);
+        Page<Board> notices = (hostType.equals(HostType.ALL)) ?
+                boardRepository.findAllNotices(member, permissionHostType, keyword, pageable) :
+                boardRepository.findNoticesByHostType(member, hostType, keyword, pageable);
 
         return boardMapper.toBoardPageInfos(notices, notices.map(boardMapper::toNoticePageElement).stream().toList());
     }
