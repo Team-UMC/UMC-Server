@@ -141,9 +141,9 @@ public class AlbumServiceImpl implements AlbumService{
         return albumMapper.toAlbumDetailResponse(
                 album,
                 findAlbumImageUrls(album),
-                albumMapper.toWriterInfo(member, memberService.findRepresentativePosition(member)),
-                checkAlbumLikeByMember(member,album),
-                album.getId().equals(member.getId()));
+                albumMapper.toWriterInfo(album.getWriter(), memberService.findRepresentativePosition(album.getWriter())),
+                checkAlbumLikeByMember(member, album),
+                album.getWriter().getId().equals(member.getId()));
     }
 
     @Override
