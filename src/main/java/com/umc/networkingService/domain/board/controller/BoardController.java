@@ -3,7 +3,10 @@ package com.umc.networkingService.domain.board.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageElement;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardSearchPageElement;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardPageElement;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
@@ -26,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
+
 
 @Tag(name = "게시판 API", description = "게시판 관련 API")
 @RestController
@@ -108,10 +112,10 @@ public class BoardController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
     @GetMapping
-    public BaseResponse<BoardResponse.BoardPageInfos> showBoards(@CurrentMember Member member,
-                                                                 @RequestParam(name = "host") HostType hostType,
-                                                                 @RequestParam(name = "board") BoardType boardType,
-                                                                 @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<BoardPageInfos<BoardPageElement>> showBoards(@CurrentMember Member member,
+                                                                     @RequestParam(name = "host") HostType hostType,
+                                                                     @RequestParam(name = "board") BoardType boardType,
+                                                                     @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                  @Parameter(hidden = true) Pageable pageable) {
 
         return BaseResponse.onSuccess(boardService.showBoards(member, hostType, boardType, pageable));
@@ -139,32 +143,16 @@ public class BoardController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
     @GetMapping(value = "/search")
-    public BaseResponse<BoardResponse.BoardSearchPageInfos> searchBoard(@CurrentMember Member member,
-                                                                        @RequestParam(name = "keyword") String keyword,
-                                                                        @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<BoardPageInfos<BoardSearchPageElement>> searchBoard(@CurrentMember Member member,
+                                                                            @RequestParam(name = "keyword") String keyword,
+                                                                            @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                         @Parameter(hidden = true) Pageable pageable) {
 
         return BaseResponse.onSuccess(boardService.searchBoard(member, keyword, pageable));
     }
 
-    @Operation(summary = "[APP] 내가 쓴 게시글 조회/검색 API", description = "APP용 내가 쓴 게시글을 조회하거나 검색하는 API입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
-    })
-    @Parameters(value = {
-            @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 내가 쓴 게시글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
-            @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
-    })
-    @GetMapping(value = "/member/app")
-    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showBoardsByMemberForApp(@CurrentMember Member member,
-                                                                                   @RequestParam(name = "keyword", required = false) String keyword,
-                                                                                   @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
-                                                                                   @Parameter(hidden = true) Pageable pageable) {
 
-        return BaseResponse.onSuccess(boardService.showBoardsByMemberForApp(member, keyword, pageable));
-    }
-
-    @Operation(summary = "[WEB] 내가 쓴 게시글 조회/검색 API", description = "WEB용 내가 쓴 게시글을 조회하거나 검색하는 API입니다.  " +
+    @Operation(summary = "내가 쓴 게시글 조회/검색 API", description = "내가 쓴 게시글을 조회하거나 검색하는 API입니다. WEB일 경우 host와 board를 지정해주세요. APP일 경우 지정하지 않아도 됩니다. " +
             "host: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
             "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
     @ApiResponses(value = {
@@ -175,35 +163,19 @@ public class BoardController {
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 내가 쓴 게시글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
-    @GetMapping(value = "/member/web")
-    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showBoardsByMemberForWeb(@CurrentMember Member member,
-                                                                                   @RequestParam(name = "host") HostType hostType,
-                                                                                   @RequestParam(name = "board") BoardType boardType,
-                                                                                   @RequestParam(name = "keyword", required = false) String keyword,
-                                                                                   @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
-                                                                                   @Parameter(hidden = true) Pageable pageable) {
-
-        return BaseResponse.onSuccess(boardService.showBoardsByMemberForWeb(member, hostType, boardType, keyword, pageable));
-    }
-
-
-    @Operation(summary = "[APP] 내가 좋아요한 게시글 조회/검색 API", description = "APP용 내가 좋아요한 게시글을 조회하거나 검색하는 API입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공")
-    })
-    @Parameters(value = {
-            @Parameter(name = "keyword", description = "keyword를 주지 않으면 내가 좋아요한 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
-            @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
-    })
-    @GetMapping(value = "/member/hearts/app")
-    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showMemberBoardHeartForApp(@CurrentMember Member member,
+    @GetMapping(value = "/member")
+    public BaseResponse<BoardPageInfos<MyBoardPageElement>> showBoardsByMemberForWeb(@CurrentMember Member member,
+                                                                                     @RequestParam(name = "host", required = false) HostType hostType,
+                                                                                     @RequestParam(name = "board", required = false) BoardType boardType,
                                                                                      @RequestParam(name = "keyword", required = false) String keyword,
                                                                                      @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
-                                                                                     @Parameter(hidden = true) Pageable pageable) {
-        return BaseResponse.onSuccess(boardService.showBoardsByMemberHeartForApp(member, keyword, pageable));
+                                                                                   @Parameter(hidden = true) Pageable pageable) {
+
+        return BaseResponse.onSuccess(boardService.showBoardsByMember(member, hostType, boardType, keyword, pageable));
     }
 
-    @Operation(summary = "[WEB] 내가 좋아요한 게시글 조회/검색 API", description = "WEB용 내가 좋아요한 게시글을 조회하거나 검색하는 API입니다.  " +
+
+    @Operation(summary = "내가 좋아요한 게시글 조회/검색 API", description = "내가 좋아요한 게시글을 조회하거나 검색하는 API입니다. WEB일 경우 host와 board를 지정해주세요. APP일 경우 지정하지 않아도 됩니다.  " +
             "host: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
             "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
     @ApiResponses(value = {
@@ -214,14 +186,14 @@ public class BoardController {
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 내가 좋아요한 모든 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
     })
-    @GetMapping(value = "/member/hearts/web")
-    public BaseResponse<MyBoardResponse.MyBoardPageInfos> showMemberBoardHeartForWeb(@CurrentMember Member member,
-                                                                                     @RequestParam(name = "host") HostType hostType,
-                                                                                     @RequestParam(name = "board") BoardType boardType,
-                                                                                     @RequestParam(name = "keyword", required = false) String keyword,
-                                                                                     @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    @GetMapping(value = "/member/hearts")
+    public BaseResponse<BoardPageInfos<MyBoardPageElement>> showMemberBoardHeart(@CurrentMember Member member,
+                                                                     @RequestParam(name = "host",required = false) HostType hostType,
+                                                                     @RequestParam(name = "board",required = false) BoardType boardType,
+                                                                     @RequestParam(name = "keyword", required = false) String keyword,
+                                                                     @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                                      @Parameter(hidden = true) Pageable pageable) {
-        return BaseResponse.onSuccess(boardService.showBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable));
+        return BaseResponse.onSuccess(boardService.showBoardsByMemberHeart(member, hostType, boardType, keyword, pageable));
     }
 
 

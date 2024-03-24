@@ -1,8 +1,8 @@
 package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardCommentPageElement;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.*;
-import static com.umc.networkingService.domain.board.dto.response.MyBoardResponse.*;
 
 @Service
 @RequiredArgsConstructor
@@ -88,30 +87,33 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     }
 
     @Override
-    public BoardCommentPageInfos showBoardComments(Member loginMember, UUID boardId, Pageable pageable) {
+    public BoardCommentPageInfos<BoardCommentPageElement> showBoardComments(Member loginMember, UUID boardId, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
         Board board = boardService.loadEntity(boardId);
         Page<BoardComment> comments = boardCommentRepository.findAllBoardComments(board, pageable);
 
         //isMine 여부를 포함
-        List<BoardCommentPageElement> commentPageElements = comments.map(comment -> {
-            boolean isMine = isMyComment(comment, member);
-            return boardCommentMapper.toBoardCommentPageElement(comment, isMine);
-        }).stream().toList();
+        List<BoardCommentPageElement> commentPageElements = comments.map(comment ->
+                boardCommentMapper.toBoardCommentPageElement(comment, isMyComment(comment, member))).stream().toList();
 
         return boardCommentMapper.toBoardCommentPageInfos(comments, commentPageElements);
     }
 
 
     @Override
-    public MyBoardPageInfos showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPageInfos(boardCommentRepository.findBoardsByMemberCommentForApp(member, keyword, pageable));
+    public BoardResponse.BoardPageInfos<BoardResponse.MyBoardPageElement> showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
+
+        Page<Board> boards = boardCommentRepository.findBoardsByMemberCommentForApp(member, keyword, pageable);
+        return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toMyBoardPageElement).stream().toList());
     }
 
     @Override
-    public MyBoardCommentPageInfos showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
-        return boardCommentMapper.toMyBoardCommentPageInfos(boardCommentRepository.findBoardsByMemberCommentForWeb(member, hostType, boardType, keyword, pageable));
+    public BoardCommentPageInfos<MyBoardCommentPageElement> showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        Page<BoardComment> boardComments = boardCommentRepository.findBoardsByMemberCommentForWeb(member, hostType, boardType, keyword, pageable);
+
+        return boardCommentMapper.toBoardCommentPageInfos(boardComments,
+                boardComments.map(boardCommentMapper::toMyBoardCommentPageElement).stream().toList());
     }
 
     private void validateMember(BoardComment comment, Member member) {

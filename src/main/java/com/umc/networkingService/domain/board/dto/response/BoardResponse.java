@@ -32,7 +32,8 @@ public class BoardResponse {
         private int hitCount;
         private int heartCount;
         private int commentCount;
-        private boolean isLiked;
+        private Boolean isLiked;
+        private Boolean isMine;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
@@ -68,45 +69,6 @@ public class BoardResponse {
     }
 
     @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class BoardPageInfos {
-        private List<BoardPageElement> boardPageElements = new ArrayList<>();
-        private int page;
-        private int totalPages;
-        private int totalElements;
-        private Boolean isFirst;
-        private Boolean isLast;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class BoardSearchPageInfos {
-        private List<BoardSearchPageElement> boardSearchPageElements = new ArrayList<>();
-        private int page;
-        private int totalPages;
-        private int totalElements;
-        private Boolean isFirst;
-        private Boolean isLast;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class NoticePageInfos {
-        private List<NoticePageElement> noticePageElements = new ArrayList<>();
-        private int page;
-        private int totalPages;
-        private int totalElements;
-        private Boolean isFirst;
-        private Boolean isLast;
-    }
-
-    @Getter
     @Builder
     public static class NoticePageElement {
         private UUID boardId;
@@ -114,9 +76,34 @@ public class BoardResponse {
         private String writer;
         private String title;
         private int hitCount;
-        private boolean isFixed;
+        private Boolean isFixed;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Builder
+    public static class MyBoardPageElement {
+        private UUID boardId;
+        private HostType hostType;
+        private BoardType boardType;
+        private String title;
+        private int hitCount;
+        private int heartCount;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Builder
+    public static class MyBoardCommentPageElement {
+        private UUID boardId;
+        private HostType hostType;
+        private BoardType boardType;
+        private String title;
+        private String comment;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime commentCreatedAt;
     }
 
     @Getter
@@ -141,4 +128,16 @@ public class BoardResponse {
         List<PinnedNotice> pinnedNotices = new ArrayList<>();
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class BoardPageInfos<T> {
+        private List<T> boardPageElements = new ArrayList<>();
+        private int page;
+        private int totalPages;
+        private int totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
 }

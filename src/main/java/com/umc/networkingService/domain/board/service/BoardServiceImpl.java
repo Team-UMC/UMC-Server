@@ -2,8 +2,7 @@ package com.umc.networkingService.domain.board.service;
 
 
 import com.umc.networkingService.domain.board.dto.request.BoardRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 import com.umc.networkingService.domain.board.entity.*;
 import com.umc.networkingService.domain.board.mapper.BoardHeartMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
@@ -16,6 +15,7 @@ import com.umc.networkingService.global.common.enums.Semester;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +44,7 @@ public class BoardServiceImpl implements BoardService {
     핀고정된 공지사항 조회
      */
     @Override
-    public BoardResponse.PinnedNotices showPinnedNotices(Member loginMember) {
+    public PinnedNotices showPinnedNotices(Member loginMember) {
 
         Member member = memberService.loadEntity(loginMember.getId());
 
@@ -54,23 +56,26 @@ public class BoardServiceImpl implements BoardService {
     해당 hostType, boardType의 글 전체 조회 with Paging
      */
     @Override
-    public BoardResponse.BoardPageInfos showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
+    public BoardPageInfos<BoardPageElement> showBoards(Member loginMember, HostType hostType, BoardType boardType, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
         checkBadRequest(hostType, boardType);
 
-        return boardMapper.toBoardPageInfos(boardRepository.findAllBoards(member, hostType, boardType, pageable));
+        Page<Board> boards = boardRepository.findAllBoards(member, hostType, boardType, pageable);
+        return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toBoardPageElement).stream().toList());
     }
 
     /*
     keyword로 글 전체 조회 with Paging
      */
     @Override
-    public BoardResponse.BoardSearchPageInfos searchBoard(Member loginMember, String keyword, Pageable pageable) {
+    public BoardPageInfos<BoardSearchPageElement> searchBoard(Member loginMember, String keyword, Pageable pageable) {
 
         Member member = memberService.loadEntity(loginMember.getId());
 
-        return boardMapper.toBoardSearchPageInfos(boardRepository.findKeywordBoards(member, keyword, pageable));
+        Page<Board> searchBoards = boardRepository.findKeywordBoards(member, keyword, pageable);
+        return boardMapper.toBoardPageInfos(searchBoards,
+                searchBoards.map(boardMapper::toBoardSearchPageElement).stream().toList());
 
     }
 
@@ -79,7 +84,7 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     @Transactional
-    public BoardResponse.BoardDetail showBoardDetail(Member loginMember, UUID boardId) {
+    public BoardDetail showBoardDetail(Member loginMember, UUID boardId) {
 
         Member member = memberService.loadEntity(loginMember.getId());
         Board board = loadEntity(boardId);
@@ -112,7 +117,7 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     @Transactional
-    public BoardResponse.BoardId toggleBoardLike(Member member, UUID boardId) {
+    public BoardId toggleBoardLike(Member member, UUID boardId) {
         Board board = loadEntity(boardId);
 
         //boardHeart에 없다면 새로 저장
@@ -126,33 +131,35 @@ public class BoardServiceImpl implements BoardService {
         boardHeart.toggleHeart();
         board.setHeartCount(boardHeart.isChecked());
 
-        return new BoardResponse.BoardId(boardId);
+        return new BoardId(boardId);
     }
 
     /*
     내 글 목록 조회
      */
     @Override
-    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberForApp(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByWriterForApp(member, keyword, pageable));
-    }
+    public BoardPageInfos<MyBoardPageElement> showBoardsByMember(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        Page<Board> boards;
+        if (hostType != null && boardType != null)
+            boards = boardRepository.findBoardsByWriterForWeb(member, hostType, boardType, keyword, pageable);
+        else
+            boards = boardRepository.findBoardsByWriterForApp(member, keyword, pageable);
 
-    @Override
-    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByWriterForWeb(member, hostType, boardType, keyword, pageable));
+        return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toMyBoardPageElement).stream().toList());
     }
 
     /*
     내가 좋아요한 글 목록 조회
      */
     @Override
-    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForApp(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForApp(member, keyword, pageable));
-    }
+    public BoardPageInfos<MyBoardPageElement> showBoardsByMemberHeart(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        Page<Board> boards;
+        if (hostType != null && boardType != null)
+            boards = boardRepository.findBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable);
+        else
+            boards = boardRepository.findBoardsByMemberHeartForApp(member, keyword, pageable);
 
-    @Override
-    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberHeartForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPageInfos(boardRepository.findBoardsByMemberHeartForWeb(member, hostType, boardType, keyword, pageable));
+        return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toMyBoardPageElement).stream().toList());
     }
 
     /*
@@ -160,7 +167,7 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     @Transactional
-    public BoardResponse.BoardId createBoard(Member member, BoardRequest.BoardCreateRequest request, List<MultipartFile> files) {
+    public BoardId createBoard(Member member, BoardRequest.BoardCreateRequest request, List<MultipartFile> files) {
         //연합, 지부, 학교 타입
         HostType hostType = HostType.valueOf(request.getHostType());
         BoardType boardType = BoardType.valueOf(request.getBoardType());
@@ -174,7 +181,7 @@ public class BoardServiceImpl implements BoardService {
         if (files != null)
             boardFileService.uploadBoardFiles(board, files);
 
-        return new BoardResponse.BoardId(board.getId());
+        return new BoardId(board.getId());
     }
 
     /*
@@ -182,7 +189,7 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     @Transactional
-    public BoardResponse.BoardId updateBoard(Member member, UUID boardId, BoardRequest.BoardUpdateRequest request, List<MultipartFile> files) {
+    public BoardId updateBoard(Member member, UUID boardId, BoardRequest.BoardUpdateRequest request, List<MultipartFile> files) {
         Board board = loadEntity(boardId);
 
         //연합, 지부, 학교 타입
@@ -200,7 +207,7 @@ public class BoardServiceImpl implements BoardService {
         board.update(request, semesterPermission);
         boardFileService.updateBoardFiles(board, files);
 
-        return new BoardResponse.BoardId(board.getId());
+        return new BoardId(board.getId());
     }
 
     /*
@@ -208,7 +215,7 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     @Transactional
-    public BoardResponse.BoardId deleteBoard(Member member, UUID boardId) {
+    public BoardId deleteBoard(Member member, UUID boardId) {
         Board board = loadEntity(boardId);
 
         //현재 로그인한 member와 writer가 같지 않고, 로그인한 멤버가 운영진이 아니라면 삭제 불가
@@ -221,7 +228,7 @@ public class BoardServiceImpl implements BoardService {
         boardFileService.deleteBoardFiles(board);
         board.delete();
 
-        return new BoardResponse.BoardId(board.getId());
+        return new BoardId(board.getId());
 
     }
 

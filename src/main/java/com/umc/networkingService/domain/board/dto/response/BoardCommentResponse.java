@@ -39,8 +39,8 @@ public class BoardCommentResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class BoardCommentPageInfos {
-        private List<BoardCommentPageElement> boardCommentPageElements = new ArrayList<>();
+    public static class BoardCommentPageInfos<T> {
+        private List<T> boardCommentPageElements = new ArrayList<>();
         private int page;
         private int totalPages;
         private int totalElements;

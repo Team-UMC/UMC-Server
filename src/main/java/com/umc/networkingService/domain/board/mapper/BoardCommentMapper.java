@@ -1,5 +1,6 @@
 package com.umc.networkingService.domain.board.mapper;
 
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardCommentPageElement;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -10,8 +11,6 @@ import java.util.List;
 
 import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.BoardCommentPageElement;
 import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.BoardCommentPageInfos;
-import static com.umc.networkingService.domain.board.dto.response.MyBoardResponse.MyBoardCommentPageElement;
-import static com.umc.networkingService.domain.board.dto.response.MyBoardResponse.MyBoardCommentPageInfos;
 
 @Component
 public class BoardCommentMapper {
@@ -24,9 +23,9 @@ public class BoardCommentMapper {
                 .build();
     }
 
-    public BoardCommentPageInfos toBoardCommentPageInfos(Page<BoardComment> comments, List<BoardCommentPageElement> commentPageElements) {
+    public <T> BoardCommentPageInfos<T> toBoardCommentPageInfos(Page<BoardComment> comments, List<T> commentPageElements) {
 
-        return BoardCommentPageInfos.builder()
+        return BoardCommentPageInfos.<T>builder()
                 .boardCommentPageElements(commentPageElements)
                 .page(comments.getNumber())
                 .totalPages(comments.getTotalPages())
@@ -49,18 +48,6 @@ public class BoardCommentMapper {
                 .build();
     }
 
-    public MyBoardCommentPageInfos toMyBoardCommentPageInfos(Page<BoardComment> comments) {
-        List<MyBoardCommentPageElement> commentPageElements = comments.map(this::toMyBoardCommentPageElement)
-                .stream().toList();
-        return MyBoardCommentPageInfos.builder()
-                .myBoardCommentPageElement(commentPageElements)
-                .page(comments.getNumber())
-                .totalPages(comments.getTotalPages())
-                .totalElements((int) comments.getTotalElements())
-                .isFirst(comments.isFirst())
-                .isLast(comments.isLast())
-                .build();
-    }
 
     public MyBoardCommentPageElement toMyBoardCommentPageElement(BoardComment comment) {
         return MyBoardCommentPageElement.builder()

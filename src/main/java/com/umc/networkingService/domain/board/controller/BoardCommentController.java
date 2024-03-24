@@ -2,8 +2,7 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.BoardCommentPageInfos;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardCommentService;
@@ -24,8 +23,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.*;
-import static com.umc.networkingService.domain.board.dto.response.MyBoardResponse.*;
+import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.BoardCommentId;
+import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.BoardCommentPageElement;
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 
 @Tag(name = "게시판 댓글 API", description = "게시판 댓글 관련 API")
 @RestController
@@ -84,9 +84,9 @@ public class BoardCommentController {
             @Parameter(name = "page", description = " page 시작은 0번부터, 오름차순으로 조회됩니다.")
     })
     @GetMapping(value = "/{boardId}")
-    public BaseResponse<BoardCommentPageInfos> showBoardComments(@CurrentMember Member member,
-                                                                 @PathVariable(value = "boardId") UUID boardId,
-                                                                 @PageableDefault(sort = "created_at", direction = Sort.Direction.ASC)
+    public BaseResponse<BoardCommentPageInfos<BoardCommentPageElement>> showBoardComments(@CurrentMember Member member,
+                                                                                          @PathVariable(value = "boardId") UUID boardId,
+                                                                                          @PageableDefault(sort = "created_at", direction = Sort.Direction.ASC)
                                                                       @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(boardCommentService.showBoardComments(member, boardId, pageable));
     }
@@ -100,9 +100,9 @@ public class BoardCommentController {
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다.")
     })
     @GetMapping(value = "/member/comments/app")
-    public BaseResponse<MyBoardPageInfos> showBoardsByMemberCommentsForApp(@CurrentMember Member member,
-                                                                           @RequestParam(name = "keyword", required = false) String keyword,
-                                                                           @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<BoardPageInfos<MyBoardPageElement>> showBoardsByMemberCommentsForApp(@CurrentMember Member member,
+                                                                                             @RequestParam(name = "keyword", required = false) String keyword,
+                                                                                             @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                                 @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(boardCommentService.showBoardsByMemberCommentForApp(member, keyword, pageable));
     }
@@ -118,7 +118,7 @@ public class BoardCommentController {
             @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 내가 댓글 쓴 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다.")})
     @GetMapping(value = "/member/comments/web")
-    public BaseResponse<MyBoardCommentPageInfos> showBoardsByMemberCommentForWeb(@CurrentMember Member member,
+    public BaseResponse<BoardCommentPageInfos<MyBoardCommentPageElement>> showBoardsByMemberCommentForWeb(@CurrentMember Member member,
                                                                                  @RequestParam(name = "host") HostType hostType,
                                                                                  @RequestParam(name = "board") BoardType boardType,
                                                                                  @RequestParam(name = "keyword", required = false) String keyword,

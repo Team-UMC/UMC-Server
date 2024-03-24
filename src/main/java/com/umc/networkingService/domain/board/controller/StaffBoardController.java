@@ -2,6 +2,8 @@ package com.umc.networkingService.domain.board.controller;
 
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.NoticePageElement;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.StaffBoardService;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -40,10 +42,10 @@ public class StaffBoardController {
 
     })
     @GetMapping("notices")
-    public BaseResponse<BoardResponse.NoticePageInfos> showNotices(@CurrentMember Member member,
-                                                                   @RequestParam(name = "host") HostType hostType,
-                                                                   @RequestParam(name = "keyword", required = false) String keyword,
-                                                                   @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
+    public BaseResponse<BoardPageInfos<NoticePageElement>> showNotices(@CurrentMember Member member,
+                                                                       @RequestParam(name = "host") HostType hostType,
+                                                                       @RequestParam(name = "keyword", required = false) String keyword,
+                                                                       @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                @Parameter(hidden = true) Pageable pageable) {
         return BaseResponse.onSuccess(staffBoardService.showNotices(member, hostType, keyword, pageable));
     }

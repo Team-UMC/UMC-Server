@@ -292,7 +292,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     /*
-    permissionHostType에 따라 최상위 권한이하의 공지글 목록을 조회
+    permissionHostType에 따라 최상위 권한이하의 공지글 목록을 조회 (운영진용)
     */
     @Override
     public Page<Board> findAllNotices(Member member, HostType permissionHostType, String keyword, Pageable pageable) {
@@ -321,7 +321,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
 
-    //hostTYpe과 boardType에 따라 조건 추가
+    //hostType과 boardType에 따라 조건 추가
     private BooleanBuilder addHostTypeAndBoardTypeCondition(Member member, HostType hostType, BoardType boardType) {
         BooleanBuilder predicate = new BooleanBuilder().and(eqBoardType(boardType));
 
