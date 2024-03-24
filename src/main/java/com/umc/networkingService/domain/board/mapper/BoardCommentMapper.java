@@ -4,6 +4,7 @@ import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoard
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.global.converter.DataConverter;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +45,7 @@ public class BoardCommentMapper {
                 .semester(comment.getWriter().getRecentSemester())
                 .content(comment.getContent())
                 .isMine(isMine)
-                .createdAt(comment.getCreatedAt())
+                .createdAt(DataConverter.convertToRelativeTimeFormat(comment.getCreatedAt()))
                 .build();
     }
 

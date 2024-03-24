@@ -8,6 +8,7 @@ import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardFileService;
 import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.converter.DataConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,7 @@ public class BoardMapper {
                 .content(board.getContent())
                 .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
                 .hitCount(board.getHitCount())
-                .createdAt(board.getCreatedAt())
+                .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
                 .build();
     }
 
@@ -61,7 +62,7 @@ public class BoardMapper {
                 .hitCount(board.getHitCount())
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())
-                .createdAt(board.getCreatedAt())
+                .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
                 .isFixed(false)
                 .build();
     }
@@ -80,7 +81,7 @@ public class BoardMapper {
                 .hitCount(board.getHitCount())
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())
-                .createdAt(board.getCreatedAt())
+                .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
                 .isFixed(false)
                 .build();
     }
@@ -93,7 +94,7 @@ public class BoardMapper {
                 .title(board.getTitle())
                 .hitCount(board.getHitCount())
                 .heartCount(board.getHeartCount())
-                .createdAt(board.getCreatedAt())
+                .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
                 .build();
     }
 
@@ -105,7 +106,7 @@ public class BoardMapper {
                 .title(board.getTitle())
                 .hitCount(board.getHitCount())
                 .isFixed(board.isFixed())
-                .createdAt(board.getCreatedAt())
+                .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
                 .build();
     }
 
@@ -125,7 +126,7 @@ public class BoardMapper {
                 .boardFiles(boardFiles)
                 .isLiked(isLiked)
                 .isMine(isMine)
-                .createdAt(board.getCreatedAt())
+                .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
                 .build();
     }
 

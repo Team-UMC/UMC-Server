@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.board.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Part;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -34,8 +32,7 @@ public class BoardResponse {
         private int commentCount;
         private Boolean isLiked;
         private Boolean isMine;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime createdAt;
+        private String createdAt;
     }
 
     @Getter
@@ -56,8 +53,7 @@ public class BoardResponse {
         private int hitCount;
         private int heartCount;
         private int commentCount;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime createdAt;
+        private String createdAt;
         private Boolean isFixed;
     }
 
@@ -77,8 +73,7 @@ public class BoardResponse {
         private String title;
         private int hitCount;
         private Boolean isFixed;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime createdAt;
+        private String createdAt;
     }
 
     @Getter
@@ -90,8 +85,7 @@ public class BoardResponse {
         private String title;
         private int hitCount;
         private int heartCount;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime createdAt;
+        private String createdAt;
     }
 
     @Getter
@@ -102,8 +96,7 @@ public class BoardResponse {
         private BoardType boardType;
         private String title;
         private String comment;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime commentCreatedAt;
+        private String commentCreatedAt;
     }
 
     @Getter
@@ -115,8 +108,7 @@ public class BoardResponse {
         private HostType hostType;
         private int hitCount;
         private String writer;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime createdAt;
+        private String createdAt;
 
     }
 
