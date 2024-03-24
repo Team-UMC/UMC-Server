@@ -96,7 +96,7 @@ public class BoardServiceImpl implements BoardService {
         List<String> boardFiles = boardFileService.findBoardFiles(board).stream()
                 .map(BoardFile::getUrl).toList();
 
-        return boardMapper.toBoardDetail(board, boardFiles, isLike, isMine);
+        return boardMapper.toBoardDetail(board, boardFiles, boardMapper.toWriterInfo(board.getWriter()), isLike, isMine);
     }
 
     @Override

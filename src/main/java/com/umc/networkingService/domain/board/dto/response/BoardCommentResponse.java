@@ -22,10 +22,7 @@ public class BoardCommentResponse {
     @Builder
     public static class BoardCommentPageElement {
         private UUID commentId;
-        private String writer;
-        private String profileImage;
-        private Semester semester;
-        private Part part;
+        private WriterInfo writerInfo;
         private String content;
         private Boolean isMine;
         private String createdAt;

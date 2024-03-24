@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.board.mapper;
 
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardCommentPageElement;
+import com.umc.networkingService.domain.board.dto.response.WriterInfo;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.member.entity.Member;
@@ -36,13 +37,10 @@ public class BoardCommentMapper {
                 .build();
     }
 
-    public BoardCommentPageElement toBoardCommentPageElement(BoardComment comment, boolean isMine) {
+    public BoardCommentPageElement toBoardCommentPageElement(BoardComment comment, WriterInfo writerInfo, boolean isMine) {
         return BoardCommentPageElement.builder()
                 .commentId(comment.getId())
-                .writer(DataConverter.convertToWriter(comment.getWriter()))
-                .profileImage(comment.getWriter().getProfileImage())
-                .part(comment.getWriter().getRecentPart())
-                .semester(comment.getWriter().getRecentSemester())
+                .writerInfo(writerInfo)
                 .content(comment.getContent())
                 .isMine(isMine)
                 .createdAt(DataConverter.convertToRelativeTimeFormat(comment.getCreatedAt()))

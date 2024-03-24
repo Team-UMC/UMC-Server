@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
+import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardCommentPageElement;
 import com.umc.networkingService.domain.board.entity.Board;
@@ -50,7 +51,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         board.increaseCommentCount();
 
-        return new BoardCommentId(comment.getId());
+        return new BoardCommentResponse.BoardCommentId(comment.getId());
     }
 
 
@@ -66,7 +67,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         comment.update(request);
 
-        return new BoardCommentId(comment.getId());
+        return new BoardCommentResponse.BoardCommentId(comment.getId());
     }
 
     @Override
@@ -83,7 +84,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         comment.delete();
 
 
-        return new BoardCommentId(comment.getId());
+        return new BoardCommentResponse.BoardCommentId(comment.getId());
     }
 
     @Override
@@ -95,7 +96,9 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         //isMine 여부를 포함
         List<BoardCommentPageElement> commentPageElements = comments.map(comment ->
-                boardCommentMapper.toBoardCommentPageElement(comment, isMyComment(comment, member))).stream().toList();
+                boardCommentMapper.toBoardCommentPageElement(comment,
+                        boardMapper.toWriterInfo(comment.getWriter()),
+                        isMyComment(comment, member))).stream().toList();
 
         return boardCommentMapper.toBoardCommentPageInfos(comments, commentPageElements);
     }
@@ -125,10 +128,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     //본인 댓글인지 확인
     @Override
     public boolean isMyComment(BoardComment boardComment, Member member) {
-        if (boardComment.getWriter().getId() == member.getId())
-            return true;
-        else
-            return false;
+        return boardComment.getWriter().getId() == member.getId();
     }
 
 

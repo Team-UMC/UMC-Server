@@ -20,10 +20,7 @@ public class BoardResponse {
     public static class BoardDetail {
         private HostType hostType;
         private BoardType boardType;
-        private String writer;
-        private String profileImage;
-        private Part part;
-        private Semester semester;
+        private WriterInfo writerInfo;
         private String title;
         private String content;
         private List<String> boardFiles;
