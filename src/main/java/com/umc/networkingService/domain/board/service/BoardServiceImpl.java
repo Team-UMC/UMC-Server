@@ -41,11 +41,12 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public PinnedNotices showPinnedNotices(Member loginMember) {
-
+    public PinnedNotices showPinnedNotices(Member loginMember, HostType hostType) {
         Member member = memberService.loadEntity(loginMember.getId());
 
-        List<Board> pinnedNotices = boardRepository.findPinnedNoticesByMember(member);
+        List<Board> pinnedNotices = (hostType == null) ?
+                boardRepository.findPinnedNoticesByMember(member) :
+                boardRepository.findPinnedNoticesByMemberAndHostType(member, hostType);
 
          return boardMapper.toPinnedNotices(
                  pinnedNotices.stream().map(notice -> boardMapper.toPinnedNotice(notice,

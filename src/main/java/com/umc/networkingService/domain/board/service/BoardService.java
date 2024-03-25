@@ -21,7 +21,7 @@ public interface BoardService extends EntityLoader<Board, UUID> {
 
     BoardId deleteBoard(Member member, UUID boardId);
 
-    PinnedNotices showPinnedNotices(Member member);
+    PinnedNotices showPinnedNotices(Member member, HostType hostType);
 
     BoardPageInfos<BoardPageElement> showBoards(Member member, HostType host, BoardType board, Pageable pageable);
 

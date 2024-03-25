@@ -30,6 +30,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
      */
     @Override
     public List<Board> findPinnedNoticesByMember(Member member) {
+
+
         return query.selectFrom(board)
                 .where(board.isFixed.eq(true)
                         .and(
@@ -37,6 +39,20 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                                         .or(BranchPermission(member))
                                         .or(CampusPermission(member))
                         ))
+                .orderBy(board.createdAt.desc())
+                .limit(10)
+                .fetch();
+    }
+
+    /*
+    hostType에 따른 핀고정된 notice 최대 10개 반환
+     */
+    @Override
+    public List<Board> findPinnedNoticesByMemberAndHostType(Member member, HostType hostType) {
+        return query.selectFrom(board)
+                .where(board.isFixed.eq(true)
+                        .and(addHostTypeAndBoardTypeCondition(member, hostType, BoardType.NOTICE))
+                )
                 .orderBy(board.createdAt.desc())
                 .limit(10)
                 .fetch();

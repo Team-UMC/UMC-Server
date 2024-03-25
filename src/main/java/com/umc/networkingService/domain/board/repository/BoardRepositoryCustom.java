@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface BoardRepositoryCustom {
     List<Board> findPinnedNoticesByMember(Member member);
+    List<Board> findPinnedNoticesByMemberAndHostType(Member member, HostType hostType);
     Page<Board> findAllBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable);
     Page<Board> findKeywordBoards(Member member, String keyword, Pageable pageable);
 
