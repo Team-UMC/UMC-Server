@@ -28,17 +28,18 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
     @Override
     public BoardPageInfos<NoticePageElement> showNotices(Member member, HostType hostType, String keyword, Pageable pageable) {
-
-        checkPermissionForNoticeBoard(member,hostType);
-
-        //해당 운영진이 조회 가능한 최상위 hostType을 구함
-        HostType permissionHostType = HostType.getPermmissionHostType(member.getRole());
-
-        // findAllNotices -> 해당 운영진이 조회 가능한 모든 hostType의 공지를 조회 가능
-        // findNoticesByHostType -> 해당 hostType만 조회 가능 (해당 멤버가 조회 가능한 hostType인지 확인 필요)
-        Page<Board> notices = (hostType.equals(HostType.ALL)) ?
-                boardRepository.findAllNotices(member, permissionHostType, keyword, pageable) :
-                boardRepository.findNoticesByHostType(member, hostType, keyword, pageable);
+        Page<Board> notices;
+        if(hostType == null) {
+            //해당 운영진이 조회 가능한 최상위 hostType을 구함
+            HostType permissionHostType = HostType.getPermmissionHostType(member.getRole());
+            // findAllNotices -> 해당 운영진이 조회 가능한 모든 hostType의 공지를 조회 가능
+            notices =  boardRepository.findAllNotices(member, permissionHostType, keyword, pageable);
+        }
+        else {
+            // findNoticesByHostType -> 해당 hostType만 조회 가능 (해당 멤버가 조회 가능한 hostType인지 확인 필요)
+            checkPermissionForNoticeBoard(member,hostType);
+            notices = boardRepository.findNoticesByHostType(member, hostType, keyword, pageable);
+        }
 
         return boardMapper.toBoardPageInfos(notices, notices.map(boardMapper::toNoticePageElement).stream().toList());
     }

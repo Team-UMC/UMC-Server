@@ -277,9 +277,6 @@ public class BoardServiceImpl implements BoardService {
 
     //badRequest check
     private void checkBadRequest(HostType hostType, BoardType boardType) {
-        //운영진 공지사항 목록 조회 제외하고는 HostType ALL 불가능
-        if (hostType.equals(HostType.ALL))
-            throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);
         //boardType: workbook, hostType: CAMPUS 가 아닐 경우 금지된 요청
         if (boardType == BoardType.WORKBOOK && hostType != HostType.CAMPUS)
             throw new RestApiException(BoardErrorCode.BAD_REQUEST_BOARD);

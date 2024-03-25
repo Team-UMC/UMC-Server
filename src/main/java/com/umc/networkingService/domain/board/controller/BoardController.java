@@ -89,10 +89,12 @@ public class BoardController {
     }
 
     @Operation(summary = "핀고정된 notice 조회 API", description = "핀 고정된 공지 게시글을 조회하는 API입니다. 최대 10개까지 조회합니다. " +
-            "CENTER, BRANCH, CAMPUS 중 하나를 파라미터로 주세요. 주지 않으면 모든 host의 핀고정 게시글이 조회됩니다." +
-            "writerInfo에는 writer, profileImage가 포함됩니다. (semester, part는 반환되지 않음)" )
-    @ApiResponses(value = {
+            "writerInfo에는 writer, profileImage가 포함됩니다. (semester, part는 반환되지 않음)" ) @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
+    })
+    @Parameters(value = {
+            @Parameter(name = "host", description = "CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요. " +
+                    "host를 주지 않으면 모든 host의 핀고정 게시글이 조회됩니다.")
     })
     @GetMapping("/pinned")
     public BaseResponse<PinnedNotices> showPinnedNotices(@CurrentMember Member member,

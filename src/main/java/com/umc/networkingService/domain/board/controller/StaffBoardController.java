@@ -36,14 +36,15 @@ public class StaffBoardController {
             @ApiResponse(responseCode = "BOARD003", description = "해당 host type의 공지사항을 볼 권한이 없을 경우 발생"),
     })
     @Parameters(value = {
-            @Parameter(name = "host", description = "ALL, CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요."),
-            @Parameter(name = "keyword", description = "keyword를 주지 않으면 모든 교내 공지사항 글이 조회됩니다. keyword를 주면 검색이 가능합니다."),
+            @Parameter(name = "host", description = "CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요. " +
+                    "host를 주지 않으면 해당 운영진의 직책에 따라 핀 설정 권한이 있는 host의 공지가 모두 조회됩니다."),
+            @Parameter(name = "keyword", description = "keyword를 주면 해당 hostType 내에서 검색이 가능합니다."),
             @Parameter(name = "page", description = "page 시작은 0번부터, 내림차순으로 조회됩니다."),
 
     })
     @GetMapping("notices")
     public BaseResponse<BoardPageInfos<NoticePageElement>> showNotices(@CurrentMember Member member,
-                                                                       @RequestParam(name = "host") HostType hostType,
+                                                                       @RequestParam(name = "host", required = false) HostType hostType,
                                                                        @RequestParam(name = "keyword", required = false) String keyword,
                                                                        @PageableDefault(sort = "created_at", direction = Sort.Direction.DESC)
                                                                @Parameter(hidden = true) Pageable pageable) {
