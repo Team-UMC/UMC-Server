@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface BoardRepositoryCustom {
-    List<Board> findNoticesByMember(Member member);
+    List<Board> findPinnedNoticesByMember(Member member);
     Page<Board> findAllBoards(Member member, HostType hostType, BoardType boardType, Pageable pageable);
     Page<Board> findKeywordBoards(Member member, String keyword, Pageable pageable);
 

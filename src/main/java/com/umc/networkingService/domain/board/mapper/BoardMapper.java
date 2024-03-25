@@ -31,20 +31,22 @@ public class BoardMapper {
                 .build();
     }
 
-    public PinnedNotice toPinnedNotice(Board board) {
+    public PinnedNotice toPinnedNotice(Board board, WriterInfo writerInfo, String thumbnail) {
         return PinnedNotice.builder()
+                .boardId(board.getId())
+                .writerInfo(writerInfo)
                 .hostType(board.getHostType())
                 .title(board.getTitle())
-                .boardId(board.getId())
                 .content(board.getContent())
-                .writer(DataConverter.convertToWriter(board.getWriter()))
+                .thumbnail(thumbnail)
+                .heartCount(board.getHeartCount())
+                .commentCount(board.getCommentCount())
                 .hitCount(board.getHitCount())
                 .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
                 .build();
     }
 
-    public PinnedNotices toPinnedNotices(List<Board> boards) {
-        List<PinnedNotice> pinnedNotices = boards.stream().map(this::toPinnedNotice).toList();
+    public PinnedNotices toPinnedNotices(List<PinnedNotice> pinnedNotices) {
         return PinnedNotices.builder()
                 .pinnedNotices(pinnedNotices)
                 .build();
@@ -61,7 +63,6 @@ public class BoardMapper {
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())
                 .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
-                .isFixed(false)
                 .build();
     }
 
@@ -79,7 +80,6 @@ public class BoardMapper {
                 .heartCount(board.getHeartCount())
                 .commentCount(board.getCommentCount())
                 .createdAt(DataConverter.convertToRelativeTimeFormat(board.getCreatedAt()))
-                .isFixed(false)
                 .build();
     }
 

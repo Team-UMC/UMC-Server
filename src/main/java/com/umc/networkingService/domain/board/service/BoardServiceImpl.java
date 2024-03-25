@@ -45,8 +45,13 @@ public class BoardServiceImpl implements BoardService {
 
         Member member = memberService.loadEntity(loginMember.getId());
 
-        return boardMapper.toPinnedNotices(boardRepository.findNoticesByMember(member));
+        List<Board> pinnedNotices = boardRepository.findPinnedNoticesByMember(member);
 
+         return boardMapper.toPinnedNotices(
+                 pinnedNotices.stream().map(notice -> boardMapper.toPinnedNotice(notice,
+                    boardMapper.toWriterInfo(notice.getWriter()),
+                    boardFileService.findThumbnailImage(notice))).toList()
+         );
     }
 
     @Override

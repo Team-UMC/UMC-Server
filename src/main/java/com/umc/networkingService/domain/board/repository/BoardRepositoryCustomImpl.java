@@ -29,7 +29,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     핀 고정된 notices 목록 최대 10개 반환
      */
     @Override
-    public List<Board> findNoticesByMember(Member member) {
+    public List<Board> findPinnedNoticesByMember(Member member) {
         return query.selectFrom(board)
                 .where(board.isFixed.eq(true)
                         .and(

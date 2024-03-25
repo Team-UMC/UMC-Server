@@ -3,10 +3,7 @@ package com.umc.networkingService.domain.board.controller;
 import com.umc.networkingService.config.security.auth.CurrentMember;
 import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageElement;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardSearchPageElement;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardPageElement;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.domain.board.service.BoardService;
@@ -91,12 +88,13 @@ public class BoardController {
         return BaseResponse.onSuccess(boardService.deleteBoard(member, boardId));
     }
 
-    @Operation(summary = "핀고정된 notice 조회 API", description = "핀 고정된 공지 게시글을 조회하는 API입니다. 최대 10개까지 조회합니다.")
+    @Operation(summary = "핀고정된 notice 조회 API", description = "핀 고정된 공지 게시글을 조회하는 API입니다. 최대 10개까지 조회합니다. " +
+            "writerInfo에는 writer, profileImage가 포함됩니다. (semester, part는 반환되지 않음)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
     })
     @GetMapping("/pinned")
-    public BaseResponse<BoardResponse.PinnedNotices> showPinnedNotices(@CurrentMember Member member) {
+    public BaseResponse<PinnedNotices> showPinnedNotices(@CurrentMember Member member) {
         return BaseResponse.onSuccess(boardService.showPinnedNotices(member));
     }
 
