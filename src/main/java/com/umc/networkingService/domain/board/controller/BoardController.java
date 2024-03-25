@@ -102,7 +102,8 @@ public class BoardController {
 
     @Operation(summary = "특정 게시판의 게시글 목록 조회 API", description = "특정 게시판의 게시글 목록을 조회하는 API입니다.  " +
             "host: CENTER, BRANCH, CAMPUS 중 하나의 값을 대문자로 주세요.  " +
-            "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요.")
+            "board: NOTICE, FREE, WORKBOOK, OB, QUESTION 중 하나의 값을 대문자로 주세요. " +
+            "writerInfo에는 writer, profileImage가 포함됩니다. (semester, part는 반환되지 않음)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공"),
             @ApiResponse(responseCode = "COMMON405", description = "host, board type 자체 값이 적절하지 않은 값일 경우 발생"),
@@ -134,7 +135,8 @@ public class BoardController {
     }
 
 
-    @Operation(summary = "게시글 검색 API", description = "keyword로 게시글을 검색합니다.")
+    @Operation(summary = "게시글 검색 API", description = "keyword로 게시글을 검색합니다." +
+            "writerInfo에는 writer, profileImage가 포함됩니다. (semester, part는 반환되지 않음)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공")
     })

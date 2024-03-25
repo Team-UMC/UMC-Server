@@ -50,11 +50,10 @@ public class BoardMapper {
                 .build();
     }
 
-    public BoardPageElement toBoardPageElement(Board board, String thumbnail) {
+    public BoardPageElement toBoardPageElement(Board board, WriterInfo writerInfo, String thumbnail) {
         return BoardPageElement.builder()
                 .boardId(board.getId())
-                .writer(DataConverter.convertToWriter(board.getWriter()))
-                .profileImage(board.getWriter().getProfileImage())
+                .writerInfo(writerInfo)
                 .title(board.getTitle())
                 .content(board.getContent())
                 .thumbnail(thumbnail)
@@ -67,13 +66,12 @@ public class BoardMapper {
     }
 
 
-    public BoardSearchPageElement toBoardSearchPageElement(Board board, String thumbnail) {
+    public BoardSearchPageElement toBoardSearchPageElement(Board board, WriterInfo writerInfo, String thumbnail) {
         return BoardSearchPageElement.builder()
                 .boardType(board.getBoardType())
                 .hostType(board.getHostType())
                 .boardId(board.getId())
-                .writer(DataConverter.convertToWriter(board.getWriter()))
-                .profileImage(board.getWriter().getProfileImage())
+                .writerInfo(writerInfo)
                 .title(board.getTitle())
                 .content(board.getContent())
                 .thumbnail(thumbnail)
@@ -138,12 +136,18 @@ public class BoardMapper {
 
     }
 
-    public WriterInfo toWriterInfo(Member member) {
+    public WriterInfo toDetailWriterInfo(Member member) {
         return WriterInfo.builder()
                 .writer(DataConverter.convertToWriter(member))
                 .profileImage(member.getProfileImage())
                 .part(member.getRecentPart())
                 .semester(member.getRecentSemester())
                 .build();
+    }
+
+    public WriterInfo toWriterInfo(Member member) {
+        return WriterInfo.builder()
+                .writer(DataConverter.convertToWriter(member))
+                .profileImage(member.getProfileImage()).build();
     }
 }

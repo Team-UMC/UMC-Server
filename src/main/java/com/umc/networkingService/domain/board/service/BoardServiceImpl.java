@@ -57,8 +57,11 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberService.loadEntity(loginMember.getId());
 
         Page<Board> boards = boardRepository.findAllBoards(member, hostType, boardType, pageable);
+
         return boardMapper.toBoardPageInfos(boards, boards.map(board ->
-                boardMapper.toBoardPageElement(board, boardFileService.findThumbnailImage(board))).stream().toList());
+                boardMapper.toBoardPageElement(board,
+                        boardMapper.toWriterInfo(board.getWriter()),
+                        boardFileService.findThumbnailImage(board))).stream().toList());
     }
 
     @Override
@@ -67,8 +70,11 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberService.loadEntity(loginMember.getId());
 
         Page<Board> searchBoards = boardRepository.findKeywordBoards(member, keyword, pageable);
+
         return boardMapper.toBoardPageInfos(searchBoards, searchBoards.map(board ->
-                boardMapper.toBoardSearchPageElement(board, boardFileService.findThumbnailImage(board))).stream().toList());
+                boardMapper.toBoardSearchPageElement(board,
+                        boardMapper.toWriterInfo(board.getWriter()),
+                        boardFileService.findThumbnailImage(board))).stream().toList());
     }
 
     @Override
@@ -96,7 +102,7 @@ public class BoardServiceImpl implements BoardService {
         List<String> boardFiles = boardFileService.findBoardFiles(board).stream()
                 .map(BoardFile::getUrl).toList();
 
-        return boardMapper.toBoardDetail(board, boardFiles, boardMapper.toWriterInfo(board.getWriter()), isLike, isMine);
+        return boardMapper.toBoardDetail(board, boardFiles, boardMapper.toDetailWriterInfo(board.getWriter()), isLike, isMine);
     }
 
     @Override

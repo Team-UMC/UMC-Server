@@ -97,7 +97,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         //isMine 여부를 포함
         List<BoardCommentPageElement> commentPageElements = comments.map(comment ->
                 boardCommentMapper.toBoardCommentPageElement(comment,
-                        boardMapper.toWriterInfo(comment.getWriter()),
+                        boardMapper.toDetailWriterInfo(comment.getWriter()),
                         isMyComment(comment, member))).stream().toList();
 
         return boardCommentMapper.toBoardCommentPageInfos(comments, commentPageElements);

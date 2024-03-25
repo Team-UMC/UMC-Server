@@ -42,8 +42,7 @@ public class BoardResponse {
     @SuperBuilder
     public static class BoardPageElement {
         private UUID boardId;
-        private String writer;
-        private String profileImage;
+        private WriterInfo writerInfo;
         private String title;
         private String content;
         private String thumbnail;
