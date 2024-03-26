@@ -4,12 +4,13 @@ import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
-import com.umc.networkingService.domain.board.entity.Board;
-import com.umc.networkingService.domain.board.entity.BoardComment;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardSearchPageElement;
+import com.umc.networkingService.domain.board.dto.response.WriterInfo;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.converter.DataConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.PATCH;
@@ -49,7 +51,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 .hostType(HostType.CAMPUS.toString())
                 .build();
 
-        BoardResponse.BoardId response = new BoardResponse.BoardId(board.getId());
+        BoardId response = new BoardId(board.getId());
 
         MockMultipartFile file1 = new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes());
@@ -84,7 +86,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
                 .hostType(HostType.CAMPUS.toString())
                 .build();
 
-        BoardResponse.BoardId response = new BoardResponse.BoardId(board.getId());
+        BoardId response = new BoardId(board.getId());
 
         MockMultipartFile file1 = new MockMultipartFile("file", "filename1.jpg", "image/jpeg", "file content".getBytes());
         MockMultipartFile request = new MockMultipartFile("request", "request", "application/json",
@@ -111,7 +113,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("게시글 삭제 API 테스트")
     public void deleteBoardTest() throws Exception {
         //given
-        BoardResponse.BoardId response = new BoardResponse.BoardId(board.getId());
+        BoardId response = new BoardId(board.getId());
 
         //when
         when(boardService.deleteBoard(eq(member), eq(board.getId()))).thenReturn(response);
@@ -133,7 +135,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("특정 게시판의 게시글 목록 조회 API 테스트")
     public void showBoardsTest() throws Exception {
         // given
-        BoardResponse.BoardPageInfos response = createMockBoardPageInfos();
+        BoardPageInfos response = createMockBoardPageInfos();
 
         // when
         when(boardService.showBoards(eq(member), any(HostType.class), any(BoardType.class), any(Pageable.class))).thenReturn(response);
@@ -157,19 +159,20 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("게시글 상세 조회 API 테스트")
     public void showBoardDetailTest() throws Exception {
         // given
-        BoardResponse.BoardDetail response = BoardResponse.BoardDetail.builder()
+        BoardDetail response = BoardDetail.builder()
                 .hostType(board.getHostType())
                 .boardType(board.getBoardType())
-                .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
-                .profileImage(board.getWriter().getProfileImage())
-                .semester(Semester.FIFTH)
+                .writerInfo(WriterInfo.builder()
+                        .writer(board.getWriter().getNickname() + "/" + board.getWriter().getName())
+                        .profileImage(board.getWriter().getProfileImage())
+                        .semester(Semester.FIFTH)
+                        .build())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .hitCount(board.getHitCount())
                 .heartCount(board.getHeartCount())
                 .boardFiles(new ArrayList<>())
                 .commentCount(board.getCommentCount())
-                .createdAt(board.getCreatedAt())
                 .build();
         // when
         when(boardService.showBoardDetail(eq(member), eq(board.getId()))).thenReturn(response);
@@ -190,7 +193,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("게시글 검색 API 테스트")
     public void searchBoardTest() throws Exception {
         // given
-        BoardResponse.BoardSearchPageInfos response = createMockBoardSearchPageInfos();
+        BoardPageInfos<BoardSearchPageElement>response = createMockBoardSearchPageInfos();
         // when
         when(boardService.searchBoard(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
@@ -212,7 +215,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("특정 게시글 좋아요/취소 테스트")
     public void toggleBoardHeart() throws Exception {
         //given
-        BoardResponse.BoardId response = new BoardResponse.BoardId(board.getId());
+        BoardId response = new BoardId(board.getId());
 
         //when
         when(boardService.toggleBoardLike(eq(member), eq(board.getId()))).thenReturn(response);
@@ -348,15 +351,15 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("App용 특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
     public void showMemberBoardsTestForApp() throws Exception {
         // given
-        MyBoardResponse.MyBoardPageInfos response = createMockMyBoardResponse();
+        BoardPageInfos<MyBoardPageElement> response = createMockMyBoardResponse();
 
         // when
-        when(boardService.showBoardsByMemberForApp(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
+        when(boardService.showBoardsByMember(eq(member), eq(null),eq(null), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         // then
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/boards/member/app")
+                        .get("/boards/member")
                         .param("keyword", "데모데이")
                         .param("page", "0")
                         .header("Authorization", accessToken))
@@ -372,15 +375,15 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("WEB용 특정 멤버가 작성한 게시글 목록 조회/검색 API 테스트")
     public void showMemberBoardsTestForWeb() throws Exception {
         // given
-        MyBoardResponse.MyBoardPageInfos response = createMockMyBoardResponse();
+        BoardPageInfos<MyBoardPageElement> response = createMockMyBoardResponse();
 
         // when
-        when(boardService.showBoardsByMemberForWeb(eq(member), any(HostType.class), any(BoardType.class), any(String.class), any(Pageable.class))).thenReturn(response);
+        when(boardService.showBoardsByMember(eq(member), any(HostType.class), any(BoardType.class), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         // then
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .get("/boards/member/web")
+                        .get("/boards/member")
                         .param("host", "CENTER")
                         .param("board", "FREE")
                         .param("keyword", "")
@@ -399,7 +402,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("운영진용 교내 공지사항 조회 테스트")
     public void showStaffNoticesTest() throws Exception {
         //given
-        BoardResponse.NoticePageInfos response = createMockNoticePageInfos();
+       BoardPageInfos<NoticePageElement> response = createMockNoticePageInfos();
         //when
         when(staffBoardService.showNotices(eq(member), any(HostType.class), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
@@ -421,14 +424,14 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("운영진용 핀설정 테스트")
     public void setStaffNoticePinTest() throws Exception {
         //given
-       BoardResponse.BoardId response = new BoardResponse.BoardId(board.getId());
+       BoardId response = new BoardId(board.getId());
         //when
         when(staffBoardService.toggleNoticePin(eq(member),eq(board.getId()), any(boolean.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
         // then
 
         mockMvc.perform(patch("/staff/boards/notices/{boardId}/pin",board.getId())
-                        .param("isPinned", "true")
+                        .param("isFixed", "true")
                         .header("Authorization", accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())

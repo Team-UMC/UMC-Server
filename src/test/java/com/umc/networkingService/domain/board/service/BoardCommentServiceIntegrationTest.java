@@ -2,7 +2,8 @@ package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.*;
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Board Comment 서비스의")
@@ -34,7 +37,7 @@ public class BoardCommentServiceIntegrationTest extends BoardServiceTestConfig {
                 .build();
 
         //when
-        BoardCommentResponse.BoardCommentId response = boardCommentService.addBoardComment(inhaMember, null, request);
+        BoardCommentId response = boardCommentService.addBoardComment(inhaMember, null, request);
         Optional<BoardComment> optionalBoardComment = boardCommentRepository.findById(response.getCommentId());
         assertTrue(optionalBoardComment.isPresent());
         BoardComment comment = optionalBoardComment.get();
@@ -55,7 +58,7 @@ public class BoardCommentServiceIntegrationTest extends BoardServiceTestConfig {
                 .content("대댓글")
                 .build();
 
-        BoardCommentResponse.BoardCommentId replyId = boardCommentService.addBoardComment(inhaMember, comment.getId(), request);
+        BoardCommentId replyId = boardCommentService.addBoardComment(inhaMember, comment.getId(), request);
 
         BoardComment replyComment = boardCommentService.loadEntity(replyId.getCommentId());
 
@@ -104,14 +107,14 @@ public class BoardCommentServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.asc("created_at")));
 
         //when
-        BoardCommentResponse.BoardCommentPageInfos response = boardCommentService.showBoardComments(inhaStaff, board.getId(), pageable);
+        BoardCommentPageInfos<BoardCommentPageElement> response = boardCommentService.showBoardComments(inhaMember, board.getId(), pageable);
 
         //then
         assertEquals(1, response.getPage());
         assertEquals(3, response.getTotalPages());
         assertEquals(21, response.getTotalElements());
         assertEquals(10, response.getBoardCommentPageElements().size());
-        assertEquals("벡스/김준석", response.getBoardCommentPageElements().get(0).getWriter());
+        assertEquals("벡스/김준석", response.getBoardCommentPageElements().get(0).getWriterInfo().getWriter());
         assertFalse(response.getBoardCommentPageElements().get(0).getIsMine());
     }
 
@@ -125,20 +128,20 @@ public class BoardCommentServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        MyBoardResponse.MyBoardPageInfos  response = boardCommentService.showBoardsByMemberCommentForApp(inhaMember, null, pageable);
-        MyBoardResponse.MyBoardPageInfos response2 = boardCommentService.showBoardsByMemberCommentForApp(gachonMember, null, pageable);
+        BoardPageInfos<MyBoardPageElement> response = boardCommentService.showBoardsByMemberCommentForApp(inhaMember, null, pageable);
+        BoardPageInfos<MyBoardPageElement> response2 = boardCommentService.showBoardsByMemberCommentForApp(gachonMember, null, pageable);
 
         //then
         assertEquals(0, response.getPage());
         assertEquals(1, response.getTotalPages());
         assertEquals(1, response.getTotalElements());
-        assertEquals(1, response.getMyBoardPageElements().size());
-        assertEquals("제목",response.getMyBoardPageElements().get(0).getTitle());
+        assertEquals(1, response.getBoardPageElements().size());
+        assertEquals("제목",response.getBoardPageElements().get(0).getTitle());
 
         assertEquals(0, response.getPage());
         assertEquals(0, response2.getTotalPages());
         assertEquals(0, response2.getTotalElements());
-        assertEquals(0, response2.getMyBoardPageElements().size());
+        assertEquals(0, response2.getBoardPageElements().size());
     }
 
     @Test
@@ -150,14 +153,14 @@ public class BoardCommentServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        MyBoardResponse.MyBoardCommentPageInfos response = boardCommentService.showBoardsByMemberCommentForWeb(inhaStaff, HostType.CAMPUS, BoardType.FREE,null, pageable);
+        BoardCommentPageInfos<MyBoardCommentPageElement> response = boardCommentService.showBoardsByMemberCommentForWeb(inhaStaff, HostType.CAMPUS, BoardType.FREE,null, pageable);
 
         //then
         assertEquals(0, response.getPage());
         assertEquals(2, response.getTotalPages());
         assertEquals(20, response.getTotalElements());
-        assertEquals(10, response.getMyBoardCommentPageElement().size());
-        assertEquals(HostType.CAMPUS, response.getMyBoardCommentPageElement().get(0).getHostType());
-        assertEquals(BoardType.FREE, response.getMyBoardCommentPageElement().get(0).getBoardType());
+        assertEquals(10, response.getBoardCommentPageElements().size());
+        assertEquals(HostType.CAMPUS, response.getBoardCommentPageElements().get(0).getHostType());
+        assertEquals(BoardType.FREE, response.getBoardCommentPageElements().get(0).getBoardType());
     }
 }

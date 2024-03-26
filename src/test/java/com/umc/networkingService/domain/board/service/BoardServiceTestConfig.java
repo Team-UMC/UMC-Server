@@ -105,6 +105,7 @@ public abstract class BoardServiceTestConfig {
                 .role(Role.CENTER_STAFF)
                 .name("김연합")
                 .nickname("센터")
+                .semesterParts(createSemesterPartFIFTH(gachonMember))
                 .build());
     }
 
