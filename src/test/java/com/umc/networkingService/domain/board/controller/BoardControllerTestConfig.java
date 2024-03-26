@@ -58,10 +58,6 @@ public abstract class BoardControllerTestConfig {
     protected StaffBoardService staffBoardService;
     @MockBean
     protected DataLoader dataLoader;
-    @MockBean
-    protected DataConverter dataConverter;
-
-
 
     protected Member member;
     protected Board board;
