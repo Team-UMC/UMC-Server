@@ -2,7 +2,7 @@ package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardCommentPageElement;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.*;
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardPageElement;
 
 @Service
 @RequiredArgsConstructor
@@ -105,7 +106,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
 
     @Override
-    public BoardResponse.BoardPageInfos<BoardResponse.MyBoardPageElement> showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
+    public BoardPageInfos<MyBoardPageElement> showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
 
         Page<Board> boards = boardCommentRepository.findBoardsByMemberCommentForApp(member, keyword, pageable);
         return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toMyBoardPageElement).stream().toList());

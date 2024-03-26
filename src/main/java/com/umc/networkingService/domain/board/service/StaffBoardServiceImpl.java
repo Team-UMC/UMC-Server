@@ -1,6 +1,5 @@
 package com.umc.networkingService.domain.board.service;
 
-import com.umc.networkingService.domain.board.dto.response.BoardResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.NoticePageElement;
 import com.umc.networkingService.domain.board.entity.Board;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardId;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +47,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
     @Override
     @Transactional
-    public BoardResponse.BoardId toggleNoticePin(Member member, UUID boardId, boolean isFixed) {
+    public BoardId toggleNoticePin(Member member, UUID boardId, boolean isFixed) {
 
         Board board = boardService.loadEntity(boardId);
         HostType hostType = board.getHostType();
@@ -55,7 +56,7 @@ public class StaffBoardServiceImpl implements StaffBoardService {
 
         board.setIsFixed(isFixed);
 
-        return new BoardResponse.BoardId(board.getId());
+        return new BoardId(board.getId());
     }
 
     public void checkPermissionForNoticeBoard(Member member, HostType hostType) {

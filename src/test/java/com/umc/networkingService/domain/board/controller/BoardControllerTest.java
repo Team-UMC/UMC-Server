@@ -135,7 +135,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("특정 게시판의 게시글 목록 조회 API 테스트")
     public void showBoardsTest() throws Exception {
         // given
-        BoardPageInfos response = createMockBoardPageInfos();
+        BoardPageInfos<BoardPageElement> response = createMockBoardPageInfos();
 
         // when
         when(boardService.showBoards(eq(member), any(HostType.class), any(BoardType.class), any(Pageable.class))).thenReturn(response);
@@ -193,7 +193,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("게시글 검색 API 테스트")
     public void searchBoardTest() throws Exception {
         // given
-        BoardPageInfos<BoardSearchPageElement>response = createMockBoardSearchPageInfos();
+        BoardPageInfos<BoardSearchPageElement> response = createMockBoardSearchPageInfos();
         // when
         when(boardService.searchBoard(eq(member), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
@@ -238,9 +238,9 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         //given
         BoardCommentRequest.BoardCommentAddRequest boardCommentAddRequest =
                 BoardCommentRequest.BoardCommentAddRequest.builder()
-                .content("내용")
-                .boardId(board.getId())
-                .build();
+                        .content("내용")
+                        .boardId(board.getId())
+                        .build();
 
         String request = objectMapper.writeValueAsString(boardCommentAddRequest);
         BoardCommentResponse.BoardCommentId response = new BoardCommentResponse.BoardCommentId(comment.getId());
@@ -281,7 +281,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
 
         //then
         this.mockMvc.perform(
-                        post("/boards/comments").param("commentId",String.valueOf(comment.getId()))
+                        post("/boards/comments").param("commentId", String.valueOf(comment.getId()))
                                 .header("Authorization", accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(request))
@@ -295,15 +295,14 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     }
 
 
-
     @Test
     @DisplayName("댓글 수정 성공 테스트")
     public void updateBoardCommentTest() throws Exception {
         //given
         BoardCommentRequest.BoardCommentUpdateRequest boardCommentUpdateRequest =
-                BoardCommentRequest.BoardCommentUpdateRequest .builder()
-                .content("수정")
-                .build();
+                BoardCommentRequest.BoardCommentUpdateRequest.builder()
+                        .content("수정")
+                        .build();
 
         String request = objectMapper.writeValueAsString(boardCommentUpdateRequest);
         BoardCommentResponse.BoardCommentId response = new BoardCommentResponse.BoardCommentId(comment.getId());
@@ -354,7 +353,7 @@ public class BoardControllerTest extends BoardControllerTestConfig {
         BoardPageInfos<MyBoardPageElement> response = createMockMyBoardResponse();
 
         // when
-        when(boardService.showBoardsByMember(eq(member), eq(null),eq(null), any(String.class), any(Pageable.class))).thenReturn(response);
+        when(boardService.showBoardsByMember(eq(member), eq(null), eq(null), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
 
         // then
@@ -397,12 +396,11 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     }
 
 
-
     @Test
     @DisplayName("운영진용 교내 공지사항 조회 테스트")
     public void showStaffNoticesTest() throws Exception {
         //given
-       BoardPageInfos<NoticePageElement> response = createMockNoticePageInfos();
+        BoardPageInfos<NoticePageElement> response = createMockNoticePageInfos();
         //when
         when(staffBoardService.showNotices(eq(member), any(HostType.class), any(String.class), any(Pageable.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
@@ -424,13 +422,13 @@ public class BoardControllerTest extends BoardControllerTestConfig {
     @DisplayName("운영진용 핀설정 테스트")
     public void setStaffNoticePinTest() throws Exception {
         //given
-       BoardId response = new BoardId(board.getId());
+        BoardId response = new BoardId(board.getId());
         //when
-        when(staffBoardService.toggleNoticePin(eq(member),eq(board.getId()), any(boolean.class))).thenReturn(response);
+        when(staffBoardService.toggleNoticePin(eq(member), eq(board.getId()), any(boolean.class))).thenReturn(response);
         when(memberRepository.findById(any(UUID.class))).thenReturn(Optional.of(member));
         // then
 
-        mockMvc.perform(patch("/staff/boards/notices/{boardId}/pin",board.getId())
+        mockMvc.perform(patch("/staff/boards/notices/{boardId}/pin", board.getId())
                         .param("isFixed", "true")
                         .header("Authorization", accessToken))
                 .andDo(print())
