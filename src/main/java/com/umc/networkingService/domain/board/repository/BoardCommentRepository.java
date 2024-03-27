@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BoardCommentRepository extends JpaRepository<BoardComment, UUID>, BoardRepositoryCustom {
-    @Query(value = "select b from BoardComment b where b.id = :commentId and b.deletedAt is null")
-    Optional<BoardComment> findById(@Param("commentId") UUID commentId);
+    Optional<BoardComment> findById(UUID commentId);
 
+    boolean existsByParentComment(BoardComment boardComment);
 }

@@ -35,5 +35,8 @@ public interface BoardService extends EntityLoader<Board, UUID> {
 
     BoardId toggleBoardLike(Member member, UUID boardId);
     Boolean existsByBoardTypeAndHostType(BoardType boardType, HostType hostType);
+    boolean checkWriter(Member writer, Member member);
+    boolean checkHighStaff(Member writer, Member member);
+
 
 }

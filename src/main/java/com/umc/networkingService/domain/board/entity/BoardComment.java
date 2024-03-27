@@ -48,4 +48,7 @@ public class BoardComment extends BaseEntity {
         this.parentComment = parentComment;
     }
 
+    public void deleteComment() {
+        this.content = "삭제된 댓글입니다.";
+    }
 }

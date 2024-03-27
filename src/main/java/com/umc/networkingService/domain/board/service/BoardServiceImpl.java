@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static com.umc.networkingService.domain.board.dto.request.BoardRequest.*;
 import static com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 
 @Service
@@ -48,11 +49,11 @@ public class BoardServiceImpl implements BoardService {
                 boardRepository.findPinnedNoticesByMember(member) :
                 boardRepository.findPinnedNoticesByMemberAndHostType(member, hostType);
 
-         return boardMapper.toPinnedNotices(
-                 pinnedNotices.stream().map(notice -> boardMapper.toPinnedNotice(notice,
-                    boardMapper.toWriterInfo(notice.getWriter()),
-                    boardFileService.findThumbnailImage(notice))).toList()
-         );
+        return boardMapper.toPinnedNotices(
+                pinnedNotices.stream().map(notice -> boardMapper.toPinnedNotice(notice,
+                        boardMapper.toWriterInfo(notice.getWriter()),
+                        boardFileService.findThumbnailImage(notice))).toList()
+        );
     }
 
     @Override
@@ -99,7 +100,7 @@ public class BoardServiceImpl implements BoardService {
                 .orElse(false);
 
         //본인글인지 확인
-        boolean isMine = isMyBoard(board, member);
+        boolean isMine = checkWriter(board.getWriter(), member);
 
         //조회수 증가
         board.increaseHitCount();
@@ -152,7 +153,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardId createBoard(Member member, BoardRequest.BoardCreateRequest request, List<MultipartFile> files) {
+    public BoardId createBoard(Member member, BoardCreateRequest request, List<MultipartFile> files) {
         //연합, 지부, 학교 타입
         HostType hostType = HostType.valueOf(request.getHostType());
         BoardType boardType = BoardType.valueOf(request.getBoardType());
@@ -171,7 +172,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardId updateBoard(Member member, UUID boardId, BoardRequest.BoardUpdateRequest request, List<MultipartFile> files) {
+    public BoardId updateBoard(Member loginMember, UUID boardId, BoardUpdateRequest request, List<MultipartFile> files) {
+        Member member = memberService.loadEntity(loginMember.getId());
         Board board = loadEntity(boardId);
 
         //연합, 지부, 학교 타입
@@ -183,7 +185,7 @@ public class BoardServiceImpl implements BoardService {
         List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
-        if (!board.getWriter().getId().equals(member.getId()))
+        if (!checkWriter(board.getWriter(), member))
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
 
         board.update(request, semesterPermission);
@@ -195,12 +197,14 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardId deleteBoard(Member member, UUID boardId) {
+    public BoardId deleteBoard(Member loginMember, UUID boardId) {
+        Member member = memberService.loadEntity(loginMember.getId());
         Board board = loadEntity(boardId);
+        Member writer = board.getWriter();
 
-        //현재 로그인한 member와 writer가 같지 않고, 로그인한 멤버가 운영진이 아니라면 삭제 불가
-        if (!board.getWriter().getId().equals(member.getId())) {
-            if (member.getRole().getPriority() >= Role.MEMBER.getPriority()) {
+        //현재 로그인한 member와 writer가 같지 않고, 로그인 한 멤버보다 상위 운영진이 아니라면 예외 반환
+        if (!checkWriter(writer, member)) {
+            if (!checkHighStaff(writer, member)) {
                 throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
             }
         }
@@ -227,10 +231,10 @@ public class BoardServiceImpl implements BoardService {
 
         //boardType에 따라 권한 Check
         switch (boardType) {
-            case OB -> checkPermissionForOBBoard(member, nowSemester);
-            case NOTICE -> checkPermissionForNoticeBoard(member, hostType);
+            case OB -> checkInactiveMember(member, nowSemester);
+            case NOTICE -> checkNoticePermissionStaff(member, hostType);
             case WORKBOOK -> {
-                checkPermissionForWorkbookBoard(member);
+                checkStaff(member);
                 //워크북의 경우 현재 기수만 볼 수 있도록 허용
                 permissionSemesters = List.of(nowSemester);
             }
@@ -239,29 +243,32 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-    //OB 게시판 권한 확인 함수
-    private void checkPermissionForOBBoard(Member member, Semester nowSemester) {
+    //멤버가 현재 기수일 경우 예외 반환
+    // OB -> Semester의 isActive가 활성화되지 않은 사용자만 가능
+    private void checkInactiveMember(Member member, Semester nowSemester) {
 
-        // OB -> Semester의 isActive가 활성화되지 않은 사용자만 가능
         if (member.getRecentSemester().equals(nowSemester))
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
     }
 
-    //공지사항 게시판 권한 확인 함수
-    private void checkPermissionForNoticeBoard(Member member, HostType hostType) {
+
+    //NOTICE -> hostType 권한보다 멤버 권한이 높거나 같지 않을 경우 예외 반환
+    private void checkNoticePermissionStaff(Member member, HostType hostType) {
 
         //HostType priority와 Member Role priority를 비교하여 권한 CHECK
         if (member.getRole().getPriority() >= hostType.getPriority())
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
     }
 
-    //workbook 게시판 권한 확인 함수
-    private void checkPermissionForWorkbookBoard(Member member) {
 
-        //CAMPUS && WORKBOOK -> 일반 MEMBER는 작성 불가
+    //일반 멤버일 경우 예외 발생
+    //CAMPUS && WORKBOOK -> 일반 MEMBER는 작성 불가
+    private void checkStaff(Member member) {
+
         if (member.getRole().getPriority() >= Role.MEMBER.getPriority())
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
     }
+
 
     //게시글 열람시 semester 권한 check
     private static void checkSemesterPermission(Member member, Board board) {
@@ -275,7 +282,7 @@ public class BoardServiceImpl implements BoardService {
 
     }
 
-    //badRequest check
+
     private void checkBadRequest(HostType hostType, BoardType boardType) {
         //boardType: workbook, hostType: CAMPUS 가 아닐 경우 금지된 요청
         if (boardType == BoardType.WORKBOOK && hostType != HostType.CAMPUS)
@@ -286,10 +293,17 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-    //본인 글인지 확인
-    private boolean isMyBoard(Board board, Member member) {
-        return board.getWriter().getId() == member.getId();
+    @Override
+    public boolean checkWriter(Member writer, Member member) {
+        return writer.getId() == member.getId();
     }
+
+
+    @Override
+    public boolean checkHighStaff(Member writer, Member member) {
+        return member.getRole().getPriority() < writer.getRole().getPriority();
+    }
+
 
     @Override
     public Board loadEntity(UUID id) {

@@ -1,6 +1,7 @@
 package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest.BoardCommentAddRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardCommentPageElement;
@@ -15,6 +16,7 @@ import com.umc.networkingService.domain.member.entity.Member;
 import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.BoardCommentErrorCode;
+import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +43,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
     @Override
     @Transactional
-    public BoardCommentId addBoardComment(Member member, UUID commentId, BoardCommentRequest.BoardCommentAddRequest request) {
+    public BoardCommentId addBoardComment(Member member, UUID commentId, BoardCommentAddRequest request) {
         Board board = boardService.loadEntity(request.getBoardId());
 
         BoardComment parentComment = Optional.ofNullable(commentId)
@@ -64,7 +66,8 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         BoardComment comment = loadEntity(commentId);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
-        validateMember(comment, member);
+        if(!boardService.checkWriter(comment.getWriter(),member))
+            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
 
         comment.update(request);
 
@@ -77,13 +80,17 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         Member member = memberService.loadEntity(loginMember.getId());
         BoardComment comment = loadEntity(commentId);
         Board board = comment.getBoard();
+        Member writer = comment.getWriter();
 
-        //현재 로그인한 member와 writer가 같지 않으면 삭제 권한 없음
-        validateMember(comment, member);
+        //현재 로그인한 member와 writer가 같지 않고, 로그인 한 멤버보다 상위 운영진이 아니라면 예외 반환
+        if (!boardService.checkWriter(writer, member)) {
+            if (!boardService.checkHighStaff(writer,member)) {
+                throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
+            }
+        }
 
         board.decreaseCommentCount();
-        comment.delete();
-
+        handleCommentDeletion(comment);
 
         return new BoardCommentResponse.BoardCommentId(comment.getId());
     }
@@ -99,7 +106,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         List<BoardCommentPageElement> commentPageElements = comments.map(comment ->
                 boardCommentMapper.toBoardCommentPageElement(comment,
                         boardMapper.toDetailWriterInfo(comment.getWriter()),
-                        isMyComment(comment, member))).stream().toList();
+                        boardService.checkWriter(comment.getWriter(), member))).stream().toList();
 
         return boardCommentMapper.toBoardCommentPageInfos(comments, commentPageElements);
     }
@@ -120,18 +127,13 @@ public class BoardCommentServiceImpl implements BoardCommentService {
                 boardComments.map(boardCommentMapper::toMyBoardCommentPageElement).stream().toList());
     }
 
-    private void validateMember(BoardComment comment, Member member) {
-        if(!comment.getWriter().getId().equals(member.getId()))
-            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
-
+    private void handleCommentDeletion(BoardComment comment) {
+        if (boardCommentRepository.existsByParentComment(comment)) {
+            comment.deleteComment();
+        } else {
+            comment.delete();
+        }
     }
-
-    //본인 댓글인지 확인
-    @Override
-    public boolean isMyComment(BoardComment boardComment, Member member) {
-        return boardComment.getWriter().getId() == member.getId();
-    }
-
 
     @Override
     public BoardComment loadEntity(UUID commentId) {
