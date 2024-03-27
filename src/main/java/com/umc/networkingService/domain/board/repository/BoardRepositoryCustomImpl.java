@@ -66,7 +66,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         List<Semester> memberSemesters = member.getSemesters();
         BooleanBuilder predicate = new BooleanBuilder()
-                .and(eqBoardType(boardType));
+                .and(eqBoardType(boardType))
+                .and(board.isFixed.isFalse());
 
         switch (hostType) {
             case CAMPUS -> predicate.and(CampusPermission(member))
@@ -76,7 +77,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         }
 
         List<Board> boards = query.selectFrom(board).where(predicate)
-                .orderBy(board.isFixed.desc(), board.createdAt.desc())
+                .orderBy(board.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
