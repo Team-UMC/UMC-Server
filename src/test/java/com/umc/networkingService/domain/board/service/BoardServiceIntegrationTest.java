@@ -2,10 +2,6 @@ package com.umc.networkingService.domain.board.service;
 
 
 import com.umc.networkingService.domain.board.dto.request.BoardRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageElement;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardSearchPageElement;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
@@ -446,7 +442,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         staffBoardService.toggleNoticePin(inhaStaff, notice.getId(), true);
 
         //then
-        assertEquals(true, notice.isFixed());
+        assertTrue(notice.isFixed());
     }
 
 }

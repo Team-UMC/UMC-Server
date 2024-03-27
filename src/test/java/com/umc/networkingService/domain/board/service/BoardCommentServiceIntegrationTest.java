@@ -7,6 +7,8 @@ import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPa
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
+import com.umc.networkingService.global.common.exception.RestApiException;
+import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -98,6 +100,55 @@ public class BoardCommentServiceIntegrationTest extends BoardServiceTestConfig {
         assertEquals(commentCount - 1, comment.getBoard().getCommentCount());
     }
 
+    @Test
+    @DisplayName("댓글 삭제 테스트 - 대댓글이 있을 경우")
+    @Transactional
+    public void deleteBoardCommentTest2() {
+        //given
+        int commentCount = board.getCommentCount();
+        BoardCommentRequest.BoardCommentAddRequest request = BoardCommentRequest.BoardCommentAddRequest.builder()
+                .boardId(board.getId())
+                .content("대댓글")
+                .build();
+
+        BoardCommentId replyId = boardCommentService.addBoardComment(inhaMember, comment.getId(), request);
+
+        //when
+        boardCommentService.deleteBoardComment(inhaMember, comment.getId());
+
+        //then
+        assertNull(comment.getDeletedAt());
+        assertEquals("삭제된 댓글입니다.", comment.getContent());
+        assertEquals(commentCount, comment.getBoard().getCommentCount());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 성공 테스트 - 운영진")
+    @Transactional
+    public void deleteBoardCommentFromStaffTest() {
+        //given
+        int commentCount = board.getCommentCount();
+        //when
+        boardCommentService.deleteBoardComment(inhaStaff, comment.getId());
+
+        //then
+        assertNotNull(comment.getDeletedAt());
+        assertEquals(commentCount - 1, comment.getBoard().getCommentCount());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 테스트")
+    @Transactional
+    public void deleteBoardCommentFailTest() {
+        //given
+        int commentCount = board.getCommentCount();
+        //when
+        RestApiException exception = assertThrows(RestApiException.class, () -> {
+            boardCommentService.deleteBoardComment(gachonMember, comment.getId());
+        });
+        //then
+        assertEquals(BoardErrorCode.NO_AUTHORIZATION_BOARD.getCode(), exception.getErrorCode().getCode());
+    }
     @Test
     @DisplayName("댓글 목록 조회 테스트")
     @Transactional
