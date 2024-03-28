@@ -225,6 +225,21 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         assertTrue(boardDetail.getIsMine());
     }
 
+    @Test
+    @DisplayName("특정 게시글 상세 조회 실패 테스트")
+    @Transactional
+    public void showBoardDetailFailTest() {
+        //given
+        UUID boardId = board.getId();
+
+        //when
+        RestApiException exception = assertThrows(RestApiException.class, () -> {
+            boardService.showBoardDetail(gachonMember, boardId);
+        });
+        //then
+        assertEquals(BoardErrorCode.NO_AUTHORIZATION_BOARD.getCode(), exception.getErrorCode().getCode());
+    }
+
 
     @Test
     @DisplayName("특정 게시판의 게시글 목록 조회 테스트")
