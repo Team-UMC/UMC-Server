@@ -105,6 +105,7 @@ public abstract class BoardServiceTestConfig {
                 .role(Role.CENTER_STAFF)
                 .name("김연합")
                 .nickname("센터")
+                .semesterParts(createSemesterPartFIFTH(gachonMember))
                 .build());
     }
 
@@ -176,6 +177,7 @@ public abstract class BoardServiceTestConfig {
                 .hitCount(0)
                 .heartCount(0)
                 .commentCount(0)
+                .isFixed(false)
                 .build());
     }
 
@@ -234,6 +236,7 @@ public abstract class BoardServiceTestConfig {
                     .hitCount(0)
                     .heartCount(0)
                     .commentCount(0)
+                    .isFixed(false)
                     .build());
         }
     }

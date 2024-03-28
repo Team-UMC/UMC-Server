@@ -1,8 +1,10 @@
 package com.umc.networkingService.domain.board.service;
 
 import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
+import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest.BoardCommentAddRequest;
 import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardCommentPageElement;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
@@ -11,14 +13,22 @@ import com.umc.networkingService.domain.board.mapper.BoardCommentMapper;
 import com.umc.networkingService.domain.board.mapper.BoardMapper;
 import com.umc.networkingService.domain.board.repository.BoardCommentRepository;
 import com.umc.networkingService.domain.member.entity.Member;
+import com.umc.networkingService.domain.member.service.MemberService;
 import com.umc.networkingService.global.common.exception.RestApiException;
 import com.umc.networkingService.global.common.exception.code.BoardCommentErrorCode;
+import com.umc.networkingService.global.common.exception.code.BoardErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
+import static com.umc.networkingService.domain.board.dto.response.BoardCommentResponse.*;
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.MyBoardPageElement;
 
 @Service
 @RequiredArgsConstructor
@@ -29,27 +39,34 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     private final BoardService boardService;
     private final BoardCommentMapper boardCommentMapper;
     private final BoardMapper boardMapper;
+    private final MemberService memberService;
 
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId addBoardComment(Member member, BoardCommentRequest.BoardCommentAddRequest request) {
+    public BoardCommentId addBoardComment(Member member, UUID commentId, BoardCommentAddRequest request) {
         Board board = boardService.loadEntity(request.getBoardId());
 
+        BoardComment parentComment = Optional.ofNullable(commentId)
+                .map(this::loadEntity).orElse(null);
+
         BoardComment comment = boardCommentRepository.save(
-                boardCommentMapper.toEntity(member, board, request));
+                boardCommentMapper.toEntity(member, board, parentComment, request.getContent()));
+
         board.increaseCommentCount();
 
         return new BoardCommentResponse.BoardCommentId(comment.getId());
     }
 
+
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId updateBoardComment(Member member, UUID commentId,
-                                                     BoardCommentRequest.BoardCommentUpdateRequest request) {
+    public BoardCommentId updateBoardComment(Member loginMember, UUID commentId, BoardCommentRequest.BoardCommentUpdateRequest request) {
+        Member member = memberService.loadEntity(loginMember.getId());
         BoardComment comment = loadEntity(commentId);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
-        validateMember(comment, member);
+        if (!boardService.checkWriter(comment.getWriter(), member))
+            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
 
         comment.update(request);
 
@@ -58,43 +75,66 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
     @Override
     @Transactional
-    public BoardCommentResponse.BoardCommentId deleteBoardComment(Member member, UUID commentId) {
-
+    public BoardCommentId deleteBoardComment(Member loginMember, UUID commentId) {
+        Member member = memberService.loadEntity(loginMember.getId());
         BoardComment comment = loadEntity(commentId);
         Board board = comment.getBoard();
+        Member writer = comment.getWriter();
 
-        //현재 로그인한 member와 writer가 같지 않으면 삭제 권한 없음
-        validateMember(comment, member);
+        //현재 로그인한 member와 writer가 같지 않고, 로그인 한 멤버보다 상위 운영진이 아니라면 예외 반환
+        if (!boardService.checkWriter(writer, member)) {
+            if (!boardService.checkHighStaff(writer, member)) {
+                throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
+            }
+        }
 
         board.decreaseCommentCount();
-        comment.delete();
-
+        handleCommentDeletion(comment);
 
         return new BoardCommentResponse.BoardCommentId(comment.getId());
     }
 
     @Override
-    public BoardCommentResponse.BoardCommentPageInfos showBoardComments(Member member, UUID boardId, Pageable pageable) {
+    public BoardCommentPageInfos<BoardCommentPageElement> showBoardComments(Member loginMember, UUID boardId, Pageable pageable) {
+
+        Member member = memberService.loadEntity(loginMember.getId());
         Board board = boardService.loadEntity(boardId);
-        return boardCommentMapper.toBoardCommentPageInfos(
-                boardCommentRepository.findAllBoardComments(member, board, pageable));
+
+        boardService.checkReadPermission(member, board);
+
+        Page<BoardComment> comments = boardCommentRepository.findAllBoardComments(board, pageable);
+
+        //isMine 여부를 포함
+        List<BoardCommentPageElement> commentPageElements = comments.map(comment ->
+                boardCommentMapper.toBoardCommentPageElement(comment,
+                        boardMapper.toDetailWriterInfo(comment.getWriter()),
+                        boardService.checkWriter(comment.getWriter(), member))).stream().toList();
+
+        return boardCommentMapper.toBoardCommentPageInfos(comments, commentPageElements);
     }
 
 
     @Override
-    public MyBoardResponse.MyBoardPageInfos showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
-        return boardMapper.toMyBoardPageInfos(boardCommentRepository.findBoardsByMemberCommentForApp(member, keyword, pageable));
+    public BoardPageInfos<MyBoardPageElement> showBoardsByMemberCommentForApp(Member member, String keyword, Pageable pageable) {
+
+        Page<Board> boards = boardCommentRepository.findBoardsByMemberCommentForApp(member, keyword, pageable);
+        return boardMapper.toBoardPageInfos(boards, boards.map(boardMapper::toMyBoardPageElement).stream().toList());
     }
 
     @Override
-    public MyBoardResponse.MyBoardCommentPageInfos showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
-        return boardCommentMapper.toMyBoardCommentPageInfos(boardCommentRepository.findBoardsByMemberCommentForWeb(member, hostType, boardType, keyword, pageable));
+    public BoardCommentPageInfos<MyBoardCommentPageElement> showBoardsByMemberCommentForWeb(Member member, HostType hostType, BoardType boardType, String keyword, Pageable pageable) {
+        Page<BoardComment> boardComments = boardCommentRepository.findBoardsByMemberCommentForWeb(member, hostType, boardType, keyword, pageable);
+
+        return boardCommentMapper.toBoardCommentPageInfos(boardComments,
+                boardComments.map(boardCommentMapper::toMyBoardCommentPageElement).stream().toList());
     }
 
-    private void validateMember(BoardComment comment, Member member) {
-        if(!comment.getWriter().getId().equals(member.getId()))
-            throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
-
+    private void handleCommentDeletion(BoardComment comment) {
+        if (boardCommentRepository.existsByParentComment(comment)) {
+            comment.deleteComment();
+        } else {
+            comment.delete();
+        }
     }
 
     @Override

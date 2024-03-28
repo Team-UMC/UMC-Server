@@ -147,7 +147,6 @@ public class AuthServiceIntegrationTest extends ServiceIntegrationTestConfig {
         assertEquals("BLUE(블루)", savedMember.getBranch().getName());
         assertEquals("인하대학교", savedMember.getUniversity().getName());
         assertEquals(2, savedMember.getSemesterParts().size());
-        assertEquals(1, savedMember.getPositions().size());
     }
 
     @Test

@@ -44,4 +44,7 @@ public class BoardComment extends BaseEntity {
         this.content = request.getContent();
     }
 
+    public void deleteComment() {
+        this.content = "삭제된 댓글입니다.";
+    }
 }

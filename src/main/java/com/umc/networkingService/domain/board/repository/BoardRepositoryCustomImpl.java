@@ -26,10 +26,12 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 
     /*
-    Home 화면에 보여지는 notices 목록 반환
+    핀 고정된 notices 목록 최대 10개 반환
      */
     @Override
-    public List<Board> findNoticesByMember(Member member) {
+    public List<Board> findPinnedNoticesByMember(Member member) {
+
+
         return query.selectFrom(board)
                 .where(board.isFixed.eq(true)
                         .and(
@@ -38,6 +40,21 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                                         .or(CampusPermission(member))
                         ))
                 .orderBy(board.createdAt.desc())
+                .limit(10)
+                .fetch();
+    }
+
+    /*
+    hostType에 따른 핀고정된 notice 최대 10개 반환
+     */
+    @Override
+    public List<Board> findPinnedNoticesByMemberAndHostType(Member member, HostType hostType) {
+        return query.selectFrom(board)
+                .where(board.isFixed.eq(true)
+                        .and(addHostTypeAndBoardTypeCondition(member, hostType, BoardType.NOTICE))
+                )
+                .orderBy(board.createdAt.desc())
+                .limit(10)
                 .fetch();
     }
 
@@ -49,7 +66,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         List<Semester> memberSemesters = member.getSemesters();
         BooleanBuilder predicate = new BooleanBuilder()
-                .and(eqBoardType(boardType));
+                .and(eqBoardType(boardType))
+                .and(board.isFixed.isFalse());
 
         switch (hostType) {
             case CAMPUS -> predicate.and(CampusPermission(member))
@@ -59,7 +77,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         }
 
         List<Board> boards = query.selectFrom(board).where(predicate)
-                .orderBy(board.isFixed.desc(), board.createdAt.desc())
+                .orderBy(board.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -94,7 +112,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     게시글의 모든 댓글 목록 조회
      */
     @Override
-    public Page<BoardComment> findAllBoardComments(Member member, Board board, Pageable pageable) {
+    public Page<BoardComment> findAllBoardComments(Board board, Pageable pageable) {
 
         List<BoardComment> boardComments = query.selectFrom(boardComment)
                 .where(boardComment.board.id.eq(board.getId()))
@@ -292,7 +310,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     /*
-    permissionHostType에 따라 최상위 권한이하의 공지글 목록을 조회
+    permissionHostType에 따라 최상위 권한이하의 공지글 목록을 조회 (운영진용)
     */
     @Override
     public Page<Board> findAllNotices(Member member, HostType permissionHostType, String keyword, Pageable pageable) {
@@ -301,7 +319,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         switch (permissionHostType) {
             case CENTER:
-                predicate.and(CenterPermission());
+                predicate.or(CenterPermission());
             case BRANCH:
                 predicate.or(BranchPermission(member));
             case CAMPUS:
@@ -321,7 +339,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
 
-    //hostTYpe과 boardType에 따라 조건 추가
+    //hostType과 boardType에 따라 조건 추가
     private BooleanBuilder addHostTypeAndBoardTypeCondition(Member member, HostType hostType, BoardType boardType) {
         BooleanBuilder predicate = new BooleanBuilder().and(eqBoardType(boardType));
 
@@ -340,7 +358,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
             predicate.and(board.title.contains(keyword).or(board.content.contains(keyword)));
         }
     }
-
 
     private BooleanExpression eqUniversity(Member member) {
         if (member != null && member.getUniversity() != null)
@@ -373,5 +390,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     private BooleanExpression CampusPermission(Member member) {
         return eqHostType(CAMPUS).and(eqUniversity(member));
     }
+
 }
 

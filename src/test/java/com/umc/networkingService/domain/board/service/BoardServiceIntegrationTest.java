@@ -1,13 +1,8 @@
 package com.umc.networkingService.domain.board.service;
 
 
-import com.umc.networkingService.domain.board.dto.request.BoardCommentRequest;
 import com.umc.networkingService.domain.board.dto.request.BoardRequest;
-import com.umc.networkingService.domain.board.dto.response.BoardCommentResponse;
-import com.umc.networkingService.domain.board.dto.response.BoardResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
 import com.umc.networkingService.domain.board.entity.Board;
-import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
 import com.umc.networkingService.domain.board.entity.HostType;
 import com.umc.networkingService.global.common.enums.Part;
@@ -29,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Board 서비스의 ")
@@ -55,7 +51,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         //files.add(new MockMultipartFile("file", "filename2.jpg", "image/jpeg", "file content".getBytes()));
 
         //when
-        BoardResponse.BoardId response = boardService.createBoard(inhaMember, request, files);
+        BoardId response = boardService.createBoard(inhaMember, request, files);
         Optional<Board> optionalBoard = boardRepository.findById(response.getBoardId());
         assertTrue(optionalBoard.isPresent());
         Board board = optionalBoard.get();
@@ -217,15 +213,31 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         UUID boardId = board.getId();
 
         //when
-        BoardResponse.BoardDetail boardDetail = boardService.showBoardDetail(inhaMember, boardId);
+        BoardDetail boardDetail = boardService.showBoardDetail(inhaMember, boardId);
 
         //then
-        assertEquals("루시/김수민", boardDetail.getWriter());
+        assertEquals("루시/김수민", boardDetail.getWriterInfo().getWriter());
         assertEquals(1, boardDetail.getHitCount());
-        assertEquals(Semester.FIFTH, boardDetail.getSemester());
-        assertEquals(Part.SPRING, boardDetail.getPart());
-        assertEquals(false, boardDetail.isLiked());
+        assertEquals(Semester.FIFTH, boardDetail.getWriterInfo().getSemester());
+        assertEquals(Part.SPRING, boardDetail.getWriterInfo().getPart());
+        assertEquals(false, boardDetail.getIsLiked());
         assertEquals(0, boardDetail.getHeartCount());
+        assertTrue(boardDetail.getIsMine());
+    }
+
+    @Test
+    @DisplayName("특정 게시글 상세 조회 실패 테스트")
+    @Transactional
+    public void showBoardDetailFailTest() {
+        //given
+        UUID boardId = board.getId();
+
+        //when
+        RestApiException exception = assertThrows(RestApiException.class, () -> {
+            boardService.showBoardDetail(gachonMember, boardId);
+        });
+        //then
+        assertEquals(BoardErrorCode.NO_AUTHORIZATION_BOARD.getCode(), exception.getErrorCode().getCode());
     }
 
 
@@ -239,17 +251,16 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardResponse.BoardPageInfos boardPageInfos = boardService.showBoards(inhaMember, hostType, boardType, pageable);
+        BoardPageInfos<BoardPageElement> boardPageInfos = boardService.showBoards(inhaMember, hostType, boardType, pageable);
 
         //then
         assertNotNull(boardPageInfos.getBoardPageElements().get(0).getBoardId());
-        assertFalse(boardPageInfos.getBoardPageElements().get(0).isFixed());
         assertEquals(0, boardPageInfos.getPage());
         assertEquals(1, boardPageInfos.getBoardPageElements().size());
         assertEquals(1, boardPageInfos.getTotalElements());
 
         //when
-        BoardResponse.BoardPageInfos boardPageInfos2 = boardService.showBoards(gachonMember, hostType, boardType, pageable);
+        BoardPageInfos<BoardPageElement>  boardPageInfos2 = boardService.showBoards(gachonMember, hostType, boardType, pageable);
         assertEquals(0, boardPageInfos2.getBoardPageElements().size());
         assertEquals(0, boardPageInfos2.getTotalElements());
 
@@ -265,14 +276,14 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardResponse.BoardPageInfos boardPageInfos = boardService.showBoards(inhaMember, hostType, boardType, pageable);
+        BoardPageInfos<BoardPageElement>  boardPageInfos = boardService.showBoards(inhaMember, hostType, boardType, pageable);
 
         //then
         assertEquals(0, boardPageInfos.getBoardPageElements().size());
         assertEquals(0, boardPageInfos.getTotalElements());
 
         //when
-        BoardResponse.BoardPageInfos boardPageInfos2 = boardService.showBoards(inhaStaff, hostType, boardType, pageable);
+        BoardPageInfos<BoardPageElement>  boardPageInfos2 = boardService.showBoards(inhaStaff, hostType, boardType, pageable);
 
         //then
         assertEquals(1, boardPageInfos2.getBoardPageElements().size());
@@ -291,22 +302,22 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         createBoards();
 
         //when
-        BoardResponse.BoardSearchPageInfos response = boardService.searchBoard(inhaMember, keyword, pageable);
-        BoardResponse.BoardSearchPageInfos  response2 = boardService.searchBoard(inhaMember, keyword2, pageable);
+        BoardPageInfos<BoardSearchPageElement> response = boardService.searchBoard(inhaMember, keyword, pageable);
+        BoardPageInfos<BoardSearchPageElement> response2 = boardService.searchBoard(inhaMember, keyword2, pageable);
 
         //then
         assertEquals(0, response.getPage());
         assertEquals(2, response.getTotalPages());
         assertEquals(20, response.getTotalElements());
-        assertEquals(10, response.getBoardSearchPageElements().size());
-        assertEquals(BoardType.FREE, response.getBoardSearchPageElements().get(0).getBoardType());
-        assertEquals(HostType.CENTER, response.getBoardSearchPageElements().get(0).getHostType());
+        assertEquals(10, response.getBoardPageElements().size());
+        assertEquals(BoardType.FREE, response.getBoardPageElements().get(0).getBoardType());
+        assertEquals(HostType.CENTER, response.getBoardPageElements().get(0).getHostType());
 
 
         assertEquals(0, response2.getPage());
         assertEquals(1, response2.getTotalPages());
         assertEquals(1, response2.getTotalElements());
-        assertEquals(1, response2.getBoardSearchPageElements().size());
+        assertEquals(1, response2.getBoardPageElements().size());
     }
 
     @Test
@@ -318,87 +329,17 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         UUID boardId = board.getId();
 
         //when
-        BoardResponse.BoardId like = boardService.toggleBoardLike(inhaMember, boardId);
+        BoardId like = boardService.toggleBoardLike(inhaMember, boardId);
 
         //then
         assertEquals(1, board.getHeartCount());
         //given
-        BoardResponse.BoardId cancel = boardService.toggleBoardLike(inhaMember, boardId);
+        BoardId cancel = boardService.toggleBoardLike(inhaMember, boardId);
 
         //then
         assertEquals(0, board.getHeartCount());
     }
 
-    @Test
-    @DisplayName("댓글 작성 성공 테스트")
-    @Transactional
-    public void addBoardCommentTest() {
-        //given
-        BoardCommentRequest.BoardCommentAddRequest request = BoardCommentRequest.BoardCommentAddRequest.builder()
-                .content("내용")
-                .boardId(board.getId())
-                .build();
-
-        //when
-        BoardCommentResponse.BoardCommentId response = boardCommentService.addBoardComment(inhaMember, request);
-        Optional<BoardComment> optionalBoardComment = boardCommentRepository.findById(response.getCommentId());
-        assertTrue(optionalBoardComment.isPresent());
-        BoardComment comment = optionalBoardComment.get();
-
-        //then
-        assertEquals("내용", comment.getContent());
-        assertEquals(board.getId(), comment.getBoard().getId());
-        assertEquals(1, board.getCommentCount());
-    }
-
-    @Test
-    @DisplayName("댓글 수정 성공 테스트")
-    @Transactional
-    public void updateBoardCommentTest() {
-        //given
-        BoardCommentRequest.BoardCommentUpdateRequest request = BoardCommentRequest.BoardCommentUpdateRequest.builder()
-                .content("수정")
-                .build();
-
-        //when
-        boardCommentService.updateBoardComment(inhaMember, comment.getId(), request);
-
-        //then
-        assertEquals("수정", comment.getContent());
-    }
-
-    @Test
-    @DisplayName("댓글 삭제 성공 테스트")
-    @Transactional
-    public void deleteBoardCommentTest() {
-        //given
-        int commentCount = board.getCommentCount();
-        //when
-        boardCommentService.deleteBoardComment(inhaMember, comment.getId());
-
-        //then
-        assertNotNull(comment.getDeletedAt());
-        assertEquals(commentCount - 1, comment.getBoard().getCommentCount());
-    }
-
-    @Test
-    @DisplayName("댓글 목록 조회 테스트")
-    @Transactional
-    public void showBoardCommentsTest() {
-        //given
-        createBoardComments();
-        Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.asc("created_at")));
-
-        //when
-        BoardCommentResponse.BoardCommentPageInfos response = boardCommentService.showBoardComments(inhaMember, board.getId(), pageable);
-
-        //then
-        assertEquals(1, response.getPage());
-        assertEquals(3, response.getTotalPages());
-        assertEquals(21, response.getTotalElements());
-        assertEquals(10, response.getBoardCommentPageElements().size());
-        assertEquals("벡스/김준석", response.getBoardCommentPageElements().get(0).getWriter());
-    }
 
 
     @Test
@@ -410,15 +351,15 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        MyBoardResponse.MyBoardPageInfos response = boardService.showBoardsByMemberForApp(inhaMember, "데모", pageable);
+        BoardPageInfos<MyBoardPageElement> response = boardService.showBoardsByMember(inhaMember, null,null,"데모", pageable);
 
         //then
         assertEquals(1, response.getPage());
         assertEquals(2, response.getTotalPages());
         assertEquals(20, response.getTotalElements());
-        assertEquals(10, response.getMyBoardPageElements().size());
-        assertEquals(HostType.CENTER, response.getMyBoardPageElements().get(0).getHostType());
-        assertEquals(BoardType.FREE, response.getMyBoardPageElements().get(0).getBoardType());
+        assertEquals(10, response.getBoardPageElements().size());
+        assertEquals(HostType.CENTER, response.getBoardPageElements().get(0).getHostType());
+        assertEquals(BoardType.FREE, response.getBoardPageElements().get(0).getBoardType());
     }
 
     @Test
@@ -430,62 +371,18 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        MyBoardResponse.MyBoardPageInfos response = boardService.showBoardsByMemberForWeb(inhaMember, HostType.CENTER,BoardType.FREE,"데모", pageable);
+        BoardPageInfos<MyBoardPageElement> response = boardService.showBoardsByMember(inhaMember, HostType.CENTER,BoardType.FREE,"데모", pageable);
 
         //then
         assertEquals(1, response.getPage());
         assertEquals(2, response.getTotalPages());
         assertEquals(20, response.getTotalElements());
-        assertEquals(10, response.getMyBoardPageElements().size());
-        assertEquals(HostType.CENTER, response.getMyBoardPageElements().get(0).getHostType());
-        assertEquals(BoardType.FREE, response.getMyBoardPageElements().get(0).getBoardType());
+        assertEquals(10, response.getBoardPageElements().size());
+        assertEquals(HostType.CENTER, response.getBoardPageElements().get(0).getHostType());
+        assertEquals(BoardType.FREE, response.getBoardPageElements().get(0).getBoardType());
     }
 
 
-    @Test
-    @DisplayName("내가 댓글 쓴 글 목록 조회 테스트 -APP용")
-    @Transactional
-    public void showBoardsByMemberCommentTestForApp() {
-        //given
-        createBoardComments();
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
-
-        //when
-        MyBoardResponse.MyBoardPageInfos  response = boardCommentService.showBoardsByMemberCommentForApp(inhaMember, null, pageable);
-        MyBoardResponse.MyBoardPageInfos response2 = boardCommentService.showBoardsByMemberCommentForApp(gachonMember, null, pageable);
-
-        //then
-        assertEquals(0, response.getPage());
-        assertEquals(1, response.getTotalPages());
-        assertEquals(1, response.getTotalElements());
-        assertEquals(1, response.getMyBoardPageElements().size());
-        assertEquals("제목",response.getMyBoardPageElements().get(0).getTitle());
-
-        assertEquals(0, response.getPage());
-        assertEquals(0, response2.getTotalPages());
-        assertEquals(0, response2.getTotalElements());
-        assertEquals(0, response2.getMyBoardPageElements().size());
-    }
-
-    @Test
-    @DisplayName("내가 댓글 쓴 글 목록 조회 테스트 - WEB용")
-    @Transactional
-    public void showBoardsByMemberCommentTestForWeb() {
-        //given
-        createBoardComments();
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
-
-        //when
-        MyBoardResponse.MyBoardCommentPageInfos response = boardCommentService.showBoardsByMemberCommentForWeb(inhaStaff, HostType.CAMPUS,BoardType.FREE,null, pageable);
-
-        //then
-        assertEquals(0, response.getPage());
-        assertEquals(2, response.getTotalPages());
-        assertEquals(20, response.getTotalElements());
-        assertEquals(10, response.getMyBoardCommentPageElement().size());
-        assertEquals(HostType.CAMPUS, response.getMyBoardCommentPageElement().get(0).getHostType());
-        assertEquals(BoardType.FREE, response.getMyBoardCommentPageElement().get(0).getBoardType());
-    }
 
     @Test
     @DisplayName("내가 좋아요한 글 목록 조회 테스트 - APP용")
@@ -496,14 +393,14 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        MyBoardResponse.MyBoardPageInfos  response = boardService.showBoardsByMemberHeartForApp(inhaStaff, null, pageable);
+        BoardPageInfos<MyBoardPageElement> response = boardService.showBoardsByMemberHeart(inhaStaff,null,null, null, pageable);
 
         //then
         assertEquals(0, response.getPage());
         assertEquals(1, response.getTotalPages());
         assertEquals(1, response.getTotalElements());
-        assertEquals(1, response.getMyBoardPageElements().size());
-        assertEquals(1, response.getMyBoardPageElements().get(0).getHeartCount());
+        assertEquals(1, response.getBoardPageElements().size());
+        assertEquals(1, response.getBoardPageElements().get(0).getHeartCount());
 
     }
 
@@ -516,13 +413,13 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        MyBoardResponse.MyBoardPageInfos response = boardService.showBoardsByMemberHeartForWeb(inhaMember,HostType.CAMPUS,BoardType.WORKBOOK, null, pageable);
+        BoardPageInfos<MyBoardPageElement> response = boardService.showBoardsByMemberHeart(inhaMember,HostType.CAMPUS,BoardType.WORKBOOK, null, pageable);
 
         //then
         assertEquals(0, response.getPage());
         assertEquals(0, response.getTotalPages());
         assertEquals(0, response.getTotalElements());
-        assertEquals(0, response.getMyBoardPageElements().size());
+        assertEquals(0, response.getBoardPageElements().size());
     }
 
 
@@ -538,12 +435,12 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created_at")));
 
         //when
-        BoardResponse.NoticePageInfos noticePageInfos = staffBoardService.showNotices(inhaStaff,HostType.ALL,null , pageable);
+        BoardPageInfos<NoticePageElement> noticePageInfos = staffBoardService.showNotices(centerStaff, null, null , pageable);
 
         //then
-        assertEquals(1, noticePageInfos.getNoticePageElements().size());
+        assertEquals(1, noticePageInfos.getBoardPageElements().size());
         assertEquals(1, noticePageInfos.getTotalElements());
-        assertEquals("공지",noticePageInfos.getNoticePageElements().get(0).getTitle());
+        assertEquals("연합공지", noticePageInfos.getBoardPageElements().get(0).getTitle());
 
     }
 
@@ -560,7 +457,7 @@ public class BoardServiceIntegrationTest extends BoardServiceTestConfig {
         staffBoardService.toggleNoticePin(inhaStaff, notice.getId(), true);
 
         //then
-        assertEquals(true, notice.isFixed());
+        assertTrue(notice.isFixed());
     }
 
 }

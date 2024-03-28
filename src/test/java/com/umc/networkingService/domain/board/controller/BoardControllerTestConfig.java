@@ -1,9 +1,12 @@
 package com.umc.networkingService.domain.board.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.umc.networkingService.config.initial.DataLoader;
 import com.umc.networkingService.config.security.jwt.JwtTokenProvider;
 import com.umc.networkingService.domain.board.dto.response.BoardResponse;
-import com.umc.networkingService.domain.board.dto.response.MyBoardResponse;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageElement;
+import com.umc.networkingService.domain.board.dto.response.BoardResponse.BoardPageInfos;
+import com.umc.networkingService.domain.board.dto.response.WriterInfo;
 import com.umc.networkingService.domain.board.entity.Board;
 import com.umc.networkingService.domain.board.entity.BoardComment;
 import com.umc.networkingService.domain.board.entity.BoardType;
@@ -19,6 +22,7 @@ import com.umc.networkingService.domain.member.repository.SemesterPartRepository
 import com.umc.networkingService.global.common.enums.Part;
 import com.umc.networkingService.global.common.enums.Role;
 import com.umc.networkingService.global.common.enums.Semester;
+import com.umc.networkingService.global.converter.DataConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +34,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.umc.networkingService.domain.board.dto.response.BoardResponse.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -50,7 +56,8 @@ public abstract class BoardControllerTestConfig {
     protected SemesterPartRepository semesterPartRepository;
     @MockBean
     protected StaffBoardService staffBoardService;
-
+    @MockBean
+    protected DataLoader dataLoader;
 
     protected Member member;
     protected Board board;
@@ -118,25 +125,24 @@ public abstract class BoardControllerTestConfig {
 
 
     //가상의 BoardPageInfos 생성
-    protected BoardResponse.BoardPageInfos createMockBoardPageInfos() {
-        List<BoardResponse.BoardPageElement> boardPageResponses = new ArrayList<>();
+    protected BoardPageInfos<BoardPageElement> createMockBoardPageInfos() {
+        List<BoardPageElement> boardPageResponses = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BoardResponse.BoardPageElement boardPageResponse = BoardResponse.BoardPageElement.builder()
+            BoardPageElement boardPageResponse = BoardPageElement.builder()
                     .title("제목")
                     .content("내용")
-                    .writer("루시/김수민")
+                    .writerInfo(WriterInfo.builder().writer("루시/김수민").profileImage(".../img").build())
                     .hitCount(1)
                     .commentCount(1)
                     .heartCount(1)
-                    .profileImage(".../img")
-                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .createdAt("2024-01-16 14:20:15")
                     .build();
             boardPageResponses.add(boardPageResponse);
         }
 
 
         // 가상의 페이징 정보 설정
-        return BoardResponse.BoardPageInfos.builder()
+        return BoardPageInfos.<BoardPageElement>builder()
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
@@ -146,74 +152,74 @@ public abstract class BoardControllerTestConfig {
                 .build();
     }
 
-    protected BoardResponse.BoardSearchPageInfos createMockBoardSearchPageInfos() {
-        List<BoardResponse.BoardSearchPageElement> boardSearchPageElements = new ArrayList<>();
+    protected BoardPageInfos<BoardSearchPageElement>  createMockBoardSearchPageInfos() {
+        List<BoardSearchPageElement> boardSearchPageElements = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BoardResponse.BoardSearchPageElement boardSearchPageResponse = BoardResponse.BoardSearchPageElement.builder()
+            BoardSearchPageElement boardSearchPageResponse = BoardSearchPageElement.builder()
                     .boardType(BoardType.FREE)
                     .hostType(HostType.CAMPUS)
                     .boardId(UUID.randomUUID())
                     .title("제목")
                     .content("내용")
-                    .writer("루시/김수민")
+                    .writerInfo(WriterInfo.builder().writer("루시/김수민").profileImage(".../img").build())
                     .hitCount(1)
                     .commentCount(1)
                     .heartCount(1)
-                    .profileImage(".../img")
-                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .createdAt("2024-01-16 14:20:15")
                     .build();
+
             boardSearchPageElements.add(boardSearchPageResponse);
         }
 
 
         // 가상의 페이징 정보 설정
-        return BoardResponse.BoardSearchPageInfos.builder()
+        return BoardPageInfos.<BoardSearchPageElement>builder()
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .boardSearchPageElements(boardSearchPageElements)
+                .boardPageElements(boardSearchPageElements)
                 .isFirst(true)
                 .isLast(false)
                 .build();
     }
 
-    protected MyBoardResponse.MyBoardPageInfos createMockMyBoardResponse() {
-        List<MyBoardResponse.MyBoardPageElement> myBoardPageElements = new ArrayList<>();
+    protected BoardPageInfos<MyBoardPageElement> createMockMyBoardResponse() {
+        List<MyBoardPageElement> myBoardPageElements = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            MyBoardResponse.MyBoardPageElement myBoardPageElement = MyBoardResponse.MyBoardPageElement.builder()
+            MyBoardPageElement myBoardPageElement = MyBoardPageElement.builder()
                     .boardType(BoardType.FREE)
                     .hostType(HostType.CAMPUS)
                     .boardId(UUID.randomUUID())
                     .title("제목")
                     .hitCount(1)
                     .heartCount(1)
-                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .createdAt("2024-01-16 14:20:15")
                     .build();
             myBoardPageElements.add(myBoardPageElement);
         }
 
 
         // 가상의 페이징 정보 설정
-        return MyBoardResponse.MyBoardPageInfos.builder()
+        return BoardPageInfos.<MyBoardPageElement>builder()
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .myBoardPageElements(myBoardPageElements)
+                .boardPageElements(myBoardPageElements)
                 .isFirst(true)
                 .isLast(false)
                 .build();
     }
 
 
-    protected BoardResponse.NoticePageInfos createMockNoticePageInfos() {
-        List<BoardResponse.NoticePageElement> noticePageElements = new ArrayList<>();
+    protected BoardPageInfos<NoticePageElement> createMockNoticePageInfos() {
+        List<NoticePageElement> noticePageElements = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BoardResponse.NoticePageElement noticePageElement = BoardResponse.NoticePageElement.builder()
+            NoticePageElement noticePageElement = NoticePageElement.builder()
                     .hostType(HostType.CAMPUS)
                     .boardId(UUID.randomUUID())
                     .title("제목")
                     .hitCount(1)
-                    .createdAt(LocalDateTime.parse("2024-01-16T14:20:15"))
+                    .createdAt("2024-01-16 14:20:15")
                     .isFixed(false)
                     .writer("루시/김수민")
                     .build();
@@ -222,11 +228,11 @@ public abstract class BoardControllerTestConfig {
 
 
         // 가상의 페이징 정보 설정
-        return BoardResponse.NoticePageInfos.builder()
+        return BoardPageInfos.<NoticePageElement>builder()
                 .page(1)
                 .totalPages(3)
                 .totalElements(30)
-                .noticePageElements(noticePageElements)
+                .boardPageElements(noticePageElements)
                 .isFirst(true)
                 .isLast(false)
                 .build();
