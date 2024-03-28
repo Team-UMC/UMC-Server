@@ -58,7 +58,6 @@ public class BoardCommentServiceImpl implements BoardCommentService {
     }
 
 
-
     @Override
     @Transactional
     public BoardCommentId updateBoardComment(Member loginMember, UUID commentId, BoardCommentRequest.BoardCommentUpdateRequest request) {
@@ -66,7 +65,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
         BoardComment comment = loadEntity(commentId);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
-        if(!boardService.checkWriter(comment.getWriter(),member))
+        if (!boardService.checkWriter(comment.getWriter(), member))
             throw new RestApiException(BoardCommentErrorCode.NO_AUTHORIZATION_BOARD_COMMENT);
 
         comment.update(request);
@@ -84,7 +83,7 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         //현재 로그인한 member와 writer가 같지 않고, 로그인 한 멤버보다 상위 운영진이 아니라면 예외 반환
         if (!boardService.checkWriter(writer, member)) {
-            if (!boardService.checkHighStaff(writer,member)) {
+            if (!boardService.checkHighStaff(writer, member)) {
                 throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
             }
         }
@@ -100,6 +99,9 @@ public class BoardCommentServiceImpl implements BoardCommentService {
 
         Member member = memberService.loadEntity(loginMember.getId());
         Board board = boardService.loadEntity(boardId);
+
+        boardService.checkReadPermission(member, board);
+
         Page<BoardComment> comments = boardCommentRepository.findAllBoardComments(board, pageable);
 
         //isMine 여부를 포함

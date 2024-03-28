@@ -37,6 +37,7 @@ public interface BoardService extends EntityLoader<Board, UUID> {
     Boolean existsByBoardTypeAndHostType(BoardType boardType, HostType hostType);
     boolean checkWriter(Member writer, Member member);
     boolean checkHighStaff(Member writer, Member member);
+    void checkReadPermission(Member member, Board board);
 
 
 }

@@ -92,7 +92,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = loadEntity(boardId);
 
         //게시글 열람 권한 check
-        checkSemesterPermission(member, board);
+        checkReadPermission(member, board);
 
         //좋아요 여부 확인
         boolean isLike = boardHeartRepository.findByMemberAndBoard(member, board)
@@ -160,7 +160,7 @@ public class BoardServiceImpl implements BoardService {
 
         //boardType과 HostType에 따라 금지된 요청, 권한 판단
         checkBadRequest(hostType, boardType);
-        List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
+        List<Semester> semesterPermission = checkWritePermission(member, hostType, boardType);
 
         Board board = boardRepository.save(boardMapper.toEntity(member, request, semesterPermission));
         if (files != null)
@@ -182,7 +182,7 @@ public class BoardServiceImpl implements BoardService {
 
         //boardType과 HostType에 따라 금지된 요청, 권한 판단
         checkBadRequest(hostType, boardType);
-        List<Semester> semesterPermission = checkPermission(member, hostType, boardType);
+        List<Semester> semesterPermission = checkWritePermission(member, hostType, boardType);
 
         //현재 로그인한 member와 writer가 같지 않으면 수정 권한 없음
         if (!checkWriter(board.getWriter(), member))
@@ -221,8 +221,38 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.existsByBoardTypeAndHostType(boardType, hostType);
     }
 
+    //게시글 열람 시 권한 check
+    @Override
+    public void checkReadPermission(Member member, Board board) {
+        //if hostType == CAMPUS -> board writer의 university와 로그인 member의 university 일치한지 확인
+        //if hostType == BRANCH -> board writer의 branch와 로그인 member의 branch 일치한지 확인
+        boolean hasPermission = true;
 
-    private List<Semester> checkPermission(Member member, HostType hostType, BoardType boardType) {
+        switch (board.getHostType()) {
+            case CAMPUS ->
+                    hasPermission = board.getWriter().getUniversity().getId().equals(member.getUniversity().getId());
+            case BRANCH ->
+                    hasPermission = board.getWriter().getBranch().getId().equals(member.getBranch().getId());
+        }
+
+        if (!hasPermission || !checkSemesterPermission(member,board)) {
+            throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
+        }
+
+    }
+
+    //게시글 열람 시 semester 권한 check
+    private static boolean checkSemesterPermission(Member member, Board board) {
+        List<Semester> memberSemesters = member.getSemesters();
+        List<Semester> boardSemesterPermissions = board.getSemesterPermission();
+
+        //memberSemester의 어떤 기수도 허용기수에 포함되지 않으면 false
+        return memberSemesters.stream()
+                .anyMatch(boardSemesterPermissions::contains);
+    }
+
+    //쓰기 권한 check
+    private List<Semester> checkWritePermission(Member member, HostType hostType, BoardType boardType) {
         //현재 기수
         Semester nowSemester = Semester.findActiveSemester();
 
@@ -268,20 +298,6 @@ public class BoardServiceImpl implements BoardService {
         if (member.getRole().getPriority() >= Role.MEMBER.getPriority())
             throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
     }
-
-
-    //게시글 열람시 semester 권한 check
-    private static void checkSemesterPermission(Member member, Board board) {
-        List<Semester> memberSemesters = member.getSemesters();
-        List<Semester> boardSemesterPermissions = board.getSemesterPermission();
-
-        //memberSemester의 어떤 기수도 허용기수에 포함되지 않으면 예외를 반환
-        if (memberSemesters.stream()
-                .noneMatch(boardSemesterPermissions::contains))
-            throw new RestApiException(BoardErrorCode.NO_AUTHORIZATION_BOARD);
-
-    }
-
 
     private void checkBadRequest(HostType hostType, BoardType boardType) {
         //boardType: workbook, hostType: CAMPUS 가 아닐 경우 금지된 요청
